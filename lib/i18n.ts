@@ -157,6 +157,8 @@ const ptBR: Dict = {
   'game.viewAllAlternatives': 'Ver todas as alternativas',
   'game.discoveryEyebrow': 'Descoberta',
   'game.aboutTitle': 'Sobre o jogo',
+  'game.whatIsTitle': 'O que é o {game}?',
+  'game.whyPopularTitle': 'Por que o {game} ficou tão conhecido?',
   'game.ownershipNote':
     'A PlayLiva não possui nem opera {game}. A disponibilidade do jogo é definida por operadores licenciados e pode variar por país.',
   'game.howItWorksTitle': 'Como funciona',
@@ -293,8 +295,32 @@ const ptBR: Dict = {
   'wtp.operatorsSub':
     'Os operadores exibidos correspondem ao mercado selecionado e oferecem esta categoria.',
   'wtp.empty':
-    'Estamos analisando onde jogar {game} no {market}. Tente outro mercado pelo seletor.',
-  'wtp.serviceNote':
+  'Estamos analisando onde jogar {game} no {market}. Tente outro mercado pelo seletor.',
+  'wtp.operatorsTitle': 'Operadoras com {game} no {market}',
+  'wtp.methodologyTitle': 'Como comparamos as operadoras',
+  'wtp.methodologyIntro':
+  'Nossa comparação segue uma metodologia editorial fixa, aplicada da mesma forma a todas as operadoras analisadas:',
+  'wtp.methodology1': 'Disponibilidade confirmada no Brasil',
+  'wtp.methodology2': 'Disponibilidade verificada do jogo em questão',
+  'wtp.methodology3': 'Reputação e histórico da marca',
+  'wtp.methodology4': 'Métodos de pagamento oferecidos',
+  'wtp.methodology5': 'Qualidade da experiência em dispositivos móveis',
+  'wtp.methodology6': 'Experiência de retirada relatada por usuários',
+  'wtp.methodology7': 'Status de aprovação como parceira afiliada da PlayLiva',
+  'wtp.methodology8':
+  'Dados de conversão, quando existem dados reais disponíveis',
+  'wtp.checklistTitle': 'O que verificar antes de jogar',
+  'wtp.checklist1': 'Se a operadora está disponível no seu mercado',
+  'wtp.checklist2': 'Os termos e condições da operadora',
+  'wtp.checklist3': 'Os métodos de pagamento aceitos',
+  'wtp.checklist4': 'As ferramentas de jogo responsável disponíveis',
+  'wtp.checklist5':
+  'Os detalhes finais da oferta diretamente no site da operadora',
+  'wtp.aboutGameTitle': 'Sobre o {game}',
+  'wtp.viewGameCta': 'Ver página do jogo',
+  'wtp.viewGamesLikeCta': 'Ver jogos parecidos',
+  'like.alternativesDetailTitle': 'Conheça cada alternativa',
+ 'wtp.serviceNote':
     'A PlayLiva é um serviço de descoberta. Não operamos jogos nem processamos apostas.',
   'wtp.noOperators': 'Estamos analisando as opções disponíveis para este mercado.',
 
@@ -633,6 +659,8 @@ const esMX: Dict = {
   'game.viewAllAlternatives': 'Ver todas las alternativas',
   'game.discoveryEyebrow': 'Descubrimiento',
   'game.aboutTitle': 'Sobre el juego',
+  'game.whatIsTitle': '¿Qué es {game}?',
+  'game.whyPopularTitle': '¿Por qué {game} se volvió tan conocido?',
   'game.ownershipNote':
     'PlayLiva no posee ni opera {game}. La disponibilidad del juego la definen operadores con licencia y puede variar según el país.',
   'game.howItWorksTitle': 'Cómo funciona',
@@ -759,8 +787,32 @@ const esMX: Dict = {
   'wtp.operatorsSub':
     'Los operadores mostrados corresponden al mercado seleccionado y ofrecen esta categoría.',
   'wtp.empty':
-    'Estamos revisando dónde jugar {game} en {market}. Prueba otro mercado con el selector.',
-  'wtp.serviceNote':
+  'Estamos revisando dónde jugar {game} en {market}. Prueba otro mercado con el selector.',
+  'wtp.operatorsTitle': 'Operadoras con {game} en {market}',
+  'wtp.methodologyTitle': 'Cómo comparamos las operadoras',
+  'wtp.methodologyIntro':
+  'Nuestra comparación sigue una metodología editorial fija, aplicada de la misma forma a todas las operadoras analizadas:',
+  'wtp.methodology1': 'Disponibilidad confirmada en el mercado',
+  'wtp.methodology2': 'Disponibilidad verificada del juego en cuestión',
+  'wtp.methodology3': 'Reputación e historial de la marca',
+  'wtp.methodology4': 'Métodos de pago ofrecidos',
+  'wtp.methodology5': 'Calidad de la experiencia en dispositivos móviles',
+  'wtp.methodology6': 'Experiencia de retiro reportada por usuarios',
+  'wtp.methodology7': 'Estado de aprobación como socia afiliada de PlayLiva',
+  'wtp.methodology8':
+  'Datos de conversión, cuando existen datos reales disponibles',
+  'wtp.checklistTitle': 'Qué verificar antes de jugar',
+  'wtp.checklist1': 'Si la operadora está disponible en tu mercado',
+  'wtp.checklist2': 'Los términos y condiciones de la operadora',
+  'wtp.checklist3': 'Los métodos de pago aceptados',
+  'wtp.checklist4': 'Las herramientas de juego responsable disponibles',
+  'wtp.checklist5':
+  'Los detalles finales de la oferta directamente en el sitio de la operadora',
+  'wtp.aboutGameTitle': 'Sobre {game}',
+  'wtp.viewGameCta': 'Ver página del juego',
+  'wtp.viewGamesLikeCta': 'Ver juegos parecidos',
+  'like.alternativesDetailTitle': 'Conoce cada alternativa',
+ 'wtp.serviceNote':
     'PlayLiva es un servicio de descubrimiento. No operamos juegos ni procesamos apuestas.',
   'wtp.noOperators': 'Estamos revisando las opciones disponibles para este mercado.',
 
@@ -1090,6 +1142,8 @@ const en: Dict = {
   'game.viewAllAlternatives': 'View all alternatives',
   'game.discoveryEyebrow': 'Discovery',
   'game.aboutTitle': 'About the game',
+  'game.whatIsTitle': 'What is {game}?',
+  'game.whyPopularTitle': 'Why did {game} become so well known?',
   'game.ownershipNote':
     "PlayLiva doesn't own or operate {game}. Game availability is set by licensed operators and may vary by country.",
   'game.howItWorksTitle': 'How it works',
@@ -1226,8 +1280,31 @@ const en: Dict = {
   'wtp.operatorsSub':
     'Operators shown match the selected market and offer this category.',
   'wtp.empty':
-    "We're reviewing where to play {game} in {market}. Try another market with the selector.",
-  'wtp.serviceNote':
+  "We're reviewing where to play {game} in {market}. Try another market with the selector.",
+  'wtp.operatorsTitle': 'Operators with {game} in {market}',
+  'wtp.methodologyTitle': 'How we compare operators',
+  'wtp.methodologyIntro':
+  'Our comparison follows a fixed editorial methodology, applied the same way to every operator reviewed:',
+  'wtp.methodology1': 'Confirmed availability in the market',
+  'wtp.methodology2': 'Verified availability of the game in question',
+  'wtp.methodology3': 'Brand reputation and track record',
+  'wtp.methodology4': 'Payment methods offered',
+  'wtp.methodology5': 'Mobile experience quality',
+  'wtp.methodology6': 'User-reported withdrawal experience',
+  'wtp.methodology7': "Approval status as a PlayLiva affiliate partner",
+  'wtp.methodology8': 'Conversion data, when real data is available',
+  'wtp.checklistTitle': 'What to check before you play',
+  'wtp.checklist1': 'Whether the operator is available in your market',
+  'wtp.checklist2': "The operator's terms and conditions",
+  'wtp.checklist3': 'Accepted payment methods',
+  'wtp.checklist4': 'Available responsible gambling tools',
+  'wtp.checklist5':
+  "The final offer details directly on the operator's site",
+  'wtp.aboutGameTitle': 'About {game}',
+  'wtp.viewGameCta': 'View game page',
+  'wtp.viewGamesLikeCta': 'View similar games',
+  'like.alternativesDetailTitle': 'Get to know each alternative',
+ 'wtp.serviceNote':
     "PlayLiva is a discovery service. We don't operate games or process bets.",
   'wtp.noOperators': 'We are reviewing the options available for this market.',
 
@@ -1372,7 +1449,7 @@ const en: Dict = {
   'notice.responsibleFull':
     'Betting involves financial risk and can be addictive. This platform is intended for ages 18+. If gaming stops being fun, take a break or seek help. Play responsibly and only bet what you can afford to lose.',
   'notice.trust':
-    '18+ • Play responsibly • Availability varies by location',
+    '18+ ��� Play responsibly • Availability varies by location',
   'notice.age': '18+',
 
   // 404

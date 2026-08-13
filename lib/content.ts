@@ -21,6 +21,12 @@ interface GameContent {
   gameType: string
   mechanics: string[]
   about?: string
+  /** "What is {game}?" editorial paragraph. Optional — falls back to `about`. */
+  whatIsIt?: string
+  /** Game-specific "how it works" steps. Optional — falls back to the generic step1/2/3 UI copy. */
+  howItWorks?: string[]
+  /** "Why did {game} become well known?" editorial paragraph. Only rendered when present. */
+  whyPopular?: string
 }
 
 const GAME_CONTENT: Record<Locale, Record<string, GameContent>> = {
@@ -32,6 +38,16 @@ const GAME_CONTENT: Record<Locale, Record<string, GameContent>> = {
         'Acompanhe o multiplicador subir e faça o cash out antes do fim da rodada.',
       gameType: 'Crash / multiplicador',
       mechanics: ['Multiplicador crescente', 'Cash-out manual', 'Cash-out automático', 'Apostas duplas'],
+      whatIsIt:
+        'O Aviator é um jogo de crash desenvolvido pela SPRIBE, um dos provedores que ajudou a popularizar esse formato na América Latina. A mecânica é direta: a cada rodada, um multiplicador começa a subir a partir de 1x, e cabe ao jogador escolher o momento de sair — o chamado cash out — antes que a rodada termine. As rodadas são curtas e se repetem em sequência rápida, o que dá ao jogo um ritmo bem dinâmico.',
+      howItWorks: [
+        'A rodada começa e o multiplicador parte de 1x.',
+        'O multiplicador sobe continuamente enquanto a rodada estiver em andamento.',
+        'O jogador pode fazer o cash out em qualquer momento antes do fim da rodada.',
+        'Se a rodada terminar antes do cash out, a aposta feita nela é perdida.',
+      ],
+      whyPopular:
+        'O Aviator ficou conhecido por combinar uma mecânica simples com rodadas rápidas e uma apresentação fácil de entender à primeira vista. Essa combinação — simplicidade, ritmo e clareza visual — ajudou o jogo a se tornar uma referência dentro da categoria de jogos crash, servindo como porta de entrada para quem quer conhecer esse formato de jogo.',
     },
     g2: {
       description: 'Um jogo de multiplicador com tema de jato de combate e uma base fiel de jogadores.',
@@ -255,7 +271,42 @@ export function getGameContent(game: Game, locale: Locale) {
     gameType: c?.gameType ?? game.gameType,
     mechanics: c?.mechanics ?? game.mechanics,
     about,
+    whatIsIt: c?.whatIsIt,
+    howItWorks: c?.howItWorks,
+    whyPopular: c?.whyPopular,
   }
+}
+
+/* ------------------------------------------------------------------ */
+/* "Games like X" — per-alternative editorial notes                    */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Short editorial note explaining how a specific alternative relates to a
+ * specific base game (e.g. "JetX" in the context of "games like Aviator").
+ * Keyed by `${baseGameId}:${alternativeGameId}`. Sparse by design — only
+ * populated where real editorial notes exist; absent pairs simply render
+ * without an individual write-up.
+ */
+const ALTERNATIVE_NOTES: Record<Locale, Record<string, string>> = {
+  'pt-BR': {
+    'g1:g2':
+      'O JetX é um jogo de crash da SmartSoft com o mesmo núcleo do Aviator — um multiplicador que sobe até quebrar — mas com tema de jato de combate e uma apresentação visual diferente. É uma alternativa direta para quem já conhece o formato crash e quer conhecer outro provedor.',
+    'g1:g3':
+      'O Spaceman, da Pragmatic Play, também usa a mecânica de multiplicador crescente, mas adiciona a opção de cash-out parcial durante a rodada. É uma alternativa próxima ao Aviator, com uma camada extra de controle sobre a saída.',
+    'g1:g4':
+      'O Mines segue um formato diferente do crash: em vez de acompanhar um multiplicador subir sozinho, o jogador revela quadrados em uma grade e evita minas escondidas para aumentar o multiplicador. O público que gosta do Aviator costuma também explorar o Mines, mas a mecânica não é um clone direto do formato crash.',
+    'g1:g10':
+      'O Plinko é um jogo instantâneo em que uma bolinha é solta e desce por uma grade de pinos até parar em uma casa com um multiplicador. Assim como o Mines, ele atrai um público parecido com o do Aviator, porém sua mecânica é estruturalmente diferente do crash — é baseado em probabilidade, sem uma rodada que "sobe" continuamente.',
+  },
+}
+
+export function getAlternativeNote(
+  baseGameId: string,
+  alternativeGameId: string,
+  locale: Locale,
+): string | undefined {
+  return ALTERNATIVE_NOTES[locale]?.[`${baseGameId}:${alternativeGameId}`]
 }
 
 /* ------------------------------------------------------------------ */

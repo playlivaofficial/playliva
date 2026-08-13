@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import { LocaleLink } from '@/components/locale-link'
-import { ArrowLeft, MapPin, ShieldCheck } from 'lucide-react'
+import { ArrowRight, ArrowLeft, ClipboardCheck, ListChecks, MapPin, ShieldCheck } from 'lucide-react'
 import { useCountry, useTranslation } from '@/components/country-context'
 import {
   getCountryName,
@@ -18,6 +18,7 @@ import { GameArtwork } from '@/components/game-artwork'
 import { Breadcrumbs } from '@/components/breadcrumbs'
 import { ComparisonCard } from '@/components/comparison-card'
 import { AffiliateDisclosure, ResponsibleNotice } from '@/components/notices'
+import { Button } from '@/components/ui/button'
 import { track } from '@/lib/tracking'
 import type { Game } from '@/lib/types'
 
