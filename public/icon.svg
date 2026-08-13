@@ -1,0 +1,16 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="PlayLiva">
+  <defs>
+    <linearGradient id="playlivaMark" x1="120" y1="80" x2="380" y2="440" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#59A6FF" />
+      <stop offset="0.55" stop-color="#2A7DFF" />
+      <stop offset="1" stop-color="#0E5BF0" />
+    </linearGradient>
+  </defs>
+  <!-- Stem of the P -->
+  <rect x="128" y="96" width="84" height="336" rx="42" fill="url(#playlivaMark)" />
+  <!-- Bowl of the P (closed counter) -->
+  <path fill-rule="evenodd" clip-rule="evenodd" fill="url(#playlivaMark)"
+    d="M238 62a128 128 0 1 0 0 256 128 128 0 0 0 0-256Zm0 66a62 62 0 1 1 0 124 62 62 0 0 1 0-124Z" />
+  <!-- Play triangle -->
+  <path d="M206 150 L206 230 L286 190 Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="12" stroke-linejoin="round" />
+</svg>

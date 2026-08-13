@@ -1,0 +1,167 @@
+'use client'
+
+import { useEffect } from 'react'
+import { LocaleLink } from '@/components/locale-link'
+import { ArrowLeft, MapPin, ShieldCheck } from 'lucide-react'
+import { useCountry, useTranslation } from '@/components/country-context'
+import {
+  getCountryName,
+  getOperatorsForGame,
+  getComparisonsForGame,
+  getRelatedGames,
+} from '@/lib/data'
+import { getCategoryName, getGameContent } from '@/lib/content'
+import { Section, SectionHeading } from '@/components/section'
+import { OperatorCard } from '@/components/operator-card'
+import { GameCard } from '@/components/game-card'
+import { GameArtwork } from '@/components/game-artwork'
+import { Breadcrumbs } from '@/components/breadcrumbs'
+import { ComparisonCard } from '@/components/comparison-card'
+import { AffiliateDisclosure, ResponsibleNotice } from '@/components/notices'
+import { track } from '@/lib/tracking'
+import type { Game } from '@/lib/types'
+
+export function WhereToPlayView({ game }: { game: Game }) {
+  const { countryCode: country, locale } = useCountry()
+  const { t } = useTranslation()
+  const countryName = getCountryName(country, locale)
+  const categoryName = getCategoryName(game.category, locale)
+  const gc = getGameContent(game, locale)
+  const operators = getOperatorsForGame(game, country)
+  const comparisons = getComparisonsForGame(game.id).slice(0, 2)
+  const related = getRelatedGames(game, country, 4)
+
+  useEffect(() => {
+    track('where_to_play_view', {
+      gameId: game.id,
+      gameSlug: game.slug,
+      country,
+      locale,
+      pageType: 'where_to_play',
+    })
+  }, [game.id, game.slug, country, locale])
+
+  return (
+    <div className="pb-16">
+      <div className="border-b border-border bg-card/40">
+        <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+          <Breadcrumbs
+            className="mb-4"
+            items={[
+              { label: t('nav.home'), href: '/' },
+              { label: game.title, href: `/games/${game.slug}` },
+              { label: t('geo.whereToPlay') },
+            ]}
+          />
+          <LocaleLink
+            href={`/games/${game.slug}`}
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ArrowLeft className="size-4" />
+            {t('cta.backToGame', { game: game.title })}
+          </LocaleLink>
+
+          <div className="mt-6 flex flex-col gap-6 sm:flex-row sm:items-center">
+            <div className="relative aspect-video w-full overflow-hidden rounded-2xl sm:w-56">
+              <GameArtwork game={game} sizes="(max-width: 640px) 100vw, 224px" />
+            </div>
+            <div>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+                <MapPin className="size-3.5" />
+                {countryName}
+              </span>
+              <h1 className="mt-3 text-balance font-display text-3xl font-bold sm:text-4xl">
+                {t('game.whereToPlayTitle', {
+                  game: game.title,
+                  market: countryName,
+                })}
+              </h1>
+              <p className="mt-3 max-w-xl text-pretty leading-relaxed text-muted-foreground">
+                {gc.shortDescription}{' '}
+                {t('wtp.intro', {
+                  market: countryName,
+                  category: categoryName.toLowerCase(),
+                })}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <Section className="pt-10">
+        <AffiliateDisclosure className="mb-6" />
+
+        {operators.length > 0 ? (
+          <>
+            <SectionHeading
+              title={t('category.operatorsTitle', {
+                category: categoryName,
+                market: countryName,
+              })}
+              description={t('wtp.operatorsSub')}
+              className="mb-6"
+            />
+            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {operators.map((operator) => (
+                <OperatorCard
+                  key={operator.id}
+                  operator={operator}
+                  country={country}
+                  pageType="where_to_play"
+                  pageSlug={game.slug}
+                  ctaLocation="where_to_play"
+                />
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="rounded-2xl border border-border bg-card/50 p-8 text-center">
+            <p className="text-pretty text-muted-foreground">
+              {t('wtp.empty', { game: game.title, market: countryName })}
+            </p>
+          </div>
+        )}
+      </Section>
+
+      {comparisons.length > 0 && (
+        <Section className="pt-4">
+          <SectionHeading
+            title={t('game.compareTitle', { game: game.title })}
+            description={t('game.compareSub')}
+            className="mb-6"
+          />
+          <div className="grid gap-5 sm:grid-cols-2">
+            {comparisons.map((c) => (
+              <ComparisonCard key={c.slug} comparison={c} />
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {related.length > 0 && (
+        <Section className="pt-4">
+          <SectionHeading
+            title={t('game.gamesLike', { game: game.title })}
+            description={t('geo.popularInSub', { country: countryName })}
+            className="mb-6"
+          />
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            {related.map((g) => (
+              <GameCard key={g.id} game={g} />
+            ))}
+          </div>
+        </Section>
+      )}
+
+      <Section className="pt-4">
+        <div className="flex items-start gap-3 rounded-2xl border border-border bg-card/50 p-5">
+          <ShieldCheck className="mt-0.5 size-5 shrink-0 text-primary" />
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            {t('wtp.serviceNote')}
+          </p>
+        </div>
+        <ResponsibleNotice className="mt-4" />
+      </Section>
+    </div>
+  )
+}

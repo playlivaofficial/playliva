@@ -1,0 +1,61 @@
+import { Gift } from 'lucide-react'
+import type { Offer } from '@/lib/types'
+import { getOperator, getCountry, getCountryName } from '@/lib/data'
+import { getCategoryName } from '@/lib/content'
+import { AffiliateButton } from '@/components/affiliate-button'
+import { useTranslation } from '@/components/country-context'
+
+export function OfferCard({ offer }: { offer: Offer }) {
+  const { t, locale } = useTranslation()
+  const operator = getOperator(offer.operatorId)
+  const country = getCountry(offer.country)
+  // GEO name is language-aware (not GEO-aware) — an offer for MX must say
+  // "Mexico" in English, "México" in Português/Español, never mixed with
+  // the visitor's own selected GEO.
+  const countryName = getCountryName(offer.country, locale)
+  const categoryLabel =
+    offer.category === 'welcome'
+      ? t('label.welcomeCategory')
+      : getCategoryName(offer.category, locale)
+
+  return (
+    <div className="flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:glow-primary">
+      <div className="flex items-center justify-between border-b border-border bg-secondary/40 px-5 py-3">
+        <span className="flex items-center gap-2 text-sm font-semibold text-foreground">
+          <Gift className="size-4 text-primary" />
+          {operator?.name ?? 'Partner'}
+        </span>
+        <span className="rounded-full bg-primary/15 px-2.5 py-1 text-xs font-semibold text-primary">
+          {categoryLabel}
+        </span>
+      </div>
+      <div className="flex flex-1 flex-col p-5">
+        <h3 className="font-display text-lg font-bold text-foreground">
+          {offer.title}
+        </h3>
+        <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
+          {offer.description}
+        </p>
+        <p className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
+          <span aria-hidden="true">{country.flag}</span>
+          {countryName}
+        </p>
+        <AffiliateButton
+          offerId={offer.id}
+          operatorId={offer.operatorId}
+          country={offer.country}
+          category={offer.category === 'welcome' ? undefined : offer.category}
+          pageType="offers"
+          ctaLocation="offer_card"
+          size="lg"
+          className="mt-5 w-full"
+        >
+          {t('cta.getOffer')}
+        </AffiliateButton>
+        <p className="mt-3 text-center text-xs text-muted-foreground">
+          {offer.terms}
+        </p>
+      </div>
+    </div>
+  )
+}
