@@ -15,6 +15,12 @@ import type {
  * visitor's chosen language is honored everywhere regardless of their GEO.
  */
 
+interface PageSeoOverride {
+  title: string
+  description: string
+  h1: string
+}
+
 interface GameContent {
   description: string
   shortDescription: string
@@ -27,6 +33,17 @@ interface GameContent {
   howItWorks?: string[]
   /** "Why did {game} become well known?" editorial paragraph. Only rendered when present. */
   whyPopular?: string
+  /**
+   * Optional literal SEO title/description/H1 overrides per target page,
+   * used for high-intent game clusters that need exact hand-written copy
+   * instead of the generic templated title/description. Sparse by design —
+   * absent pages fall back to the generic template.
+   */
+  seo?: {
+    game?: PageSeoOverride
+    gamesLike?: PageSeoOverride
+    whereToPlay?: PageSeoOverride
+  }
 }
 
 const GAME_CONTENT: Record<Locale, Record<string, GameContent>> = {
@@ -128,6 +145,26 @@ const GAME_CONTENT: Record<Locale, Record<string, GameContent>> = {
       ],
       whyPopular:
         'Aviator se hizo conocido por combinar una mecánica simple con rondas rápidas y una presentación fácil de entender a primera vista. Esa combinación — simplicidad, ritmo y claridad visual — ayudó al juego a convertirse en una referencia dentro de la categoría de juegos de choque, sirviendo como puerta de entrada para quienes quieren conocer este formato de juego.',
+      seo: {
+        game: {
+          title: 'Aviator México: Cómo Funciona y Cómo Jugar | PlayLiva',
+          description:
+            'Descubre cómo funciona Aviator, conoce su mecánica, encuentra juegos similares y revisa dónde está disponible en México.',
+          h1: 'Aviator México: cómo funciona el juego',
+        },
+        gamesLike: {
+          title: 'Juegos Similares a Aviator: Alternativas para Probar | PlayLiva',
+          description:
+            'Conoce juegos similares a Aviator, compara alternativas como JetX y Spaceman y descubre otras opciones de juegos crash e instantáneos.',
+          h1: 'Juegos similares a Aviator',
+        },
+        whereToPlay: {
+          title: 'Dónde Jugar Aviator en México | PlayLiva',
+          description:
+            'Consulta dónde está disponible Aviator en México y compara operadores verificados antes de visitar el sitio del operador.',
+          h1: 'Dónde jugar Aviator en México',
+        },
+      },
     },
     g2: {
       description: 'Un juego de multiplicador con tema de jet de combate y una base fiel de jugadores.',
@@ -294,6 +331,7 @@ export function getGameContent(game: Game, locale: Locale) {
     whatIsIt: c?.whatIsIt,
     howItWorks: c?.howItWorks,
     whyPopular: c?.whyPopular,
+    seo: c?.seo,
   }
 }
 

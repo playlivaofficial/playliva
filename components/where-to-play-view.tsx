@@ -72,10 +72,11 @@ export function WhereToPlayView({ game }: { game: Game }) {
                 {countryName}
               </span>
               <h1 className="mt-3 text-balance font-display text-3xl font-bold sm:text-4xl">
-                {t('game.whereToPlayTitle', {
-                  game: game.title,
-                  market: countryName,
-                })}
+                {gc.seo?.whereToPlay?.h1 ??
+                  t('game.whereToPlayTitle', {
+                    game: game.title,
+                    market: countryName,
+                  })}
               </h1>
               <p className="mt-3 max-w-xl text-pretty leading-relaxed text-muted-foreground">
                 {gc.shortDescription}{' '}

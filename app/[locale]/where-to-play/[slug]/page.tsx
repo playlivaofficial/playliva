@@ -28,14 +28,18 @@ export async function generateMetadata({
     isLocaleSegment(localeSegment) ? localeSegment : DEFAULT_LOCALE_SEGMENT,
   )
   const t = createTranslator(locale)
+  const gc = getGameContent(game, locale)
   // gameType is a localized editorial label (e.g. "crash"), not the GEO.
-  const gameType = getGameContent(game, locale).gameType
+  const gameType = gc.gameType
+  const seoOverride = gc.seo?.whereToPlay
   return pageMetadata({
-    title: t('seo.whereToPlayTitle', { game: game.title }),
-    description: t('seo.whereToPlayDescription', {
-      game: game.title,
-      gameType,
-    }),
+    title: seoOverride?.title ?? t('seo.whereToPlayTitle', { game: game.title }),
+    description:
+      seoOverride?.description ??
+      t('seo.whereToPlayDescription', {
+        game: game.title,
+        gameType,
+      }),
     path: `/where-to-play/${game.slug}`,
     localeSegment,
     images: getGameOgImage(game),

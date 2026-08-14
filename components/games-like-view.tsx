@@ -56,7 +56,7 @@ export function GamesLikeView({ game }: { game: Game }) {
     <div>
       <PageHero
         eyebrow={t('like.eyebrow')}
-        title={t('game.gamesLike', { game: game.title })}
+        title={content.seo?.gamesLike?.h1 ?? t('game.gamesLike', { game: game.title })}
         description={t('like.heroSub', { game: game.title, category: categoryLower })}
         breadcrumbs={[
           { label: t('nav.home'), href: '/' },

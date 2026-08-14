@@ -32,9 +32,12 @@ export async function generateMetadata({
   const t = createTranslator(locale)
   const content = getGameContent(game, locale)
   const categoryName = getCategoryName(game.category, locale)
+  const seoOverride = content.seo?.game
   return pageMetadata({
-    title: `${game.title} — ${categoryName}`,
-    description: `${content.description} ${t('seo.gameDescriptionSuffix', { game: game.title })}`,
+    title: seoOverride?.title ?? `${game.title} — ${categoryName}`,
+    description:
+      seoOverride?.description ??
+      `${content.description} ${t('seo.gameDescriptionSuffix', { game: game.title })}`,
     path: `/games/${game.slug}`,
     localeSegment,
     images: getGameOgImage(game),

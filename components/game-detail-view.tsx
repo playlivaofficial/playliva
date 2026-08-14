@@ -27,7 +27,11 @@ import { GameArtwork } from '@/components/game-artwork'
 import { Breadcrumbs } from '@/components/breadcrumbs'
 import { ComparisonCard } from '@/components/comparison-card'
 import { OperatorCard } from '@/components/operator-card'
-import { ResponsibleNotice, AffiliateDisclosure } from '@/components/notices'
+import {
+  ResponsibleNotice,
+  ResponsibleGamingNotice,
+  AffiliateDisclosure,
+} from '@/components/notices'
 import { Button } from '@/components/ui/button'
 import { track } from '@/lib/tracking'
 import type { Game } from '@/lib/types'
@@ -102,7 +106,7 @@ export function GameDetailView({ game }: { game: Game }) {
               </span>
             </div>
             <h1 className="mt-4 text-balance font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-              {game.title}
+              {content.seo?.game?.h1 ?? game.title}
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
               {t('game.byProvider', { provider: game.provider })}
@@ -344,6 +348,15 @@ export function GameDetailView({ game }: { game: Game }) {
             {t('geo.reviewingBody')}
           </p>
         )}
+      </Section>
+
+      {/* Responsible gambling */}
+      <Section className="border-t border-border bg-card/30">
+        <SectionHeading title={t('rg.blockTitle')} />
+        <div className="grid gap-4 md:grid-cols-2">
+          <AffiliateDisclosure />
+          <ResponsibleGamingNotice />
+        </div>
       </Section>
     </div>
   )

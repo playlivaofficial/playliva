@@ -787,7 +787,7 @@ const esMX: Dict = {
   'wtp.operatorsSub':
     'Los operadores mostrados corresponden al mercado seleccionado y ofrecen esta categoría.',
   'wtp.empty':
-  'Estamos revisando dónde jugar {game} en {market}. Prueba otro mercado con el selector.',
+  'Estamos verificando qué operadores ofrecen {game} en {market}. Las opciones aparecerán aquí únicamente después de confirmar su disponibilidad y la relación de afiliación.',
   'wtp.operatorsTitle': 'Operadoras con {game} en {market}',
   'wtp.methodologyTitle': 'Cómo comparamos las operadoras',
   'wtp.methodologyIntro':
