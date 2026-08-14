@@ -980,6 +980,42 @@ export function getGamesForOperator(
   )
 }
 
+/**
+ * Single, named entry point for "may this operator appear in a monetized
+ * CTA right now, for this exact context". Every affiliate CTA surface
+ * (game detail, games-like, where-to-play, comparisons, best-games,
+ * operator cards) must call this — or the equivalent list helpers above,
+ * which apply the same rule — rather than re-implementing the approval
+ * check inline. It composes the existing rules instead of duplicating
+ * them:
+ *
+ *  - `isOperatorRecommendable`: active, verified, `affiliateStatus ===
+ *    'approved'`, non-mock, GEO supported, and a real `affiliateUrl` for
+ *    that GEO.
+ *  - `isGameVerifiedAtOperator`: an explicit verified-availability record
+ *    for `gameId` in that GEO (only checked when a `gameId` is supplied).
+ *
+ * Sports betting is intentionally out of scope here — this project's sports
+ * surface does not (yet) route through approved `Operator` records, so it
+ * is left untouched. The `sport` parameter is accepted for interface
+ * parity with the spec and reserved for when a verified sports-availability
+ * record is introduced; it never grants eligibility on its own today.
+ */
+export function canShowAffiliateCTA(params: {
+  operator: Operator
+  geo: CountryCode
+  gameSlug?: string
+  /** Reserved — sports availability is not yet wired to approved operators. */
+  sport?: string
+}): boolean {
+  const { operator, geo, gameSlug } = params
+  if (!isOperatorRecommendable(operator, geo)) return false
+  if (!gameSlug) return true
+  const game = getGame(gameSlug)
+  if (!game) return false
+  return isGameVerifiedAtOperator(operator, game.id, geo)
+}
+
 /* ------------------------------------------------------------------ */
 /* Offers                                                              */
 /* ------------------------------------------------------------------ */

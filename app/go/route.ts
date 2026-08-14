@@ -4,6 +4,19 @@ import { COUNTRIES } from '@/lib/data'
 import type { CountryCode } from '@/lib/types'
 
 /**
+ * `/go` is disallowed in `robots.ts`, but that only stops crawling — a
+ * search engine that discovers the URL some other way (an external link,
+ * a referrer log) could still index the redirect response itself. Setting
+ * `X-Robots-Tag` directly on every response here is a second, independent
+ * signal that holds regardless of how the URL was found.
+ */
+function redirect(url: string) {
+  const response = NextResponse.redirect(url, { status: 302 })
+  response.headers.set('X-Robots-Tag', 'noindex, nofollow')
+  return response
+}
+
+/**
  * Tracked affiliate redirect endpoint.
  *
  * Resolves the correct GEO-specific affiliate URL server-side, rejecting
@@ -28,7 +41,7 @@ export async function GET(request: NextRequest) {
     : `${origin}/offers`
 
   if (!validCountry) {
-    return NextResponse.redirect(fallback, { status: 302 })
+    return redirect(fallback)
   }
 
   const language = searchParams.get('language') ?? undefined
@@ -51,7 +64,7 @@ export async function GET(request: NextRequest) {
   })
 
   if (!destination) {
-    return NextResponse.redirect(fallback, { status: 302 })
+    return redirect(fallback)
   }
 
   // Server-side attribution record for the `affiliate_click` event (kept
@@ -71,5 +84,5 @@ export async function GET(request: NextRequest) {
     device: request.headers.get('user-agent') ?? undefined,
   })
 
-  return NextResponse.redirect(destination.url, { status: 302 })
+  return redirect(destination.url)
 }

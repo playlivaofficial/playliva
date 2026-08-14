@@ -13,6 +13,10 @@ export default function robots(): MetadataRoute.Robots {
         // Tracked affiliate redirect — never a page worth indexing, and
         // crawling it would just spend crawl budget on 302s to operators.
         '/go',
+        // Internal, development-only operator activation overview. Already
+        // hard-404s in production and carries its own noindex metadata —
+        // this is belt-and-suspenders only.
+        '/dev',
       ],
     },
     sitemap: `${SITE_URL}/sitemap.xml`,
