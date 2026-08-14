@@ -219,6 +219,36 @@ const GAME_CONTENT: Record<Locale, Record<string, GameContent>> = {
       shortDescription: 'Slot de alta volatilidad con pago en cualquier posición.',
       gameType: 'Video slot',
       mechanics: ['Pago en cualquier posición', 'Multiplicadores', 'Giros gratis', 'Tumble'],
+      whatIsIt:
+        'Gates of Olympus es un slot de Pragmatic Play con temática mitológica, ambientado en el universo de los dioses griegos. Es un juego basado en cuadrícula, con una jugabilidad centrada en multiplicadores que aparecen entre los giros. El aspecto visual presenta columnas de símbolos con una fuerte identidad griega — monedas, coronas de laurel y una presencia central de Zeus.',
+      howItWorks: [
+        'El juego paga combinaciones en cualquier posición de la cuadrícula, no solo en líneas fijas.',
+        'Pueden aparecer símbolos multiplicadores durante los giros, y aumentan el valor de los premios.',
+        'Existe una mecánica de tumble: los símbolos que forman combinación desaparecen y caen nuevos símbolos en su lugar, lo que puede generar nuevas combinaciones en la misma ronda.',
+        'El juego incluye un modo de giros gratis.',
+      ],
+      whyPopular:
+        'Gates of Olympus se hizo conocido por combinar una temática mitológica con una fuerte identidad visual y una presentación llamativa de los multiplicadores durante el juego. Esa combinación, sumada a la asociación con Pragmatic Play — uno de los proveedores más reconocidos del mercado de slots en línea —, ayudó al juego a convertirse en una referencia dentro de la categoría.',
+      seo: {
+        game: {
+          title: 'Gates of Olympus México: Cómo Funciona el Juego | PlayLiva',
+          description:
+            'Conoce Gates of Olympus, entiende cómo funciona, descubre juegos similares y revisa dónde puede estar disponible en México.',
+          h1: 'Gates of Olympus: cómo funciona el juego',
+        },
+        gamesLike: {
+          title: 'Juegos Similares a Gates of Olympus | PlayLiva',
+          description:
+            'Descubre juegos similares a Gates of Olympus, compara slots relacionados y conoce otras opciones de Pragmatic Play y la categoría slots.',
+          h1: 'Juegos similares a Gates of Olympus',
+        },
+        whereToPlay: {
+          title: 'Dónde Jugar Gates of Olympus en México | PlayLiva',
+          description:
+            'Consulta dónde Gates of Olympus puede estar disponible en México y compara operadores verificados antes de visitar el sitio del operador.',
+          h1: 'Dónde jugar Gates of Olympus en México',
+        },
+      },
     },
     g6: {
       description: 'Un slot colorido de cluster pays con tema de dulces.',
@@ -400,6 +430,10 @@ const ALTERNATIVE_NOTES: Record<Locale, Record<string, string>> = {
       'Mines sigue un formato diferente al de choque: en lugar de seguir un multiplicador que sube solo, el jugador revela casillas en una cuadrícula y evita minas ocultas para aumentar el multiplicador. El público que disfruta Aviator suele explorar también Mines, aunque la mecánica no es un clon directo del formato de choque.',
     'g1:g10':
       'Plinko es un juego instantáneo en el que se suelta una bolita que baja por una cuadrícula de clavos hasta detenerse en una casilla con un multiplicador. Igual que Mines, atrae a un público parecido al de Aviator, pero su mecánica es estructuralmente distinta al choque — se basa en la probabilidad, sin una ronda que "sube" de forma continua.',
+    'g5:g6':
+      'Sweet Bonanza también es de Pragmatic Play y comparte la mecánica de tumble y los símbolos multiplicadores de Gates of Olympus, pero paga por cluster en lugar de pagar en cualquier posición de la cuadrícula, y cambia la temática mitológica por un universo de dulces. Es la alternativa más cercana para quien disfruta la sensación de juego de Gates of Olympus.',
+    'g5:g11':
+      'Big Bass Bonanza, también de Pragmatic Play, usa un formato de giros gratis con recolección de premios en lugar del pago en cualquier posición de Gates of Olympus. El público que disfruta los slots de alta acción de Pragmatic Play suele explorar ambos, pero la mecánica central es distinta.',
   },
   en: {
     'g1:g2':
@@ -519,6 +553,16 @@ interface ComparisonContent {
   similarities: string[]
   differences: string[]
   editorialSummary: string
+  /**
+   * Optional literal SEO title/description override for this comparison,
+   * used for high-intent pairs that need exact hand-written copy instead of
+   * the generic templated title. Sparse by design — falls back to the
+   * generic template when absent.
+   */
+  seo?: {
+    title: string
+    description: string
+  }
 }
 
 const COMPARISON_CONTENT: Record<Locale, Record<string, ComparisonContent>> = {
@@ -640,6 +684,28 @@ const COMPARISON_CONTENT: Record<Locale, Record<string, ComparisonContent>> = {
       editorialSummary:
         'Ambos son buenas opciones para quien explora más allá de Aviator. Elige según el tema que disfrutes y si el cash-out parcial te importa.',
     },
+    'gates-of-olympus-vs-sweet-bonanza': {
+      intro:
+        'Gates of Olympus y Sweet Bonanza son dos slots de Pragmatic Play que comparten varias mecánicas, lo que los convierte en una comparación natural para quien ya juega uno de los dos y quiere conocer el otro.',
+      similarities: [
+        'Ambos son video slots de Pragmatic Play',
+        'Ambos usan mecánica de tumble',
+        'Ambos tienen símbolos multiplicadores',
+        'Ambos tienen modo de giros gratis',
+      ],
+      differences: [
+        'Gates of Olympus paga en cualquier posición de la cuadrícula; Sweet Bonanza paga por cluster',
+        'Gates of Olympus tiene temática mitológica; Sweet Bonanza tiene temática de dulces',
+        'Identidad visual y diseño de símbolos distintos',
+      ],
+      editorialSummary:
+        'Quien disfruta la sensación de tumble con multiplicadores de Gates of Olympus, pero quiere una temática y una estructura de pago distintas, suele probar Sweet Bonanza después. Ninguno es objetivamente mejor — la elección depende de la preferencia de temática y de si prefieres el pago en cualquier posición o por cluster.',
+      seo: {
+        title: 'Gates of Olympus vs Sweet Bonanza: Comparación | PlayLiva',
+        description:
+          'Compara Gates of Olympus y Sweet Bonanza, conoce sus principales diferencias y descubre cuál experiencia puede interesarte más.',
+      },
+    },
   },
   en: {
     'aviator-vs-jetx': {
@@ -701,6 +767,7 @@ export function getComparisonContent(comparison: Comparison, locale: Locale) {
     similarities: c?.similarities ?? comparison.similarities,
     differences: c?.differences ?? comparison.differences,
     editorialSummary: c?.editorialSummary ?? comparison.editorialSummary,
+    seo: c?.seo,
   }
 }
 
