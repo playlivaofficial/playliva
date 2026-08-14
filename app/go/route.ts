@@ -50,6 +50,7 @@ export async function GET(request: NextRequest) {
   const gameSlug = searchParams.get('game') ?? undefined
   const matchSlug = searchParams.get('match') ?? undefined
   const placement = searchParams.get('placement') ?? searchParams.get('cta') ?? undefined
+  const category = searchParams.get('category') ?? undefined
 
   const destination = resolveDestination({
     operatorSlug,
@@ -61,6 +62,7 @@ export async function GET(request: NextRequest) {
     gameSlug,
     matchSlug,
     placement,
+    category,
   })
 
   if (!destination) {
@@ -78,6 +80,7 @@ export async function GET(request: NextRequest) {
     pageSlug,
     game: gameSlug,
     match: matchSlug,
+    category,
     operatorId: destination.operatorId,
     offerId: destination.offerId,
     placement,

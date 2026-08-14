@@ -188,6 +188,17 @@ export interface Operator {
    */
   affiliateUrl: Partial<Record<CountryCode, string>>
   /**
+   * Optional per-category destination override, keyed by category then GEO.
+   * When a CTA carries an explicit `category` context (e.g. a crash-game
+   * page, a "best crash games" hub, a live-casino category page) and a
+   * matching entry exists here for the current GEO, it is used instead of
+   * the generic `affiliateUrl`. Falls back to `affiliateUrl` whenever no
+   * category is set, no entry exists for it, or the GEO is missing —
+   * undefined until the affiliate program issues real category-specific
+   * tracking links.
+   */
+  categoryAffiliateUrl?: Partial<Record<CategorySlug, Partial<Record<CountryCode, string>>>>
+  /**
    * Optional query-string template appended to `affiliateUrl` at redirect
    * time, keyed by GEO. Supports tokens: {geo} {language} {pageType}
    * {pageSlug} {gameSlug} {matchSlug} {placement}. Undefined until the real

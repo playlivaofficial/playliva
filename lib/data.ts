@@ -817,20 +817,42 @@ export const OPERATORS: Operator[] = [
   /* confirmed — no other file needs to change.                          */
   /* ------------------------------------------------------------------ */
   {
+    /* ------------------------------------------------------------------ */
+    /* Betsson — first approved/verified real affiliate partner.           */
+    /* Approved for BR only; MX is explicitly NOT supported for this       */
+    /* partner and must never be added to `countries` here. Game           */
+    /* availability is a separate concern from affiliate approval — only   */
+    /* Aviator (g1) has an explicit, manually-verified availability record  */
+    /* below, so no other game may show Betsson as an operator yet.        */
+    /* ------------------------------------------------------------------ */
     id: 'op-betsson',
     slug: 'betsson-group-affiliates',
-    name: 'Betsson Group Affiliates',
+    name: 'Betsson',
     logo: '/operators/pending-verification.png',
-    countries: ['BR', 'MX'],
-    categories: [],
+    countries: ['BR'],
+    categories: ['crash', 'live-casino'],
     paymentMethods: [],
     gameTypes: [],
     active: true,
-    verified: false,
+    verified: true,
     featured: false,
     isMock: false,
-    affiliateStatus: 'pending',
-    affiliateUrl: {},
+    affiliateStatus: 'approved',
+    lastVerifiedAt: '2026-08-14',
+    affiliateUrl: {
+      BR: 'https://record.betsson.bet.br/_DtXajoX9_riEp6ygYOshWmNd7ZgqdRLk/1/',
+    },
+    categoryAffiliateUrl: {
+      crash: {
+        BR: 'https://record.betsson.bet.br/_DtXajoX9_riSXGwDxSNOy2Nd7ZgqdRLk/1/',
+      },
+      'live-casino': {
+        BR: 'https://record.betsson.bet.br/_DtXajoX9_rgmwo_GmoYHy2Nd7ZgqdRLk/1/',
+      },
+    },
+    verifiedGames: {
+      BR: ['g1'],
+    },
   },
   {
     id: 'op-betano',
