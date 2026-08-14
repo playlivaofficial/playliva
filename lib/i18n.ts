@@ -458,6 +458,7 @@ const ptBR: Dict = {
   // Notices
   'notice.affiliate':
     'A PlayLiva pode receber comissão de afiliados por indicações. Isso não gera custo para você e não influencia nosso conteúdo editorial.',
+  'notice.affiliateShort': 'Este site pode receber comissão de afiliados por indicações.',
   'notice.responsible':
     'Conteúdo destinado a maiores de 18 anos. Se o jogo deixar de ser diversão, faça uma pausa e procure ajuda.',
   'notice.responsibleShort':
@@ -942,6 +943,7 @@ const esMX: Dict = {
 
   'notice.affiliate':
     'PlayLiva puede recibir comisión de afiliados por referencias. Esto no tiene costo para ti y no influye en nuestro contenido editorial.',
+  'notice.affiliateShort': 'Este sitio puede recibir comisión de afiliados por referencias.',
   'notice.responsible':
     'Contenido destinado a mayores de 18 años. Si el juego deja de ser diversión, toma un descanso y busca ayuda.',
   'notice.responsibleShort':
@@ -1442,6 +1444,7 @@ const en: Dict = {
   // Notices
   'notice.affiliate':
     "PlayLiva may earn an affiliate commission on referrals. This costs you nothing and doesn't influence our editorial content.",
+  'notice.affiliateShort': 'This site may earn an affiliate commission on referrals.',
   'notice.responsible':
     "Content intended for ages 18+. If gaming stops being fun, take a break and seek help.",
   'notice.responsibleShort':

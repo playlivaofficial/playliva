@@ -31,7 +31,7 @@ import { OperatorCard } from '@/components/operator-card'
 import {
   ResponsibleNotice,
   ResponsibleGamingNotice,
-  AffiliateDisclosure,
+  AffiliateDisclosureLine,
 } from '@/components/notices'
 import { Button } from '@/components/ui/button'
 import { track } from '@/lib/tracking'
@@ -351,7 +351,7 @@ export function GameDetailView({ game }: { game: Game }) {
           <Globe className="size-4 text-primary" />
           {t('geo.viewingFor', { flag: country.flag, market: marketName })}
         </div>
-        <AffiliateDisclosure className="mt-6" />
+        <AffiliateDisclosureLine className="mt-4" />
       </Section>
 
       {/* Availability markets */}
@@ -383,10 +383,7 @@ export function GameDetailView({ game }: { game: Game }) {
       {/* Responsible gambling */}
       <Section className="border-t border-border bg-card/30">
         <SectionHeading title={t('rg.blockTitle')} />
-        <div className="grid gap-4 md:grid-cols-2">
-          <AffiliateDisclosure />
-          <ResponsibleGamingNotice />
-        </div>
+        <ResponsibleGamingNotice />
       </Section>
     </div>
   )

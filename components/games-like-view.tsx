@@ -17,7 +17,7 @@ import { GameCard } from '@/components/game-card'
 import { GameArtwork } from '@/components/game-artwork'
 import { ComparisonCard } from '@/components/comparison-card'
 import { OperatorCard } from '@/components/operator-card'
-import { AffiliateDisclosure, ResponsibleGamingNotice } from '@/components/notices'
+import { AffiliateDisclosureLine, ResponsibleGamingNotice } from '@/components/notices'
 import { Button } from '@/components/ui/button'
 import { track } from '@/lib/tracking'
 import type { Game } from '@/lib/types'
@@ -205,10 +205,8 @@ export function GamesLikeView({ game }: { game: Game }) {
 
       <Section>
         <SectionHeading title={t('rg.blockTitle')} />
-        <div className="grid gap-4 md:grid-cols-2">
-          <AffiliateDisclosure />
-          <ResponsibleGamingNotice />
-        </div>
+        <ResponsibleGamingNotice />
+        <AffiliateDisclosureLine className="mt-3" />
       </Section>
     </div>
   )

@@ -18,7 +18,7 @@ import { Section, SectionHeading } from '@/components/section'
 import { GameCard } from '@/components/game-card'
 import { ComparisonCard } from '@/components/comparison-card'
 import { WhereToPlay } from '@/components/where-to-play'
-import { AffiliateDisclosure, ResponsibleGamingNotice } from '@/components/notices'
+import { AffiliateDisclosureLine, ResponsibleGamingNotice } from '@/components/notices'
 import type { CategorySlug } from '@/lib/types'
 import { cn } from '@/lib/utils'
 
@@ -152,10 +152,8 @@ export function CategoryPageView({ slug }: { slug: CategorySlug }) {
 
       <Section>
         <SectionHeading title={t('rg.blockTitle')} />
-        <div className="grid gap-4 md:grid-cols-2">
-          <AffiliateDisclosure />
-          <ResponsibleGamingNotice />
-        </div>
+        <ResponsibleGamingNotice />
+        <AffiliateDisclosureLine className="mt-3" />
       </Section>
     </div>
   )
