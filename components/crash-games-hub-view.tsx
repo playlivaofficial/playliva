@@ -10,7 +10,7 @@ import { PageHero } from '@/components/page-hero'
 import { Section, SectionHeading } from '@/components/section'
 import { GameArtwork } from '@/components/game-artwork'
 import { WhereToPlay } from '@/components/where-to-play'
-import { AffiliateDisclosure, ResponsibleGamingNotice } from '@/components/notices'
+import { AffiliateDisclosureLine, ResponsibleGamingNotice } from '@/components/notices'
 import { Button } from '@/components/ui/button'
 import { track } from '@/lib/tracking'
 
@@ -166,7 +166,7 @@ export function CrashGamesHubView() {
           description={content.whereToPlaySub}
         />
         <WhereToPlay category="crash" />
-        <AffiliateDisclosure className="mt-6" />
+        <AffiliateDisclosureLine className="mt-4" />
       </Section>
 
       <Section>

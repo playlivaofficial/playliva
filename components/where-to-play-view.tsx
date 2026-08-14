@@ -17,7 +17,7 @@ import { GameCard } from '@/components/game-card'
 import { GameArtwork } from '@/components/game-artwork'
 import { Breadcrumbs } from '@/components/breadcrumbs'
 import { ComparisonCard } from '@/components/comparison-card'
-import { AffiliateDisclosure, ResponsibleNotice } from '@/components/notices'
+import { AffiliateDisclosureLine, ResponsibleNotice } from '@/components/notices'
 import { Button } from '@/components/ui/button'
 import { track } from '@/lib/tracking'
 import type { Game } from '@/lib/types'
@@ -91,8 +91,6 @@ export function WhereToPlayView({ game }: { game: Game }) {
       </div>
 
       <Section className="pt-10">
-        <AffiliateDisclosure className="mb-6" />
-
         {operators.length > 0 ? (
           <>
             <SectionHeading
@@ -116,6 +114,7 @@ export function WhereToPlayView({ game }: { game: Game }) {
                 />
               ))}
             </div>
+            <AffiliateDisclosureLine className="mt-6" />
           </>
         ) : (
           <div className="rounded-2xl border border-border bg-card/50 p-8 text-center">

@@ -18,7 +18,7 @@ import { PageHero } from '@/components/page-hero'
 import { Section, SectionHeading } from '@/components/section'
 import { OperatorCard } from '@/components/operator-card'
 import { GameArtwork } from '@/components/game-artwork'
-import { AffiliateDisclosure, ResponsibleGamingNotice } from '@/components/notices'
+import { AffiliateDisclosureLine, ResponsibleGamingNotice } from '@/components/notices'
 import { Button } from '@/components/ui/button'
 import { track } from '@/lib/tracking'
 import type { GameList } from '@/lib/types'
@@ -168,7 +168,7 @@ export function BestListView({ list }: { list: GameList }) {
           <MapPin className="size-4 text-primary" />
           {t('best.guideCovers', { flag: countryFlag, market: countryName })}
         </div>
-        <AffiliateDisclosure className="mt-6" />
+        <AffiliateDisclosureLine className="mt-4" />
       </Section>
 
       <Section>

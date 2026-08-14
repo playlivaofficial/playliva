@@ -10,7 +10,7 @@ import { PageHero } from '@/components/page-hero'
 import { Section, SectionHeading } from '@/components/section'
 import { OperatorCard } from '@/components/operator-card'
 import { GameArtwork } from '@/components/game-artwork'
-import { AffiliateDisclosure, ResponsibleGamingNotice } from '@/components/notices'
+import { AffiliateDisclosureLine, ResponsibleGamingNotice } from '@/components/notices'
 import { Button } from '@/components/ui/button'
 import { track } from '@/lib/tracking'
 import type { Comparison } from '@/lib/types'
@@ -184,10 +184,8 @@ export function ComparisonView({ comparison }: { comparison: Comparison }) {
 
       <Section>
         <SectionHeading title={t('rg.blockTitle')} />
-        <div className="grid gap-4 md:grid-cols-2">
-          <AffiliateDisclosure />
-          <ResponsibleGamingNotice />
-        </div>
+        <ResponsibleGamingNotice />
+        <AffiliateDisclosureLine className="mt-3" />
       </Section>
     </div>
   )
