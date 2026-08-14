@@ -826,9 +826,12 @@ export const OPERATORS: Operator[] = [
     id: 'op-betsson',
     slug: 'betsson-group-affiliates',
     name: 'Betsson',
-    logo: '/operators/pending-verification.png',
+    logo: '/operators/betsson.png',
     countries: ['BR'],
-    categories: ['crash', 'live-casino'],
+    // `slots` is served via the default/homepage link (no verified slots-
+    // specific tracking link exists yet), so slots games route to
+    // `affiliateUrl` while crash/live-casino use `categoryAffiliateUrl`.
+    categories: ['crash', 'live-casino', 'slots'],
     paymentMethods: [],
     gameTypes: [],
     active: true,
@@ -848,8 +851,14 @@ export const OPERATORS: Operator[] = [
         BR: 'https://record.betsson.bet.br/_DtXajoX9_rgmwo_GmoYHy2Nd7ZgqdRLk/1/',
       },
     },
+    // Explicit, manually-verified availability at Betsson BR. Crash titles
+    // (g1 Aviator, g2 JetX, g3 Spaceman) resolve to the crash link; live-
+    // casino titles (g7 Lightning Roulette, g8 Crazy Time, g12 Blackjack
+    // Live) to the live-casino link; slots titles (g5 Gates of Olympus,
+    // g6 Sweet Bonanza, g11 Big Bass Bonanza) fall back to the default
+    // homepage link until a verified slots-specific link exists.
     verifiedGames: {
-      BR: ['g1'],
+      BR: ['g1', 'g2', 'g3', 'g5', 'g6', 'g7', 'g8', 'g11', 'g12'],
     },
   },
   {
