@@ -542,6 +542,27 @@ export const COMPARISONS: Comparison[] = [
       'Players who enjoy the tumble-and-multiplier feel of Gates of Olympus but want a different theme and payout structure often try Sweet Bonanza next. Neither is objectively better — the choice comes down to theme preference and whether you prefer pay-anywhere or cluster-based wins.',
     countries: ['BR', 'MX'],
   },
+  {
+    slug: 'crazy-time-vs-lightning-roulette',
+    gameAId: 'g8',
+    gameBId: 'g7',
+    intro:
+      'Crazy Time and Lightning Roulette are both Evolution live-casino titles, but they take a very different approach to the live format — one built around a game-show wheel, the other around a roulette table with random multipliers.',
+    similarities: [
+      'Both are Evolution live-casino titles',
+      'Both feature a live host/dealer',
+      'Both include a random multiplier element',
+      'Both are designed for quick, repeatable rounds',
+    ],
+    differences: [
+      'Crazy Time is a game-show format built around a money wheel and bonus rounds; Lightning Roulette is a straight-up roulette table',
+      'Crazy Time bets are on wheel segments and bonus games; Lightning Roulette bets are straight-up numbers with random multipliers',
+      'Different formats overall — game show vs table game',
+    ],
+    editorialSummary:
+      'Players who enjoy the interactive, presenter-led pace of Crazy Time may also like the electrified rounds of Lightning Roulette, but the two are built on different formats — a game show versus a roulette table. Neither is objectively better — the choice comes down to whether you prefer a wheel-and-bonus format or a classic roulette table with a multiplier twist.',
+    countries: ['BR', 'MX'],
+  },
 ]
 
 export function getComparison(slug: string): Comparison | undefined {
