@@ -295,7 +295,7 @@ const ptBR: Dict = {
   'wtp.operatorsSub':
     'Os operadores exibidos correspondem ao mercado selecionado e oferecem esta categoria.',
   'wtp.empty':
-  'Estamos analisando onde jogar {game} no {market}. Tente outro mercado pelo seletor.',
+  'Estamos verificando quais operadoras oferecem {game} no {market}. As opções serão exibidas aqui somente após confirmação de disponibilidade e parceria.',
   'wtp.operatorsTitle': 'Operadoras com {game} no {market}',
   'wtp.methodologyTitle': 'Como comparamos as operadoras',
   'wtp.methodologyIntro':
