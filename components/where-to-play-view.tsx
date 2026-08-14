@@ -80,8 +80,8 @@ export function WhereToPlayView({ game }: { game: Game }) {
               <p className="mt-3 max-w-xl text-pretty leading-relaxed text-muted-foreground">
                 {gc.shortDescription}{' '}
                 {t('wtp.intro', {
-                  market: countryName,
-                  category: categoryName.toLowerCase(),
+                  country: countryName,
+                  game: game.title,
                 })}
               </p>
             </div>
@@ -153,6 +153,88 @@ export function WhereToPlayView({ game }: { game: Game }) {
           </div>
         </Section>
       )}
+
+      <Section className="pt-4">
+        <div className="grid gap-6 lg:grid-cols-2">
+          <div className="rounded-2xl border border-border bg-card p-6">
+            <div className="flex items-center gap-2 text-primary">
+              <ListChecks className="size-5" />
+              <h2 className="font-display text-xl font-bold text-foreground">
+                {t('wtp.methodologyTitle')}
+              </h2>
+            </div>
+            <p className="mt-3 leading-relaxed text-muted-foreground">
+              {t('wtp.methodologyIntro')}
+            </p>
+            <ul className="mt-4 space-y-2">
+              {[
+                t('wtp.methodology1'),
+                t('wtp.methodology2'),
+                t('wtp.methodology3'),
+                t('wtp.methodology4'),
+                t('wtp.methodology5'),
+                t('wtp.methodology6'),
+                t('wtp.methodology7'),
+                t('wtp.methodology8'),
+              ].map((item, i) => (
+                <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                  <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="rounded-2xl border border-border bg-card p-6">
+            <div className="flex items-center gap-2 text-primary">
+              <ClipboardCheck className="size-5" />
+              <h2 className="font-display text-xl font-bold text-foreground">
+                {t('wtp.checklistTitle')}
+              </h2>
+            </div>
+            <ol className="mt-4 space-y-3">
+              {[
+                t('wtp.checklist1'),
+                t('wtp.checklist2'),
+                t('wtp.checklist3'),
+                t('wtp.checklist4'),
+                t('wtp.checklist5'),
+              ].map((item, i) => (
+                <li key={i} className="flex items-start gap-3">
+                  <span className="mt-0.5 inline-grid size-6 shrink-0 place-items-center rounded-full bg-primary/15 text-xs font-bold text-primary">
+                    {i + 1}
+                  </span>
+                  <span className="text-sm text-muted-foreground">{item}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      </Section>
+
+      <Section className="pt-4">
+        <div className="rounded-2xl border border-border bg-card/50 p-6">
+          <h2 className="font-display text-lg font-bold text-foreground">
+            {t('wtp.aboutGameTitle', { game: game.title })}
+          </h2>
+          <p className="mt-2 max-w-2xl leading-relaxed text-muted-foreground">
+            {gc.shortDescription}
+          </p>
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <Button size="sm" render={<LocaleLink href={`/games/${game.slug}`} />}>
+              {t('wtp.viewGameCta')}
+              <ArrowRight className="size-4" />
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              render={<LocaleLink href={`/games-like/${game.slug}`} />}
+            >
+              {t('wtp.viewGamesLikeCta')}
+            </Button>
+          </div>
+        </div>
+      </Section>
 
       <Section className="pt-4">
         <div className="flex items-start gap-3 rounded-2xl border border-border bg-card/50 p-5">

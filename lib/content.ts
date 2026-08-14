@@ -118,6 +118,16 @@ const GAME_CONTENT: Record<Locale, Record<string, GameContent>> = {
         'Sigue cómo aumenta el multiplicador y retira antes de que termine la ronda.',
       gameType: 'Crash / multiplicador',
       mechanics: ['Multiplicador creciente', 'Cash-out manual', 'Cash-out automático', 'Apuestas dobles'],
+      whatIsIt:
+        'Aviator es un juego de choque desarrollado por SPRIBE, uno de los proveedores que ayudó a popularizar este formato en América Latina. La mecánica es directa: en cada ronda, un multiplicador comienza a subir desde 1x, y depende del jugador elegir el momento de salir — el llamado cash out — antes de que la ronda termine. Las rondas son cortas y se repiten en secuencia rápida, lo que le da al juego un ritmo muy dinámico.',
+      howItWorks: [
+        'La ronda comienza y el multiplicador parte de 1x.',
+        'El multiplicador sube continuamente mientras la ronda esté en curso.',
+        'El jugador puede hacer el cash out en cualquier momento antes de que termine la ronda.',
+        'Si la ronda termina antes del cash out, la apuesta realizada en ella se pierde.',
+      ],
+      whyPopular:
+        'Aviator se hizo conocido por combinar una mecánica simple con rondas rápidas y una presentación fácil de entender a primera vista. Esa combinación — simplicidad, ritmo y claridad visual — ayudó al juego a convertirse en una referencia dentro de la categoría de juegos de choque, sirviendo como puerta de entrada para quienes quieren conocer este formato de juego.',
     },
     g2: {
       description: 'Un juego de multiplicador con tema de jet de combate y una base fiel de jugadores.',
@@ -188,6 +198,16 @@ const GAME_CONTENT: Record<Locale, Record<string, GameContent>> = {
         'Watch the multiplier climb and cash out before the round ends.',
       gameType: 'Crash / multiplier',
       mechanics: ['Rising multiplier', 'Manual cash-out', 'Auto cash-out', 'Dual bets'],
+      whatIsIt:
+        'Aviator is a crash game developed by SPRIBE, one of the providers that helped popularize this format across Latin America. The mechanic is straightforward: each round, a multiplier starts climbing from 1x, and it is up to the player to choose the moment to exit — known as the cash out — before the round ends. Rounds are short and repeat in quick succession, giving the game a fast, dynamic pace.',
+      howItWorks: [
+        'The round begins and the multiplier starts at 1x.',
+        'The multiplier climbs continuously while the round is in progress.',
+        'The player can cash out at any moment before the round ends.',
+        "If the round ends before cashing out, the bet placed on it is lost.",
+      ],
+      whyPopular:
+        'Aviator became known for pairing a simple mechanic with fast rounds and a presentation that is easy to grasp at a glance. That combination — simplicity, pace, and visual clarity — helped the game become a reference point within the crash game category, serving as an entry point for players getting to know this game format.',
     },
     g2: {
       description: 'A fighter-jet-themed multiplier game with a loyal player base.',
@@ -298,6 +318,26 @@ const ALTERNATIVE_NOTES: Record<Locale, Record<string, string>> = {
       'O Mines segue um formato diferente do crash: em vez de acompanhar um multiplicador subir sozinho, o jogador revela quadrados em uma grade e evita minas escondidas para aumentar o multiplicador. O público que gosta do Aviator costuma também explorar o Mines, mas a mecânica não é um clone direto do formato crash.',
     'g1:g10':
       'O Plinko é um jogo instantâneo em que uma bolinha é solta e desce por uma grade de pinos até parar em uma casa com um multiplicador. Assim como o Mines, ele atrai um público parecido com o do Aviator, porém sua mecânica é estruturalmente diferente do crash — é baseado em probabilidade, sem uma rodada que "sobe" continuamente.',
+  },
+  'es-MX': {
+    'g1:g2':
+      'JetX es un juego de choque de SmartSoft con el mismo núcleo que Aviator — un multiplicador que sube hasta romperse — pero con temática de jet de combate y una presentación visual diferente. Es una alternativa directa para quien ya conoce el formato de choque y quiere conocer otro proveedor.',
+    'g1:g3':
+      'Spaceman, de Pragmatic Play, también usa la mecánica de multiplicador creciente, pero agrega la opción de retiro parcial durante la ronda. Es una alternativa cercana a Aviator, con una capa extra de control sobre la salida.',
+    'g1:g4':
+      'Mines sigue un formato diferente al de choque: en lugar de seguir un multiplicador que sube solo, el jugador revela casillas en una cuadrícula y evita minas ocultas para aumentar el multiplicador. El público que disfruta Aviator suele explorar también Mines, aunque la mecánica no es un clon directo del formato de choque.',
+    'g1:g10':
+      'Plinko es un juego instantáneo en el que se suelta una bolita que baja por una cuadrícula de clavos hasta detenerse en una casilla con un multiplicador. Igual que Mines, atrae a un público parecido al de Aviator, pero su mecánica es estructuralmente distinta al choque — se basa en la probabilidad, sin una ronda que "sube" de forma continua.',
+  },
+  en: {
+    'g1:g2':
+      "JetX is a crash game from SmartSoft with the same core as Aviator — a multiplier that climbs until it crashes — but with a combat jet theme and a different visual presentation. It's a direct alternative for players who already know the crash format and want to try another provider.",
+    'g1:g3':
+      'Spaceman, from Pragmatic Play, also uses the rising-multiplier mechanic but adds a partial cash-out option during the round. It sits close to Aviator, with an extra layer of control over the exit.',
+    'g1:g4':
+      "Mines follows a different format than crash: instead of watching a multiplier climb on its own, the player reveals tiles on a grid and avoids hidden mines to raise the multiplier. Players who enjoy Aviator often explore Mines too, but the mechanic isn't a direct clone of the crash format.",
+    'g1:g10':
+      'Plinko is an instant game where a ball drops through a grid of pins until it lands in a slot with a multiplier. Like Mines, it draws a similar audience to Aviator, but its mechanic is structurally different from crash — it\u2019s probability-based, with no round that continuously "climbs."',
   },
 }
 
