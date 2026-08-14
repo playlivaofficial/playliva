@@ -31,8 +31,8 @@ export async function generateMetadata({
   )
   const content = getComparisonContent(comparison, locale)
   return pageMetadata({
-    title: `${a?.title} vs ${b?.title} — Game Comparison`,
-    description: content.intro,
+    title: content.seo?.title ?? `${a?.title} vs ${b?.title} — Game Comparison`,
+    description: content.seo?.description ?? content.intro,
     path: `/compare/${comparison.slug}`,
     localeSegment,
   })
