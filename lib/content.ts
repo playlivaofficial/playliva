@@ -297,6 +297,36 @@ const GAME_CONTENT: Record<Locale, Record<string, GameContent>> = {
       shortDescription: 'Game-show en vivo con rondas de bonus.',
       gameType: 'Game show en vivo',
       mechanics: ['Presentador en vivo', 'Rueda de la fortuna', 'Rondas de bonus'],
+      whatIsIt:
+        'Crazy Time es un juego de casino en vivo de Evolution con formato de game show. En lugar de una mesa tradicional, el juego lo conduce un presentador en vivo desde un estudio, con una rueda giratoria como elemento central de cada ronda.',
+      howItWorks: [
+        'El jugador apuesta en segmentos de la rueda antes de cada ronda.',
+        'Un presentador en vivo gira la rueda en tiempo real desde el estudio.',
+        'La rueda incluye segmentos numéricos y segmentos de rondas de bonus.',
+        'Cuando la rueda se detiene en un segmento de bonus, se activa una ronda de bonus con el presentador.',
+      ],
+      whyPopular:
+        'Crazy Time se hizo conocido por su presentación con host en vivo, la identidad visual llamativa de la rueda y la sensación interactiva del formato de game show en vivo. La asociación con Evolution, uno de los proveedores más reconocidos de casino en vivo, también ayudó al juego a convertirse en una referencia dentro de la categoría.',
+      seo: {
+        game: {
+          title: 'Crazy Time México: Cómo Funciona el Juego en Vivo | PlayLiva',
+          description:
+            'Conoce Crazy Time, entiende cómo funciona el juego en vivo de Evolution, descubre juegos similares y revisa dónde puede estar disponible en México.',
+          h1: 'Crazy Time: cómo funciona el juego en vivo',
+        },
+        gamesLike: {
+          title: 'Juegos Similares a Crazy Time | PlayLiva',
+          description:
+            'Descubre juegos similares a Crazy Time, compara opciones de casino en vivo y conoce otras experiencias relacionadas.',
+          h1: 'Juegos similares a Crazy Time',
+        },
+        whereToPlay: {
+          title: 'Dónde Jugar Crazy Time en México | PlayLiva',
+          description:
+            'Consulta dónde Crazy Time puede estar disponible en México y compara operadores verificados antes de visitar el sitio del operador.',
+          h1: 'Dónde jugar Crazy Time en México',
+        },
+      },
     },
     g10: {
       description: 'Suelta la pelota y mírala rebotar hacia un multiplicador.',
@@ -468,6 +498,10 @@ const ALTERNATIVE_NOTES: Record<Locale, Record<string, string>> = {
       'Sweet Bonanza también es de Pragmatic Play y comparte la mecánica de tumble y los símbolos multiplicadores de Gates of Olympus, pero paga por cluster en lugar de pagar en cualquier posición de la cuadrícula, y cambia la temática mitológica por un universo de dulces. Es la alternativa más cercana para quien disfruta la sensación de juego de Gates of Olympus.',
     'g5:g11':
       'Big Bass Bonanza, también de Pragmatic Play, usa un formato de giros gratis con recolección de premios en lugar del pago en cualquier posición de Gates of Olympus. El público que disfruta los slots de alta acción de Pragmatic Play suele explorar ambos, pero la mecánica central es distinta.',
+    'g8:g7':
+      'Lightning Roulette, también de Evolution, cambia la rueda de game show de Crazy Time por una mesa de ruleta en vivo con multiplicadores aleatorios electrizantes. Es la alternativa más cercana en cuanto a ritmo y proveedor, pero el formato central es una ruleta, no un game show.',
+    'g8:g12':
+      'Blackjack Live, también de Evolution, ofrece mesas clásicas de blackjack con dealer en vivo en varios límites, sin la rueda ni las rondas de bonus de Crazy Time. Es una opción para quien quiere salir del formato game show y volver a un juego de mesa tradicional dentro del casino en vivo.',
   },
   en: {
     'g1:g2':
@@ -755,6 +789,28 @@ const COMPARISON_CONTENT: Record<Locale, Record<string, ComparisonContent>> = {
         title: 'Gates of Olympus vs Sweet Bonanza: Comparación | PlayLiva',
         description:
           'Compara Gates of Olympus y Sweet Bonanza, conoce sus principales diferencias y descubre cuál experiencia puede interesarte más.',
+      },
+    },
+    'crazy-time-vs-lightning-roulette': {
+      intro:
+        'Crazy Time y Lightning Roulette son dos juegos de casino en vivo de Evolution, pero siguen enfoques muy distintos dentro del formato en vivo — uno construido alrededor de una rueda de game show, el otro alrededor de una mesa de ruleta con multiplicadores aleatorios.',
+      similarities: [
+        'Ambos son juegos de casino en vivo de Evolution',
+        'Ambos tienen presentador/dealer en vivo',
+        'Ambos incluyen un elemento de multiplicador aleatorio',
+        'Ambos están pensados para rondas rápidas y repetibles',
+      ],
+      differences: [
+        'Crazy Time es un formato de game show construido alrededor de una rueda y rondas de bonus; Lightning Roulette es una mesa de ruleta tradicional',
+        'Las apuestas en Crazy Time se hacen en segmentos de la rueda y juegos de bonus; las apuestas en Lightning Roulette se hacen en números directos con multiplicadores aleatorios',
+        'Formatos completamente distintos — game show frente a juego de mesa',
+      ],
+      editorialSummary:
+        'Cuál puede interesarte más depende del tipo de experiencia que busques. Quien disfruta el ritmo interactivo y conducido por un presentador de Crazy Time también puede disfrutar las rondas electrizantes de Lightning Roulette, pero son formatos distintos — un game show frente a una mesa de ruleta.',
+      seo: {
+        title: 'Crazy Time vs Lightning Roulette: Comparación | PlayLiva',
+        description:
+          'Compara Crazy Time y Lightning Roulette, conoce sus principales diferencias y descubre qué tipo de experiencia ofrece cada juego en vivo.',
       },
     },
   },
