@@ -52,6 +52,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/offers', priority: 0.7 },
     { path: '/operators', priority: 0.6 },
     { path: '/crash', priority: 0.7 },
+    { path: '/best/crash-games', priority: 0.7 },
     { path: '/slots', priority: 0.7 },
     { path: '/live-casino', priority: 0.7 },
     { path: '/sports', priority: 0.7 },
