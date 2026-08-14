@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import { LocaleLink } from '@/components/locale-link'
 import { Check, ShieldCheck } from 'lucide-react'
-import type { CountryCode, Operator } from '@/lib/types'
+import type { CategorySlug, CountryCode, Operator } from '@/lib/types'
 import { getCountryName } from '@/lib/data'
 import { getCategoryName } from '@/lib/content'
 import { AffiliateButton } from '@/components/affiliate-button'
@@ -13,12 +13,15 @@ import type { PageType } from '@/lib/tracking'
 export function OperatorCard({
   operator,
   country,
+  category,
   pageType = 'operator',
   pageSlug,
   ctaLocation = 'operator_card',
 }: {
   operator: Operator
   country: CountryCode
+  /** Editorial category context of the page this card is rendered on (e.g. "crash", "live-casino"), used to resolve a category-specific affiliate destination. */
+  category?: CategorySlug
   /** Context of the page this card is rendered on, for accurate attribution. */
   pageType?: PageType
   /** Editorial slug of the current page (e.g. game slug), for tracking only. */
@@ -73,26 +76,32 @@ export function OperatorCard({
         ))}
       </div>
 
-      <dl className="mt-4 space-y-2 text-sm">
-        <div className="flex items-start gap-2">
-          <Check className="mt-0.5 size-4 shrink-0 text-primary" />
-          <div>
-            <dt className="sr-only">{t('label.payments')}</dt>
-            <dd className="text-muted-foreground">
-              {operator.paymentMethods.join(' · ')}
-            </dd>
-          </div>
-        </div>
-        <div className="flex items-start gap-2">
-          <Check className="mt-0.5 size-4 shrink-0 text-primary" />
-          <div>
-            <dt className="sr-only">{t('label.gameType')}</dt>
-            <dd className="text-muted-foreground">
-              {operator.gameTypes.join(' · ')}
-            </dd>
-          </div>
-        </div>
-      </dl>
+      {(operator.paymentMethods.length > 0 || operator.gameTypes.length > 0) && (
+        <dl className="mt-4 space-y-2 text-sm">
+          {operator.paymentMethods.length > 0 && (
+            <div className="flex items-start gap-2">
+              <Check className="mt-0.5 size-4 shrink-0 text-primary" />
+              <div>
+                <dt className="sr-only">{t('label.payments')}</dt>
+                <dd className="text-muted-foreground">
+                  {operator.paymentMethods.join(' · ')}
+                </dd>
+              </div>
+            </div>
+          )}
+          {operator.gameTypes.length > 0 && (
+            <div className="flex items-start gap-2">
+              <Check className="mt-0.5 size-4 shrink-0 text-primary" />
+              <div>
+                <dt className="sr-only">{t('label.gameType')}</dt>
+                <dd className="text-muted-foreground">
+                  {operator.gameTypes.join(' · ')}
+                </dd>
+              </div>
+            </div>
+          )}
+        </dl>
+      )}
 
       <div className="mt-5 flex items-center gap-2">
         {hasAffiliate ? (
@@ -100,6 +109,7 @@ export function OperatorCard({
             operatorSlug={operator.slug}
             operatorId={operator.id}
             country={country}
+            category={category}
             pageType={pageType}
             pageSlug={pageSlug}
             ctaLocation={ctaLocation}

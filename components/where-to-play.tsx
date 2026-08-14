@@ -32,6 +32,7 @@ export function WhereToPlay({ category }: { category?: CategorySlug }) {
           key={operator.id}
           operator={operator}
           country={countryCode}
+          category={category}
         />
       ))}
     </div>

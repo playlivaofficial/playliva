@@ -330,6 +330,7 @@ export function GameDetailView({ game }: { game: Game }) {
                 key={operator.id}
                 operator={operator}
                 country={countryCode}
+                category={game.category}
                 pageType="game"
                 pageSlug={game.slug}
                 ctaLocation="game_where_to_play"

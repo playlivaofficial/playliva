@@ -8,7 +8,12 @@
  */
 
 import { getOperator, getOperatorById, getOffers, getGame, isGameVerifiedAtOperator } from './data'
-import type { CountryCode } from './types'
+import type { CategorySlug, CountryCode } from './types'
+
+/** Type guard for the free-text `category` query param / tracking context. */
+function isCategorySlug(value: string | null | undefined): value is CategorySlug {
+  return value === 'crash' || value === 'slots' || value === 'live-casino' || value === 'sports'
+}
 
 export interface GoParams {
   /** Operator slug (preferred) */
@@ -115,8 +120,10 @@ export function resolveDestination(params: {
   gameSlug?: string | null
   matchSlug?: string | null
   placement?: string | null
+  /** Editorial category context (e.g. "crash", "live-casino"), for category-specific destinations. */
+  category?: string | null
 }): ResolvedDestination | null {
-  const { operatorSlug, offerId, country, ...ctx } = params
+  const { operatorSlug, offerId, country, category, ...ctx } = params
 
   // Offer-based resolution (validate the offer is live and verified in this market).
   if (offerId) {
@@ -153,7 +160,14 @@ export function resolveDestination(params: {
     if (!operator || !operator.active || operator.affiliateStatus !== 'approved')
       return null
     if (!operator.countries.includes(country)) return null
-    const baseUrl = operator.affiliateUrl[country]
+    // A category-specific destination (e.g. crash, live-casino) takes
+    // priority over the generic destination when the operator has an
+    // explicit link for it in this market; otherwise fall back to the
+    // generic `affiliateUrl`.
+    const categoryUrl = isCategorySlug(category)
+      ? operator.categoryAffiliateUrl?.[category]?.[country]
+      : undefined
+    const baseUrl = categoryUrl ?? operator.affiliateUrl[country]
     if (!baseUrl) return null
     // Defense in depth: when a game context is explicitly claimed (the
     // `game` query param — distinct from `pageSlug`, which is editorial/

@@ -109,6 +109,7 @@ export function WhereToPlayView({ game }: { game: Game }) {
                   key={operator.id}
                   operator={operator}
                   country={country}
+                  category={game.category}
                   pageType="where_to_play"
                   pageSlug={game.slug}
                   ctaLocation="where_to_play"
