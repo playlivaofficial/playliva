@@ -1054,3 +1054,154 @@ export function getTagLabel(
   }
   return labels[locale]?.[tag] ?? tag
 }
+
+/* ------------------------------------------------------------------ */
+/* "Best Crash Games" editorial discovery hub (/best/crash-games)      */
+/* ------------------------------------------------------------------ */
+
+interface CrashHubCriterion {
+  label: string
+  text: string
+}
+
+interface CrashHubContent {
+  seoTitle: string
+  seoDescription: string
+  h1: string
+  breadcrumbLabel: string
+  intro: string
+  featuredHeading: string
+  featuredSub: string
+  howToChooseHeading: string
+  howToChooseIntro: string
+  criteria: CrashHubCriterion[]
+  whereToPlayHeading: string
+  whereToPlaySub: string
+}
+
+const CRASH_HUB_CONTENT: Record<Locale, CrashHubContent> = {
+  'pt-BR': {
+    seoTitle: 'Melhores Crash Games para Conhecer | PlayLiva',
+    seoDescription:
+      'Conheça crash games como Aviator, JetX e Spaceman, compare estilos de jogo e descubra opções disponíveis no PlayLiva.',
+    h1: 'Melhores crash games para conhecer',
+    breadcrumbLabel: 'Melhores crash games',
+    intro:
+      'Crash games são jogos de multiplicador: uma curva sobe a partir de 1x enquanto a rodada está em andamento, e cabe ao jogador decidir o momento de sair — o cash out — antes que a rodada termine. É um formato simples de entender e por isso se tornou uma das categorias mais exploradas nos cassinos online. Esta página é uma seleção editorial para ajudar você a conhecer os principais crash games disponíveis, não um ranking com pontuação ou uma promessa de resultado.',
+    featuredHeading: 'Crash games em destaque',
+    featuredSub:
+      'Uma seleção editorial dos crash games mais conhecidos, com uma breve explicação do que torna cada um diferente.',
+    howToChooseHeading: 'Como escolher um crash game?',
+    howToChooseIntro:
+      'Não existe uma fórmula que garanta resultado em um crash game — cada rodada é independente. O que pode ajudar é entender o que diferencia um título do outro:',
+    criteria: [
+      {
+        label: 'Apresentação',
+        text: 'O visual e o tema do jogo — de um avião estilizado a um foguete espacial — mudam a experiência sem alterar a mecânica central.',
+      },
+      {
+        label: 'Ritmo',
+        text: 'Algumas rodadas são bem curtas e se repetem rapidamente; outras dão mais tempo para acompanhar a curva subir.',
+      },
+      {
+        label: 'Provedor',
+        text: 'Cada crash game é desenvolvido por um provedor diferente (Spribe, SmartSoft, Pragmatic Play, entre outros), o que influencia a qualidade da apresentação e a disponibilidade em cada operador.',
+      },
+      {
+        label: 'Mecânica',
+        text: 'Recursos como cash-out automático, apostas duplas simultâneas ou cash-out parcial variam de título para título.',
+      },
+      {
+        label: 'Disponibilidade',
+        text: 'Nem todo crash game está disponível em todos os operadores ou mercados — vale confirmar antes de escolher onde jogar.',
+      },
+    ],
+    whereToPlayHeading: 'Onde jogar crash games?',
+    whereToPlaySub:
+      'Operadores verificados e aprovados que oferecem crash games na sua região.',
+  },
+  'es-MX': {
+    seoTitle: 'Mejores Juegos Crash para Conocer | PlayLiva',
+    seoDescription:
+      'Conoce juegos crash como Aviator, JetX y Spaceman, compara sus estilos y descubre opciones disponibles en PlayLiva.',
+    h1: 'Mejores juegos crash para conocer',
+    breadcrumbLabel: 'Mejores juegos crash',
+    intro:
+      'Los juegos crash son juegos de multiplicador: una curva empieza a subir desde 1x mientras la ronda está activa, y el jugador decide en qué momento retirarse —el llamado cash out— antes de que la ronda termine. Es un formato fácil de entender, por lo que se ha convertido en una de las categorías más exploradas en los casinos en línea. Esta página es una selección editorial para conocer los principales juegos crash disponibles, no una clasificación con puntajes ni una promesa de resultado.',
+    featuredHeading: 'Juegos crash destacados',
+    featuredSub:
+      'Una selección editorial de los juegos crash más conocidos, con una breve explicación de qué hace diferente a cada uno.',
+    howToChooseHeading: 'Cómo elegir un juego crash',
+    howToChooseIntro:
+      'No existe una fórmula que garantice un resultado en un juego crash —cada ronda es independiente—. Lo que sí puede ayudar es entender qué diferencia a un título de otro:',
+    criteria: [
+      {
+        label: 'Presentación',
+        text: 'El estilo visual y la temática —de un avión estilizado a un cohete espacial— cambian la experiencia sin modificar la mecánica central.',
+      },
+      {
+        label: 'Ritmo',
+        text: 'Algunas rondas son muy cortas y se repiten rápido; otras dan más tiempo para seguir la curva mientras sube.',
+      },
+      {
+        label: 'Proveedor',
+        text: 'Cada juego crash lo desarrolla un proveedor distinto (Spribe, SmartSoft, Pragmatic Play, entre otros), lo que influye en la calidad de la presentación y en su disponibilidad en cada operador.',
+      },
+      {
+        label: 'Mecánica',
+        text: 'Funciones como el cash out automático, las apuestas dobles simultáneas o el cash out parcial varían de un título a otro.',
+      },
+      {
+        label: 'Disponibilidad',
+        text: 'No todos los juegos crash están disponibles en todos los operadores o mercados — conviene confirmarlo antes de elegir dónde jugar.',
+      },
+    ],
+    whereToPlayHeading: 'Dónde jugar juegos crash',
+    whereToPlaySub:
+      'Operadores verificados y aprobados que ofrecen juegos crash en tu región.',
+  },
+  en: {
+    seoTitle: 'Best Crash Games to Discover | PlayLiva',
+    seoDescription:
+      'Discover crash games like Aviator, JetX and Spaceman, compare their styles and find available options on PlayLiva.',
+    h1: 'Best crash games to discover',
+    breadcrumbLabel: 'Best crash games',
+    intro:
+      'Crash games are multiplier games: a curve rises from 1x while the round is live, and it is up to the player to decide when to cash out before the round ends. It is a simple format to understand, which is part of why it became one of the most-explored categories at online casinos. This page is an editorial selection to help you discover the main crash games available — not a scored ranking or a promise of any outcome.',
+    featuredHeading: 'Featured crash games',
+    featuredSub:
+      'An editorial selection of the best-known crash games, with a short note on what makes each one different.',
+    howToChooseHeading: 'How to choose a crash game?',
+    howToChooseIntro:
+      'There is no formula that guarantees an outcome in a crash game — every round is independent. What can help is understanding what sets one title apart from another:',
+    criteria: [
+      {
+        label: 'Presentation',
+        text: 'Visual style and theme — from a stylized plane to a space rocket — change the experience without altering the core mechanic.',
+      },
+      {
+        label: 'Pace',
+        text: 'Some rounds are short and repeat quickly; others give more time to follow the curve as it rises.',
+      },
+      {
+        label: 'Provider',
+        text: 'Each crash game is built by a different provider (Spribe, SmartSoft, Pragmatic Play, among others), which affects presentation quality and availability at each operator.',
+      },
+      {
+        label: 'Mechanics',
+        text: 'Features like auto cash-out, simultaneous double bets or partial cash-out vary from title to title.',
+      },
+      {
+        label: 'Availability',
+        text: 'Not every crash game is available at every operator or market — worth confirming before choosing where to play.',
+      },
+    ],
+    whereToPlayHeading: 'Where to play crash games',
+    whereToPlaySub:
+      'Verified, approved operators offering crash games in your region.',
+  },
+}
+
+export function getCrashHubContent(locale: Locale): CrashHubContent {
+  return CRASH_HUB_CONTENT[locale]
+}

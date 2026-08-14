@@ -11,6 +11,7 @@ import {
   ListChecks,
   MapPin,
   Sparkles,
+  Trophy,
 } from 'lucide-react'
 import { useCountry } from '@/components/country-context'
 import {
@@ -20,7 +21,7 @@ import {
   getPublicMarkets,
   getRelatedGames,
 } from '@/lib/data'
-import { getCategoryName, getGameContent } from '@/lib/content'
+import { getCategoryName, getCrashHubContent, getGameContent } from '@/lib/content'
 import { Section, SectionHeading } from '@/components/section'
 import { GameCard } from '@/components/game-card'
 import { GameArtwork } from '@/components/game-artwork'
@@ -234,6 +235,34 @@ export function GameDetailView({ game }: { game: Game }) {
           </div>
         )}
       </Section>
+
+      {/* Best crash games hub — only for crash-category titles */}
+      {game.category === 'crash' && (
+        <Section className="pt-0">
+          <LocaleLink
+            href="/best/crash-games"
+            className="group flex flex-col items-start gap-4 rounded-2xl border border-border bg-card p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/50 hover:glow-primary sm:flex-row sm:items-center sm:justify-between"
+          >
+            <div className="flex items-start gap-4">
+              <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/12 text-primary">
+                <Trophy className="size-5" />
+              </span>
+              <div>
+                <h2 className="font-display text-lg font-bold text-foreground">
+                  {getCrashHubContent(locale).breadcrumbLabel}
+                </h2>
+                <p className="mt-1 max-w-xl text-pretty text-sm leading-relaxed text-muted-foreground">
+                  {getCrashHubContent(locale).featuredSub}
+                </p>
+              </div>
+            </div>
+            <span className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-primary">
+              {t('cta.viewDetails')}
+              <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+            </span>
+          </LocaleLink>
+        </Section>
+      )}
 
       {/* Games like X */}
       {related.length > 0 && (
