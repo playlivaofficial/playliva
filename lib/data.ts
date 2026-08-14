@@ -518,7 +518,28 @@ export const COMPARISONS: Comparison[] = [
       'Different providers (SmartSoft vs Pragmatic Play)',
     ],
     editorialSummary:
-      'Both are strong choices for players exploring beyond Aviator. Choose based on the theme you enjoy and whether partial cash-out matters to you.',
+      'Both are solid picks for players exploring beyond Aviator. Choose based on the theme you enjoy and whether partial cash-out matters to you.',
+    countries: ['BR', 'MX'],
+  },
+  {
+    slug: 'gates-of-olympus-vs-sweet-bonanza',
+    gameAId: 'g5',
+    gameBId: 'g6',
+    intro:
+      'Gates of Olympus and Sweet Bonanza are both Pragmatic Play slots that share several mechanics, which makes them a natural pair for players comparing options within the same provider lineup.',
+    similarities: [
+      'Both are Pragmatic Play video slots',
+      'Both use a tumble mechanic',
+      'Both feature multiplier symbols',
+      'Both offer a free-spins mode',
+    ],
+    differences: [
+      'Gates of Olympus pays anywhere on the grid; Sweet Bonanza pays via clusters',
+      'Gates of Olympus uses a mythological theme; Sweet Bonanza uses a candy theme',
+      'Different visual identity and symbol design',
+    ],
+    editorialSummary:
+      'Players who enjoy the tumble-and-multiplier feel of Gates of Olympus but want a different theme and payout structure often try Sweet Bonanza next. Neither is objectively better — the choice comes down to theme preference and whether you prefer pay-anywhere or cluster-based wins.',
     countries: ['BR', 'MX'],
   },
 ]
