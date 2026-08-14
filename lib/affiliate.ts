@@ -7,7 +7,7 @@
  * inactive operators or unsupported markets.
  */
 
-import { getOperator, getOperatorById, getOffers } from './data'
+import { getOperator, getOperatorById, getOffers, getGame, isGameVerifiedAtOperator } from './data'
 import type { CountryCode } from './types'
 
 export interface GoParams {
@@ -155,6 +155,18 @@ export function resolveDestination(params: {
     if (!operator.countries.includes(country)) return null
     const baseUrl = operator.affiliateUrl[country]
     if (!baseUrl) return null
+    // Defense in depth: when a game context is explicitly claimed (the
+    // `game` query param — distinct from `pageSlug`, which is editorial/
+    // tracking-only), the operator must have an explicit verified-
+    // availability record for it in this market. Referring pages already
+    // filter operators this way before rendering a CTA (see
+    // `getOperatorsForGame`), so this only ever rejects a hand-crafted or
+    // stale `/go` URL, never a link the site itself produced.
+    if (ctx.gameSlug) {
+      const game = getGame(ctx.gameSlug)
+      if (!game || !isGameVerifiedAtOperator(operator, game.id, country))
+        return null
+    }
     const url = withTrackingTemplate(
       baseUrl,
       operator.trackingTemplate?.[country],
