@@ -51,12 +51,13 @@ export const config = {
     /*
      * Match everything except:
      * - /go (tracked affiliate redirect, never locale-prefixed)
+     * - /dev (internal, development-only tooling, never locale-prefixed)
      * - /api
      * - /_next (static/image optimization internals)
      * - /sitemap.xml, /robots.txt, /manifest.webmanifest and similar
      *   top-level special files
      * - any request for a file with an extension (favicon, images, etc.)
      */
-    '/((?!go|api|_next|sitemap.xml|robots.txt|manifest.webmanifest|.*\\..*).*)',
+    '/((?!go|dev|api|_next|sitemap.xml|robots.txt|manifest.webmanifest|.*\\..*).*)',
   ],
 }
