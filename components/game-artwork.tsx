@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import { ImageOff } from 'lucide-react'
 import type { Game } from '@/lib/types'
-import { hasApprovedArtwork } from '@/lib/game-artwork'
+import { getApprovedArtwork, hasApprovedArtwork } from '@/lib/game-artwork'
 import { useTranslation } from '@/components/country-context'
 import { getCategoryName } from '@/lib/content'
 import { cn } from '@/lib/utils'
@@ -41,11 +41,19 @@ export function GameArtwork({
 }) {
   const { locale } = useTranslation()
 
-  if (hasApprovedArtwork(game)) {
+  // `getApprovedArtwork` reads a static, module-level object literal keyed
+  // by `game.id` — the exact same value on the server render and the
+  // first client render, so this branch can never disagree with itself
+  // across hydration. `hasApprovedArtwork` is checked first so a game
+  // that's missing from the map (or not yet rights-cleared) always falls
+  // through to the fallback below, on both server and client alike.
+  const artwork = hasApprovedArtwork(game) ? getApprovedArtwork(game) : null
+
+  if (artwork) {
     return (
       <Image
-        src={game.image as string}
-        alt={game.imageAlt || `${game.title} by ${game.provider}`}
+        src={artwork.src}
+        alt={game.imageAlt || artwork.alt}
         fill={fill}
         priority={priority}
         sizes={sizes}
