@@ -10,6 +10,7 @@ import {
   Info,
   ListChecks,
   MapPin,
+  Sparkles,
 } from 'lucide-react'
 import { useCountry } from '@/components/country-context'
 import {
@@ -26,7 +27,11 @@ import { GameArtwork } from '@/components/game-artwork'
 import { Breadcrumbs } from '@/components/breadcrumbs'
 import { ComparisonCard } from '@/components/comparison-card'
 import { OperatorCard } from '@/components/operator-card'
-import { ResponsibleNotice, AffiliateDisclosure } from '@/components/notices'
+import {
+  ResponsibleNotice,
+  ResponsibleGamingNotice,
+  AffiliateDisclosure,
+} from '@/components/notices'
 import { Button } from '@/components/ui/button'
 import { track } from '@/lib/tracking'
 import type { Game } from '@/lib/types'
@@ -101,7 +106,7 @@ export function GameDetailView({ game }: { game: Game }) {
               </span>
             </div>
             <h1 className="mt-4 text-balance font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-              {game.title}
+              {content.seo?.game?.h1 ?? game.title}
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
               {t('game.byProvider', { provider: game.provider })}
@@ -141,11 +146,13 @@ export function GameDetailView({ game }: { game: Game }) {
             <div className="flex items-center gap-2 text-primary">
               <Gamepad2 className="size-5" />
               <h2 className="font-display text-xl font-bold text-foreground">
-                {t('game.aboutTitle')}
+                {content.whatIsIt
+                  ? t('game.whatIsTitle', { game: game.title })
+                  : t('game.aboutTitle')}
               </h2>
             </div>
             <p className="mt-4 leading-relaxed text-muted-foreground">
-              {content.about}
+              {content.whatIsIt ?? content.about}
             </p>
             <p className="mt-3 leading-relaxed text-muted-foreground">
               {t('game.ownershipNote', { game: game.title })}
@@ -160,11 +167,11 @@ export function GameDetailView({ game }: { game: Game }) {
               </h2>
             </div>
             <ol className="mt-4 space-y-3">
-              {[
+              {(content.howItWorks ?? [
                 t('game.step1'),
                 t('game.step2'),
                 t('game.step3'),
-              ].map((step, i) => (
+              ]).map((step, i) => (
                 <li key={i} className="flex items-start gap-3">
                   <span className="mt-0.5 inline-grid size-6 shrink-0 place-items-center rounded-full bg-primary/15 text-xs font-bold text-primary">
                     {i + 1}
@@ -178,6 +185,20 @@ export function GameDetailView({ game }: { game: Game }) {
             </p>
           </div>
         </div>
+
+        {content.whyPopular && (
+          <div className="mt-8 rounded-2xl border border-border bg-card p-6">
+            <div className="flex items-center gap-2 text-primary">
+              <Sparkles className="size-5" />
+              <h2 className="font-display text-xl font-bold text-foreground">
+                {t('game.whyPopularTitle', { game: game.title })}
+              </h2>
+            </div>
+            <p className="mt-4 max-w-3xl leading-relaxed text-muted-foreground">
+              {content.whyPopular}
+            </p>
+          </div>
+        )}
       </Section>
 
       {/* Key game information */}
@@ -266,11 +287,7 @@ export function GameDetailView({ game }: { game: Game }) {
             <Button
               variant="outline"
               size="lg"
-              render={
-                <LocaleLink
-                  href={`/where-to-play/${game.slug}/${country.code.toLowerCase()}`}
-                />
-              }
+              render={<LocaleLink href={`/where-to-play/${game.slug}`} />}
             >
               {t('game.fullGuide')}
               <ArrowRight className="size-4" />
@@ -331,6 +348,15 @@ export function GameDetailView({ game }: { game: Game }) {
             {t('geo.reviewingBody')}
           </p>
         )}
+      </Section>
+
+      {/* Responsible gambling */}
+      <Section className="border-t border-border bg-card/30">
+        <SectionHeading title={t('rg.blockTitle')} />
+        <div className="grid gap-4 md:grid-cols-2">
+          <AffiliateDisclosure />
+          <ResponsibleGamingNotice />
+        </div>
       </Section>
     </div>
   )

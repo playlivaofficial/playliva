@@ -160,11 +160,7 @@ export function ComparisonView({ comparison }: { comparison: Comparison }) {
             <Button
               variant="outline"
               size="lg"
-              render={
-                <LocaleLink
-                  href={`/where-to-play/${a.slug}/${countryCode.toLowerCase()}`}
-                />
-              }
+              render={<LocaleLink href={`/where-to-play/${a.slug}`} />}
             >
               {t('compare.whereToPlayCta', { game: a.title })}
               <ArrowRight className="size-4" />

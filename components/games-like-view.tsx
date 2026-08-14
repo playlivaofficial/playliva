@@ -10,10 +10,11 @@ import {
   getOperatorsForGame,
   getRelatedGames,
 } from '@/lib/data'
-import { getCategoryName, getGameContent } from '@/lib/content'
+import { getAlternativeNote, getCategoryName, getGameContent } from '@/lib/content'
 import { PageHero } from '@/components/page-hero'
 import { Section, SectionHeading } from '@/components/section'
 import { GameCard } from '@/components/game-card'
+import { GameArtwork } from '@/components/game-artwork'
 import { ComparisonCard } from '@/components/comparison-card'
 import { OperatorCard } from '@/components/operator-card'
 import { AffiliateDisclosure, ResponsibleGamingNotice } from '@/components/notices'
@@ -30,6 +31,17 @@ export function GamesLikeView({ game }: { game: Game }) {
   const alternatives = getRelatedGames(game, undefined, 8)
   const comparisons = getComparisonsForGame(game.id)
   const operators = getOperatorsForGame(game, countryCode)
+  // Individual editorial write-ups per alternative, only where a real note
+  // exists (sparse by design — see `getAlternativeNote`).
+  const alternativeDetails = alternatives
+    .map((alt) => ({
+      game: alt,
+      note: getAlternativeNote(game.id, alt.id, locale),
+      comparison: comparisons.find(
+        (c) => c.gameAId === alt.id || c.gameBId === alt.id,
+      ),
+    }))
+    .filter((d): d is typeof d & { note: string } => Boolean(d.note))
 
   useEffect(() => {
     track('game_view', {
@@ -44,7 +56,7 @@ export function GamesLikeView({ game }: { game: Game }) {
     <div>
       <PageHero
         eyebrow={t('like.eyebrow')}
-        title={t('game.gamesLike', { game: game.title })}
+        title={content.seo?.gamesLike?.h1 ?? t('game.gamesLike', { game: game.title })}
         description={t('like.heroSub', { game: game.title, category: categoryLower })}
         breadcrumbs={[
           { label: t('nav.home'), href: '/' },
@@ -98,6 +110,51 @@ export function GamesLikeView({ game }: { game: Game }) {
         </div>
       </Section>
 
+      {/* Individual alternative write-ups */}
+      {alternativeDetails.length > 0 && (
+        <Section className="border-t border-border bg-card/30">
+          <SectionHeading title={t('like.alternativesDetailTitle')} />
+          <div className="space-y-6">
+            {alternativeDetails.map(({ game: alt, note, comparison }) => (
+              <div
+                key={alt.id}
+                className="flex flex-col gap-5 rounded-2xl border border-border bg-card p-6 sm:flex-row sm:items-start"
+              >
+                <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden rounded-xl border border-border sm:w-48">
+                  <GameArtwork game={alt} sizes="192px" compact />
+                </div>
+                <div className="flex-1">
+                  <h2 className="font-display text-xl font-bold text-foreground">
+                    {alt.title}
+                  </h2>
+                  <p className="mt-1 text-xs font-medium text-muted-foreground">
+                    {alt.provider}
+                  </p>
+                  <p className="mt-3 max-w-2xl leading-relaxed text-muted-foreground">
+                    {note}
+                  </p>
+                  <div className="mt-4 flex flex-wrap items-center gap-3">
+                    <Button size="sm" render={<LocaleLink href={`/games/${alt.slug}`} />}>
+                      {t('cta.viewGame')}
+                    </Button>
+                    {comparison && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        render={<LocaleLink href={`/compare/${comparison.slug}`} />}
+                      >
+                        {t('cta.compare')}
+                        <ArrowRight className="size-4" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Section>
+      )}
+
       {/* Comparisons */}
       {comparisons.length > 0 && (
         <Section>
@@ -124,11 +181,7 @@ export function GamesLikeView({ game }: { game: Game }) {
             <Button
               variant="outline"
               size="lg"
-              render={
-                <LocaleLink
-                  href={`/where-to-play/${game.slug}/${countryCode.toLowerCase()}`}
-                />
-              }
+              render={<LocaleLink href={`/where-to-play/${game.slug}`} />}
             >
               {t('compare.whereToPlayCta', { game: game.title })}
               <ArrowRight className="size-4" />

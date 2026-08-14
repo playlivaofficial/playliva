@@ -116,11 +116,7 @@ export function BestListView({ list }: { list: GameList }) {
                     <Button
                       size="lg"
                       variant="outline"
-                      render={
-                        <LocaleLink
-                          href={`/where-to-play/${game.slug}/${list.country.toLowerCase()}`}
-                        />
-                      }
+                      render={<LocaleLink href={`/where-to-play/${game.slug}`} />}
                     >
                       {t('best.whereToPlayGame', { market: countryName })}
                     </Button>
