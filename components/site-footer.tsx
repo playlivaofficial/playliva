@@ -78,7 +78,15 @@ export function SiteFooter() {
         </p>
 
         <div className="mt-6 flex flex-col gap-4 border-t border-border pt-6 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-          <p>{t('footer.rights', { year: new Date().getFullYear() })}</p>
+          {/* `new Date()` can legitimately differ between the server render
+           * and the client hydration pass (clock skew, or a render that
+           * straddles midnight on Dec 31). suppressHydrationWarning is the
+           * React-recommended escape hatch for exactly this case — it only
+           * silences the mismatch warning for this text node, it does not
+           * affect any other content or logic. */}
+          <p suppressHydrationWarning>
+            {t('footer.rights', { year: new Date().getFullYear() })}
+          </p>
           <p className="flex items-center gap-2">
             <span className="inline-grid size-6 place-items-center rounded-md border border-primary/40 text-xs font-bold text-primary">
               {t('notice.age')}
