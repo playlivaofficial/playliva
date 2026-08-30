@@ -108,7 +108,7 @@ export function OperatorProfileView({ operator }: { operator: Operator }) {
                 alt={`${operator.name} logo`}
                 fill
                 sizes="80px"
-                className="object-cover"
+                className="object-contain"
               />
             </div>
             <div className="flex-1">

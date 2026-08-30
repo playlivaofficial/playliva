@@ -819,9 +819,9 @@ export const OPERATORS: Operator[] = [
     /* Betsson — first approved/verified real affiliate partner.           */
     /* Approved for BR only; MX is explicitly NOT supported for this       */
     /* partner and must never be added to `countries` here. Game           */
-    /* availability is a separate concern from affiliate approval — only   */
-    /* Aviator (g1) has an explicit, manually-verified availability record  */
-    /* below, so no other game may show Betsson as an operator yet.        */
+    /* availability is a separate concern from affiliate approval and is   */
+    /* enumerated explicitly in `verifiedGames.BR` below — only the games  */
+    /* listed there may show a game-specific Betsson CTA.                   */
     /* ------------------------------------------------------------------ */
     id: 'op-betsson',
     slug: 'betsson-group-affiliates',
@@ -865,7 +865,10 @@ export const OPERATORS: Operator[] = [
     id: 'op-betano',
     slug: 'betano',
     name: 'Betano',
-    logo: '/operators/pending-verification.png',
+    // Unverified/pending operator — kept out of all public surfaces. No real
+    // logo asset on file yet, so it points at the neutral placeholder rather
+    // than a missing file (avoids a 404 if ever rendered in a private view).
+    logo: '/placeholder.svg',
     countries: ['MX'],
     categories: [],
     paymentMethods: [],
@@ -881,7 +884,7 @@ export const OPERATORS: Operator[] = [
     id: 'op-kto',
     slug: 'kto',
     name: 'KTO',
-    logo: '/operators/pending-verification.png',
+    logo: '/placeholder.svg',
     countries: ['BR'],
     categories: [],
     paymentMethods: [],
@@ -897,7 +900,7 @@ export const OPERATORS: Operator[] = [
     id: 'op-codere',
     slug: 'codere',
     name: 'Codere',
-    logo: '/operators/pending-verification.png',
+    logo: '/placeholder.svg',
     countries: ['MX'],
     categories: [],
     paymentMethods: [],
