@@ -25,7 +25,10 @@ const APPROVED_ARTWORK: Record<string, { src: string; alt: string }> = {
   g2: { src: '/games/jetx.png', alt: 'JetX by SmartSoft' },
   g3: { src: '/games/spaceman.webp', alt: 'Spaceman by Pragmatic Play' },
   g4: { src: '/games/mines.jpeg', alt: 'Mines by Spribe' },
+  g5: { src: '/games/gates-of-olympus.png', alt: 'Gates of Olympus by Pragmatic Play' },
+  g6: { src: '/games/sweet-bonanza.png', alt: 'Sweet Bonanza by Pragmatic Play' },
   g10: { src: '/games/plinko.jpeg', alt: 'Plinko by Spribe' },
+  g11: { src: '/games/big-bass.png', alt: 'Big Bass Bonanza by Pragmatic Play' },
 }
 
 /**
