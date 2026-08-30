@@ -147,6 +147,22 @@ export function ComparisonView({ comparison }: { comparison: Comparison }) {
           <p className="mt-4 text-xs text-muted-foreground">
             {t('compare.editorialNote')}
           </p>
+          <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2">
+            <LocaleLink
+              href={`/games-like/${a.slug}`}
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
+            >
+              {t('game.gamesLike', { game: a.title })}
+              <ArrowRight className="size-4" />
+            </LocaleLink>
+            <LocaleLink
+              href={`/games-like/${b.slug}`}
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
+            >
+              {t('game.gamesLike', { game: b.title })}
+              <ArrowRight className="size-4" />
+            </LocaleLink>
+          </div>
         </div>
       </Section>
 

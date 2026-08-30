@@ -345,6 +345,24 @@ const GAME_CONTENT: Record<Locale, Record<string, GameContent>> = {
       shortDescription: 'Mesas clásicas de blackjack en vivo.',
       gameType: 'Mesa en vivo',
       mechanics: ['Dealer en vivo', 'Varios límites', 'Apuestas laterales'],
+      whatIsIt:
+        'El Blackjack en Vivo es una versión con dealer en vivo del blackjack de Evolution, que se juega contra un dealer real transmitido desde un estudio en tiempo real. En lugar de que el software reparta las cartas, el blackjack live usa un dealer humano y una transmisión de video, así que cada mano se desarrolla como en una mesa física. Pertenece a la categoría de blackjack de casino en vivo, y no al formato de blackjack online basado en software.',
+      howItWorks: [
+        'Te unes a una mesa de blackjack en vivo y colocas tu apuesta antes de que se repartan las cartas.',
+        'El dealer en vivo reparte las cartas frente a la cámara y ves cada carta en tiempo real.',
+        'Tomas las decisiones habituales del blackjack en tu mano, como pedir carta o plantarte.',
+        'Algunas mesas de blackjack en vivo también ofrecen apuestas laterales opcionales junto a la mano principal.',
+      ],
+      whyPopular:
+        'El blackjack en vivo se hizo conocido por llevar el ritmo y la sensación social de una mesa de blackjack real a un formato en línea, con un dealer humano, una transmisión de video en vivo y varias mesas para elegir. Su asociación con Evolution, uno de los proveedores de casino en vivo más reconocidos, también ayudó a que el blackjack de casino en vivo se convirtiera en una referencia dentro de la categoría.',
+      seo: {
+        game: {
+          title: 'Blackjack en Vivo: Cómo Funciona el Blackjack Live',
+          description:
+            'Descubre cómo funciona el blackjack en vivo — el formato de blackjack con dealer en vivo de Evolution. Conoce el blackjack de casino en vivo y qué revisar antes de jugar.',
+          h1: 'Blackjack en Vivo: Cómo Funciona el Blackjack Live',
+        },
+      },
     },
   },
   en: {
@@ -365,6 +383,14 @@ const GAME_CONTENT: Record<Locale, Record<string, GameContent>> = {
       ],
       whyPopular:
         'Aviator became known for pairing a simple mechanic with fast rounds and a presentation that is easy to grasp at a glance. That combination — simplicity, pace, and visual clarity — helped the game become a reference point within the crash game category, serving as an entry point for players getting to know this game format.',
+      seo: {
+        game: {
+          title: 'Aviator: How the Crash Game Works',
+          description:
+            'How the Aviator crash game works — watch the multiplier climb and cash out before the round ends. Learn how to play the Aviator game and see similar crash games.',
+          h1: 'Aviator: How the Crash Game Works',
+        },
+      },
     },
     g2: {
       description: 'A fighter-jet-themed multiplier game with a loyal player base.',
@@ -389,6 +415,14 @@ const GAME_CONTENT: Record<Locale, Record<string, GameContent>> = {
       shortDescription: 'High-volatility slot with pays-anywhere wins.',
       gameType: 'Video slot',
       mechanics: ['Pays anywhere', 'Multipliers', 'Free spins', 'Tumble'],
+      seo: {
+        gamesLike: {
+          title: 'Games Like Gates of Olympus: Similar Slots',
+          description:
+            'Discover games like Gates of Olympus — similar slots and Gates of Olympus alternatives compared by tumble mechanics, multiplier symbols and free-spin features.',
+          h1: 'Games Like Gates of Olympus',
+        },
+      },
     },
     g6: {
       description: 'A colorful cluster-pays slot with a candy theme.',
@@ -419,12 +453,48 @@ const GAME_CONTENT: Record<Locale, Record<string, GameContent>> = {
       shortDescription: 'Fishing-themed slot with free spins.',
       gameType: 'Video slot',
       mechanics: ['Free spins', 'Prize collection', 'Multipliers'],
+      whatIsIt:
+        'Big Bass Bonanza is a fishing-themed video slot from Pragmatic Play. Its gameplay centers on a free spins round built around a collect mechanic, where fish symbols carry values that can be gathered when a fisherman symbol appears. The theme, symbols and presentation all lean into the fishing concept.',
+      howItWorks: [
+        'Big Bass Bonanza is a video slot, so each spin sets the reels and symbols in motion.',
+        'The main feature is a free spins round rather than a single base-game mechanic.',
+        'During free spins, a collect mechanic links fish symbols to a fisherman symbol so their values can be gathered.',
+        'Multiplier elements can raise the value of what is collected during the feature.',
+      ],
+      whyPopular:
+        'Big Bass Bonanza became well known for pairing a simple, approachable fishing theme with a free spins round that many players find easy to follow. That, together with its association with Pragmatic Play — one of the most recognized slot providers — helped Big Bass slots become a reference point within the category.',
+      seo: {
+        game: {
+          title: 'Big Bass Bonanza: Slot Game Guide',
+          description:
+            'A game guide to Big Bass Bonanza, the fishing-themed Pragmatic Play slot. Learn how its free spins and collect mechanic work, plus similar Big Bass slots to explore.',
+          h1: 'Big Bass Bonanza: Game Guide',
+        },
+      },
     },
     g12: {
       description: 'Classic blackjack tables with a live dealer across several limits.',
       shortDescription: 'Classic live blackjack tables.',
       gameType: 'Live table',
       mechanics: ['Live dealer', 'Multiple limits', 'Side bets'],
+      whatIsIt:
+        'Blackjack Live is a live-dealer version of blackjack from Evolution, played against a real dealer who is streamed from a studio in real time. Instead of software dealing the cards, live blackjack uses a human dealer and a video feed, so each hand plays out the way it would at a physical table. It sits in the live casino blackjack category rather than the software-based online blackjack format.',
+      howItWorks: [
+        'You join a live blackjack table and place your bet before the hand is dealt.',
+        'The live dealer deals the cards on camera, and you see each card in real time.',
+        'You make the standard blackjack decisions on your hand, such as hitting or standing.',
+        'Some live blackjack tables also offer optional side bets alongside the main hand.',
+      ],
+      whyPopular:
+        'Live blackjack became well known for bringing the pace and social feel of a real blackjack table into an online format, with a human dealer, a live video feed and several tables to choose from. Its association with Evolution, one of the most recognized live casino providers, also helped live casino blackjack become a reference point within the category.',
+      seo: {
+        game: {
+          title: 'Live Blackjack: How Blackjack Live Works',
+          description:
+            'Learn how live blackjack works — the live-dealer Blackjack Live format from Evolution. Understand live casino blackjack, how a hand plays out and what to check before you play.',
+          h1: 'Live Blackjack: How Blackjack Live Works',
+        },
+      },
     },
   },
 }
@@ -512,6 +582,10 @@ const ALTERNATIVE_NOTES: Record<Locale, Record<string, string>> = {
       "Mines follows a different format than crash: instead of watching a multiplier climb on its own, the player reveals tiles on a grid and avoids hidden mines to raise the multiplier. Players who enjoy Aviator often explore Mines too, but the mechanic isn't a direct clone of the crash format.",
     'g1:g10':
       'Plinko is an instant game where a ball drops through a grid of pins until it lands in a slot with a multiplier. Like Mines, it draws a similar audience to Aviator, but its mechanic is structurally different from crash — it\u2019s probability-based, with no round that continuously "climbs."',
+    'g5:g6':
+      "Sweet Bonanza is also from Pragmatic Play and shares the tumble mechanic and multiplier symbols of Gates of Olympus, but it pays by cluster instead of paying anywhere on the grid, and swaps the mythology theme for a candy world. It's the closest alternative for players who enjoy the gameplay feel of Gates of Olympus.",
+    'g5:g11':
+      'Big Bass Bonanza, also from Pragmatic Play, is built around a free spins round with a prize-collect mechanic rather than the pays-anywhere structure of Gates of Olympus. Players who enjoy high-action Pragmatic Play slots often explore both, though the core mechanic is different.',
   },
 }
 
@@ -863,6 +937,29 @@ const COMPARISON_CONTENT: Record<Locale, Record<string, ComparisonContent>> = {
       ],
       editorialSummary:
         'Both are solid picks for players exploring beyond Aviator. Choose based on the theme you enjoy and whether partial cash-out matters to you.',
+    },
+    'crazy-time-vs-lightning-roulette': {
+      intro:
+        'Crazy Time and Lightning Roulette are two of Evolution\u2019s best-known live casino titles, and players often weigh Crazy Time vs Lightning Roulette when deciding which live experience to try. Both are hosted live from a studio and build in a random-multiplier element, but they offer very different gameplay: Crazy Time is a wheel-based, game-show format, while Lightning Roulette is roulette-focused.',
+      similarities: [
+        'Both are Evolution live casino titles',
+        'Both are hosted live from a studio with a real presenter or dealer',
+        'Both build a random-multiplier element into their rounds',
+        'Both are designed for fast, repeatable rounds',
+      ],
+      differences: [
+        'Crazy Time is a game show built around a spinning wheel and bonus rounds; Lightning Roulette is a traditional roulette table',
+        'Crazy Time bets are placed on wheel segments and bonus games; Lightning Roulette bets are placed on roulette numbers with random multipliers',
+        'Crazy Time leans on game-show presentation and a host; Lightning Roulette keeps the classic roulette layout',
+        'Different core formats — a live game show versus a live table game',
+      ],
+      editorialSummary:
+        'Which game may suit you better comes down to the kind of live experience you enjoy. If you like an interactive, host-led game show with bonus rounds, Crazy Time leans that way; if you prefer a classic roulette table with a multiplier twist, Lightning Roulette may fit better. Neither is objectively better — Crazy Time and Lightning Roulette simply offer different live casino experiences.',
+      seo: {
+        title: 'Crazy Time vs Lightning Roulette: Live Casino Comparison',
+        description:
+          'Compare Crazy Time and Lightning Roulette, two Evolution live casino games. See how their gameplay, formats and multipliers differ, and which may suit you.',
+      },
     },
   },
 }
