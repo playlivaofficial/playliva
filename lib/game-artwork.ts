@@ -27,8 +27,11 @@ const APPROVED_ARTWORK: Record<string, { src: string; alt: string }> = {
   g4: { src: '/games/mines.jpeg', alt: 'Mines by Spribe' },
   g5: { src: '/games/gates-of-olympus.png', alt: 'Gates of Olympus by Pragmatic Play' },
   g6: { src: '/games/sweet-bonanza.png', alt: 'Sweet Bonanza by Pragmatic Play' },
+  g7: { src: '/games/lightning-roulette.jpg', alt: 'Lightning Roulette by Evolution' },
+  g8: { src: '/games/crazy-time.webp', alt: 'Crazy Time by Evolution' },
   g10: { src: '/games/plinko.jpeg', alt: 'Plinko by Spribe' },
   g11: { src: '/games/big-bass.png', alt: 'Big Bass Bonanza by Pragmatic Play' },
+  g12: { src: '/games/blackjack-live.jpg', alt: 'Speed Blackjack Live by Evolution' },
 }
 
 /**
