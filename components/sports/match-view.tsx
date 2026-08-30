@@ -8,7 +8,7 @@ import { Section } from '@/components/section'
 import { MatchHeader } from '@/components/sports/match-header'
 import { OddsComparison } from '@/components/sports/odds-comparison'
 import { BettingMarketTabs } from '@/components/sports/betting-market-tabs'
-import { AffiliateDisclosure, ResponsibleGamingNotice } from '@/components/notices'
+import { AffiliateDisclosureLine, ResponsibleGamingNotice } from '@/components/notices'
 
 export function MatchView({ match, league }: { match: Match; league: League }) {
   const { t } = useTranslation()
@@ -58,9 +58,9 @@ export function MatchView({ match, league }: { match: Match; league: League }) {
           <MatchInfoItem label={t('sports.competition')} value={league.name} />
           <MatchInfoItem label={t('sports.venue')} value={match.venue ?? t('sports.venueUnavailable')} />
         </dl>
-        <div className="mt-8 grid gap-4 md:grid-cols-2">
-          <AffiliateDisclosure />
+        <div className="mt-8">
           <ResponsibleGamingNotice />
+          <AffiliateDisclosureLine className="mt-4" />
         </div>
       </Section>
     </div>

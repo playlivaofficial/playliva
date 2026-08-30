@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react'
 import { PUBLIC_COUNTRIES, getPublicOperators, getCountryName } from '@/lib/data'
 import { useCountry } from '@/components/country-context'
 import { OperatorCard } from '@/components/operator-card'
-import { AffiliateDisclosure } from '@/components/notices'
+import { AffiliateDisclosureLine } from '@/components/notices'
 import { cn } from '@/lib/utils'
 import type { CategorySlug, CountryCode } from '@/lib/types'
 
@@ -116,7 +116,7 @@ export function OperatorsDirectory() {
         </div>
       )}
 
-      <AffiliateDisclosure className="mt-8" />
+      <AffiliateDisclosureLine className="mt-8" />
     </div>
   )
 }

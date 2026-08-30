@@ -228,11 +228,11 @@ export const GAMES: Game[] = [
     title: 'Gates of Olympus',
     category: 'slots',
     provider: 'Pragmatic Play',
-    image: null,
+    image: '/games/gates-of-olympus.png',
     imageAlt: 'Gates of Olympus by Pragmatic Play',
-    imageSource: 'Pending — awaiting an approved Pragmatic Play asset. Must match the original Gates of Olympus title exactly, not a sequel/variant such as Gates of Olympus 1000.',
-    assetStatus: 'pending',
-    assetRightsStatus: 'unknown',
+    imageSource: 'Approved — official Pragmatic Play promotional tile (Gates of Olympus POP edition) supplied by the operator.',
+    assetStatus: 'approved',
+    assetRightsStatus: 'approved',
     description: 'A high-volatility slot themed around the god of thunder.',
     shortDescription: 'High-volatility pay-anywhere slot.',
     tag: 'Popular',
@@ -253,11 +253,11 @@ export const GAMES: Game[] = [
     title: 'Sweet Bonanza',
     category: 'slots',
     provider: 'Pragmatic Play',
-    image: null,
+    image: '/games/sweet-bonanza.png',
     imageAlt: 'Sweet Bonanza by Pragmatic Play',
-    imageSource: 'Pending — awaiting an approved Pragmatic Play asset. Must match the original Sweet Bonanza title exactly, not a sequel/variant such as Sweet Bonanza 1000.',
-    assetStatus: 'pending',
-    assetRightsStatus: 'unknown',
+    imageSource: 'Approved — official Pragmatic Play promotional tile (Sweet Bonanza 1000 edition) supplied by the operator.',
+    assetStatus: 'approved',
+    assetRightsStatus: 'approved',
     description: 'A colourful cluster-pays slot with a candy theme.',
     shortDescription: 'Candy-themed cluster-pays slot.',
     tag: 'Popular',
@@ -353,11 +353,11 @@ export const GAMES: Game[] = [
     title: 'Big Bass Bonanza',
     category: 'slots',
     provider: 'Pragmatic Play',
-    image: null,
+    image: '/games/big-bass.png',
     imageAlt: 'Big Bass Bonanza by Pragmatic Play',
-    imageSource: 'Pending — awaiting an approved Pragmatic Play asset.',
-    assetStatus: 'pending',
-    assetRightsStatus: 'unknown',
+    imageSource: 'Approved — official Pragmatic Play promotional tile (Big Bass Bonanza Reel Action edition) supplied by the operator.',
+    assetStatus: 'approved',
+    assetRightsStatus: 'approved',
     description: 'A fishing-themed slot with free-spin collection mechanics.',
     shortDescription: 'Fishing-themed free-spin slot.',
     tag: 'Popular',
@@ -819,9 +819,9 @@ export const OPERATORS: Operator[] = [
     /* Betsson — first approved/verified real affiliate partner.           */
     /* Approved for BR only; MX is explicitly NOT supported for this       */
     /* partner and must never be added to `countries` here. Game           */
-    /* availability is a separate concern from affiliate approval — only   */
-    /* Aviator (g1) has an explicit, manually-verified availability record  */
-    /* below, so no other game may show Betsson as an operator yet.        */
+    /* availability is a separate concern from affiliate approval and is   */
+    /* enumerated explicitly in `verifiedGames.BR` below — only the games  */
+    /* listed there may show a game-specific Betsson CTA.                   */
     /* ------------------------------------------------------------------ */
     id: 'op-betsson',
     slug: 'betsson-group-affiliates',
@@ -865,7 +865,10 @@ export const OPERATORS: Operator[] = [
     id: 'op-betano',
     slug: 'betano',
     name: 'Betano',
-    logo: '/operators/pending-verification.png',
+    // Unverified/pending operator — kept out of all public surfaces. No real
+    // logo asset on file yet, so it points at the neutral placeholder rather
+    // than a missing file (avoids a 404 if ever rendered in a private view).
+    logo: '/placeholder.svg',
     countries: ['MX'],
     categories: [],
     paymentMethods: [],
@@ -881,7 +884,7 @@ export const OPERATORS: Operator[] = [
     id: 'op-kto',
     slug: 'kto',
     name: 'KTO',
-    logo: '/operators/pending-verification.png',
+    logo: '/placeholder.svg',
     countries: ['BR'],
     categories: [],
     paymentMethods: [],
@@ -897,7 +900,7 @@ export const OPERATORS: Operator[] = [
     id: 'op-codere',
     slug: 'codere',
     name: 'Codere',
-    logo: '/operators/pending-verification.png',
+    logo: '/placeholder.svg',
     countries: ['MX'],
     categories: [],
     paymentMethods: [],

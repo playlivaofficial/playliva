@@ -8,7 +8,7 @@ import { GameCard } from '@/components/game-card'
 import { ComparisonCard } from '@/components/comparison-card'
 import { PopularInMarket } from '@/components/popular-in-market'
 import { FeaturedOperators } from '@/components/featured-operators'
-import { AffiliateDisclosure } from '@/components/notices'
+import { AffiliateDisclosureLine } from '@/components/notices'
 import { Button } from '@/components/ui/button'
 import { useCountry } from '@/components/country-context'
 import { LocaleLink } from '@/components/locale-link'
@@ -118,7 +118,7 @@ export function HomePageClient() {
           description={t('home.whereToPlaySub')}
         />
         <FeaturedOperators limit={3} />
-        <AffiliateDisclosure className="mt-6" />
+        <AffiliateDisclosureLine className="mt-6" />
       </Section>
 
       {/* Responsible gambling block */}

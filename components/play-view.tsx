@@ -7,7 +7,7 @@ import { getCountryName } from '@/lib/data'
 import { Section, SectionHeading } from '@/components/section'
 import { FeaturedOperators } from '@/components/featured-operators'
 import { CountrySelector } from '@/components/geo-selectors'
-import { AffiliateDisclosure, ResponsibleNotice } from '@/components/notices'
+import { AffiliateDisclosureLine, ResponsibleNotice } from '@/components/notices'
 import { Button } from '@/components/ui/button'
 import type { CategorySlug } from '@/lib/types'
 
@@ -64,18 +64,16 @@ export function PlayView() {
           action={<CountrySelector />}
         />
         <FeaturedOperators />
-        <div className="mt-8 grid gap-4 md:grid-cols-2">
-          <AffiliateDisclosure />
-          <div className="flex flex-col justify-center gap-4 rounded-xl border border-border bg-card p-5">
-            <ResponsibleNotice />
-            <Button
-              variant="outline"
-              render={<LocaleLink href="/responsible-gaming" />}
-            >
-              {t('rg.title')}
-            </Button>
-          </div>
+        <div className="mt-8 flex flex-col justify-center gap-4 rounded-xl border border-border bg-card p-5">
+          <ResponsibleNotice />
+          <Button
+            variant="outline"
+            render={<LocaleLink href="/responsible-gaming" />}
+          >
+            {t('rg.title')}
+          </Button>
         </div>
+        <AffiliateDisclosureLine className="mt-4" />
       </Section>
     </div>
   )

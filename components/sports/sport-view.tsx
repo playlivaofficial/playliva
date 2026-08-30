@@ -17,7 +17,7 @@ import { SportTabs } from '@/components/sports/sport-tabs'
 import { DateFilter } from '@/components/sports/date-filter'
 import { LeagueFilter } from '@/components/sports/league-filter'
 import { MatchCard } from '@/components/sports/match-card'
-import { AffiliateDisclosure, ResponsibleGamingNotice } from '@/components/notices'
+import { AffiliateDisclosureLine, ResponsibleGamingNotice } from '@/components/notices'
 
 export function SportView({ sport }: { sport: SportSlug }) {
   const { t, countryCode } = useCountry()
@@ -79,10 +79,8 @@ export function SportView({ sport }: { sport: SportSlug }) {
       </Section>
 
       <Section className="border-t border-border bg-card/30">
-        <div className="grid gap-4 md:grid-cols-2">
-          <AffiliateDisclosure />
-          <ResponsibleGamingNotice />
-        </div>
+        <ResponsibleGamingNotice />
+        <AffiliateDisclosureLine className="mt-4" />
       </Section>
     </div>
   )

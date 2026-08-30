@@ -6,7 +6,7 @@ import { getPublicOffers, getCountryName } from '@/lib/data'
 import { Section, SectionHeading } from '@/components/section'
 import { OfferCard } from '@/components/offer-card'
 import { CountrySelector } from '@/components/geo-selectors'
-import { AffiliateDisclosure } from '@/components/notices'
+import { AffiliateDisclosureLine } from '@/components/notices'
 import type { Offer } from '@/lib/types'
 
 function OfferGrid({ offers }: { offers: Offer[] }) {
@@ -116,7 +116,7 @@ export function OffersView() {
       )}
 
       <Section className="border-t border-border">
-        <AffiliateDisclosure />
+        <AffiliateDisclosureLine />
       </Section>
     </div>
   )
