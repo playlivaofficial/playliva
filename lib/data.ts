@@ -822,6 +822,19 @@ export const OPERATORS: Operator[] = [
     /* availability is a separate concern from affiliate approval and is   */
     /* enumerated explicitly in `verifiedGames.BR` below — only the games  */
     /* listed there may show a game-specific Betsson CTA.                   */
+    /*                                                                      */
+    /* TEMPORARY TRAFFIC PAUSE (until the Betsson commercial campaign is    */
+    /* activated): `affiliateStatus` is set to `'paused'` instead of        */
+    /* `'approved'`. This is the single, reversible lever that stops all    */
+    /* outbound Betsson traffic — every gate (`isOperatorRecommendable`,    */
+    /* `getPublicOperators`, `getOperatorsForGame`, and `/go`'s             */
+    /* `resolveDestination`) requires `=== 'approved'`, so with `'paused'`  */
+    /* the CTAs are hidden sitewide and `/go` refuses to resolve the        */
+    /* external URL (falling back to the internal operator page). All the   */
+    /* real config below — `affiliateUrl`, `categoryAffiliateUrl`,          */
+    /* `trackingTemplate`, `verifiedGames` — is intentionally KEPT intact.  */
+    /* To re-activate: flip `affiliateStatus` back to `'approved'`. No      */
+    /* other file needs to change.                                          */
     /* ------------------------------------------------------------------ */
     id: 'op-betsson',
     slug: 'betsson-group-affiliates',
@@ -838,7 +851,8 @@ export const OPERATORS: Operator[] = [
     verified: true,
     featured: false,
     isMock: false,
-    affiliateStatus: 'approved',
+    // Temporarily paused — see the block comment above. Was `'approved'`.
+    affiliateStatus: 'paused',
     lastVerifiedAt: '2026-08-14',
     affiliateUrl: {
       BR: 'https://record.betsson.bet.br/_DtXajoX9_riEp6ygYOshWmNd7ZgqdRLk/1/',

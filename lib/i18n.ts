@@ -355,6 +355,7 @@ const ptBR: Dict = {
   'operators.termsTitle': 'Termos importantes',
   'operators.termsPlaceholder':
     'Termos de exemplo. Os termos reais do operador, condições de bônus e elegibilidade são definidos pelo operador e devem ser revisados no site dele. Termos se aplicam. 18+.',
+  'operators.temporarilyUnavailable': 'Este operador está temporariamente indisponível.',
 
   // Offers
   'offers.title': 'Ofertas',
@@ -847,6 +848,7 @@ const esMX: Dict = {
   'operators.termsTitle': 'Términos importantes',
   'operators.termsPlaceholder':
     'Términos de ejemplo. Los términos reales del operador, condiciones de bono y elegibilidad los define el operador y deben revisarse en su sitio. Aplican términos. 18+.',
+  'operators.temporarilyUnavailable': 'Este operador no está disponible temporalmente.',
 
   'offers.title': 'Ofertas',
   'offers.sub': 'Una selección de ofertas de operadores para tu mercado.',
@@ -1341,6 +1343,7 @@ const en: Dict = {
   'operators.termsTitle': 'Important terms',
   'operators.termsPlaceholder':
     'Placeholder terms. Real operator terms, bonus conditions and eligibility are set by the operator and must be reviewed on their site. Terms apply. 18+.',
+  'operators.temporarilyUnavailable': 'This operator is temporarily unavailable.',
 
   // Offers
   'offers.title': 'Offers',

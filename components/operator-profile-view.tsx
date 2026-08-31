@@ -56,7 +56,13 @@ export function OperatorProfileView({ operator }: { operator: Operator }) {
     ? countryCode
     : operator.countries[0]
   const activeCountryName = getCountryName(activeCountry, locale)
-  const hasAffiliate = Boolean(operator.affiliateUrl[activeCountry])
+  // A temporarily paused partner keeps its config/links but must not receive
+  // outbound traffic, so its CTA is suppressed in favor of a neutral note.
+  // Only a paused operator is affected here — every other operator behaves
+  // exactly as before (CTA shown whenever a market affiliate URL exists).
+  const isPaused = operator.affiliateStatus === 'paused'
+  const showAffiliateCta =
+    Boolean(operator.affiliateUrl[activeCountry]) && !isPaused
 
   const relatedOffers = operator.countries
     .flatMap((c) => getOffers(c))
@@ -134,7 +140,7 @@ export function OperatorProfileView({ operator }: { operator: Operator }) {
                 ))}
               </div>
             </div>
-            {hasAffiliate && (
+            {showAffiliateCta ? (
               <AffiliateButton
                 operatorSlug={operator.slug}
                 operatorId={operator.id}
@@ -146,7 +152,11 @@ export function OperatorProfileView({ operator }: { operator: Operator }) {
               >
                 {t('cta.visitOperator')}
               </AffiliateButton>
-            )}
+            ) : isPaused ? (
+              <span className="inline-flex items-center rounded-full border border-border bg-secondary/40 px-4 py-2 text-sm font-medium text-muted-foreground sm:self-center">
+                {t('operators.temporarilyUnavailable')}
+              </span>
+            ) : null}
           </div>
         </div>
       </section>
@@ -211,7 +221,7 @@ export function OperatorProfileView({ operator }: { operator: Operator }) {
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                 {t('operators.termsPlaceholder')}
               </p>
-              {hasAffiliate && (
+              {showAffiliateCta ? (
                 <AffiliateButton
                   operatorSlug={operator.slug}
                   operatorId={operator.id}
@@ -223,7 +233,11 @@ export function OperatorProfileView({ operator }: { operator: Operator }) {
                 >
                   {t('cta.visitOperator')}
                 </AffiliateButton>
-              )}
+              ) : isPaused ? (
+                <p className="mt-4 text-sm font-medium text-muted-foreground">
+                  {t('operators.temporarilyUnavailable')}
+                </p>
+              ) : null}
             </div>
 
             <div className="rounded-2xl border border-border bg-secondary/30 p-5">
