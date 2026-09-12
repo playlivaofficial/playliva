@@ -5,9 +5,10 @@
 .vignette { pointer-events: none; background: radial-gradient(ellipse at 54% 43%, transparent 35%, #0b3d4922 100%), linear-gradient(180deg, #12354c1c, transparent 48%, #092d332c); }
 .sceneBrand { position: absolute; top: 16px; left: 18px; color: #16465c; font-size: 9px; font-weight: 800; letter-spacing: .17em; }
 .sceneBrand span { display: block; font-size: 11px; letter-spacing: .08em; }
-.hud { position: absolute; z-index: 1; top: 32px; inset-inline: 10px; text-align: center; pointer-events: none; color: #fffefa; text-shadow: 0 2px 0 #19495944; }
-.phase { display: inline-block; border-radius: 999px; padding: 3px 9px; background: #d8fff066; backdrop-filter: blur(5px); font-size: clamp(11px, 1.4vw, 15px); font-weight: 800; letter-spacing: .16em; color: #164b62; }
-.multiplier { white-space: nowrap; font-variant-numeric: tabular-nums; font-size: clamp(64px, 6vw, 88px); line-height: 1.08; letter-spacing: -.055em; font-weight: 900; text-shadow: 0 4px 0 #25637b55, 0 8px 30px #1c586944; }
+/* Keep the centered HUD in the upper sky strip, clear of contact/launch heads. */
+.hud { position: absolute; z-index: 1; top: 4px; inset-inline: 10px; display: flex; flex-direction: column; align-items: center; text-align: center; pointer-events: none; color: #fffefa; text-shadow: 0 2px 0 #19495944; }
+.phase { display: inline-block; border-radius: 999px; padding: 2px 9px; background: #d8fff066; backdrop-filter: blur(5px); font-size: clamp(11px, 1vw, 12px); line-height: 1; font-weight: 800; letter-spacing: .16em; color: #164b62; }
+.multiplier { white-space: nowrap; font-variant-numeric: tabular-nums; font-size: clamp(64px, 5.625vw, 72px); line-height: .95; letter-spacing: -.055em; font-weight: 900; text-shadow: 0 4px 0 #25637b55, 0 8px 30px #1c586944; }
 .multiplier[data-crashed] { color: #ffe29a; text-shadow: 0 3px 0 #9a582b; }
 .result { position: absolute; z-index: 1; bottom: 16px; inset-inline-start: 16px; display: grid; max-width: 42%; border: 1px solid #d9fff044; border-radius: 12px; background: #0b344de8; backdrop-filter: blur(8px); padding: 8px 12px; color: #fff; font-size: 14px; font-weight: 700; text-shadow: none; box-shadow: 0 8px 24px #052b3e33; pointer-events: none; overflow-wrap: anywhere; }
 .result[data-won=true] { border-color: #b9f56b88; }
@@ -70,12 +71,13 @@
   .action strong { font-size: clamp(14px, 5.5vw, 22px); line-height: 24px; }
   .autoToggle { font-size: 11px; }
   .viewport { height: 320px; }
-  .sceneBrand { font-size: 8px; top: 12px; left: 12px; }
+  /* The corner signature must not collide with the raised, localized status. */
+  .sceneBrand { font-size: 8px; top: auto; bottom: 12px; left: auto; right: 12px; text-align: right; }
   .sceneBrand span { font-size: 9px; }
-  .hud { top: 44px; }
+  .hud { top: 6px; }
   .phase { letter-spacing: .1em; }
   .result { bottom: 12px; inset-inline-start: 10px; font-size: 12px; padding: 6px 8px; }
   .details { padding-inline: 16px; }
 }
-@media (max-width: 360px) { .viewport { height: 260px; } .hud { top: 35px; } .phase { font-size: 10px; } .multiplier { font-size: 58px; } .result span { font-size: 10px; } .result strong { font-size: 15px; } }
+@media (max-width: 360px) { .viewport { height: 260px; } .hud { top: 4px; } .phase { font-size: 10px; } .multiplier { font-size: 58px; } .result span { font-size: 10px; } .result strong { font-size: 15px; } }
 @media (prefers-reduced-motion: reduce) { .loadingBar::after { animation: none; width: 100%; } }
