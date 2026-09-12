@@ -6,6 +6,6 @@ export const ISLAND_CRASH: OriginalGameDefinition = {
   title: { en: ISLAND_CRASH_NAME, 'pt-BR': ISLAND_CRASH_NAME, 'es-MX': ISLAND_CRASH_NAME },
 }
 export const CRASH_ASSETS = {
-  castaway: '/originals/crash/runtime/castaway.glb?v=06933964489b',
-  kicker: '/originals/crash/runtime/island-kicker.glb?v=3c82d1cd533a',
+  castaway: '/originals/crash/runtime/castaway.glb?v=ba0d3dd0d618',
+  kicker: '/originals/crash/runtime/island-kicker.glb?v=0b5d3a22e614',
 } as const

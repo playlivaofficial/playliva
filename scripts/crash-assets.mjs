@@ -4,6 +4,7 @@ import { readFile, mkdir, writeFile } from 'node:fs/promises'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { resolve } from 'node:path'
 import sharp from 'sharp'
+import { gzipSync, brotliCompressSync, constants as zlibConstants } from 'node:zlib'
 
 // Explicit inputs and output root: source GLBs are always read-only.
 const root = fileURLToPath(new URL('../', import.meta.url))
@@ -102,7 +103,7 @@ export async function optimize() {
       bytes.copy(padded); chunks.push(padded); offset += padded.length
       return index
     }
-    const accessors = new Map(), views = new Map()
+    const accessors = new Map(), views = new Map(), identicalViews = new Map()
     const copyAccessor = (input, index) => {
       assert.ok(!input.json.accessors[index].sparse, 'Sparse accessors need an explicit conversion')
       let map = accessors.get(input)
@@ -111,16 +112,43 @@ export async function optimize() {
       const a = structuredClone(input.json.accessors[index])
       let viewMap = views.get(input)
       if (!viewMap) { viewMap = new Map(); views.set(input, viewMap) }
-      if (!viewMap.has(a.bufferView)) viewMap.set(a.bufferView, append(input.view(a.bufferView), input.json.bufferViews[a.bufferView]))
+      if (!viewMap.has(a.bufferView)) {
+        const data = input.view(a.bufferView), original = input.json.bufferViews[a.bufferView]
+        const signature = `${hash(data)}:${original.byteStride ?? 0}:${original.target ?? 0}`
+        if (!identicalViews.has(signature)) identicalViews.set(signature, append(data, original))
+        viewMap.set(a.bufferView, identicalViews.get(signature))
+      }
       a.bufferView = viewMap.get(a.bufferView)
       const result = json.accessors.push(a) - 1
       map.set(index, result)
       return result
     }
+    const packedAttribute = (index, semantic) => {
+      if (!['NORMAL', 'TANGENT', 'WEIGHTS_0'].includes(semantic)) return copyAccessor(base, index)
+      const original = base.json.accessors[index]
+      assert.equal(original.componentType, 5126)
+      const components = original.type === 'VEC3' ? 3 : 4
+      // Four-byte aligned SHORT normals use an 8-byte stride. All position,
+      // UV, joint-index, bind and animation values remain untouched.
+      const stride = 8, packed = Buffer.alloc(original.count * stride)
+      const source = base.view(original.bufferView), sourceStride = base.json.bufferViews[original.bufferView].byteStride ?? components * 4
+      const unsigned = semantic === 'WEIGHTS_0', scale = unsigned ? 65535 : 32767
+      for (let row = 0; row < original.count; row++) for (let col = 0; col < components; col++) {
+        const value = source.readFloatLE((original.byteOffset ?? 0) + row * sourceStride + col * 4)
+        assert.ok(value >= (unsigned ? 0 : -1.00001) && value <= 1.00001)
+        const quantized = Math.round(Math.max(unsigned ? 0 : -1, Math.min(1, value)) * scale)
+        if (unsigned) packed.writeUInt16LE(quantized, row * stride + col * 2)
+        else packed.writeInt16LE(quantized, row * stride + col * 2)
+      }
+      const accessor = { ...original, bufferView: append(packed, { target: 34962, byteStride: stride }), byteOffset: 0,
+        componentType: unsigned ? 5123 : 5122, normalized: true }
+      delete accessor.min; delete accessor.max
+      return json.accessors.push(accessor) - 1
+    }
     json.meshes.forEach(mesh => mesh.primitives.forEach(p => {
       assert.ok(!p.targets, 'Morph targets need explicit preservation')
       p.indices = copyAccessor(base, p.indices)
-      p.attributes = Object.fromEntries(Object.entries(p.attributes).map(([key, index]) => [key, copyAccessor(base, index)]))
+      p.attributes = Object.fromEntries(Object.entries(p.attributes).map(([key, index]) => [key, packedAttribute(index, key)]))
     }))
     json.skins.forEach(s => { s.inverseBindMatrices = copyAccessor(base, s.inverseBindMatrices) })
     const clips = []
@@ -143,9 +171,9 @@ export async function optimize() {
     for (let i = 0; i < json.images.length; i++) {
       const original = base.view(base.json.images[i].bufferView)
       const metadata = await sharp(original).metadata()
-      // Color keeps 2K detail. Packed roughness/metallic data uses lossless WebP
-      // after 1K resizing; no lossy channel changes to the packed material map.
-      const size = i === 0 ? 2048 : 1024
+      // 1K color retains face/clothing detail at the actual on-screen scale.
+      // Roughness/metallic stays lossless after a 512px spatial reduction.
+      const size = i === 0 ? 1024 : 512
       const pipeline = sharp(original).resize(size, size, { fit: 'inside', withoutEnlargement: true })
       const optimized = await pipeline.webp(i === 0 ? { quality: 85, effort: 6 } : { lossless: true, effort: 6 }).toBuffer()
       json.images[i] = { bufferView: append(optimized), mimeType: 'image/webp' }
@@ -155,12 +183,14 @@ export async function optimize() {
       const { source, ...rest } = texture
       return { ...rest, extensions: { EXT_texture_webp: { source } } }
     })
-    json.extensionsUsed = ['EXT_texture_webp']
-    json.extensionsRequired = ['EXT_texture_webp']
+    json.extensionsUsed = ['EXT_texture_webp', 'KHR_mesh_quantization']
+    json.extensionsRequired = ['EXT_texture_webp', 'KHR_mesh_quantization']
     const bytes = encodeGlb(json, chunks)
     const path = `${group.directory}.glb`
     await writeFile(outputRoot + path, bytes)
-    manifest.runtime.push({ path, bytes: bytes.length, sha256: hash(bytes), vertices: base.json.accessors[base.json.meshes[0].primitives[0].attributes.POSITION].count, joints: base.json.skins[0].joints.length, clips, textures })
+    manifest.runtime.push({ path, bytes: bytes.length, gzipBytes: gzipSync(bytes).length,
+      brotliBytes: brotliCompressSync(bytes, { params: { [zlibConstants.BROTLI_PARAM_QUALITY]: 6 } }).length,
+      sha256: hash(bytes), vertices: base.json.accessors[base.json.meshes[0].primitives[0].attributes.POSITION].count, joints: base.json.skins[0].joints.length, clips, textures })
     manifest.runtimeBytes += bytes.length
   }
   await writeFile(outputRoot + 'manifest.json', JSON.stringify(manifest, null, 2) + '\n')

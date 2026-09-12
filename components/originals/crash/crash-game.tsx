@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import Image from 'next/image'
 import { useCountry } from '@/components/country-context'
 import { DemoSessionProvider, useDemoSession } from '../demo-session'
 import { PlayGameShell } from '../play-game-shell'
@@ -8,6 +9,7 @@ import { ISLAND_CRASH } from '@/lib/originals/crash/definition'
 import { crashCopy, parseAutoInput } from '@/lib/originals/crash/copy'
 import { createCrashEngine, isRoundActive } from '@/lib/originals/crash/engine'
 import { trackFreePlay } from '@/lib/originals/analytics'
+import { ISLAND_CRASH_POSTER } from '@/lib/originals/discovery'
 import styles from './crash-game.module.css'
 
 export default function IslandCrashGame() {
@@ -121,6 +123,7 @@ export function CrashGame() {
           </p>}
         </div>
         {load !== 'ready' && <div className={styles.loader} role="status">
+          <Image src={ISLAND_CRASH_POSTER} alt="" fill sizes="(max-width: 700px) 100vw, 960px" priority className={styles.loadingPoster} />
           <span className={styles.islandIcon} aria-hidden="true">✦</span>
           <strong>{load === 'loading' ? copy.loading : load === 'unsupported' ? copy.unsupported : copy.loadError}</strong>
           {load === 'loading' ? <><span>{copy.loadingHint}</span><div className={styles.loadingBar} /></> :

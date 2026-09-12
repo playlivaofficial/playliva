@@ -1,6 +1,6 @@
 {
   "sourceBytes": 135344240,
-  "runtimeBytes": 7488180,
+  "runtimeBytes": 4422328,
   "sources": [
     {
       "path": "castaway/castaway-flyer-base.glb",
@@ -46,8 +46,10 @@
   "runtime": [
     {
       "path": "castaway.glb",
-      "bytes": 3725264,
-      "sha256": "06933964489b0a26042287bd5c23a4db0460e9b0e7d7ffe8c5fee00abf59ac31",
+      "bytes": 2188480,
+      "gzipBytes": 1359975,
+      "brotliBytes": 1313146,
+      "sha256": "ba0d3dd0d6187025267b6a84f6227c31e7e0a5c57666a10b8bd7f7063afe3f90",
       "vertices": 25604,
       "joints": 28,
       "clips": [
@@ -76,23 +78,25 @@
         {
           "sourceWidth": 2048,
           "sourceHeight": 2048,
-          "width": 2048,
-          "height": 2048,
-          "bytes": 618892
+          "width": 1024,
+          "height": 1024,
+          "bytes": 218410
         },
         {
           "sourceWidth": 4096,
           "sourceHeight": 4096,
-          "width": 1024,
-          "height": 1024,
-          "bytes": 777218
+          "width": 512,
+          "height": 512,
+          "bytes": 239550
         }
       ]
     },
     {
       "path": "island-kicker.glb",
-      "bytes": 3762916,
-      "sha256": "3c82d1cd533a51a04a78f495c80bccc25e9774ecce9a2d274d9a3adff2a6ddd0",
+      "bytes": 2233848,
+      "gzipBytes": 1416193,
+      "brotliBytes": 1362790,
+      "sha256": "0b5d3a22e614d361fb875ac1226aa49d84d4b8a0390e5476a670c880e7a83087",
       "vertices": 30369,
       "joints": 28,
       "clips": [
@@ -111,16 +115,16 @@
         {
           "sourceWidth": 2048,
           "sourceHeight": 2048,
-          "width": 2048,
-          "height": 2048,
-          "bytes": 613610
+          "width": 1024,
+          "height": 1024,
+          "bytes": 221576
         },
         {
           "sourceWidth": 4096,
           "sourceHeight": 4096,
-          "width": 1024,
-          "height": 1024,
-          "bytes": 710834
+          "width": 512,
+          "height": 512,
+          "bytes": 221060
         }
       ]
     }

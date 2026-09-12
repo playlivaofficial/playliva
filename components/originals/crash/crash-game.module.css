@@ -12,11 +12,13 @@
 .multiplier[data-crashed] { color: #ffe29a; text-shadow: 0 3px 0 #9a582b; }
 .result { position: absolute; top: 250px; inset-inline-start: 8px; display: inline-block; max-width: calc(100% - 16px); border: 1px solid #d9fff044; border-radius: 999px; background: #0b344de8; backdrop-filter: blur(8px); padding: 8px 16px; color: #fff; font-size: 14px; font-weight: 700; text-shadow: none; box-shadow: 0 8px 24px #052b3e33; }
 .result span { font-weight: 400; font-size: 11px; }
-.loader { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 30px; text-align: center; background: radial-gradient(ellipse at 70% 15%, #234963, #102537 60%, #0c1a2a); color: #dcecf0; }
+.loader { position: absolute; inset: 0; z-index: 2; isolation: isolate; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 8px; padding: 24px; text-align: center; background: #173b4b; color: #f2fbff; }
+.loadingPoster { z-index: -2; object-fit: cover; }
+.loader::before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, #09253505 10%, #09253560 40%, #071c31f5 100%); }
 .loader strong { max-width: 330px; font-size: 18px; }
-.loader > span:not(.islandIcon) { font-size: 12px; color: #9aafc2; }
+.loader > span:not(.islandIcon) { font-size: 12px; color: #d3e7ee; }
 .loader button { background: #28aeef; color: #062134; border-radius: 10px; padding: 12px 24px; font-weight: 800; cursor: pointer; }
-.islandIcon { font-size: 54px; color: var(--island-mint); }
+.islandIcon { font-size: 30px; color: var(--island-mint); }
 .loadingBar { width: 140px; height: 3px; border-radius: 4px; overflow: hidden; background: #294355; }
 .loadingBar::after { content: ''; display: block; width: 60%; height: 100%; background: var(--island-blue); animation: load 1.5s ease-in-out infinite alternate; }
 @keyframes load { to { transform: translateX(70%); } }

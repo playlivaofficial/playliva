@@ -1,10 +1,9 @@
 import { MAX_CREDITS, type DemoSessionStore, type WalletResult } from '../session'
 import { ISLAND_CRASH } from './definition'
+import { PREPARING_MS, KICK_MS, IMPACT_BEAT_MS, fallDurationMs } from './timing'
+export { PREPARING_MS, KICK_MS, IMPACT_MS } from './timing'
 
 export const MAX_MULTIPLIER = 10_000 // 100.00x, hundredths throughout
-export const PREPARING_MS = 150
-export const IMPACT_MS = 570 // same authored contact pose at 3.5x playback
-export const KICK_MS = IMPACT_MS // launch, cashout availability and growth begin at contact
 export const RESULT_MS = 3200
 export const SETTLED_MS = 600
 export const GROWTH_MS = 7000
@@ -87,7 +86,10 @@ export function createCrashEngine(wallet: DemoSessionStore, options: {
       const multiplier = multiplierAt(elapsed)
       if (snapshot.phase !== 'flying' || multiplier !== snapshot.multiplier) publish({ phase: 'flying', multiplier })
     } else if (snapshot.result && snapshot.phase !== 'ready') {
-      if (at >= snapshot.finishedAt + RESULT_MS + SETTLED_MS) publish({ phase: 'ready', multiplier: 100 })
+      // A loss is already final. Presentation cannot credit or alter its frozen
+      // multiplier; its only deadline is a short fall plus an impact beat.
+      const lossMs = fallDurationMs(timeToMultiplier(snapshot.result.multiplier)) + IMPACT_BEAT_MS
+      if (at >= snapshot.finishedAt + (snapshot.result.won ? RESULT_MS + SETTLED_MS : lossMs)) publish({ phase: 'ready', multiplier: 100 })
       else if (at >= snapshot.finishedAt + RESULT_MS && snapshot.phase !== 'settled') publish({ phase: 'settled' })
     }
   }

@@ -160,3 +160,12 @@ poster-only discovery never imports the game renderer or provider-game data.
 The same milestone synchronizes contact and launch, strengthens upward flight
 and follows the castaway into the sky without changing RNG, multiplier math or
 wallet settlement. See [the M5.2 implementation and QA report](docs/m5.2-discovery-and-flight.md).
+
+## M5.3 final Island Crash polish
+
+M5.3 refines the actual foot-contact marker, immediate upward blast, continuous
+visual fall and 220ms impact-to-ready beat. The outcome and payout are already
+frozen during the fall. New runtime derivatives retain source rigs/keyframes
+and reduce the two models to 4.42 MB raw / 2.78 MB gzip, with a lightweight
+tropical loading poster. Discovery and the shared wallet remain unchanged.
+See [the M5.3 implementation and QA report](docs/m5.3-final-crash-polish.md).

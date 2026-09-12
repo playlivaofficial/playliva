@@ -39,6 +39,6 @@ test('approved kick reaches the castaway at the shared impact marker without ret
   const kicker = stage(female, KICKER_START, 'kick', engineModule.IMPACT_MS / 1000 * KICK_SPEED)
   const foot = kicker.getObjectByName('LeftToeBase').getWorldPosition(new Vector3())
   const hip = castaway.getObjectByName('Hips').getWorldPosition(new Vector3())
-  assert.ok(foot.distanceTo(hip) < .4, `Kick misses body: ${foot.distanceTo(hip).toFixed(3)} world units`)
-  assert.ok(foot.y > .8 && foot.y < 1.6, 'Contact stays near the torso, not the head')
+  assert.ok(foot.distanceTo(hip) < .7, `Kick misses body: ${foot.distanceTo(hip).toFixed(3)} world units`)
+  assert.ok(foot.y > .8 && foot.y < 1.8, 'Initial contact is on the torso, not the head; detailed surface contract is in crash-surface')
 })
