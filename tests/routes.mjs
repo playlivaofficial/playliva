@@ -4,6 +4,7 @@ import { spawn } from 'node:child_process'
 import { createServer } from 'node:net'
 import assert from 'node:assert/strict'
 import { once } from 'node:events'
+import { readdir, readFile } from 'node:fs/promises'
 import { JSDOM } from 'jsdom'
 import sitemapModule from '../app/sitemap.ts'
 const sitemap = sitemapModule.default
@@ -33,6 +34,14 @@ const failures = []
 const publicPaths = sitemap().map((entry) => new URL(entry.url).pathname)
 const paths = new Set(publicPaths)
 const linkedPaths = new Set()
+const chunkRoot = new URL('../.next/static/chunks/', import.meta.url)
+const gameChunks = []
+for (const name of await readdir(chunkRoot)) {
+  if (!name.endsWith('.js')) continue
+  const source = await readFile(new URL(name, chunkRoot), 'utf8')
+  if (source.includes('WebGLRenderer') || source.includes('mountIslandScene')) gameChunks.push(name)
+}
+assert.ok(gameChunks.length >= 1, 'Crash renderer must exist in the production output')
 for (const locale of LOCALE_SEGMENTS) {
   paths.add(`/${locale}/sports`)
   for (const sport of SPORTS) paths.add(`/${locale}/sports/${sport.slug}`)
@@ -80,6 +89,15 @@ try {
     const canonical = doc.querySelector('link[rel="canonical"]')?.href
     if (canonical !== SITE_URL + path) failures.push(`${path}: canonical ${canonical}`)
     const routePath = path.replace(/^\/(en|pt-br|es-mx)/, '')
+    if (routePath !== '/play/crash') {
+      for (const script of doc.querySelectorAll('script[src], link[rel="modulepreload"]')) {
+        const url = script.getAttribute('src') ?? script.getAttribute('href')
+        assert.ok(!gameChunks.some(name => url?.includes(name)), `${path}: game runtime leaks into ordinary page`)
+      }
+    } else {
+      assert.doesNotMatch(doc.querySelector('main')?.textContent ?? '', /JetX|Aviator|SmartSoft|SPRIBE|Robinson Crusoe|\bFriday\b/i)
+      assert.ok(doc.querySelector('[data-phase="ready"]'), `${path}: real game shell`)
+    }
     const sportsNav = doc.querySelector('header nav[aria-label="Primary"] a[href="https://livasports.com"]')
     assert.ok(sportsNav, `${path}: visible desktop Sports network entry`)
     assert.equal(sportsNav.getAttribute('target'), null, `${path}: same-tab Sports navigation`)
@@ -144,7 +162,7 @@ try {
   for (const locale of LOCALE_SEGMENTS) {
     for (const path of [`/${locale}/missing-page`, `/${locale}/games/missing-game`, `/${locale}/operators/missing-operator`,
       `/${locale}/sports/missing-sport`,
-      ...['crash', 'slots', 'blackjack', 'roulette', 'mines', 'plinko', 'test-only'].map(slug => `/${locale}/play/${slug}`)]) {
+      ...['slots', 'blackjack', 'roulette', 'mines', 'plinko', 'test-only'].map(slug => `/${locale}/play/${slug}`)]) {
       const response = await fetch(base + path)
       assert.equal(response.status, 404, path)
       const doc = new JSDOM(await response.text()).window.document

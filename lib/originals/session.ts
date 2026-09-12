@@ -24,7 +24,7 @@ export interface DemoSession {
 export type TransactionContext = Pick<DemoTransaction, 'gameId' | 'roundId'>
 export type WalletResult = { ok: true } | {
   ok: false
-  reason: 'invalid-amount' | 'insufficient-credits' | 'balance-limit' | 'invalid-context' | 'history-limit'
+  reason: 'invalid-amount' | 'insufficient-credits' | 'balance-limit' | 'invalid-context' | 'history-limit' | 'round-active'
 }
 export type StorageStatus = 'loading' | 'persistent' | 'memory-only' | 'recovered'
 export interface DemoSnapshot { session: DemoSession; storageStatus: StorageStatus }
@@ -95,6 +95,8 @@ export function createDemoSessionStore(
   let hydrated = false
   let persistedRaw: string | null = null
   let detached = false
+  // Transient only: interrupted rounds are never restored or refunded.
+  let activeRound: string | null = null
   const listeners = new Set<() => void>()
   const notify = () => listeners.forEach(listener => listener())
   function hydrate() {
@@ -138,6 +140,7 @@ export function createDemoSessionStore(
   }
   function transact(kind: DemoTransaction['kind'], amount: number, context: TransactionContext = {}): WalletResult {
     hydrate()
+    if (activeRound && (kind === 'reset' || context?.roundId !== activeRound)) return { ok: false, reason: 'round-active' }
     if (!integer(amount) || amount === 0) return { ok: false, reason: 'invalid-amount' }
     if (!validContext(context)) return { ok: false, reason: 'invalid-context' }
     const state = snapshot.session
@@ -155,6 +158,14 @@ export function createDemoSessionStore(
     return { ok: true }
   }
   return {
+    acquireRound(roundId: string) {
+      if (activeRound || !isDemoIdentifier(roundId)) return false
+      activeRound = roundId
+      return true
+    },
+    releaseRound(roundId: string) {
+      if (activeRound === roundId) activeRound = null
+    },
     hydrate,
     getSnapshot: () => snapshot,
     getServerSnapshot: () => serverSnapshot,

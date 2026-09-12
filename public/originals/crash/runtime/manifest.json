@@ -1,0 +1,128 @@
+{
+  "sourceBytes": 135344240,
+  "runtimeBytes": 7488180,
+  "sources": [
+    {
+      "path": "castaway/castaway-flyer-base.glb",
+      "bytes": 16252740,
+      "sha256": "2a014cdf54b7870f029a45759d82456f836daa5b03e753e446755669d10aecec"
+    },
+    {
+      "path": "castaway/castaway-idle-nervous.glb",
+      "bytes": 17352200,
+      "sha256": "e46b6e6782ec7446388dd801bb9433241562af72a78f8f0f506f2680ade04008"
+    },
+    {
+      "path": "castaway/castaway-kick-react.glb",
+      "bytes": 17312344,
+      "sha256": "88e57810b9458ceaf2680d3b9530b2ece4dfe20f244dc8acd7b4ed662a1db9f7"
+    },
+    {
+      "path": "castaway/castaway-flying-panic.glb",
+      "bytes": 17312352,
+      "sha256": "3582efa877e5c4cfb93813259750d8ee2827a6f7315a2f0960e2e46130f8667a"
+    },
+    {
+      "path": "castaway/castaway-crash-dazed.glb",
+      "bytes": 17312332,
+      "sha256": "605b7e09a5b1d928b7e6ec0afe519a513e69598e970ea3fdee70d9384d6b9f55"
+    },
+    {
+      "path": "island-kicker/island-kicker-female-base.glb",
+      "bytes": 15779908,
+      "sha256": "c73ffe6c73c5d07b477dcf6fade96123a056519dc2116747fc8446f584b7dec0"
+    },
+    {
+      "path": "island-kicker/island-kicker-female-idle.glb",
+      "bytes": 17011196,
+      "sha256": "9ae80a91c9590195dbe40b61737b2adafd311c669326e4226f878fdfaa10109c"
+    },
+    {
+      "path": "island-kicker/island-kicker-female-kick.glb",
+      "bytes": 17011168,
+      "sha256": "229b961d877549429d6c93f6ba096b5b50658cce6dd29414a469e157bdb1a0d7"
+    }
+  ],
+  "runtime": [
+    {
+      "path": "castaway.glb",
+      "bytes": 3725264,
+      "sha256": "06933964489b0a26042287bd5c23a4db0460e9b0e7d7ffe8c5fee00abf59ac31",
+      "vertices": 25604,
+      "joints": 28,
+      "clips": [
+        {
+          "name": "idle",
+          "seconds": 4.5333333015441895,
+          "source": "castaway-idle-nervous.glb"
+        },
+        {
+          "name": "react",
+          "seconds": 3.0333333015441895,
+          "source": "castaway-kick-react.glb"
+        },
+        {
+          "name": "flying",
+          "seconds": 3.0333333015441895,
+          "source": "castaway-flying-panic.glb"
+        },
+        {
+          "name": "crash",
+          "seconds": 3.0333333015441895,
+          "source": "castaway-crash-dazed.glb"
+        }
+      ],
+      "textures": [
+        {
+          "sourceWidth": 2048,
+          "sourceHeight": 2048,
+          "width": 2048,
+          "height": 2048,
+          "bytes": 618892
+        },
+        {
+          "sourceWidth": 4096,
+          "sourceHeight": 4096,
+          "width": 1024,
+          "height": 1024,
+          "bytes": 777218
+        }
+      ]
+    },
+    {
+      "path": "island-kicker.glb",
+      "bytes": 3762916,
+      "sha256": "3c82d1cd533a51a04a78f495c80bccc25e9774ecce9a2d274d9a3adff2a6ddd0",
+      "vertices": 30369,
+      "joints": 28,
+      "clips": [
+        {
+          "name": "idle",
+          "seconds": 3.0333333015441895,
+          "source": "island-kicker-female-idle.glb"
+        },
+        {
+          "name": "kick",
+          "seconds": 3.0333333015441895,
+          "source": "island-kicker-female-kick.glb"
+        }
+      ],
+      "textures": [
+        {
+          "sourceWidth": 2048,
+          "sourceHeight": 2048,
+          "width": 2048,
+          "height": 2048,
+          "bytes": 613610
+        },
+        {
+          "sourceWidth": 4096,
+          "sourceHeight": 4096,
+          "width": 1024,
+          "height": 1024,
+          "bytes": 710834
+        }
+      ]
+    }
+  ]
+}
