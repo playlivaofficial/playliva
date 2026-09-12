@@ -142,5 +142,9 @@ or M11 homepage features were added by M3 or M4.
 Read [the Originals integration contract](docs/originals.md) before building a
 game. Reusable wallet/session logic lives in `lib/originals/`; the isolated
 provider, game shell and Play Real component live in `components/originals/`.
-No current route imports them. M4 registers no games, adds no public play URLs,
-and adds no game-engine dependency. The UI harness exists only in tests.
+M4 itself registered no games or public play URLs. M5 now reuses this foundation
+for the three localized `/play/crash` routes, with a route-only Three.js renderer.
+Read [the Island Crash implementation report](docs/m5-island-crash.md) for the
+round engine, asset regeneration, verification and local free-play limitations.
+Other unfinished play slugs remain 404/noindex. Existing discovery surfaces
+have not been expanded to advertise the game.

@@ -2,15 +2,26 @@ import * as THREE from 'three'
 import { GLTFLoader, type GLTF } from 'three/addons/loaders/GLTFLoader.js'
 import { CRASH_ASSETS } from '@/lib/originals/crash/definition'
 import { IMPACT_MS, PREPARING_MS, type CrashEngine } from '@/lib/originals/crash/engine'
+import { CHARACTER_SCALE, KICK_SPEED, CASTAWAY_START, KICKER_START } from '@/lib/originals/crash/presentation'
 
 type Character = { root: THREE.Group; model: THREE.Group; mixer: THREE.AnimationMixer; actions: Record<string, THREE.AnimationAction>; current: string }
 const smooth = (x: number) => { const t = THREE.MathUtils.clamp(x, 0, 1); return t * t * (3 - 2 * t) }
+// Measured skinned-mesh lower bounds of the supplied dazed clip, in model units.
+// Presentation-only grounding: no source keyframes or skeleton transforms change.
+const dazedGround = [[0, .2314], [.3, .2575], [.6, .302], [1, .2244], [1.5, .2172], [2, .1669], [2.8, .2818], [3.0334, .3148]]
+function groundAt(time: number) {
+  const index = dazedGround.findIndex(point => point[0] >= time)
+  if (index <= 0) return dazedGround[index === 0 ? 0 : dazedGround.length - 1][1]
+  const [a, b] = [dazedGround[index - 1], dazedGround[index]]
+  return THREE.MathUtils.lerp(a[1], b[1], (time - a[0]) / (b[0] - a[0]))
+}
 
 /** Route-only renderer. The engine owns all timing and money; this is presentation. */
 export function mountIslandScene(host: HTMLDivElement, engine: CrashEngine, callbacks: {
   ready: () => void; error: (unsupported?: boolean) => void
 }) {
   const abort = new AbortController()
+  const mountedAt = performance.now()
   let disposed = false, frame = 0
   let renderer: THREE.WebGLRenderer
   try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'low-power' }) }
@@ -85,6 +96,7 @@ export function mountIslandScene(host: HTMLDivElement, engine: CrashEngine, call
     rock.position.set(-5 + i * 1.5, .1, -2.8 - i % 2)
     rock.scale.set(.5 + i % 3 * .12, .4, .45)
   }
+  const scenicPositions = new Map(grove.children.map(child => [child, child.position.x]))
   const cloudMat = new THREE.MeshBasicMaterial({ color: '#f2fff8' })
   for (let i = 0; i < 5; i++) {
     const cloud = mesh(geometry.sphere, cloudMat)
@@ -106,13 +118,19 @@ export function mountIslandScene(host: HTMLDivElement, engine: CrashEngine, call
     return particle
   })
   particles.visible = false
+  const wind = new THREE.Group(); scene.add(wind)
+  for (let i = 0; i < 5; i++) {
+    const line = mesh(new THREE.CylinderGeometry(.012, .012, .6 + (i % 2) * .5, 3), foamMat, wind)
+    line.rotation.z = Math.PI / 2; line.position.set(-1 - i % 2 * .7, .2 + i * .25, -.25)
+  }
+  wind.visible = false
   const ring = mesh(new THREE.TorusGeometry(.4, .035, 6, 32), new THREE.MeshBasicMaterial({ color: '#fff6c4', transparent: true, opacity: .75 }))
   ring.visible = false
   let castaway: Character | undefined, kicker: Character | undefined
   const loadedRoots: THREE.Object3D[] = []
   function character(gltf: GLTF): Character {
     const root = new THREE.Group(), model = gltf.scene
-    root.add(model); root.scale.setScalar(1.45); scene.add(root)
+    root.add(model); root.scale.setScalar(CHARACTER_SCALE); scene.add(root)
     const mixer = new THREE.AnimationMixer(model)
     const actions = Object.fromEntries(gltf.animations.map(clip => [clip.name, mixer.clipAction(clip)]))
     model.rotation.y = Math.PI / 2
@@ -124,7 +142,7 @@ export function mountIslandScene(host: HTMLDivElement, engine: CrashEngine, call
   function play(value: Character, name: string) {
     if (name === value.current) return
     const previous = value.actions[value.current], next = value.actions[name]
-    next.reset().setEffectiveWeight(1).setEffectiveTimeScale(name === 'kick' ? 2.1 : 1)
+    next.reset().setEffectiveWeight(1).setEffectiveTimeScale(name === 'kick' ? KICK_SPEED : 1)
     next.setLoop(['kick', 'react', 'crash'].includes(name) ? THREE.LoopOnce : THREE.LoopRepeat, Infinity)
     next.clampWhenFinished = true
     next.play().crossFadeFrom(previous, reduced.matches ? .08 : .22, false)
@@ -142,7 +160,7 @@ export function mountIslandScene(host: HTMLDivElement, engine: CrashEngine, call
   void Promise.all([load(CRASH_ASSETS.castaway), load(CRASH_ASSETS.kicker)]).then(([male, female]) => {
     if (disposed) return
     castaway = character(male); kicker = character(female)
-    castaway.root.position.set(.35, -.1, .15); kicker.root.position.set(-1.05, -.1, .05)
+    castaway.root.position.set(...CASTAWAY_START); kicker.root.position.set(...KICKER_START)
     callbacks.ready()
   }).catch(() => { if (!disposed) callbacks.error() })
   let aspect = 1
@@ -157,13 +175,15 @@ export function mountIslandScene(host: HTMLDivElement, engine: CrashEngine, call
   const observer = new ResizeObserver(resize); observer.observe(host); resize()
   const loseContext = (event: Event) => { event.preventDefault(); callbacks.error(true) }
   renderer.domElement.addEventListener('webglcontextlost', loseContext)
-  let previousTime = performance.now(), drift = 0
+  let previousTime = performance.now(), drift = 0, measured = false
+  const frameTimes: number[] = []
   const target = new THREE.Vector3(), origin = new THREE.Vector3()
   function render(time: number) {
     if (disposed) return
     frame = requestAnimationFrame(render)
     if (document.hidden) { previousTime = time; return }
-    const dt = Math.min((time - previousTime) / 1000, .05); previousTime = time
+    const frameMs = time - previousTime
+    const dt = Math.min(frameMs / 1000, .05); previousTime = time
     const state = engine.getSnapshot()
     const flightAge = Math.max(0, (time - state.flightAt) / 1000)
     const flying = state.phase === 'flying' || state.phase === 'cashed_out'
@@ -177,15 +197,27 @@ export function mountIslandScene(host: HTMLDivElement, engine: CrashEngine, call
       castaway.mixer.update(dt); kicker.mixer.update(dt)
       const lift = flying ? smooth(flightAge / .75) : impact ? smooth((kickAge - IMPACT_MS) / 550) * .45 : 0
       const bounce = reduced.matches ? 0 : Math.sin(time / 260) * .07
-      target.set(flying ? .9 : crashed ? 1.0 : .35, flying ? .75 + lift * .22 + bounce : crashed ? -.1 : -.1 + lift, .15)
+      target.set(flying ? .9 : crashed ? 1.0 : .35,
+        flying ? .75 + lift * .22 + bounce : crashed ? -.1 - groundAt(castaway.actions.crash.time) * CHARACTER_SCALE : -.1 + lift, .15)
       castaway.root.position.lerp(target, 1 - Math.exp(-dt * (crashed ? 9 : 5)))
       const tilt = flying ? -.7 : 0
       castaway.model.rotation.z = THREE.MathUtils.damp(castaway.model.rotation.z, tilt, 5, dt)
-      kicker.root.position.x = THREE.MathUtils.damp(kicker.root.position.x, flying || crashed ? -3.8 : -1.05, 2.5, dt)
+      kicker.root.position.x = THREE.MathUtils.damp(kicker.root.position.x, flying || crashed ? -3.8 : KICKER_START[0], 2.5, dt)
       shadows[0].position.x = castaway.root.position.x; shadows[1].position.x = kicker.root.position.x
       shadows[0].scale.setScalar(flying ? .65 : 1)
       if (flying && !reduced.matches) drift += dt * Math.min(1.5 + state.multiplier / 180, 7)
-      grove.position.x = flying && !reduced.matches ? -Math.sin(drift * .2) * 1.6 : THREE.MathUtils.damp(grove.position.x, 0, 2, dt)
+      if (state.phase === 'ready') drift = 0
+      for (const [object, x] of scenicPositions) {
+        if (flying && !reduced.matches) {
+          const speed = object.position.z < -5 ? .2 : .65
+          object.position.x = ((x - drift * speed + 20) % 40 + 40) % 40 - 20
+        } else if (state.phase === 'ready' || state.phase === 'preparing') object.position.x = THREE.MathUtils.damp(object.position.x, x, 3, dt)
+      }
+      wind.visible = flying && !reduced.matches
+      if (wind.visible) {
+        wind.position.copy(castaway.root.position).add(new THREE.Vector3(0, .5, 0))
+        wind.scale.x = 1 + Math.min(state.multiplier / 500, 1.4)
+      }
       palms.forEach((p, i) => { p.rotation.z = reduced.matches ? 0 : Math.sin(time / 1600 + i) * .015 })
       const burst = crashed && resultAge < 1.2 ? resultAge : impact ? (kickAge - IMPACT_MS) / 1000 : -1
       particles.visible = burst >= 0 && burst < 1.2 && !reduced.matches
@@ -206,6 +238,22 @@ export function mountIslandScene(host: HTMLDivElement, engine: CrashEngine, call
     camera.position.set(2.6 + shake, 3.15, distance)
     camera.lookAt(.1, 1.8, 0)
     renderer.render(scene, camera)
+    // Local DOM diagnostics for reproducible browser QA. Never sent as analytics,
+    // never used for game outcomes, and no identifiers or browsing history stored.
+    if (castaway && kicker && !measured) {
+      measured = true
+      host.dataset.readyMs = String(Math.round(performance.now() - mountedAt))
+      const resources = performance.getEntriesByType('resource') as PerformanceResourceTiming[]
+      const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined
+      const own = resources.filter(resource => new URL(resource.name).origin === location.origin)
+      host.dataset.transferBytes = String(own.reduce((sum, resource) => sum + resource.transferSize, navigation?.transferSize ?? 0))
+      host.dataset.jsBytes = String(own.filter(resource => new URL(resource.name).pathname.endsWith('.js')).reduce((sum, resource) => sum + resource.encodedBodySize, 0))
+      host.dataset.characterBytes = String(own.filter(resource => resource.name.includes('/originals/crash/runtime/')).reduce((sum, resource) => sum + resource.encodedBodySize, 0))
+    }
+    if (measured && frameTimes.length < 180 && frameMs > 0) {
+      frameTimes.push(frameMs)
+      if (frameTimes.length === 180) host.dataset.frameP95Ms = String(Math.round(frameTimes.slice().sort((a, b) => a - b)[170] * 10) / 10)
+    }
   }
   frame = requestAnimationFrame(render)
   function disposeObject(root: THREE.Object3D) {

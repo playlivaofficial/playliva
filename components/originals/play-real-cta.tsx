@@ -40,7 +40,7 @@ export function PlayRealCTA({ game }: { game: OriginalGameDefinition }) {
   const context = { originalId: game.id, originalSlug: game.slug, category: game.category, country: countryCode, locale }
   return <aside className="space-y-3 rounded-2xl border border-border bg-card p-5" aria-label={copy.playReal}>
     <h2 className="font-display text-lg font-semibold">{copy.playReal}</h2>
-    <p className="text-sm text-muted-foreground">{copy.realBoundary}</p>
+    <p className="text-sm text-muted-foreground">{game.category === 'crash' ? copy.crashRealBoundary : copy.realBoundary}</p>
     {options.length ? <div className="flex flex-wrap gap-3">{options.map(option =>
       <OperatorLink key={`${countryCode}:${game.category}:${option.operatorSlug}`} option={option} context={context} label={copy.playReal} />,
     )}</div> : <p className="text-sm text-muted-foreground">{copy.noOperators}</p>}

@@ -35,11 +35,10 @@ Draco/Meshopt decoder or geometry approximation is introduced.
 | Runtime kicker, both clips | 3,762,916 |
 | Runtime total | 7,488,180 |
 
-This removes 94.47% of the source payload. Planned initial game-character load:
+This removes 94.47% of the source payload. Initial raw game-character load:
 7,488,180 bytes; deferred character animations: zero (clips are bundled with
 their one reusable rig). Ordinary discovery routes load zero character bytes.
-Final browser transfers and rendering QA will be recorded after integration;
-structural asset validation is not a claim of completed visual QA.
+Browser transfer and rendering measurements are recorded below.
 
 ## Checkpoint 2/3: route and engine
 
@@ -83,11 +82,111 @@ complete, rejecting optional analytics does not stop play/Play Real, and the
 No browser renderer errors were logged. Full visual/interaction acceptance and
 production performance measurements are still required before main integration.
 
-## Continuation
+## Presentation and browser acceptance
 
-Continue on `codex/m5-island-crash`. Main must remain untouched until final M5
-acceptance passes. Complete expanded browser QA (auto, repeated/reload/reset,
-all locales, phone/tablet/desktop, animation contact/flight/crash polish), verify
-bundle isolation and transfers, complete full gates, and record CI/Preview
-evidence. Then update this report and only integrate the fully verified result.
-Preserve existing discovery, Sports/LivaSports, GEO and partner attribution.
+The original procedural world uses sunny ocean/beach colors, curved palm leaves,
+jungle hills, rocks, unnamed scenic islanders, depth-dependent moving scenery,
+wind streaks and restrained leaf/dust bursts. There is no fake player telemetry.
+The castaway's supplied dazed clip is grounded using measured mesh lower bounds;
+no source animation is edited. A CPU pose regression loads the actual rigs and
+checks foot-to-body contact at the shared impact marker. Cashout locks the result
+immediately while flight presentation continues briefly. Sound defaults off;
+optional short oscillator cues are original, with no downloaded audio. Haptics
+are optional/capability-gated. Reduced motion disables camera shake, particles,
+wind and scenery movement. Rendering failure never controls settlement.
+
+Actual browser checks covered desktop (1280px), tablet (768px), 390px phone and
+320px. The 320px viewport had matching client/scroll widths (305px excluding
+the scrollbar) and a 247px-wide, 60px-high primary action. Both textured models
+load without an initial T-pose; idle, kick, panic flight and dazed transitions
+were inspected. Initial palm shapes, narrow-screen layout and dazed grounding
+were corrected within M5. English, Portuguese and Spanish controls/results were
+exercised. Portuguese accepts a comma auto target, and displays localized
+multiplier separators. Browser round evidence includes natural 1.00x losses,
+longer 2.88x flights, manual 1.03x cashout, automatic 1.10x and Spanish 3.00x
+cashout (100 stake, exactly 300 returned). Repeated rounds return to ready.
+
+Reset restores 10,000 credits; a 10,001 stake is rejected without spending.
+During a 250-credit round, reset/stake controls were disabled; reload retained
+the debit and returned ready without refund/resume. Rejecting analytics allowed
+gameplay and the approved Play Real link. The Crash conversion copy explicitly
+describes real-money crash games and says this Original is not available there.
+No operator record, destination, campaign identifier or GEO rule was changed.
+
+## Performance and limits
+
+A fresh local production origin measured 5,484,517 bytes of same-origin transfer
+through the first character frame: 4,982,851 encoded character bytes and 365,470
+encoded JavaScript bytes. Character decode/load to first rendered frame took
+489ms; the first 180 visible frames had a 16.8ms 95th-percentile interval. These
+are local desktop measurements, not WAN or physical Android benchmarks. There
+are no deferred character clips; all six clips share two rigged runtime models.
+The renderer is dynamically imported only by Crash. The production route crawl
+checks that ordinary pages do not preload/include its renderer or controller
+chunks. Source GLBs are never requested by gameplay.
+
+WebGL and WebP support are required; unsupported/load-error states disable Start
+and offer retry. The 7.49MB raw character payload and approximately 47,000
+character triangles remain meaningful on slower devices. DPR is capped at 1.5,
+shadow maps are avoided, and resources are disposed on unmount. Physical low-end
+Android, actual vibration hardware and subjective audio loudness still require
+device testing. Reduced-motion behavior is implemented but not verified using a
+physical device preference. No claim of universal frame rate or casino readiness
+is made. Local DOM performance counters contain no identifiers and are never
+sent as analytics.
+
+## Verification and delivery
+
+Node 24.20.0 / pnpm 10.30.3. The complete gates are frozen install, lint,
+typecheck, all Node/DOM tests, production build, route/content crawl and
+`git diff --check`. The suite preserves all 30 pre-M5 tests and adds asset,
+engine, route/copy and actual-rig contact coverage. The crawl covers 246 public,
+legal and legacy URLs plus unknown play routes and affiliate fallback probes.
+It checks localized canonical/hreflang/x-default, sitemap boundaries, consent
+script exclusion, Sports archive rules and runtime bundle isolation.
+
+Known baseline warnings remain: three ESLint warnings (country context/header
+effects and an unused JSON-LD suppression), Next's middleware deprecation and
+pnpm's blocked optional dependency build scripts. No warning budget or quality
+gate was weakened. Added dependencies are Three.js 0.186.0, development types
+0.186.0 and development Sharp 0.35.4; no broad game framework was added.
+
+Checkpoint `97605ac38c855e6d82b4c33f643dc6eee5a9922b` passed hosted CI run
+34695105113 and Vercel Preview deployment 2TtqBJJUVqEEYxU5utPWqgSb3wTt.
+Final commit/CI/production evidence is provided in the delivery report because
+the final commit cannot contain its own SHA. Review PR: #19.
+
+Future real-money/casino work would require an authoritative server, secure
+account/ledger and settlement, validated outcome/RTP design, independent game
+testing, legal/regulatory review and operational security. None is implied by
+this local entertainment game. Do not add deposits, withdrawals, multiplayer,
+autoplay, additional games or certification claims under M5.
+
+## Exact M5 file scope
+
+- `app/[locale]/play/crash/page.tsx`
+- `app/sitemap.ts`
+- `components/originals/crash/crash-game.module.css`
+- `components/originals/crash/crash-game.tsx`
+- `components/originals/crash/island-scene.ts`
+- `components/originals/play-game-shell.tsx`
+- `components/originals/play-real-cta.tsx`
+- `docs/m5-island-crash.md`
+- `lib/originals/copy.ts`
+- `lib/originals/crash/copy.ts`
+- `lib/originals/crash/definition.ts`
+- `lib/originals/crash/engine.ts`
+- `lib/originals/crash/presentation.ts`
+- `lib/originals/session.ts`
+- `package.json`
+- `pnpm-lock.yaml`
+- `public/originals/crash/runtime/castaway.glb`
+- `public/originals/crash/runtime/island-kicker.glb`
+- `public/originals/crash/runtime/manifest.json`
+- `README.md`
+- `scripts/crash-assets.mjs`
+- `tests/crash-assets.test.mjs`
+- `tests/crash-contact.test.mjs`
+- `tests/crash-engine.test.mjs`
+- `tests/crash-routes.test.mjs`
+- `tests/routes.mjs`
