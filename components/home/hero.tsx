@@ -1,13 +1,15 @@
 'use client'
 
 import { LocaleLink } from '@/components/locale-link'
-import { Play, TrendingUp, ShieldCheck } from 'lucide-react'
+import { Play, TrendingUp, ShieldCheck, ArrowRight, Gamepad2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { TrustLine } from '@/components/notices'
 import { useCountry } from '@/components/country-context'
+import { originalsDiscoveryCopy, ISLAND_CRASH_PLAY_PATH } from '@/lib/originals/discovery'
 
 export function Hero() {
-  const { t, countryName } = useCountry()
+  const { t, countryName, locale } = useCountry()
+  const originals = originalsDiscoveryCopy(locale)
   return (
     <section className="relative overflow-hidden bg-grid">
       <div
@@ -45,7 +47,12 @@ export function Hero() {
               {t('cta.browseCategories')}
             </Button>
           </div>
-          <TrustLine className="mt-6" />
+          <LocaleLink href={ISLAND_CRASH_PLAY_PATH} prefetch={false} data-hero-play-free
+            className="mt-4 inline-flex min-h-11 max-w-full items-center gap-2 text-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-4">
+            <Gamepad2 className="size-4 shrink-0" aria-hidden="true" />
+            {originals.heroLink}<ArrowRight className="size-4 shrink-0" aria-hidden="true" />
+          </LocaleLink>
+          <TrustLine className="mt-4" />
         </div>
 
         <HeroVisual />

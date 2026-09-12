@@ -1,81 +1,37 @@
 'use client'
 
+import { ArrowRight, Check } from 'lucide-react'
 import { LocaleLink } from '@/components/locale-link'
-import { Rocket, Dices, Radio, Spade, Zap } from 'lucide-react'
 import { useCountry } from '@/components/country-context'
-import { getCountryName } from '@/lib/data'
-import { Section, SectionHeading } from '@/components/section'
-import { FeaturedOperators } from '@/components/featured-operators'
-import { CountrySelector } from '@/components/geo-selectors'
-import { AffiliateDisclosureLine, ResponsibleNotice } from '@/components/notices'
-import { Button } from '@/components/ui/button'
-import type { CategorySlug } from '@/lib/types'
-
-const QUICK: { slug: CategorySlug; key: string; icon: typeof Zap }[] = [
-  { slug: 'crash', key: 'nav.crash', icon: Zap },
-  { slug: 'slots', key: 'nav.slots', icon: Dices },
-  { slug: 'live-casino', key: 'nav.live', icon: Radio },
-  { slug: 'table-games', key: 'nav.tableGames', icon: Spade },
-  { slug: 'instant-games', key: 'nav.instantGames', icon: Zap },
-]
+import { IslandCrashFeature } from '@/components/originals/island-crash-feature'
+import { originalsDiscoveryCopy } from '@/lib/originals/discovery'
+import styles from '@/components/originals/originals-discovery.module.css'
 
 export function PlayView() {
-  const { countryCode, locale, t } = useCountry()
-  const countryName = getCountryName(countryCode, locale)
-
+  const { locale } = useCountry()
+  const copy = originalsDiscoveryCopy(locale)
   return (
-    <div>
-      <section className="relative overflow-hidden border-b border-border bg-grid">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 -top-24 mx-auto h-72 max-w-3xl rounded-full bg-primary/25 blur-[110px]"
-        />
-        <div className="relative mx-auto max-w-7xl px-4 py-16 text-center sm:px-6 sm:py-24 lg:px-8">
-          <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">
-            <Rocket className="size-4" />
-            {t('game.discoveryEyebrow')}
-          </span>
-          <h1 className="mx-auto mt-6 max-w-3xl text-balance font-display text-4xl font-bold tracking-tight text-foreground sm:text-6xl">
-            {t('play.heroTitle')}
-          </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-pretty text-lg leading-relaxed text-muted-foreground">
-            {t('play.heroSub')}
-          </p>
-
-          <div className="mx-auto mt-10 flex max-w-2xl flex-wrap justify-center gap-3">
-            {QUICK.map(({ slug, key, icon: Icon }) => (
-              <LocaleLink
-                key={slug}
-                href={`/${slug}`}
-                className="group flex items-center gap-2 rounded-2xl border border-border bg-card px-5 py-3 text-sm font-semibold text-foreground transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:glow-primary"
-              >
-                <Icon className="size-5 text-primary transition-transform group-hover:scale-110" />
-                {t(key)}
-              </LocaleLink>
-            ))}
-          </div>
-        </div>
+    <div className={styles.hub} data-play-hub>
+      <header className={styles.hubIntro}>
+        <p className={styles.eyebrow}>{copy.originals} · {copy.demoGames}</p>
+        <h1 className={styles.hubTitle}>{copy.hubTitle}</h1>
+        <p className={styles.hubDescription}>{copy.hubDescription}</p>
+        <ul className={styles.trust}>
+          {[copy.noDeposits, copy.noWithdrawals, copy.noValue].map(label => (
+            <li key={label}><Check size={16} aria-hidden="true" />{label}</li>
+          ))}
+        </ul>
+      </header>
+      <p className={styles.available}>{copy.available}</p>
+      <IslandCrashFeature surface="hub" />
+      <p className={styles.hubDisclaimer}>{copy.disclaimer}</p>
+      <section className={styles.keepDiscovering}>
+        <h2>{copy.discoverTitle}</h2>
+        <p>{copy.discoverDescription}</p>
+        <LocaleLink href="/games" className={styles.hubLink}>
+          {copy.discoverLink}<ArrowRight size={16} aria-hidden="true" />
+        </LocaleLink>
       </section>
-
-      <Section>
-        <SectionHeading
-          eyebrow={t('geo.marketLabel')}
-          title={t('play.recommendedFor', { market: countryName })}
-          description={t('play.recommendedSub')}
-          action={<CountrySelector />}
-        />
-        <FeaturedOperators />
-        <div className="mt-8 flex flex-col justify-center gap-4 rounded-xl border border-border bg-card p-5">
-          <ResponsibleNotice />
-          <Button
-            variant="outline"
-            render={<LocaleLink href="/responsible-gaming" />}
-          >
-            {t('rg.title')}
-          </Button>
-        </div>
-        <AffiliateDisclosureLine className="mt-4" />
-      </Section>
     </div>
   )
 }

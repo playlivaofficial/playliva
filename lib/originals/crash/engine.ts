@@ -2,9 +2,9 @@ import { MAX_CREDITS, type DemoSessionStore, type WalletResult } from '../sessio
 import { ISLAND_CRASH } from './definition'
 
 export const MAX_MULTIPLIER = 10_000 // 100.00x, hundredths throughout
-export const PREPARING_MS = 650
-export const KICK_MS = 1500
-export const IMPACT_MS = 950 // within kick; scene uses the same clock
+export const PREPARING_MS = 150
+export const IMPACT_MS = 570 // same authored contact pose at 3.5x playback
+export const KICK_MS = IMPACT_MS // launch, cashout availability and growth begin at contact
 export const RESULT_MS = 3200
 export const SETTLED_MS = 600
 export const GROWTH_MS = 7000

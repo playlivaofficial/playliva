@@ -77,6 +77,7 @@ test('consent UI gates loaders/events, supports revocation/revisit, and preserve
     assert.ok(desktopSports, 'Sports is a direct desktop navigation entry')
     assert.equal(desktopSports.textContent, 'Sports')
     assert.equal(desktopSports.getAttribute('target'), null, 'network navigation stays in the same tab')
+    assert.equal(document.querySelector('header nav[aria-label="Primary"] a[href="/en/play"]')?.textContent, 'Play')
     await click(document.querySelector('button[aria-label="More"]'))
     assert.deepEqual([...document.querySelectorAll('header [role="menuitem"]')].map(a => a.getAttribute('href')),
       ['/en/table-games', '/en/instant-games', '/en/offers', '/en/operators'])
@@ -84,7 +85,7 @@ test('consent UI gates loaders/events, supports revocation/revisit, and preserve
     assert.equal(document.querySelector('header [role="menu"]'), null)
     await click(document.querySelector('button[aria-label="Open menu"]'))
     const headerLinks = [...document.querySelectorAll('header a')].map(a => a.getAttribute('href'))
-    for (const path of ['games', 'crash', 'slots', 'live-casino', 'table-games', 'instant-games', 'offers', 'operators']) {
+    for (const path of ['play', 'games', 'crash', 'slots', 'live-casino', 'table-games', 'instant-games', 'offers', 'operators']) {
       assert.ok(headerLinks.includes(`/en/${path}`), `mobile navigation: ${path}`)
     }
     assert.ok(headerLinks.every(href => !href.includes('/sports')))

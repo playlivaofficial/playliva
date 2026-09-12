@@ -1,0 +1,49 @@
+.section, .hub { width: 100%; max-width: 80rem; margin-inline: auto; padding: 3.5rem 1rem; }
+.section { border-bottom: 1px solid var(--border); }
+.sectionHeading { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 1rem 2rem; margin-bottom: 1.5rem; }
+.eyebrow { color: var(--primary); font-size: .75rem; font-weight: 750; letter-spacing: .14em; text-transform: uppercase; }
+.sectionHeading h2, .hubTitle { color: var(--foreground); font-family: var(--font-display); font-weight: 800; line-height: 1.1; letter-spacing: -.035em; text-wrap: balance; }
+.sectionHeading h2 { font-size: clamp(1.75rem, 4vw, 2.65rem); margin-top: .6rem; }
+.sectionDescription { max-width: 47rem; margin-top: .85rem; color: var(--muted-foreground); line-height: 1.6; }
+.hubLink { display: inline-flex; align-items: center; gap: .6rem; min-height: 44px; max-width: 100%; color: var(--primary); font-size: .875rem; font-weight: 650; }
+.hubLink svg { flex-shrink: 0; }
+.hubLink:hover { text-decoration: underline; text-underline-offset: 4px; }
+.card { display: grid; min-width: 0; overflow: hidden; border: 1px solid color-mix(in srgb, var(--primary) 30%, var(--border)); border-radius: 1.5rem; background: linear-gradient(125deg, color-mix(in srgb, var(--primary) 8%, var(--card)), var(--card) 75%); }
+.posterLink { position: relative; display: block; min-width: 0; aspect-ratio: 16 / 9; overflow: hidden; background: #287f83; }
+.poster { object-fit: cover; transition: transform .3s ease; }
+.posterLink:hover .poster { transform: scale(1.025); }
+.posterMark { position: absolute; top: .85rem; left: .85rem; display: inline-flex; align-items: center; gap: .45rem; padding: .45rem .65rem; border-radius: .5rem; background: #061728e6; color: #fff; font-size: .7rem; font-weight: 750; }
+.playIcon { position: absolute; right: 1rem; bottom: 1rem; display: grid; width: 3.25rem; height: 3.25rem; place-items: center; border: 1px solid #ffffff80; border-radius: 50%; background: #08182acf; color: #fff; }
+.cardBody { min-width: 0; display: flex; flex-direction: column; align-items: start; justify-content: center; padding: 1.35rem; }
+.labels { display: flex; flex-wrap: wrap; align-items: center; gap: .65rem; color: var(--muted-foreground); font-size: .75rem; }
+.badge { padding: .4rem .65rem; border-radius: .4rem; background: #dcff88; color: #17251e; font-size: .65rem; font-weight: 850; letter-spacing: .05em; }
+.gameTitle { margin-top: 1rem; color: var(--foreground); font-family: var(--font-display); font-size: clamp(1.6rem, 3vw, 2.25rem); line-height: 1.12; font-weight: 800; letter-spacing: -.03em; text-wrap: balance; }
+.description { max-width: 36rem; margin-top: .85rem; color: var(--muted-foreground); font-size: .95rem; line-height: 1.6; }
+.credits { margin-top: 1rem; color: var(--foreground); font-size: .8rem; font-weight: 600; }
+.playButton { display: inline-flex; align-items: center; justify-content: center; gap: .6rem; width: 100%; min-height: 52px; margin-top: 1.1rem; padding: .85rem 1.15rem; border-radius: .75rem; background: var(--primary); color: var(--primary-foreground); font-size: 1rem; font-weight: 750; }
+.playButton:hover { filter: brightness(1.12); }
+.cardNote { margin-top: .7rem; color: var(--muted-foreground); font-size: .7rem; line-height: 1.5; }
+.posterLink:focus-visible, .playButton:focus-visible, .hubLink:focus-visible { outline: 3px solid var(--primary); outline-offset: 4px; }
+.posterLink:focus-visible { outline-offset: -4px; }
+.hub { padding-top: 2.75rem; }
+.hubIntro { max-width: 55rem; margin-bottom: 2rem; }
+.hubTitle { max-width: 48rem; margin-top: .9rem; font-size: clamp(2.2rem, 5vw, 4rem); }
+.hubDescription { max-width: 43rem; margin-top: 1rem; color: var(--muted-foreground); font-size: 1.05rem; line-height: 1.65; }
+.trust { display: flex; flex-wrap: wrap; gap: .65rem 1.25rem; margin-top: 1.3rem; color: var(--foreground); font-size: .8rem; }
+.trust li { display: flex; align-items: center; gap: .4rem; }
+.trust svg { color: var(--primary); flex-shrink: 0; }
+.available { margin-bottom: 1rem; color: var(--muted-foreground); font-size: .8rem; font-weight: 650; }
+.hubDisclaimer { margin-top: 1.25rem; max-width: 55rem; color: var(--muted-foreground); font-size: .85rem; line-height: 1.65; }
+.keepDiscovering { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+.keepDiscovering h2 { color: var(--foreground); font-family: var(--font-display); font-size: 1.4rem; font-weight: 700; }
+.keepDiscovering p { max-width: 45rem; margin-top: .6rem; color: var(--muted-foreground); line-height: 1.65; }
+.keepDiscovering .hubLink { margin-top: .7rem; }
+@media (min-width: 640px) { .section, .hub { padding-inline: 1.5rem; } .cardBody { padding: 2rem; } }
+@media (min-width: 768px) {
+  .card { grid-template-columns: 1.15fr 1fr; }
+  .posterLink { aspect-ratio: auto; min-height: 25rem; }
+  .posterMark { top: 1.25rem; left: 1.25rem; }
+  .playButton { width: auto; min-width: 12rem; }
+}
+@media (min-width: 1024px) { .section, .hub { padding-inline: 2rem; } .cardBody { padding: 2.25rem; } }
+@media (prefers-reduced-motion: reduce) { .poster { transition: none; } .posterLink:hover .poster { transform: none; } }

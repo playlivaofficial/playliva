@@ -14,6 +14,7 @@ import {
 import { getCategoryContent, getGameListContent } from '@/lib/content'
 import { useCountry } from '@/components/country-context'
 import { PageHero } from '@/components/page-hero'
+import { OriginalsDiscoverySection } from '@/components/originals/island-crash-feature'
 import { Section, SectionHeading } from '@/components/section'
 import { GameCard } from '@/components/game-card'
 import { ComparisonCard } from '@/components/comparison-card'
@@ -72,6 +73,8 @@ export function CategoryPageView({ slug }: { slug: CategorySlug }) {
           ))}
         </div>
       </div>
+
+      {slug === 'crash' && <OriginalsDiscoverySection surface="category" />}
 
       <Section>
         <SectionHeading

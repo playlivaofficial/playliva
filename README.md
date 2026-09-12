@@ -133,8 +133,8 @@ the sitemap. Crawlers can still access them to read the noindex directive. All
 show archive/demo notices. Their URLs are preserved for a future explicit
 LivaSports redirect; a verified target and route mapping require separate approval.
 
-The existing `/[locale]/play` discovery page remains; only its category shortcuts
-changed. Nested `/[locale]/play/...` routes need no preparatory routing changes.
+M3 preserved `/[locale]/play`; M5.2 now makes it the dedicated Originals hub.
+Nested `/[locale]/play/...` routes need no preparatory routing changes.
 No public free-game placeholders, balances, Play Real flows, Originals sections,
 or M11 homepage features were added by M3 or M4.
 
@@ -149,5 +149,14 @@ Read [the Island Crash implementation report](docs/m5-island-crash.md) for the
 round engine, asset regeneration, verification and local free-play limitations,
 and [the M5.1 hardening report](docs/m5.1-island-crash-hardening.md) for the
 production-oriented visual and delivery pass.
-Other unfinished play slugs remain 404/noindex. Existing discovery surfaces
-have not been expanded to advertise the game.
+Other unfinished play slugs remain 404/noindex.
+
+## M5.2 Originals discovery and sky flight
+
+The localized `/play` hub features exactly one playable Original, Island Crash.
+The homepage hero and feature section, desktop/mobile Play navigation and the
+separate Crash category block lead to the existing localized game. Lightweight
+poster-only discovery never imports the game renderer or provider-game data.
+The same milestone synchronizes contact and launch, strengthens upward flight
+and follows the castaway into the sky without changing RNG, multiplier math or
+wallet settlement. See [the M5.2 implementation and QA report](docs/m5.2-discovery-and-flight.md).

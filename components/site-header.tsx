@@ -13,6 +13,7 @@ import { stripLocaleFromPath } from '@/lib/locale'
 import { cn } from '@/lib/utils'
 
 const NAV: { href: string; key: string }[] = [
+  { href: '/play', key: 'nav.play' },
   { href: '/games', key: 'nav.games' },
   { href: '/crash', key: 'nav.crash' },
   { href: '/slots', key: 'nav.slots' },
@@ -52,17 +53,18 @@ export function SiteHeader() {
       )}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-4">
           <Logo />
           <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary">
-            {NAV.slice(0, 5).map((item) => {
-              const active = activePath === item.href
+            {NAV.slice(0, 6).map((item) => {
+              const active = activePath === item.href || item.href === '/play' && activePath.startsWith('/play/')
               return (
                 <LocaleLink
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    'rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                    'rounded-lg px-2 py-2 text-sm font-medium transition-colors',
+                    item.href === '/play' && 'bg-primary/10',
                     active
                       ? 'text-primary'
                       : 'text-muted-foreground hover:text-foreground',
@@ -73,7 +75,7 @@ export function SiteHeader() {
               )
             })}
             <Dropdown trigger={t('nav.more')} label={t('nav.more')} align="start">
-              {(close) => NAV.slice(5).map((item) => (
+              {(close) => NAV.slice(6).map((item) => (
                 <LocaleLink key={item.href} href={item.href} role="menuitem" onClick={close}
                   className={cn('block rounded-lg px-3 py-2 text-sm hover:bg-muted', activePath === item.href && 'text-primary')}>
                   {t(item.key)}
@@ -99,7 +101,7 @@ export function SiteHeader() {
               aria-label={menuOpen ? t('nav.closeMenu') : t('nav.openMenu')}
               aria-expanded={menuOpen}
               onClick={() => setMenuOpen((v) => !v)}
-              className="grid size-9 place-items-center rounded-lg border border-border bg-card/60 text-foreground"
+              className="grid size-11 place-items-center rounded-lg border border-border bg-card/60 text-foreground"
             >
               {menuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
             </button>
@@ -109,7 +111,7 @@ export function SiteHeader() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="border-t border-border bg-background/95 backdrop-blur-xl lg:hidden">
+        <div className="max-h-[calc(100dvh-8rem)] overflow-y-auto border-t border-border bg-background/95 backdrop-blur-xl lg:hidden">
           <nav
             className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-4 sm:px-6"
             aria-label={t('nav.menu')}
@@ -119,7 +121,8 @@ export function SiteHeader() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'rounded-lg px-3 py-2.5 text-base font-medium transition-colors',
+                  'min-h-11 rounded-lg px-3 py-2.5 text-base font-medium transition-colors',
+                  item.href === '/play' && 'bg-primary/10',
                   activePath === item.href
                     ? 'bg-muted text-primary'
                     : 'text-foreground hover:bg-muted',

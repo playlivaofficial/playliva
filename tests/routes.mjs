@@ -17,6 +17,9 @@ const { SITE_URL } = seoModule
 import dataModule from '../lib/data.ts'
 const { getOperator, CATEGORIES, GAMES } = dataModule
 import consentModule from '../lib/consent.ts'
+import discoveryModule from '../lib/originals/discovery.ts'
+import i18nModule from '../lib/i18n.ts'
+const { originalsDiscoveryCopy, ISLAND_CRASH_POSTER } = discoveryModule
 const { ANALYTICS_COOKIE } = consentModule
 
 const listener = createServer()
@@ -60,7 +63,16 @@ try {
   assert.ok(publicPaths.every(path => !/^\/(en|pt-br|es-mx)\/sports(?:\/|$)/.test(path)), 'Sports archive URLs excluded from sitemap')
   const sitemapResponse = await fetch(`${base}/sitemap.xml`)
   assert.equal(sitemapResponse.status, 200)
-  assert.doesNotMatch(await sitemapResponse.text(), /\/(?:en|pt-br|es-mx)\/sports(?:[\/<"])/, 'served sitemap excludes Sports archive URLs')
+  const sitemapText = await sitemapResponse.text()
+  assert.doesNotMatch(sitemapText, /\/(?:en|pt-br|es-mx)\/sports(?:[\/<"])/, 'served sitemap excludes Sports archive URLs')
+  for (const segment of LOCALE_SEGMENTS) assert.ok(sitemapText.includes(`${SITE_URL}/${segment}/play</loc>`))
+  const poster = await fetch(base + ISLAND_CRASH_POSTER)
+  assert.equal(poster.status, 200)
+  assert.ok((await poster.arrayBuffer()).byteLength < 100_000)
+  const manifest = JSON.parse(await readFile(new URL('../public/originals/crash/runtime/manifest.json', import.meta.url)))
+  for (const source of manifest.sources) {
+    assert.equal((await fetch(`${base}/originals/crash/characters/${source.path}`)).status, 404, source.path)
+  }
   const partner = getOperator('betsson-group-affiliates')
   for (const consent of [undefined, 'denied', 'granted']) {
     for (const category of ['table-games', 'live-casino']) {
@@ -89,6 +101,30 @@ try {
     const canonical = doc.querySelector('link[rel="canonical"]')?.href
     if (canonical !== SITE_URL + path) failures.push(`${path}: canonical ${canonical}`)
     const routePath = path.replace(/^\/(en|pt-br|es-mx)/, '')
+    const segment = path.split('/')[1]
+    const copy = originalsDiscoveryCopy(localeModule.segmentToLocale(segment))
+    const navCopy = i18nModule.createTranslator(localeModule.segmentToLocale(segment))
+    assert.equal(doc.querySelector('header nav[aria-label="Primary"] a[href="/' + segment + '/play"]')?.textContent, navCopy('nav.play'))
+    if (['', '/play', '/crash'].includes(routePath)) {
+      const cards = doc.querySelectorAll('[data-original-card="island-crash"]')
+      assert.equal(cards.length, 1, `${path}: exactly one available Original`)
+      assert.ok(cards[0].textContent.includes(copy.freePlay))
+      assert.ok(cards[0].textContent.includes(copy.virtualCredits))
+      assert.ok(cards[0].querySelector('img')?.getAttribute('src')?.includes('island-crash-poster'))
+      for (const link of cards[0].querySelectorAll('a')) assert.equal(link.getAttribute('href'), `/${segment}/play/crash`)
+      assert.equal(cards[0].querySelector('[data-play-free]')?.textContent.trim(), copy.playFree)
+      assert.equal(doc.querySelector('main a[href*="/play/slots"], main a[href*="/play/mines"]'), null)
+      if (routePath === '/play') {
+        assert.equal(doc.title, copy.seoTitle)
+        assert.equal(doc.querySelector('meta[name="description"]')?.content, copy.seoDescription)
+        assert.ok(doc.querySelector('[data-play-hub]')?.textContent.includes(copy.disclaimer))
+        assert.doesNotMatch(doc.querySelector('[data-play-hub]')?.textContent ?? '', /Betsson|Aviator|Coming soon/i)
+      } else {
+        assert.ok(doc.querySelector(`[data-originals-section="${routePath === '' ? 'home' : 'category'}"]`))
+        if (routePath === '') assert.equal(doc.querySelector('[data-hero-play-free]')?.getAttribute('href'), `/${segment}/play/crash`)
+        else assert.ok(cards[0].compareDocumentPosition(doc.querySelector('main a[href*="/games/"]')) & 4, 'Original precedes provider grid')
+      }
+    }
     if (routePath !== '/play/crash') {
       for (const script of doc.querySelectorAll('script[src], link[rel="modulepreload"]')) {
         const url = script.getAttribute('src') ?? script.getAttribute('href')

@@ -1,8 +1,8 @@
 import * as THREE from 'three'
 import { GLTFLoader, type GLTF } from 'three/addons/loaders/GLTFLoader.js'
 import { CRASH_ASSETS } from '@/lib/originals/crash/definition'
-import { IMPACT_MS, PREPARING_MS, type CrashEngine } from '@/lib/originals/crash/engine'
-import { CHARACTER_SCALE, KICK_SPEED, CASTAWAY_START, KICKER_START } from '@/lib/originals/crash/presentation'
+import { PREPARING_MS, type CrashEngine } from '@/lib/originals/crash/engine'
+import { CHARACTER_SCALE, KICK_SPEED, CASTAWAY_START, KICKER_START, flightPosition } from '@/lib/originals/crash/presentation'
 
 type Character = { root: THREE.Group; model: THREE.Group; mixer: THREE.AnimationMixer; actions: Record<string, THREE.AnimationAction>; current: string }
 const smooth = (x: number) => { const t = THREE.MathUtils.clamp(x, 0, 1); return t * t * (3 - 2 * t) }
@@ -19,6 +19,8 @@ function groundAt(time: number) {
 /** Route-only renderer. The engine owns all timing and money; this is presentation. */
 export function mountIslandScene(host: HTMLDivElement, engine: CrashEngine, callbacks: {
   ready: () => void; error: (unsupported?: boolean) => void
+  /** Local visual-QA harness only; production always uses requestAnimationFrame. */
+  now?: () => number
 }) {
   const abort = new AbortController()
   const mountedAt = performance.now()
@@ -104,11 +106,12 @@ export function mountIslandScene(host: HTMLDivElement, engine: CrashEngine, call
   }
   const scenicPositions = new Map(grove.children.map(child => [child, child.position.x]))
   const cloudMat = new THREE.MeshBasicMaterial({ color: '#f2fff8' })
-  for (let i = 0; i < 5; i++) {
+  const clouds = Array.from({ length: 12 }, (_, i) => {
     const cloud = mesh(geometry.sphere, cloudMat)
-    cloud.position.set(-15 + i * 8, 7 + i % 2, -20)
-    cloud.scale.set(3.3, .5, 1)
-  }
+    cloud.position.set(-15 + i * 5, 7 + i % 3 * 3, -12 - i % 3 * 6)
+    cloud.scale.set(2.2 + i % 3, .35 + i % 2 * .15, 1)
+    return cloud
+  })
   // Distant, unnamed scenic islanders; never represented as live players.
   const shirtMats = [mat('#ed765f'), mat('#4e8dde'), mat('#f0bd45')]
   for (const [index, x] of [-3, 3.7, 5.1].entries()) {
@@ -165,7 +168,7 @@ export function mountIslandScene(host: HTMLDivElement, engine: CrashEngine, call
     next.reset().setEffectiveWeight(1).setEffectiveTimeScale(name === 'kick' ? KICK_SPEED : 1)
     next.setLoop(['kick', 'react', 'crash'].includes(name) ? THREE.LoopOnce : THREE.LoopRepeat, Infinity)
     next.clampWhenFinished = true
-    const fade = reduced.matches ? .06 : name === 'react' ? .11 : .18
+    const fade = name === 'react' || name === 'flying' ? .045 : .1
     next.play().crossFadeFrom(previous, fade, false)
     value.current = name
   }
@@ -196,63 +199,80 @@ export function mountIslandScene(host: HTMLDivElement, engine: CrashEngine, call
   const observer = new ResizeObserver(resize); observer.observe(host); resize()
   const loseContext = (event: Event) => { event.preventDefault(); callbacks.error(true) }
   renderer.domElement.addEventListener('webglcontextlost', loseContext)
-  let previousTime = performance.now(), drift = 0, measured = false
+  let previousTime = performance.now(), measured = false
   const frameTimes: number[] = []
   const target = new THREE.Vector3(), origin = new THREE.Vector3()
-  function render(time: number) {
+  function render(frameTime: number) {
     if (disposed) return
     frame = requestAnimationFrame(render)
-    if (document.hidden) { previousTime = time; return }
-    const frameMs = time - previousTime
-    const dt = Math.min(frameMs / 1000, .05); previousTime = time
+    if (document.hidden) { previousTime = frameTime; return }
+    const time = callbacks.now?.() ?? frameTime
+    const frameMs = frameTime - previousTime
+    const dt = Math.min(frameMs / 1000, .05); previousTime = frameTime
     const state = engine.getSnapshot()
     const flightAge = Math.max(0, (time - state.flightAt) / 1000)
-    const flying = state.phase === 'flying' || state.phase === 'cashed_out'
+    const flying = state.phase === 'flying' || state.phase === 'cashed_out' || state.phase === 'settled' && !!state.result?.won
     const crashed = state.phase === 'crashed' || state.phase === 'settled' && !state.result?.won
     const resultAge = Math.max(0, (time - state.finishedAt) / 1000)
     const kickAge = time - state.startedAt - PREPARING_MS
-    const impact = state.phase === 'kick' && kickAge >= IMPACT_MS
+    const impact = flying && flightAge < .075
+    const air = flightPosition(flightAge, state.multiplier)
+    const kickPlaying = state.phase !== 'ready' && state.phase !== 'preparing' && kickAge >= 0 && kickAge < 1100
     if (castaway && kicker) {
-      play(kicker, state.phase === 'kick' ? 'kick' : 'idle')
-      play(castaway, crashed ? 'crash' : flying ? 'flying' : impact ? 'react' : 'idle')
+      play(kicker, kickPlaying ? 'kick' : 'idle')
+      play(castaway, crashed ? 'crash' : impact ? 'react' : flying ? 'flying' : 'idle')
       castaway.mixer.update(dt); kicker.mixer.update(dt)
-      const impactProgress = impact ? smooth((kickAge - IMPACT_MS) / 430) : 0
-      const flightRise = flying ? smooth(flightAge / .5) : 0
-      const flightWeave = flying && !reduced.matches
-        ? Math.sin(flightAge * 3.2) * .055 + Math.sin(flightAge * 1.15 + .8) * .035 : 0
-      const flightBob = flying && !reduced.matches
-        ? Math.sin(flightAge * 4.4) * .07 + Math.sin(flightAge * 1.7) * .045 : 0
-      target.set(
-        flying ? 2.5 + flightRise * .14 + flightWeave : crashed ? 1.8 : .35 + impactProgress * .78,
-        flying ? .04 + flightRise * .08 + flightBob
-          : crashed ? -.1 - groundAt(castaway.actions.crash.time) * CHARACTER_SCALE
-            : -.1 + Math.sin(impactProgress * Math.PI / 2) * .55,
-        flying ? .15 + Math.sin(flightAge * 2.1) * .035 : .15,
-      )
-      castaway.root.position.lerp(target, 1 - Math.exp(-dt * (crashed ? 9 : 5)))
-      const tilt = flying ? -.62 + (reduced.matches ? 0 : Math.sin(flightAge * 2.5) * .07) : 0
-      castaway.model.rotation.z = THREE.MathUtils.damp(castaway.model.rotation.z, tilt, 5, dt)
-      kicker.root.position.x = THREE.MathUtils.damp(kicker.root.position.x, flying || crashed ? -3.8 : KICKER_START[0], 2.5, dt)
-      shadows[0].position.x = castaway.root.position.x; shadows[1].position.x = kicker.root.position.x
-      shadows[0].scale.setScalar(flying ? .65 : 1)
-      if (flying && !reduced.matches) drift += dt * Math.min(1.7 + Math.log2(Math.max(1, state.multiplier / 100)) * .85, 5.8)
-      if (state.phase === 'ready') drift = 0
-      for (const [object, x] of scenicPositions) {
-        if (flying && !reduced.matches) {
-          const speed = object.position.z < -5 ? .24 : .72
-          object.position.x = ((x - drift * speed + 20) % 40 + 40) % 40 - 20
-        } else if (state.phase === 'ready' || state.phase === 'preparing') object.position.x = THREE.MathUtils.damp(object.position.x, x, 3, dt)
+      // Seek the kick from the engine clock, not a delayed React phase render.
+      // The exact source contact frame is shared with the rig regression test.
+      if (kickPlaying) {
+        kicker.actions.kick.time = Math.min(kickAge / 1000 * KICK_SPEED, kicker.actions.kick.getClip().duration)
+        kicker.mixer.update(0)
       }
+      if (castaway.current !== 'idle') {
+        const action = castaway.actions[castaway.current]
+        action.time = crashed ? Math.min(resultAge, action.getClip().duration)
+          : impact ? flightAge : Math.max(0, flightAge - .075) % action.getClip().duration
+        castaway.mixer.update(0)
+      }
+      target.set(
+        flying ? air.x : crashed ? 1.8 : CASTAWAY_START[0],
+        flying ? air.y : crashed ? -.1 - groundAt(castaway.actions.crash.time) * CHARACTER_SCALE : CASTAWAY_START[1],
+        CASTAWAY_START[2],
+      )
+      castaway.root.position.copy(target)
+      castaway.root.rotation.z = flying ? smooth(flightAge / .18) * (-.3 + (reduced.matches ? 0 : Math.sin(flightAge * 4.5) * .055)) : 0
+      kicker.root.position.set(...KICKER_START)
+      shadows[0].position.x = castaway.root.position.x; shadows[1].position.x = kicker.root.position.x
+      shadows[0].visible = !flying
+      for (const [object, x] of scenicPositions) {
+        object.position.x = x // island stays behind; only the castaway and camera travel
+      }
+      clouds.forEach((cloud, i) => {
+        const depth = i % 3
+        const wrap = (n: number, size: number) => ((n % size) + size) % size
+        cloud.position.set(
+          flying ? air.x + wrap(i * 5 - flightAge * (2 + air.speed) * (1 - depth * .2), 36) - 18 : -15 + i * 5,
+          flying ? air.y + wrap(8 + i * 3 - air.y * (1 - depth * .2), 20) - 4 : 7 + depth * 3,
+          -12 - depth * 6,
+        )
+      })
       wind.visible = flying && !reduced.matches
       if (wind.visible) {
-        wind.position.copy(castaway.root.position).add(new THREE.Vector3(0, .5, 0))
-        wind.scale.x = 1 + Math.min(state.multiplier / 500, 1.4)
+        wind.position.copy(castaway.root.position)
+        wind.children.forEach((line, i) => {
+          const pass = (flightAge * (2.5 + air.speed) + i * .37) % 1
+          line.position.set(4 - pass * 9, 3.8 - pass * 3.6 + (i % 3 - 1) * 1.1, -.8 - i % 2)
+          line.rotation.z = -1.12
+          line.scale.y = 1 + air.speed * .55
+        })
       }
       palms.forEach((p, i) => { p.rotation.z = reduced.matches ? 0 : Math.sin(time / 1600 + i) * .015 })
-      const burst = crashed && resultAge < 1.2 ? resultAge : impact ? (kickAge - IMPACT_MS) / 1000 : -1
+      const burst = crashed && resultAge < 1.2 ? resultAge : flying && flightAge < .5 ? flightAge : -1
       particles.visible = burst >= 0 && burst < 1.2 && !reduced.matches
       if (particles.visible) {
-        origin.copy(castaway.root.position); origin.y += .7
+        if (crashed) origin.copy(castaway.root.position)
+        else origin.set(...CASTAWAY_START)
+        origin.y += .7
         particleItems.forEach((p, i) => {
           const a = i * 2.399
           p.position.copy(origin).add(new THREE.Vector3(Math.cos(a) * burst * 2, Math.sin(a) * burst * 1.4 + .5 - burst * burst, Math.sin(a * 2) * burst))
@@ -279,11 +299,18 @@ export function mountIslandScene(host: HTMLDivElement, engine: CrashEngine, call
     }
     const wideFrame = smooth((aspect - 1.1) / 1.35)
     const distance = THREE.MathUtils.lerp(8.05, 6.75, wideFrame)
-    const focusX = flying || crashed ? .4 : .05
+    const follow = flying ? smooth(flightAge / .3) : 0
+    const focusX = flying ? THREE.MathUtils.lerp(.05, air.x - .2, follow) : crashed ? .4 : .05
+    const focusY = flying ? THREE.MathUtils.lerp(1.68, air.y + 1.9, follow) : 1.68
     const shake = crashed && resultAge < .35 && !reduced.matches ? Math.sin(time / 23) * .045 * (1 - resultAge / .35) : 0
-    camera.position.set(2.45 + focusX * .35 + shake, 3.05, distance)
-    camera.lookAt(focusX, 1.68, 0)
+    camera.position.set(focusX + 2.4 + shake, focusY + (flying ? 1.37 - follow * .9 : 1.37), distance)
+    camera.lookAt(focusX, focusY, 0)
     renderer.render(scene, camera)
+    if (castaway) {
+      host.dataset.flightAgeMs = String(Math.round(flightAge * 1000))
+      host.dataset.altitude = castaway.root.position.y.toFixed(3)
+      host.dataset.cameraY = camera.position.y.toFixed(3)
+    }
     // Local DOM diagnostics for reproducible browser QA. Never sent as analytics,
     // never used for game outcomes, and no identifiers or browsing history stored.
     if (castaway && kicker && !measured) {

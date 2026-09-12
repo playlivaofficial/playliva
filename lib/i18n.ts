@@ -26,6 +26,7 @@ const ptBR: Dict = {
   // Navigation
   'nav.home': 'Início',
   'nav.games': 'Jogos',
+  'nav.play': 'Jogar',
   'nav.crash': 'Crash',
   'nav.slots': 'Slots',
   'nav.liveCasino': 'Cassino ao Vivo',
@@ -540,6 +541,7 @@ const esMX: Dict = {
 
   'nav.home': 'Inicio',
   'nav.games': 'Juegos',
+  'nav.play': 'Jugar',
   'nav.crash': 'Crash',
   'nav.slots': 'Slots',
   'nav.liveCasino': 'Casino en Vivo',
@@ -1029,6 +1031,7 @@ const en: Dict = {
 
   'nav.home': 'Home',
   'nav.games': 'Games',
+  'nav.play': 'Play',
   'nav.crash': 'Crash',
   'nav.slots': 'Slots',
   'nav.liveCasino': 'Live Casino',

@@ -2,6 +2,7 @@
 
 import { ArrowRight } from 'lucide-react'
 import { Hero } from '@/components/home/hero'
+import { OriginalsDiscoverySection } from '@/components/originals/island-crash-feature'
 import { Section, SectionHeading } from '@/components/section'
 import { CategoryCard } from '@/components/category-card'
 import { GameCard } from '@/components/game-card'
@@ -30,6 +31,7 @@ export function HomePageClient() {
   return (
     <>
       <Hero />
+      <OriginalsDiscoverySection surface="home" />
 
       {/* Explore by game type */}
       <Section id="game-types">

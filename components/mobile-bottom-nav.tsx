@@ -19,7 +19,7 @@ export function MobileBottomNav() {
   const items = [
     { href: '/', label: t('nav.home') || 'Home', icon: Home },
     { href: '/games', label: t('nav.games'), icon: Gamepad2 },
-    { href: '/play', label: t('play.title'), icon: Zap },
+    { href: '/play', label: t('nav.play'), icon: Zap },
     { href: '/offers', label: t('nav.offers'), icon: Tag },
   ]
 

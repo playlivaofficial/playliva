@@ -6,7 +6,7 @@ import {
   isLocaleSegment,
   segmentToLocale,
 } from '@/lib/locale'
-import { createTranslator } from '@/lib/i18n'
+import { originalsDiscoveryCopy, ISLAND_CRASH_POSTER } from '@/lib/originals/discovery'
 
 export async function generateMetadata({
   params,
@@ -17,12 +17,14 @@ export async function generateMetadata({
   const locale = segmentToLocale(
     isLocaleSegment(localeSegment) ? localeSegment : DEFAULT_LOCALE_SEGMENT,
   )
-  const t = createTranslator(locale)
+  const copy = originalsDiscoveryCopy(locale)
   return pageMetadata({
-    title: t('seo.playPageTitle'),
-    description: t('seo.playPageDescription'),
+    title: copy.seoTitle,
+    description: copy.seoDescription,
     path: '/play',
     localeSegment,
+    images: [ISLAND_CRASH_POSTER],
+    index: true,
   })
 }
 
