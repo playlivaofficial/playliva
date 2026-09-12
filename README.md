@@ -1,0 +1,83 @@
+# PlayLiva
+
+Source of truth: https://github.com/playlivaofficial/playliva.
+
+Next.js 16.3.0 App Router, React 19, TypeScript and Tailwind CSS 4. Application
+routes live in `app/`, UI in `components/`, static data/content in `lib/`, and
+assets in `public/`. Read `AGENTS.md` before making changes.
+
+## Setup
+
+Use **Node.js 24.20.0** (`.nvmrc`) and **pnpm 10.30.3** (`packageManager` in
+`package.json`). Node version managers that support `.nvmrc` can use `nvm use`;
+on Windows, select `nvm use 24.20.0` after installing that version. Install the
+pinned package manager with `npm install --global pnpm@10.30.3`, or use an
+existing Corepack installation that honors `packageManager`. Check which
+executable is on PATH if the reported version differs. Do not use pnpm 11 for
+this checkout: its override configuration format differs from this lockfile.
+
+```sh
+node --version
+pnpm --version
+pnpm install --frozen-lockfile
+pnpm dev
+```
+
+Open http://localhost:3000. No environment file is required. `.env.example`
+documents only the three known optional public variables; it intentionally
+contains no active assignments. If needed, copy it to `.env.local` and supply
+authorized values. Keep the site URL unset to preserve the existing default;
+an empty assignment is not equivalent to an unset variable. Never commit local
+environment values. Variables prefixed `NEXT_PUBLIC_` are public, not secrets.
+
+## Quality gates
+
+Run in this order, including before proposing a commit:
+
+```sh
+pnpm install --frozen-lockfile
+pnpm lint
+pnpm typecheck
+pnpm build
+git status --short
+```
+
+Typecheck first generates Next.js route declarations, so it works on a fresh
+checkout before the first dev/build run. Production builds also validate
+TypeScript; there is no error bypass. The build needs network access to Google
+Fonts for the existing font configuration. Do not change fonts to work around
+a restricted environment. `pnpm start` serves the production build locally.
+
+ESLint uses the Next.js Core Web Vitals and TypeScript flat presets, with
+`eslint-config-next` pinned to the framework version. ESLint 9 is used because
+the bundled React and accessibility plugins declare compatibility through 9,
+not 10. The registry currently marks this ESLint release deprecated; reassess
+the compatible tooling stack in a dedicated dependency maintenance task.
+
+The baseline has **three visible warnings** and a maximum-warning budget of
+three: synchronous effects in `country-context.tsx` and `site-header.tsx`, and
+an existing unused suppression in `json-ld.tsx`. Only those two component files
+downgrade `react-hooks/set-state-in-effect` to warning; all other preset errors
+remain blocking. Resolving these warnings is follow-up work, not permission to
+change GEO or navigation behavior. Do not raise the warning budget to pass CI.
+
+GitHub Actions runs the four gates on pull requests, pushes to `main`, and
+manual dispatch, with the same Node/pnpm pins. It does not deploy or require
+application secrets. Repository administrators must separately configure any
+required branch checks. A local green run does not prove a hosted CI run.
+
+`node_modules/`, `.next/`, `next-env.d.ts` and TypeScript build caches are
+generated and ignored. Keep `pnpm-lock.yaml` committed. Update it with the
+pinned pnpm only when intentionally changing dependencies; use frozen installs
+for normal development/CI. pnpm may report blocked build scripts for transitive
+`msw`/`unrs-resolver`; the verified gates do not need those scripts, and they
+must not be broadly enabled just to silence the notice.
+
+## Current boundaries
+
+URL locales are `/en`, `/pt-br` and `/es-mx`; selected market is independent.
+Affiliate redirects use `/go`, static operator eligibility and source data.
+Sports remains demo data, and the contact form has no delivery backend. Do not
+mistake those existing limitations for a request to implement product changes.
+Vercel project/environment/domain settings are managed outside this repository;
+the canonical-host redirect is owned there. No deployment is part of setup.
