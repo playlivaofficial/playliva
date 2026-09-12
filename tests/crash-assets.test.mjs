@@ -1,20 +1,22 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { readFile } from 'node:fs/promises'
+import { access, readFile } from 'node:fs/promises'
 import { createHash } from 'node:crypto'
 import sharp from 'sharp'
 import { parseGlb } from '../scripts/crash-assets.mjs'
 
-const root = new URL('../public/originals/crash/', import.meta.url)
-const read = path => readFile(new URL(path, root))
+const sourceRoot = new URL('../assets-source/originals/crash/characters/', import.meta.url)
+const runtimeRoot = new URL('../public/originals/crash/runtime/', import.meta.url)
+const readSource = path => readFile(new URL(path, sourceRoot))
+const readRuntime = path => readFile(new URL(path, runtimeRoot))
 const hash = bytes => createHash('sha256').update(bytes).digest('hex')
-const manifest = JSON.parse(await read('runtime/manifest.json'))
+const manifest = JSON.parse(await readRuntime('manifest.json'))
 
 test('all eight original GLBs are unchanged and runtime stays below 8 MB', async () => {
   assert.equal(manifest.sources.length, 8)
   let total = 0
   for (const source of manifest.sources) {
-    const bytes = await read(`characters/${source.path}`)
+    const bytes = await readSource(source.path)
     assert.equal(bytes.length, source.bytes)
     assert.equal(hash(bytes), source.sha256)
     total += bytes.length
@@ -22,10 +24,11 @@ test('all eight original GLBs are unchanged and runtime stays below 8 MB', async
   assert.equal(total, 135344240)
   assert.equal(total, manifest.sourceBytes)
   assert.ok(manifest.runtimeBytes < 8_000_000)
+  await assert.rejects(access(new URL('../public/originals/crash/characters/', import.meta.url)), { code: 'ENOENT' })
 })
 
 for (const model of manifest.runtime) test(`${model.path}: one rig, compatible clips, bounded textures and no external payloads`, async () => {
-  const bytes = await read(`runtime/${model.path}`)
+  const bytes = await readRuntime(model.path)
   assert.equal(bytes.length, model.bytes)
   assert.equal(hash(bytes), model.sha256)
   const runtime = parseGlb(bytes), g = runtime.json
@@ -38,7 +41,7 @@ for (const model of manifest.runtime) test(`${model.path}: one rig, compatible c
   assert.deepEqual(g.animations.map(a => a.name), model.clips.map(c => c.name))
   const directory = model.path.replace('.glb', '')
   for (const [index, clip] of model.clips.entries()) {
-    const original = parseGlb(await read(`characters/${directory}/${clip.source}`))
+    const original = parseGlb(await readSource(`${directory}/${clip.source}`))
     assert.deepEqual(g.nodes, original.json.nodes)
     const a = g.animations[index], b = original.json.animations[0]
     assert.deepEqual(a.channels, b.channels)

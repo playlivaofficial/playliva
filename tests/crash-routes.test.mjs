@@ -42,3 +42,8 @@ test('renderer imports and character URLs stay inside the Crash integration', as
     assert.doesNotMatch(source, /island-scene|three|originals\/crash/)
   }
 })
+test('the route-only action surface is never covered by the fixed mobile nav', async () => {
+  const source = await readFile(new URL('../components/mobile-bottom-nav.tsx', import.meta.url), 'utf8')
+  assert.match(source, /activePath === ['"]\/play\/crash['"]\) return null/)
+  assert.doesNotMatch(source, /activePath\.startsWith\(['"]\/play['"]\).*return null/s)
+})

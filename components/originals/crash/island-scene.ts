@@ -35,7 +35,7 @@ export function mountIslandScene(host: HTMLDivElement, engine: CrashEngine, call
   const scene = new THREE.Scene()
   scene.background = new THREE.Color('#82dcec')
   scene.fog = new THREE.Fog('#a8e6df', 17, 48)
-  const camera = new THREE.PerspectiveCamera(38, 1, .1, 90)
+  const camera = new THREE.PerspectiveCamera(36, 1, .1, 90)
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
   const light = new THREE.DirectionalLight('#fff1d0', 3.1)
   light.position.set(-3, 7, 5)
@@ -50,6 +50,8 @@ export function mountIslandScene(host: HTMLDivElement, engine: CrashEngine, call
   const mesh = (g: THREE.BufferGeometry, m: THREE.Material, parent: THREE.Object3D = scene) => { const value = new THREE.Mesh(g, m); parent.add(value); return value }
   const ocean = mesh(new THREE.PlaneGeometry(160, 160), mat('#32c9c4', .35))
   ocean.rotation.x = -Math.PI / 2; ocean.position.y = -.42
+  const sun = mesh(new THREE.CircleGeometry(1.35, 32), new THREE.MeshBasicMaterial({ color: '#fff0a4', fog: false }))
+  sun.position.set(-7.5, 7.8, -22)
   const beach = mesh(new THREE.CylinderGeometry(7, 7.6, .6, 48), sand)
   beach.position.set(0, -.4, 0); beach.scale.z = .72
   const shoreline = mesh(new THREE.CylinderGeometry(7.65, 7.65, .015, 48), foamMat)
@@ -85,7 +87,11 @@ export function mountIslandScene(host: HTMLDivElement, engine: CrashEngine, call
     }
     return group
   }
-  const palms = [palm(-3.8, -1.5, 1.25), palm(4.2, -2, 1.35), palm(-6, -5, 1), palm(1.8, -5.5, .9), palm(6.7, -4.5, .85)]
+  const palms = [
+    palm(-4.3, -1.9, 1.22), palm(4.7, -2.2, 1.28), palm(-7.2, -5.2, 1),
+    palm(1.5, -5.7, .92), palm(7.8, -4.8, .9), palm(12.5, -3.7, 1.08),
+    palm(16.8, -5.5, .82), palm(-13.5, -4.2, .9),
+  ]
   for (let i = 0; i < 7; i++) {
     const wave = mesh(new THREE.TorusGeometry(8.3 + i * .8, .016, 3, 64, Math.PI * .7), foamMat)
     wave.rotation.x = -Math.PI / 2; wave.rotation.z = .2
@@ -104,10 +110,15 @@ export function mountIslandScene(host: HTMLDivElement, engine: CrashEngine, call
     cloud.scale.set(3.3, .5, 1)
   }
   // Distant, unnamed scenic islanders; never represented as live players.
-  for (const x of [-3, 3.6, 5]) {
+  const shirtMats = [mat('#ed765f'), mat('#4e8dde'), mat('#f0bd45')]
+  for (const [index, x] of [-3, 3.7, 5.1].entries()) {
     const npc = new THREE.Group(); npc.position.set(x, 0, -3); scene.add(npc)
-    const body = mesh(geometry.sphere, trunkMat, npc); body.scale.set(.12, .28, .1); body.position.y = .35
+    const body = mesh(geometry.sphere, shirtMats[index], npc); body.scale.set(.15, .28, .11); body.position.y = .38
     const head = mesh(geometry.sphere, sand, npc); head.scale.setScalar(.13); head.position.y = .76
+    for (const side of [-1, 1]) {
+      const leg = mesh(geometry.trunk, trunkMat, npc); leg.scale.set(.55, .32, .55); leg.position.set(side * .07, .11, 0)
+      const arm = mesh(geometry.trunk, trunkMat, npc); arm.scale.set(.45, .26, .45); arm.position.set(side * .18, .43, 0); arm.rotation.z = side * -.45
+    }
   }
   const shadowMat = new THREE.MeshBasicMaterial({ color: '#6d6742', transparent: true, opacity: .19, depthWrite: false })
   const shadows = [0, 1].map(() => { const shadow = mesh(new THREE.CircleGeometry(.48, 24), shadowMat); shadow.rotation.x = -Math.PI / 2; shadow.position.y = -.085; return shadow })
@@ -119,13 +130,22 @@ export function mountIslandScene(host: HTMLDivElement, engine: CrashEngine, call
   })
   particles.visible = false
   const wind = new THREE.Group(); scene.add(wind)
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 7; i++) {
     const line = mesh(new THREE.CylinderGeometry(.012, .012, .6 + (i % 2) * .5, 3), foamMat, wind)
     line.rotation.z = Math.PI / 2; line.position.set(-1 - i % 2 * .7, .2 + i * .25, -.25)
   }
   wind.visible = false
-  const ring = mesh(new THREE.TorusGeometry(.4, .035, 6, 32), new THREE.MeshBasicMaterial({ color: '#fff6c4', transparent: true, opacity: .75 }))
+  const ringMaterial = new THREE.MeshBasicMaterial({ color: '#fff6c4', transparent: true, opacity: .75, depthWrite: false })
+  const ring = mesh(new THREE.RingGeometry(.35, .58, 32), ringMaterial)
+  ring.rotation.x = -Math.PI / 2
   ring.visible = false
+  const daze = new THREE.Group(); scene.add(daze); daze.visible = false
+  const dazeMaterial = new THREE.MeshBasicMaterial({ color: '#fff1a0', fog: false, depthTest: false })
+  const dazeItems = Array.from({ length: 3 }, () => {
+    const item = mesh(new THREE.OctahedronGeometry(.11, 0), dazeMaterial, daze)
+    item.renderOrder = 3
+    return item
+  })
   let castaway: Character | undefined, kicker: Character | undefined
   const loadedRoots: THREE.Object3D[] = []
   function character(gltf: GLTF): Character {
@@ -145,7 +165,8 @@ export function mountIslandScene(host: HTMLDivElement, engine: CrashEngine, call
     next.reset().setEffectiveWeight(1).setEffectiveTimeScale(name === 'kick' ? KICK_SPEED : 1)
     next.setLoop(['kick', 'react', 'crash'].includes(name) ? THREE.LoopOnce : THREE.LoopRepeat, Infinity)
     next.clampWhenFinished = true
-    next.play().crossFadeFrom(previous, reduced.matches ? .08 : .22, false)
+    const fade = reduced.matches ? .06 : name === 'react' ? .11 : .18
+    next.play().crossFadeFrom(previous, fade, false)
     value.current = name
   }
   const loader = new GLTFLoader()
@@ -195,21 +216,30 @@ export function mountIslandScene(host: HTMLDivElement, engine: CrashEngine, call
       play(kicker, state.phase === 'kick' ? 'kick' : 'idle')
       play(castaway, crashed ? 'crash' : flying ? 'flying' : impact ? 'react' : 'idle')
       castaway.mixer.update(dt); kicker.mixer.update(dt)
-      const lift = flying ? smooth(flightAge / .75) : impact ? smooth((kickAge - IMPACT_MS) / 550) * .45 : 0
-      const bounce = reduced.matches ? 0 : Math.sin(time / 260) * .07
-      target.set(flying ? .9 : crashed ? 1.0 : .35,
-        flying ? .75 + lift * .22 + bounce : crashed ? -.1 - groundAt(castaway.actions.crash.time) * CHARACTER_SCALE : -.1 + lift, .15)
+      const impactProgress = impact ? smooth((kickAge - IMPACT_MS) / 430) : 0
+      const flightRise = flying ? smooth(flightAge / .5) : 0
+      const flightWeave = flying && !reduced.matches
+        ? Math.sin(flightAge * 3.2) * .055 + Math.sin(flightAge * 1.15 + .8) * .035 : 0
+      const flightBob = flying && !reduced.matches
+        ? Math.sin(flightAge * 4.4) * .07 + Math.sin(flightAge * 1.7) * .045 : 0
+      target.set(
+        flying ? 2.5 + flightRise * .14 + flightWeave : crashed ? 1.8 : .35 + impactProgress * .78,
+        flying ? .04 + flightRise * .08 + flightBob
+          : crashed ? -.1 - groundAt(castaway.actions.crash.time) * CHARACTER_SCALE
+            : -.1 + Math.sin(impactProgress * Math.PI / 2) * .55,
+        flying ? .15 + Math.sin(flightAge * 2.1) * .035 : .15,
+      )
       castaway.root.position.lerp(target, 1 - Math.exp(-dt * (crashed ? 9 : 5)))
-      const tilt = flying ? -.7 : 0
+      const tilt = flying ? -.62 + (reduced.matches ? 0 : Math.sin(flightAge * 2.5) * .07) : 0
       castaway.model.rotation.z = THREE.MathUtils.damp(castaway.model.rotation.z, tilt, 5, dt)
       kicker.root.position.x = THREE.MathUtils.damp(kicker.root.position.x, flying || crashed ? -3.8 : KICKER_START[0], 2.5, dt)
       shadows[0].position.x = castaway.root.position.x; shadows[1].position.x = kicker.root.position.x
       shadows[0].scale.setScalar(flying ? .65 : 1)
-      if (flying && !reduced.matches) drift += dt * Math.min(1.5 + state.multiplier / 180, 7)
+      if (flying && !reduced.matches) drift += dt * Math.min(1.7 + Math.log2(Math.max(1, state.multiplier / 100)) * .85, 5.8)
       if (state.phase === 'ready') drift = 0
       for (const [object, x] of scenicPositions) {
         if (flying && !reduced.matches) {
-          const speed = object.position.z < -5 ? .2 : .65
+          const speed = object.position.z < -5 ? .24 : .72
           object.position.x = ((x - drift * speed + 20) % 40 + 40) % 40 - 20
         } else if (state.phase === 'ready' || state.phase === 'preparing') object.position.x = THREE.MathUtils.damp(object.position.x, x, 3, dt)
       }
@@ -230,13 +260,29 @@ export function mountIslandScene(host: HTMLDivElement, engine: CrashEngine, call
           p.scale.setScalar(Math.max(.005, .08 * (1 - burst / 1.2)))
         })
       }
-      ring.visible = crashed
-      if (crashed) { ring.position.copy(castaway.root.position).add(new THREE.Vector3(0, 1.9, .1)); ring.rotation.set(1.3, 0, reduced.matches ? 0 : time / 600) }
+      ring.visible = crashed && resultAge < 1
+      if (ring.visible) {
+        ring.position.set(castaway.root.position.x, -.075, castaway.root.position.z)
+        ring.scale.setScalar(1 + resultAge * 1.7)
+        ringMaterial.opacity = .7 * (1 - resultAge)
+      }
+      daze.visible = crashed
+      if (daze.visible) {
+        daze.position.copy(castaway.root.position).add(new THREE.Vector3(-.62, .95, .1))
+        daze.rotation.y = reduced.matches ? 0 : time / 950
+        dazeItems.forEach((item, i) => {
+          const angle = i * Math.PI * 2 / dazeItems.length
+          item.position.set(Math.cos(angle) * .32, Math.sin(angle * 2 + time / 500) * .06, Math.sin(angle) * .18)
+          item.rotation.set(time / 700 + i, time / 850 + i, 0)
+        })
+      }
     }
-    const distance = aspect < 1 ? 8.8 : 8.1
+    const wideFrame = smooth((aspect - 1.1) / 1.35)
+    const distance = THREE.MathUtils.lerp(8.05, 6.75, wideFrame)
+    const focusX = flying || crashed ? .4 : .05
     const shake = crashed && resultAge < .35 && !reduced.matches ? Math.sin(time / 23) * .045 * (1 - resultAge / .35) : 0
-    camera.position.set(2.6 + shake, 3.15, distance)
-    camera.lookAt(.1, 1.8, 0)
+    camera.position.set(2.45 + focusX * .35 + shake, 3.05, distance)
+    camera.lookAt(focusX, 1.68, 0)
     renderer.render(scene, camera)
     // Local DOM diagnostics for reproducible browser QA. Never sent as analytics,
     // never used for game outcomes, and no identifiers or browsing history stored.

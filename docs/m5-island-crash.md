@@ -5,8 +5,9 @@ game, browser acceptance, CI and deployment checks in the approved M5 brief pass
 
 ## Checkpoint 1: assets
 
-All eight original GLBs remain byte-for-byte unchanged. `runtime/manifest.json`
-records full SHA-256 hashes, exact sizes and clip mappings. Regenerate derivatives
+All eight original GLBs remain byte-for-byte unchanged. M5.1 stores them under
+`assets-source/originals/crash/characters/`, outside the web-served `public/`
+tree. `runtime/manifest.json` records full SHA-256 hashes, exact sizes and clip mappings. Regenerate derivatives
 with Node 24.20.0 / pnpm 10.30.3: `pnpm install --frozen-lockfile`, then
 `node scripts/crash-assets.mjs`. Sharp 0.35.4 is a development-only image tool.
 
@@ -52,7 +53,8 @@ The engine follows ready → preparing → kick → flying → cashed_out/crashe
 settled → ready. Preparation takes 650ms, kick 1500ms, result 3200ms and reset
 transition 600ms. The kick animation runs at 2.1×: its extended-foot contact
 near source time 2s aligns with the shared 950ms impact marker. Rendering never
-settles money. Normal animation crossfades take 220ms; reduced motion removes
+settles money. M5.1 uses 180ms normal crossfades, a tighter 110ms impact reaction
+and 60ms reduced-motion fades. Reduced motion removes
 camera shake, flight sway, moving scenery and burst particles.
 
 One uint32 sample from `crypto.getRandomValues` chooses the crash before debit
@@ -77,10 +79,9 @@ strip describes only completed rounds in the current visit. No parallel wallet
 or persistence schema was added.
 
 Initial browser smoke: both textured characters load, a loss and manual cashout
-complete, rejecting optional analytics does not stop play/Play Real, and the
-320px compact view keeps the primary button above the existing bottom nav.
-No browser renderer errors were logged. Full visual/interaction acceptance and
-production performance measurements are still required before main integration.
+complete, and rejecting optional analytics does not stop play/Play Real. A later
+exact 320×720 production-oriented audit found the fixed mobile nav obscuring 56px
+of the 60px action; M5.1 suppresses that duplicate nav only on `/play/crash`.
 
 ## Presentation and browser acceptance
 
@@ -97,7 +98,9 @@ wind and scenery movement. Rendering failure never controls settlement.
 
 Actual browser checks covered desktop (1280px), tablet (768px), 390px phone and
 320px. The 320px viewport had matching client/scroll widths (305px excluding
-the scrollbar) and a 247px-wide, 60px-high primary action. Both textured models
+the scrollbar) and a 247px-wide, 60px-high primary action. M5.1's exact-path nav
+suppression makes the complete action visible at y=639–699 in a 720px viewport.
+Both textured models
 load without an initial T-pose; idle, kick, panic flight and dazed transitions
 were inspected. Initial palm shapes, narrow-screen layout and dazed grounding
 were corrected within M5. English, Portuguese and Spanish controls/results were

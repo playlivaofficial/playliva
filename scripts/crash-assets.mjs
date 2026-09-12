@@ -7,7 +7,7 @@ import sharp from 'sharp'
 
 // Explicit inputs and output root: source GLBs are always read-only.
 const root = fileURLToPath(new URL('../', import.meta.url))
-const sourceRoot = `${root}public/originals/crash/characters/`
+const sourceRoot = `${root}assets-source/originals/crash/characters/`
 const outputRoot = `${root}public/originals/crash/runtime/`
 const hash = (bytes) => createHash('sha256').update(bytes).digest('hex')
 export function parseGlb(bytes) {

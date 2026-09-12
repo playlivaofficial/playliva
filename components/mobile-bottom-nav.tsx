@@ -12,6 +12,10 @@ export function MobileBottomNav() {
   const activePath = stripLocaleFromPath(pathname)
   const { t } = useTranslation()
 
+  // Crash already has a compact, persistent action surface. Keeping a second
+  // fixed navigation layer here obscures Start/Cash Out on 320px screens.
+  if (activePath === '/play/crash') return null
+
   const items = [
     { href: '/', label: t('nav.home') || 'Home', icon: Home },
     { href: '/games', label: t('nav.games'), icon: Gamepad2 },

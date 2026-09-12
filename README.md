@@ -4,7 +4,8 @@ Source of truth: https://github.com/playlivaofficial/playliva.
 
 Next.js 16.3.0 App Router, React 19, TypeScript and Tailwind CSS 4. Application
 routes live in `app/`, UI in `components/`, static data/content in `lib/`, and
-assets in `public/`. Read `AGENTS.md` before making changes.
+runtime assets in `public/`. Immutable authoring inputs that must not be served
+live under `assets-source/`. Read `AGENTS.md` before making changes.
 
 ## Setup
 
@@ -145,6 +146,8 @@ provider, game shell and Play Real component live in `components/originals/`.
 M4 itself registered no games or public play URLs. M5 now reuses this foundation
 for the three localized `/play/crash` routes, with a route-only Three.js renderer.
 Read [the Island Crash implementation report](docs/m5-island-crash.md) for the
-round engine, asset regeneration, verification and local free-play limitations.
+round engine, asset regeneration, verification and local free-play limitations,
+and [the M5.1 hardening report](docs/m5.1-island-crash-hardening.md) for the
+production-oriented visual and delivery pass.
 Other unfinished play slugs remain 404/noindex. Existing discovery surfaces
 have not been expanded to advertise the game.
