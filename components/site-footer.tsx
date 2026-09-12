@@ -3,6 +3,7 @@
 import { LocaleLink } from '@/components/locale-link'
 import { Logo } from '@/components/logo'
 import { useTranslation } from '@/components/country-context'
+import { openCookiePreferences } from '@/lib/consent'
 
 export function SiteFooter() {
   const { t } = useTranslation()
@@ -76,6 +77,9 @@ export function SiteFooter() {
         <p className="mt-12 border-t border-border pt-6 text-xs leading-relaxed text-muted-foreground">
           {t('footer.disclaimer')}
         </p>
+        <button type="button" onClick={openCookiePreferences} className="mt-4 text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground">
+          {t('cookie.preferences')}
+        </button>
 
         <div className="mt-6 flex flex-col gap-4 border-t border-border pt-6 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           {/* The year is evaluated per-render from the same request/hydration

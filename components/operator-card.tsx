@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { LocaleLink } from '@/components/locale-link'
 import { Check, ShieldCheck } from 'lucide-react'
 import type { CategorySlug, CountryCode, Operator } from '@/lib/types'
-import { getCountryName } from '@/lib/data'
+import { getCountryName, isAffiliateEligible } from '@/lib/data'
 import { getCategoryName } from '@/lib/content'
 import { AffiliateButton } from '@/components/affiliate-button'
 import { useTranslation } from '@/components/country-context'
@@ -16,6 +16,7 @@ export function OperatorCard({
   category,
   pageType = 'operator',
   pageSlug,
+  gameSlug,
   ctaLocation = 'operator_card',
 }: {
   operator: Operator
@@ -26,10 +27,13 @@ export function OperatorCard({
   pageType?: PageType
   /** Editorial slug of the current page (e.g. game slug), for tracking only. */
   pageSlug?: string
+  gameSlug?: string
   ctaLocation?: string
 }) {
   const { t, locale } = useTranslation()
-  const hasAffiliate = Boolean(operator.affiliateUrl[country])
+  const hasAffiliate = isAffiliateEligible(operator, country, {
+    category, pageType, pageSlug, gameSlug, placement: ctaLocation,
+  })
   const countryName = getCountryName(country, locale)
 
   return (
@@ -112,6 +116,7 @@ export function OperatorCard({
             category={category}
             pageType={pageType}
             pageSlug={pageSlug}
+            gameSlug={gameSlug}
             ctaLocation={ctaLocation}
             size="lg"
             className="flex-1"

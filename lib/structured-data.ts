@@ -1,4 +1,5 @@
 import { SITE_NAME, SITE_URL, DEFAULT_DESCRIPTION, absoluteUrl } from '@/lib/seo'
+import { localizedPath, type LocaleSegment } from './locale'
 
 /**
  * JSON-LD builders.
@@ -45,7 +46,7 @@ export interface BreadcrumbItem {
 }
 
 /** BreadcrumbList entity for a single page, built from its own crumb trail. */
-export function getBreadcrumbJsonLd(items: BreadcrumbItem[]): JsonLdObject {
+export function getBreadcrumbJsonLd(items: BreadcrumbItem[], segment: LocaleSegment): JsonLdObject {
   return {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -53,7 +54,7 @@ export function getBreadcrumbJsonLd(items: BreadcrumbItem[]): JsonLdObject {
       '@type': 'ListItem',
       position: index + 1,
       name: item.label,
-      ...(item.href ? { item: absoluteUrl(item.href) } : {}),
+      ...(item.href ? { item: absoluteUrl(localizedPath(item.href, segment)) } : {}),
     })),
   }
 }

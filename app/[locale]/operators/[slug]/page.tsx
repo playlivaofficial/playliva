@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { OPERATORS, getOperator } from '@/lib/data'
+import { getPublicOperators, getOperator } from '@/lib/data'
 import { OperatorProfileView } from '@/components/operator-profile-view'
 import { pageMetadata } from '@/lib/seo'
 import {
@@ -14,7 +14,7 @@ import { createTranslator } from '@/lib/i18n'
 // real partners still `pending` onboarding (e.g. partners currently being
 // activated) stay unbuilt here — they are not public pages yet.
 export function generateStaticParams() {
-  return OPERATORS.filter((o) => !o.isMock && o.affiliateStatus === 'approved').map(
+  return getPublicOperators().map(
     (o) => ({ slug: o.slug }),
   )
 }
@@ -38,7 +38,7 @@ export async function generateMetadata({
     localeSegment,
     // Only approved, non-mock partners may be indexed — pending onboarding
     // (real or mock) must stay out of search results.
-    index: !operator.isMock && operator.affiliateStatus === 'approved',
+    index: getPublicOperators().some((o) => o.id === operator.id),
   })
 }
 

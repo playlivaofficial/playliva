@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
-import { resolveDestination } from '@/lib/affiliate'
+import { affiliateFallbackPath, resolveDestination } from '@/lib/affiliate'
+import { ANALYTICS_COOKIE } from '@/lib/consent'
 import { COUNTRIES } from '@/lib/data'
 import type { CountryCode } from '@/lib/types'
 
@@ -22,8 +23,8 @@ function redirect(url: string) {
  * Resolves the correct GEO-specific affiliate URL server-side, rejecting
  * inactive operators or unsupported markets. External URLs never appear in
  * the client DOM. Client-side context (page type, game, CTA) is captured by
- * the tracking layer before navigation; here we log a server-side record and
- * redirect.
+ * the consented tracking layer before navigation; here we resolve the partner
+ * destination and redirect, preserving functional attribution without consent.
  */
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl
@@ -35,16 +36,17 @@ export async function GET(request: NextRequest) {
   const validCountry =
     country && COUNTRIES.some((c) => c.code === country) ? country : null
 
-  // Graceful fallback target when we cannot resolve a valid destination.
-  const fallback = operatorSlug
-    ? `${origin}/operators/${operatorSlug}`
-    : `${origin}/offers`
+  const language = searchParams.get('language') ?? undefined
+  const fallback = new URL(affiliateFallbackPath({
+    operatorSlug,
+    language,
+    cookieLocale: request.cookies.get('playliva_locale')?.value,
+  }), origin).toString()
 
   if (!validCountry) {
     return redirect(fallback)
   }
 
-  const language = searchParams.get('language') ?? undefined
   const pageType = searchParams.get('page') ?? undefined
   const pageSlug = searchParams.get('pageSlug') ?? undefined
   const gameSlug = searchParams.get('game') ?? undefined
@@ -63,29 +65,14 @@ export async function GET(request: NextRequest) {
     matchSlug,
     placement,
     category,
+    analyticsAllowed: request.cookies.get(ANALYTICS_COOKIE)?.value === 'granted',
   })
 
   if (!destination) {
     return redirect(fallback)
   }
 
-  // Server-side attribution record for the `affiliate_click` event (kept
-  // minimal; no sensitive/personal data — only editorial identifiers and
-  // the current context, GTM/GA4-compatible shape).
-  console.log('[v0] affiliate_click', {
-    timestamp: new Date().toISOString(),
-    geo: validCountry,
-    language,
-    page: pageType,
-    pageSlug,
-    game: gameSlug,
-    match: matchSlug,
-    category,
-    operatorId: destination.operatorId,
-    offerId: destination.offerId,
-    placement,
-    device: request.headers.get('user-agent') ?? undefined,
-  })
-
+  // Partner attribution is functional without analytics. Optional measurement
+  // requires consent; do not duplicate client events in unconditional server logs.
   return redirect(destination.url)
 }

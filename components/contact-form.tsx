@@ -1,7 +1,6 @@
 'use client'
 
-import { useState } from 'react'
-import { CheckCircle2 } from 'lucide-react'
+import { contactDraft } from '@/lib/contact'
 import { useCountry } from '@/components/country-context'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -10,7 +9,6 @@ import { Label } from '@/components/ui/label'
 
 export function ContactForm() {
   const { t } = useCountry()
-  const [submitted, setSubmitted] = useState(false)
 
   const topics = [
     t('contact.topicGeneral'),
@@ -22,38 +20,24 @@ export function ContactForm() {
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    // Prototype only — no backend. Simulate a successful submission.
-    setSubmitted(true)
-  }
-
-  if (submitted) {
-    return (
-      <div className="rounded-2xl border border-primary/30 bg-primary/10 p-8 text-center">
-        <CheckCircle2 className="mx-auto size-10 text-primary" />
-        <h2 className="mt-4 font-display text-xl font-bold text-foreground">
-          {t('contact.successTitle')}
-        </h2>
-        <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
-          {t('contact.successNote')}
-        </p>
-        <Button
-          className="mt-6"
-          variant="outline"
-          onClick={() => setSubmitted(false)}
-        >
-          {t('contact.sendAnother')}
-        </Button>
-      </div>
-    )
+    const values = new FormData(e.currentTarget)
+    window.location.href = contactDraft({
+      name: String(values.get('name') ?? ''),
+      email: String(values.get('email') ?? ''),
+      topic: String(values.get('topic') ?? ''),
+      message: String(values.get('message') ?? ''),
+    })
   }
 
   return (
     <form
       onSubmit={handleSubmit}
       className="rounded-2xl border border-border bg-card p-6 sm:p-8"
-      noValidate
     >
       <div className="grid gap-5">
+        <p className="text-sm text-muted-foreground">{t('contact.draftNote')}{' '}
+          <a href="mailto:hello@playliva.com" className="underline underline-offset-4">hello@playliva.com</a>
+        </p>
         <div className="grid gap-2">
           <Label htmlFor="name">{t('contact.name')}</Label>
           <Input
@@ -101,7 +85,7 @@ export function ContactForm() {
           />
         </div>
         <Button type="submit" size="lg" className="w-full sm:w-auto">
-          {t('contact.send')}
+          {t('contact.openDraft')}
         </Button>
       </div>
     </form>

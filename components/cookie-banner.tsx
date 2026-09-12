@@ -4,8 +4,7 @@ import { LocaleLink } from '@/components/locale-link'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { useTranslation } from '@/components/country-context'
-
-const KEY = 'playliva.cookie-consent'
+import { consentSnapshot, parseConsent, saveConsent, syncConsentCookie, PREFERENCES_EVENT, type Consent } from '@/lib/consent'
 
 export function CookieBanner() {
   const { t } = useTranslation()
@@ -15,15 +14,24 @@ export function CookieBanner() {
   const [marketing, setMarketing] = useState(false)
 
   useEffect(() => {
-    const stored = window.localStorage.getItem(KEY)
-    if (!stored) {
-      const timer = setTimeout(() => setVisible(true), 600)
-      return () => clearTimeout(timer)
+    syncConsentCookie()
+    const open = () => {
+      const saved = parseConsent(consentSnapshot())
+      setAnalytics(saved?.analytics ?? false)
+      setMarketing(saved?.marketing ?? false)
+      setManaging(true)
+      setVisible(true)
+    }
+    window.addEventListener(PREFERENCES_EVENT, open)
+    const timer = !parseConsent(consentSnapshot()) ? setTimeout(() => setVisible(true), 600) : undefined
+    return () => {
+      clearTimeout(timer)
+      window.removeEventListener(PREFERENCES_EVENT, open)
     }
   }, [])
 
-  const persist = (value: string) => {
-    window.localStorage.setItem(KEY, value)
+  const persist = (value: Consent) => {
+    saveConsent(value)
     setVisible(false)
   }
 
@@ -101,7 +109,7 @@ export function CookieBanner() {
                 size="lg"
                 onClick={() =>
                   persist(
-                    JSON.stringify({ necessary: true, analytics, marketing }),
+                    { necessary: true, analytics, marketing },
                   )
                 }
               >
@@ -113,11 +121,11 @@ export function CookieBanner() {
               size="lg"
               onClick={() =>
                 persist(
-                  JSON.stringify({
+                  {
                     necessary: true,
                     analytics: false,
                     marketing: false,
-                  }),
+                  },
                 )
               }
             >
@@ -127,11 +135,11 @@ export function CookieBanner() {
               size="lg"
               onClick={() =>
                 persist(
-                  JSON.stringify({
+                  {
                     necessary: true,
                     analytics: true,
                     marketing: true,
-                  }),
+                  },
                 )
               }
             >

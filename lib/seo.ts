@@ -115,21 +115,22 @@ export function pageMetadata(opts: {
   const alternateLocales = LOCALE_SEGMENTS.filter((s) => s !== segment).map(
     segmentToOgLocale,
   )
+  const cleanTitle = title?.replace(/(?:\s*[|—–-]\s*PlayLiva)+\s*$/i, '').trim()
 
   return {
-    title,
+    title: cleanTitle && /\bPlayLiva\b/i.test(cleanTitle) ? { absolute: cleanTitle } : cleanTitle,
     description,
     alternates: {
       canonical: absoluteUrl(localizedPath(segment)),
       languages,
     },
     robots: index
-      ? { index: true, follow: true }
-      : { index: false, follow: true },
+      ? { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large' } }
+      : { index: false, follow: true, googleBot: { index: false, follow: true } },
     openGraph: {
       type: 'website',
       siteName: SITE_NAME,
-      title: title ?? DEFAULT_TITLE,
+      title: cleanTitle ?? DEFAULT_TITLE,
       description,
       url: absoluteUrl(localizedPath(segment)),
       locale: segmentToOgLocale(segment),
@@ -138,7 +139,7 @@ export function pageMetadata(opts: {
     },
     twitter: {
       card: images ? 'summary_large_image' : 'summary',
-      title: title ?? DEFAULT_TITLE,
+      title: cleanTitle ?? DEFAULT_TITLE,
       description,
       ...(images ? { images } : {}),
     },

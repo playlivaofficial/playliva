@@ -14,7 +14,8 @@ import { useCountry } from '@/components/country-context'
 import {
   getCountryName,
   getGamesForOperator,
-  getOffers,
+  getPublicOffers,
+  isAffiliateEligible,
 } from '@/lib/data'
 import { getCategoryName } from '@/lib/content'
 import { Section, SectionHeading } from '@/components/section'
@@ -51,21 +52,11 @@ function InfoRow({
 export function OperatorProfileView({ operator }: { operator: Operator }) {
   const { countryCode, locale, t } = useCountry()
 
-  // Prefer the selected country if the operator serves it, else its first market.
-  const activeCountry = operator.countries.includes(countryCode)
-    ? countryCode
-    : operator.countries[0]
+  const activeCountry = countryCode
   const activeCountryName = getCountryName(activeCountry, locale)
-  const hasAffiliate = Boolean(operator.affiliateUrl[activeCountry])
+  const hasAffiliate = isAffiliateEligible(operator, activeCountry)
 
-  const relatedOffers = operator.countries
-    .flatMap((c) => getOffers(c))
-    .filter(
-      (o) =>
-        o.operatorId === operator.id &&
-        o.active &&
-        o.status === 'verified',
-    )
+  const relatedOffers = getPublicOffers(activeCountry).filter((o) => o.operatorId === operator.id)
 
   const games = getGamesForOperator(operator, activeCountry).slice(0, 8)
 

@@ -1,3 +1,7 @@
+'use client'
+
+import { usePathname } from 'next/navigation'
+import { DEFAULT_LOCALE_SEGMENT, isLocaleSegment } from '@/lib/locale'
 import { LocaleLink } from '@/components/locale-link'
 import { ChevronRight } from 'lucide-react'
 import { JsonLd } from '@/components/json-ld'
@@ -19,9 +23,11 @@ export function Breadcrumbs({
   items: BreadcrumbItem[]
   className?: string
 }) {
+  const firstSegment = usePathname().split('/')[1] ?? ''
+  const segment = isLocaleSegment(firstSegment) ? firstSegment : DEFAULT_LOCALE_SEGMENT
   return (
     <>
-      <JsonLd data={getBreadcrumbJsonLd(items)} />
+      <JsonLd data={getBreadcrumbJsonLd(items, segment)} />
       <nav aria-label="Breadcrumb" className={cn('overflow-x-auto', className)}>
         <ol className="flex items-center gap-1.5 whitespace-nowrap text-sm text-muted-foreground">
           {items.map((item, index) => {

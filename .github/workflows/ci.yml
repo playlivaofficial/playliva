@@ -36,5 +36,9 @@ jobs:
         run: pnpm lint
       - name: Typecheck
         run: pnpm typecheck
+      - name: Trust regression tests
+        run: pnpm test
       - name: Production build
         run: pnpm build
+      - name: Production route and content checks
+        run: pnpm test:routes

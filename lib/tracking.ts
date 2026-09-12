@@ -10,6 +10,8 @@
  * the current context.
  */
 
+import { hasAnalyticsConsent } from './consent'
+
 export type TrackEventName =
   | 'page_view'
   | 'game_view'
@@ -67,13 +69,8 @@ function getDeviceClass(): 'mobile' | 'desktop' | undefined {
     : 'desktop'
 }
 
-declare global {
-  interface Window {
-    dataLayer?: Record<string, unknown>[]
-  }
-}
-
 export function track(event: TrackEventName, payload: TrackPayload = {}): void {
+  if (typeof window === 'undefined' || !hasAnalyticsConsent()) return
   const data: Record<string, unknown> = {
     event,
     timestamp: new Date().toISOString(),
@@ -85,6 +82,7 @@ export function track(event: TrackEventName, payload: TrackPayload = {}): void {
     if (!payload.url) data.url = window.location.pathname + window.location.search
     window.dataLayer = window.dataLayer ?? []
     window.dataLayer.push(data)
+    window.gtag?.('event', event, data)
   }
 
   if (process.env.NODE_ENV !== 'production') {

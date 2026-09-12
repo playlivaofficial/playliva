@@ -85,6 +85,11 @@ export function stripLocaleFromPath(pathname: string): string {
   return pathname
 }
 
+export function localizedPath(path: string, segment: LocaleSegment): string {
+  if (isLocaleSegment(path.split('/')[1] ?? '')) return path
+  return `/${segment}${path === '/' ? '' : path}`
+}
+
 /** Best-effort Accept-Language header parsing → nearest supported segment. */
 export function detectLocaleSegmentFromAcceptLanguage(
   acceptLanguage: string | null,

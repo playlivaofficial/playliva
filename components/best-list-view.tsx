@@ -24,7 +24,7 @@ import { track } from '@/lib/tracking'
 import type { GameList } from '@/lib/types'
 
 export function BestListView({ list }: { list: GameList }) {
-  const { locale } = useCountry()
+  const { locale, countryCode } = useCountry()
   const { t } = useTranslation()
 
   const countryName = getCountryName(list.country, locale)
@@ -32,7 +32,8 @@ export function BestListView({ list }: { list: GameList }) {
   const categoryName = getCategoryName(list.category, locale)
   const games = getGamesByIds(list.gameIds)
   const listContent = getGameListContent(list, locale)
-  const operators = getOperatorsForCountry(list.country).filter((o) =>
+  const operators = getOperatorsForCountry(countryCode).filter((o) =>
+    countryCode === list.country &&
     o.categories.includes(list.category),
   )
 
@@ -151,7 +152,8 @@ export function BestListView({ list }: { list: GameList }) {
         {operators.length > 0 ? (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {operators.map((o) => (
-              <OperatorCard key={o.id} operator={o} country={list.country} />
+              <OperatorCard key={o.id} operator={o} country={list.country}
+                category={list.category} pageType="best_list" pageSlug={list.slug} />
             ))}
           </div>
         ) : (

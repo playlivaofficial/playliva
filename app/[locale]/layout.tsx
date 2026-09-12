@@ -1,12 +1,11 @@
 import { notFound } from 'next/navigation'
-import { Analytics } from '@vercel/analytics/next'
 import { CountryProvider } from '@/components/country-context'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
 import { CookieBanner } from '@/components/cookie-banner'
 import { MobileBottomNav } from '@/components/mobile-bottom-nav'
 import { JsonLd } from '@/components/json-ld'
-import { GoogleAnalytics } from '@/components/analytics/ga4'
+import { ConsentedAnalytics } from '@/components/analytics/consented-analytics'
 import { getWebsiteJsonLd, getOrganizationJsonLd } from '@/lib/structured-data'
 import { LOCALE_SEGMENTS, isLocaleSegment, segmentToLocale } from '@/lib/locale'
 
@@ -36,8 +35,7 @@ export default async function LocaleLayout({
         <MobileBottomNav />
         <CookieBanner />
       </CountryProvider>
-      {process.env.NODE_ENV === 'production' && <Analytics />}
-      {process.env.NODE_ENV === 'production' && <GoogleAnalytics />}
+      {process.env.NODE_ENV === 'production' && <ConsentedAnalytics />}
     </>
   )
 }

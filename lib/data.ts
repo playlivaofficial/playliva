@@ -379,10 +379,10 @@ export const GAMES: Game[] = [
     category: 'live-casino',
     provider: 'Evolution',
     image: '/games/blackjack-live.jpg',
-    imageAlt: 'Speed Blackjack Live by Evolution',
+    imageAlt: 'Blackjack Live',
     imageSource:
-      'Approved — official Evolution promotional tile (Speed Blackjack Live edition) supplied by the operator for this live blackjack entry.',
-    assetStatus: 'approved',
+      'Supplied tile reads Speed Blackjack Live; its correspondence to this generic Blackjack Live entry needs confirmation before display.',
+    assetStatus: 'pending',
     assetRightsStatus: 'approved',
     description: 'Classic live-dealer blackjack tables in multiple limits.',
     shortDescription: 'Classic live-dealer blackjack tables.',
@@ -926,10 +926,7 @@ export function getOperatorById(id: string): Operator | undefined {
  * Whether an operator may be shown to public visitors as a real, commercial
  * recommendation. Requires `affiliateStatus === 'approved'` — the single
  * source of truth for affiliate readiness — plus an active, non-mock record
- * with a real destination URL for the market. Every operator today is either
- * a development placeholder (`isMock: true`) or a real partner still
- * `pending` onboarding, so this returns false for every market until a real
- * partner is explicitly approved with real data. This gate prevents
+ * with a real destination URL for the market. This gate prevents
  * fabricated licences, bonuses and affiliate clicks from reaching
  * production.
  */
@@ -938,15 +935,7 @@ export function isOperatorRecommendable(
   country: CountryCode,
   category?: CategorySlug,
 ): boolean {
-  const base =
-    operator.active &&
-    operator.verified &&
-    operator.affiliateStatus === 'approved' &&
-    !operator.isMock &&
-    operator.countries.includes(country) &&
-    Boolean(operator.affiliateUrl[country])
-  if (!base) return false
-  return category ? operator.categories.includes(category) : true
+  return isAffiliateEligible(operator, country, { category })
 }
 
 /**
@@ -958,7 +947,7 @@ export function isOperatorRecommendable(
  */
 export function getPublicOperators(): Operator[] {
   return OPERATORS.filter(
-    (o) => !o.isMock && o.affiliateStatus === 'approved',
+    (o) => PUBLIC_COUNTRIES.some((c) => isAffiliateEligible(o, c.code)),
   )
 }
 
@@ -992,8 +981,7 @@ export function getOperatorsForGame(
 ): Operator[] {
   return OPERATORS.filter(
     (o) =>
-      isOperatorRecommendable(o, country, game.category) &&
-      isGameVerifiedAtOperator(o, game.id, country),
+      isAffiliateEligible(o, country, { category: game.category, gameSlug: game.slug }),
   )
 }
 
@@ -1005,10 +993,11 @@ export function getGamesForOperator(
   operator: Operator,
   country: CountryCode,
 ): Game[] {
+  if (!isAffiliateEligible(operator, country)) return []
   const verifiedIds = new Set(operator.verifiedGames?.[country] ?? [])
   if (verifiedIds.size === 0) return []
   return GAMES.filter(
-    (g) => g.countries.includes(country) && verifiedIds.has(g.id),
+    (g) => verifiedIds.has(g.id) && isAffiliateEligible(operator, country, { gameSlug: g.slug }),
   )
 }
 
@@ -1040,12 +1029,92 @@ export function canShowAffiliateCTA(params: {
   /** Reserved — sports availability is not yet wired to approved operators. */
   sport?: string
 }): boolean {
-  const { operator, geo, gameSlug } = params
-  if (!isOperatorRecommendable(operator, geo)) return false
-  if (!gameSlug) return true
-  const game = getGame(gameSlug)
-  if (!game) return false
-  return isGameVerifiedAtOperator(operator, game.id, geo)
+  return !params.sport && isAffiliateEligible(params.operator, params.geo, {
+    gameSlug: params.gameSlug,
+  })
+}
+
+export interface AffiliateContext {
+  category?: string | null
+  gameSlug?: string | null
+  pageType?: string | null
+  pageSlug?: string | null
+  matchSlug?: string | null
+  placement?: string | null
+}
+
+export function isCategorySlug(value: string): value is CategorySlug {
+  return CATEGORIES.some((category) => category.slug === value)
+}
+
+/** Only configured HTTPS destinations, never placeholders or executable URLs. */
+export function isAffiliateUrl(value: string | undefined): boolean {
+  if (!value) return false
+  try {
+    const url = new URL(value)
+    return url.protocol === 'https:' && !url.username && !url.password &&
+      !/(^|\.)(example\.(com|org|net)|localhost)$/.test(url.hostname)
+  } catch {
+    return false
+  }
+}
+
+export function affiliateGameSlug(context: AffiliateContext): string | undefined {
+  const gamePage = ['game', 'games_like', 'where_to_play'].includes(context.pageType ?? '')
+  return context.gameSlug || (gamePage ? context.pageSlug || undefined : undefined)
+}
+
+/** Authoritative public outbound gate, shared by lists, CTAs and redirects. */
+export function isAffiliateEligible(
+  operator: Operator | undefined,
+  country: CountryCode,
+  context: AffiliateContext = {},
+): boolean {
+  if (!operator || !operator.active || !operator.verified || operator.isMock ||
+    operator.affiliateStatus !== 'approved' ||
+    !PUBLIC_COUNTRIES.some((c) => c.code === country) ||
+    !operator.countries.includes(country) ||
+    !isAffiliateUrl(operator.affiliateUrl[country])) return false
+
+  // Sports fixtures have no verified operator availability model yet.
+  if (context.matchSlug || context.placement === 'sports_odds') return false
+  if (context.category && (!isCategorySlug(context.category) ||
+    !operator.categories.includes(context.category))) return false
+
+  const gameSlug = affiliateGameSlug(context)
+  const requiresGame = ['game', 'games_like', 'where_to_play'].includes(context.pageType ?? '') ||
+    ['where_to_play', 'game_where_to_play'].includes(context.placement ?? '')
+  if (requiresGame && !gameSlug) return false
+  if (gameSlug) {
+    const game = getGame(gameSlug)
+    if (!game || !game.countries.includes(country) ||
+      !operator.categories.includes(game.category) ||
+      (context.category && context.category !== game.category) ||
+      !isGameVerifiedAtOperator(operator, game.id, country)) return false
+  }
+  const category = context.category || (gameSlug ? getGame(gameSlug)?.category : undefined)
+  const destination = category && isCategorySlug(category)
+    ? operator.categoryAffiliateUrl?.[category]?.[country] ?? operator.affiliateUrl[country]
+    : operator.affiliateUrl[country]
+  return isAffiliateUrl(destination)
+}
+
+export function isOfferEligible(
+  offer: Offer,
+  country: CountryCode,
+  context: AffiliateContext = {},
+): boolean {
+  const operator = getOperatorById(offer.operatorId)
+  if (!offer.active || offer.status !== 'verified' || offer.country !== country ||
+    !isAffiliateUrl(offer.affiliateUrl) || !isAffiliateEligible(operator, country, context)) return false
+  if (offer.category !== 'welcome' &&
+    (!isAffiliateEligible(operator, country, { ...context, category: offer.category }) ||
+      (context.category && context.category !== offer.category))) return false
+  if (operator?.verifiedOffers && !operator.verifiedOffers.includes(offer.id)) return false
+  const now = Date.now()
+  if (offer.validFrom && !(Date.parse(offer.validFrom) <= now)) return false
+  if (offer.validUntil && !(Date.parse(offer.validUntil) >= now)) return false
+  return true
 }
 
 /* ------------------------------------------------------------------ */
@@ -1205,16 +1274,9 @@ export function getOffers(country: CountryCode): Offer[] {
  * `verifiedOffers` allow-list, the offer id must also appear there. This
  * mirrors `verifiedGames` — availability/verification is never inferred
  * from one record alone when a cross-check list exists. Operators that
- * don't define `verifiedOffers` are unaffected (the offer's own `status`
- * remains the sole gate).
+ * don't define `verifiedOffers` still require both offer verification and
+ * operator eligibility, a valid destination, GEO/category and date validity.
  */
 export function getPublicOffers(country: CountryCode): Offer[] {
-  return (offersByCountry[country] ?? []).filter((o) => {
-    if (!o.active || o.status !== 'verified') return false
-    const operator = getOperatorById(o.operatorId)
-    if (operator?.verifiedOffers && !operator.verifiedOffers.includes(o.id)) {
-      return false
-    }
-    return true
-  })
+  return getOffers(country).filter((offer) => isOfferEligible(offer, country))
 }

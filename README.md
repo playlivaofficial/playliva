@@ -38,7 +38,9 @@ Run in this order, including before proposing a commit:
 pnpm install --frozen-lockfile
 pnpm lint
 pnpm typecheck
+pnpm test
 pnpm build
+pnpm test:routes
 git status --short
 ```
 
@@ -61,10 +63,33 @@ downgrade `react-hooks/set-state-in-effect` to warning; all other preset errors
 remain blocking. Resolving these warnings is follow-up work, not permission to
 change GEO or navigation behavior. Do not raise the warning budget to pass CI.
 
-GitHub Actions runs the four gates on pull requests, pushes to `main`, and
+GitHub Actions runs the quality gates on pull requests, pushes to `main`, and
 manual dispatch, with the same Node/pnpm pins. It does not deploy or require
 application secrets. Repository administrators must separately configure any
 required branch checks. A local green run does not prove a hosted CI run.
+
+`pnpm test` runs isolated Node/DOM trust checks for affiliate eligibility,
+consent transitions, contact drafts and metadata. JSDOM does not execute or
+download third-party analytics scripts; its opaque test sentinel is never an
+application GA ID. `pnpm test:routes` starts/stops a local production server,
+crawls all sitemap/legal/sports URLs, checks content tokens, canonicals,
+localized breadcrumbs, noindex/404s and safe affiliate fallbacks. It never
+follows outbound affiliate redirects. Both checks also run in CI.
+
+Analytics is opt-in: GA4, Vercel Analytics and custom events require analytics
+consent. Reopen Cookie preferences in the footer to change it. Revocation
+blocks future events; events discarded without consent are not replayed.
+Marketing preferences remain stored, but no advertising/GTM tags are introduced.
+Partner navigation and required commission attribution work without analytics.
+Configured base/category/offer URLs and partner-issued `trackingTemplate`
+parameters are functional and retained regardless of consent. Put only optional
+measurement in `analyticsTrackingTemplate`, which requires analytics consent;
+never put required affiliate/campaign IDs there or reuse functional parameter
+keys. Both templates support the documented context tokens. No operator has an
+analytics template configured currently. Existing partner records remain unchanged.
+Google revocation uses its documented [opt-out flag](https://developers.google.com/tag-platform/security/guides/privacy),
+alongside consent updates. Vercel's `beforeSend` callback checks the current
+choice even if its script was previously loaded.
 
 `node_modules/`, `.next/`, `next-env.d.ts` and TypeScript build caches are
 generated and ignored. Keep `pnpm-lock.yaml` committed. Update it with the
@@ -77,7 +102,8 @@ must not be broadly enabled just to silence the notice.
 
 URL locales are `/en`, `/pt-br` and `/es-mx`; selected market is independent.
 Affiliate redirects use `/go`, static operator eligibility and source data.
-Sports remains demo data, and the contact form has no delivery backend. Do not
+Sports remains demo data. The contact form opens a draft in the visitor's email
+app and has no delivery backend or sent-message confirmation. Do not
 mistake those existing limitations for a request to implement product changes.
 Vercel project/environment/domain settings are managed outside this repository;
 the canonical-host redirect is owned there. No deployment is part of setup.

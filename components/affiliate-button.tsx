@@ -3,7 +3,8 @@
 import { useEffect, useRef, type ComponentProps } from 'react'
 import { ArrowUpRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { buildGoHref } from '@/lib/affiliate'
+import { buildGoHref, resolveDestination } from '@/lib/affiliate'
+import { getGameById } from '@/lib/data'
 import { track, type PageType } from '@/lib/tracking'
 import { useCountry } from '@/components/country-context'
 import type { CountryCode } from '@/lib/types'
@@ -25,6 +26,7 @@ export function AffiliateButton({
   offerId,
   operatorId,
   gameId,
+  gameSlug,
   matchId,
   category,
   pageType,
@@ -39,6 +41,7 @@ export function AffiliateButton({
   offerId?: string
   operatorId?: string
   gameId?: string
+  gameSlug?: string
   /** Sports fixture identifier, when the CTA is placed on a match context. */
   matchId?: string
   category?: string
@@ -55,13 +58,18 @@ export function AffiliateButton({
   const country = countryProp ?? countryCode
   const buttonRef = useRef<HTMLAnchorElement>(null)
   const hasFiredImpression = useRef(false)
+  const resolvedGame = gameSlug ?? (gameId ? getGameById(gameId)?.slug : undefined)
+  const eligible = country === countryCode && Boolean(resolveDestination({
+    operatorSlug, offerId, country, category, gameSlug: resolvedGame,
+    matchSlug: matchId, pageType, pageSlug, placement: ctaLocation,
+  })) && (!gameId || Boolean(resolvedGame))
 
   const href = buildGoHref({
     operator: operatorSlug,
     offer: offerId,
     country,
     language: locale,
-    game: gameId,
+    game: resolvedGame,
     match: matchId,
     category,
     page: pageType,
@@ -118,6 +126,8 @@ export function AffiliateButton({
       destination: offerId ?? operatorSlug,
     })
   }
+
+  if (!eligible) return null
 
   return (
     <Button

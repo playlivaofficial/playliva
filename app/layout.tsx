@@ -25,11 +25,12 @@ export const metadata: Metadata = {
   },
   description: DEFAULT_DESCRIPTION,
   applicationName: SITE_NAME,
-  alternates: { canonical: '/' },
+  // Known pages opt into indexing and provide their own canonical through
+  // pageMetadata. Unknown/error routes must never inherit homepage indexing.
   robots: {
-    index: true,
-    follow: true,
-    googleBot: { index: true, follow: true, 'max-image-preview': 'large' },
+    index: false,
+    follow: false,
+    googleBot: { index: false, follow: false },
   },
   // Set NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION once the property is added in
   // Google Search Console (Settings → Ownership verification → HTML tag).

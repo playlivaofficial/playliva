@@ -1,18 +1,19 @@
 import { Gift } from 'lucide-react'
 import type { Offer } from '@/lib/types'
-import { getOperator, getCountry, getCountryName } from '@/lib/data'
+import { getOperatorById, getCountry, getCountryName, isOfferEligible } from '@/lib/data'
 import { getCategoryName } from '@/lib/content'
 import { AffiliateButton } from '@/components/affiliate-button'
 import { useTranslation } from '@/components/country-context'
 
 export function OfferCard({ offer }: { offer: Offer }) {
   const { t, locale } = useTranslation()
-  const operator = getOperator(offer.operatorId)
+  const operator = getOperatorById(offer.operatorId)
   const country = getCountry(offer.country)
   // GEO name is language-aware (not GEO-aware) — an offer for MX must say
   // "Mexico" in English, "México" in Português/Español, never mixed with
   // the visitor's own selected GEO.
   const countryName = getCountryName(offer.country, locale)
+  if (!isOfferEligible(offer, offer.country)) return null
   const categoryLabel =
     offer.category === 'welcome'
       ? t('label.welcomeCategory')

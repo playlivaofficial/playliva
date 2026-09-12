@@ -199,12 +199,18 @@ export interface Operator {
    */
   categoryAffiliateUrl?: Partial<Record<CategorySlug, Partial<Record<CountryCode, string>>>>
   /**
-   * Optional query-string template appended to `affiliateUrl` at redirect
-   * time, keyed by GEO. Supports tokens: {geo} {language} {pageType}
+   * Functional partner attribution appended at redirect time regardless of
+   * analytics consent, keyed by GEO. Supports tokens: {geo} {language} {pageType}
    * {pageSlug} {gameSlug} {matchSlug} {placement}. Undefined until the real
    * tracking parameters are supplied by the affiliate program.
    */
   trackingTemplate?: Partial<Record<CountryCode, string>>
+  /**
+   * Optional measurement only; appended exclusively with analytics consent.
+   * Supports the same tokens as trackingTemplate. Never put required partner
+   * affiliate/campaign IDs or destination parameters here, or reuse their keys.
+   */
+  analyticsTrackingTemplate?: Partial<Record<CountryCode, string>>
   /**
    * Explicit, manually-verified game availability per GEO. This is the only
    * source of truth for "this operator offers this game in this market" —

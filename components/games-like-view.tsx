@@ -77,6 +77,7 @@ export function GamesLikeView({ game }: { game: Game }) {
           <p className="mt-4 max-w-3xl leading-relaxed text-muted-foreground">
             {content.description}{' '}
             {t('like.whyBody', {
+              game: game.title,
               category: categoryLower,
               mechanics: content.mechanics.slice(0, 2).join(', ').toLowerCase(),
             })}
@@ -191,7 +192,8 @@ export function GamesLikeView({ game }: { game: Game }) {
         {operators.length > 0 ? (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {operators.map((o) => (
-              <OperatorCard key={o.id} operator={o} country={countryCode} />
+              <OperatorCard key={o.id} operator={o} country={countryCode}
+                category={game.category} gameSlug={game.slug} pageType="games_like" pageSlug={game.slug} />
             ))}
           </div>
         ) : (
