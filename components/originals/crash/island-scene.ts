@@ -202,10 +202,10 @@ export function mountIslandScene(host: HTMLDivElement, engine: CrashEngine, call
     const dt = Math.min(frameMs / 1000, .05); previousTime = frameTime
     const state = engine.getSnapshot()
     const flightAge = Math.max(0, (time - state.flightAt) / 1000)
-    const flying = state.phase === 'flying' || state.phase === 'cashed_out' || state.phase === 'settled' && !!state.result?.won
-    const crashed = state.phase === 'crashed' || state.phase === 'settled' && !state.result?.won
+    const flying = state.phase === 'flying'
+    const crashed = state.phase === 'falling' || state.phase === 'impact'
     const resultAge = Math.max(0, (time - state.finishedAt) / 1000)
-    const crashFlightAge = timeToMultiplier(state.result?.multiplier ?? 100) / 1000
+    const crashFlightAge = timeToMultiplier(state.multiplier) / 1000
     const fall = fallPosition(crashFlightAge, resultAge * 1000, state.multiplier)
     const falling = crashed && fall.phase === 'falling'
     const landed = crashed && fall.phase === 'impact'

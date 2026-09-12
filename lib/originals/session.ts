@@ -1,7 +1,8 @@
+import { CREDIT_SCALE, INITIAL_CREDIT_UNITS, MAX_CREDIT_UNITS } from './credits'
 export const DEMO_STORAGE_KEY = 'playliva.originals.session'
-export const DEMO_SCHEMA_VERSION = 1
-export const INITIAL_CREDITS = 10_000
-export const MAX_CREDITS = 1_000_000_000
+export const DEMO_SCHEMA_VERSION = 2
+// API method/field names remain stable; all amounts in v2 are integer hundredths.
+export { INITIAL_CREDIT_UNITS, MAX_CREDIT_UNITS } from './credits'
 export const HISTORY_LIMIT = 50
 
 export interface GameSettings { sound: boolean; haptics: boolean }
@@ -31,11 +32,11 @@ export interface DemoSnapshot { session: DemoSession; storageStatus: StorageStat
 type StorageAccess = () => Pick<Storage, 'getItem' | 'setItem'> | null
 
 export function initialSession(): DemoSession {
-  return { version: DEMO_SCHEMA_VERSION, balance: INITIAL_CREDITS, sequence: 0,
+  return { version: DEMO_SCHEMA_VERSION, balance: INITIAL_CREDIT_UNITS, sequence: 0,
     settings: { sound: false, haptics: false }, transactions: [] }
 }
 
-const integer = (value: unknown, max = MAX_CREDITS): value is number =>
+const integer = (value: unknown, max = MAX_CREDIT_UNITS): value is number =>
   Number.isSafeInteger(value) && (value as number) >= 0 && (value as number) <= max
 export const isDemoIdentifier = (value: unknown): value is string =>
   typeof value === 'string' && /^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$/.test(value)
@@ -44,23 +45,26 @@ const validContext = (context: TransactionContext) =>
   (context.gameId === undefined || isDemoIdentifier(context.gameId)) &&
   (context.roundId === undefined || isDemoIdentifier(context.roundId))
 
-/** Rebuild only known fields. Unsupported schemas are reset, never guessed/migrated. */
+/** Validate the complete original ledger BEFORE converting v1 whole credits.
+ * Only this known migration is supported; v2 never receives another scale-up. */
 export function decodeSession(raw: string | null): DemoSession | null {
   if (!raw || raw.length > 32_768) return null
   try {
     const value = JSON.parse(raw)
-    if (value?.version !== DEMO_SCHEMA_VERSION || !integer(value.balance) ||
+    const scale = value?.version === 1 ? CREDIT_SCALE : 1
+    const maximum = MAX_CREDIT_UNITS / scale, initial = INITIAL_CREDIT_UNITS / scale
+    if (![1, DEMO_SCHEMA_VERSION].includes(value?.version) || !integer(value.balance, maximum) ||
       !integer(value.sequence, Number.MAX_SAFE_INTEGER) ||
       typeof value.settings?.sound !== 'boolean' || typeof value.settings?.haptics !== 'boolean' ||
       !Array.isArray(value.transactions) || value.transactions.length !== Math.min(value.sequence, HISTORY_LIMIT)) return null
     const transactions: DemoTransaction[] = []
     for (const item of value.transactions) {
       if (!item || !['debit', 'credit', 'reset'].includes(item.kind) ||
-        !integer(item.amount) || !integer(item.balance) || !integer(item.at, Number.MAX_SAFE_INTEGER) ||
+        !integer(item.amount, maximum) || !integer(item.balance, maximum) || !integer(item.at, Number.MAX_SAFE_INTEGER) ||
         !integer(item.sequence, Number.MAX_SAFE_INTEGER) || item.sequence < 1 || !validContext(item) ||
         (item.kind !== 'reset' && item.amount === 0) ||
-        (item.kind === 'reset' && (item.balance !== INITIAL_CREDITS || item.amount !== INITIAL_CREDITS))) return null
-      const previous = transactions.at(-1) ?? (item.sequence === 1 ? { balance: INITIAL_CREDITS, sequence: 0 } : undefined)
+        (item.kind === 'reset' && (item.balance !== initial || item.amount !== initial))) return null
+      const previous = transactions.at(-1) ?? (item.sequence === 1 ? { balance: initial, sequence: 0 } : undefined)
       if (previous && (item.sequence !== previous.sequence + 1 ||
         (item.kind === 'debit' && item.balance !== previous.balance - item.amount) ||
         (item.kind === 'credit' && item.balance !== previous.balance + item.amount))) return null
@@ -71,9 +75,10 @@ export function decodeSession(raw: string | null): DemoSession | null {
     }
     const last = transactions.at(-1)
     if (last ? last.sequence !== value.sequence || last.balance !== value.balance
-      : value.sequence !== 0 || value.balance !== INITIAL_CREDITS) return null
-    return { version: DEMO_SCHEMA_VERSION, balance: value.balance, sequence: value.sequence,
-      settings: { sound: value.settings.sound, haptics: value.settings.haptics }, transactions }
+      : value.sequence !== 0 || value.balance !== initial) return null
+    return { version: DEMO_SCHEMA_VERSION, balance: value.balance * scale, sequence: value.sequence,
+      settings: { sound: value.settings.sound, haptics: value.settings.haptics },
+      transactions: transactions.map(item => ({ ...item, amount: item.amount * scale, balance: item.balance * scale })) }
   } catch { return null }
 }
 
@@ -145,7 +150,7 @@ export function createDemoSessionStore(
     if (!validContext(context)) return { ok: false, reason: 'invalid-context' }
     const state = snapshot.session
     if (kind === 'debit' && amount > state.balance) return { ok: false, reason: 'insufficient-credits' }
-    const balance = kind === 'reset' ? INITIAL_CREDITS : state.balance + (kind === 'debit' ? -amount : amount)
+    const balance = kind === 'reset' ? INITIAL_CREDIT_UNITS : state.balance + (kind === 'debit' ? -amount : amount)
     if (!integer(balance)) return { ok: false, reason: 'balance-limit' }
     if (state.sequence === Number.MAX_SAFE_INTEGER) return { ok: false, reason: 'history-limit' }
     const sequence = state.sequence + 1
@@ -176,7 +181,7 @@ export function createDemoSessionStore(
     },
     debit: (amount: number, context?: TransactionContext) => transact('debit', amount, context),
     credit: (amount: number, context?: TransactionContext) => transact('credit', amount, context),
-    reset: () => transact('reset', INITIAL_CREDITS),
+    reset: () => transact('reset', INITIAL_CREDIT_UNITS),
     setSettings(settings: GameSettings): boolean {
       hydrate()
       if (typeof settings?.sound !== 'boolean' || typeof settings?.haptics !== 'boolean') return false

@@ -27,7 +27,7 @@ for(const point of [100,110,250,1000,10000]) test(`${point/100}x loss freezes be
   const flightMs=timeToMultiplier(point), crashAt=contact+flightMs, duration=fallDurationMs(flightMs)
   f.at(crashAt+.0001)
   const snapshot=f.snapshot(), balance=f.wallet.getSnapshot().session.balance
-  assert.equal(snapshot.phase,'crashed'); assert.equal(snapshot.multiplier,point); assert.equal(snapshot.result.payout,0)
+  assert.equal(snapshot.phase,'falling'); assert.equal(snapshot.multiplier,point); assert.equal(snapshot.result.payout,0)
   const start=flightPosition(flightMs/1000,point), fall=fallPosition(flightMs/1000,0,point)
   assert.equal(fall.x,start.x); assert.equal(fall.y,start.y)
   assert.ok(duration>=400 && duration<=900)

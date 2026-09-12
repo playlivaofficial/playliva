@@ -41,12 +41,14 @@ fullscreen rejection produces a localized non-fatal message.
 
 ## Guest wallet and storage
 
-Storage key: `playliva.originals.session`. Schema version: `1`.
+Storage key: `playliva.originals.session`. Current schema version: `2` (M5.4).
+The method and field names are unchanged; every amount is now an integer subunit,
+with **100 subunits = 1 Liva Credit**. See the [M5.4 report](m5.4-continuous-cashout.md).
 
 ```ts
 {
-  version: 1,
-  balance: number,        // integer Liva Credits, 0..1,000,000,000
+  version: 2,
+  balance: number,        // integer subunits, 0..100,000,000,000
   sequence: number,       // safe integer, monotonically increasing
   settings: { sound: boolean, haptics: boolean },
   transactions: [{        // at most 50, oldest entries evicted first
@@ -61,8 +63,8 @@ Storage key: `playliva.originals.session`. Schema version: `1`.
 }
 ```
 
-Initial and reset balance: **10,000 Liva Credits**. Debit/credit accept positive
-safe integers only. Insufficient credits, invalid context, overflow and exhausted
+Initial and reset balance: **10,000.00 Liva Credits / 1,000,000 subunits**.
+Debit/credit accept positive safe integer subunits only. Insufficient credits, invalid context, overflow and exhausted
 sequence numbers return explicit failures without changing balance/history.
 Reset records the new allocation (not a monetary payout), preserves settings and
 retains bounded history. No arbitrary balance setter exists. Zero payouts require
@@ -71,9 +73,12 @@ no credit transaction; M5 can correlate round events with optional round IDs.
 Snapshots are immutable. The store hydrates after React subscribes, with a stable
 server snapshot. It rebuilds only known schema fields and validates settings,
 numbers, history length, sequencing and balance continuity. Empty/missing storage
-starts a guest session. Malformed/oversized data and unknown versions (older or
-newer) reset to the initial session with a visible recovery notice. There is no
-speculative migration; a future version must add an explicit reviewed migration.
+starts a guest session. M5.4 explicitly validates the entire v1 ledger in its
+original whole-credit units, then multiplies balance and transaction amounts/
+balances by 100. Settings, sequence numbers, timestamps and round/game identifiers
+are preserved. Valid bounded history is retained; v2 reloads never scale again.
+Malformed/oversized data and unknown versions reset to the initial session with
+a visible recovery notice. There is no speculative migration for other versions.
 
 Unavailable storage and quota failures keep the wallet usable in memory and show
 that saving is unavailable. Multiple components share one provider/store. Tabs

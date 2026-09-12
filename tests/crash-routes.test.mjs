@@ -38,7 +38,9 @@ test('renderer imports and character URLs stay inside the Crash integration', as
   assert.match(game, /<DemoSessionProvider>/)
   assert.match(game, /<PlayGameShell/)
   assert.match(game, /<Image src=\{ISLAND_CRASH_POSTER\}[^>]*priority/)
-  assert.match(game, /disabled=\{!available \|\| load !== 'ready'\}/)
+  assert.match(game, /<CrashAction round=\{round\} locale=\{locale\} loaded=\{load === 'ready'\}/)
+  const action = await readFile(new URL('../components/originals/crash/crash-action.tsx', import.meta.url), 'utf8')
+  assert.match(action, /disabled=\{round.phase !== 'ready' \|\| !loaded\}/)
   for (const path of ['app/layout.tsx', 'app/[locale]/layout.tsx', 'components/play-view.tsx']) {
     const source = await readFile(new URL(`../${path}`, import.meta.url), 'utf8')
     assert.doesNotMatch(source, /island-scene|three|originals\/crash/)

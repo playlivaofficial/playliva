@@ -169,3 +169,12 @@ frozen during the fall. New runtime derivatives retain source rigs/keyframes
 and reduce the two models to 4.42 MB raw / 2.78 MB gzip, with a lightweight
 tropical loading poster. Discovery and the shared wallet remain unchanged.
 See [the M5.3 implementation and QA report](docs/m5.3-final-crash-polish.md).
+
+## M5.4 continuous round and decimal credits
+
+Cashout now settles only the player's wager. The visible round keeps flying to
+its original crash point, followed by the unchanged M5.3 fall/impact/reset.
+The action shows a live two-decimal return and then a disabled, locked payout.
+Wallet schema v2 uses integer hundredths with a validated, one-time v1 migration;
+no floating-point balance accounting is introduced. See the
+[M5.4 implementation and QA report](docs/m5.4-continuous-cashout.md).

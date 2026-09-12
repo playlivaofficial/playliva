@@ -5,7 +5,7 @@ import realModule from '../lib/originals/play-real.ts'
 import affiliateModule from '../lib/affiliate.ts'
 import dataModule from '../lib/data.ts'
 import copyModule from '../lib/originals/copy.ts'
-const { createDemoSessionStore, decodeSession, DEMO_STORAGE_KEY, INITIAL_CREDITS, MAX_CREDITS, HISTORY_LIMIT } = sessionModule
+const { createDemoSessionStore, decodeSession, DEMO_STORAGE_KEY, INITIAL_CREDIT_UNITS: INITIAL_CREDITS, MAX_CREDIT_UNITS: MAX_CREDITS, HISTORY_LIMIT } = sessionModule
 const { getPlayRealOptions } = realModule
 const { getOperator } = dataModule
 const memory = () => {
@@ -13,18 +13,18 @@ const memory = () => {
   return { getItem: key => data.get(key) ?? null, setItem: (key, value) => data.set(key, value) }
 }
 
-test('demo wallet starts at 10,000 integer credits; debit, credit and reset are bounded and immutable', () => {
+test('demo wallet starts at 10,000 credits in integer subunits; debit, credit and reset are bounded and immutable', () => {
   const store = createDemoSessionStore(() => null, () => 1234)
   assert.equal(store.getSnapshot().session.balance, INITIAL_CREDITS)
   assert.deepEqual(store.debit(250, { gameId: 'test-only', roundId: 'round-1' }), { ok: true })
   const previous = store.getSnapshot()
-  assert.equal(previous.session.balance, 9750)
+  assert.equal(previous.session.balance, INITIAL_CREDITS - 250)
   assert.deepEqual(store.credit(100), { ok: true })
-  assert.equal(store.getSnapshot().session.balance, 9850)
-  assert.equal(previous.session.balance, 9750)
+  assert.equal(store.getSnapshot().session.balance, INITIAL_CREDITS - 150)
+  assert.equal(previous.session.balance, INITIAL_CREDITS - 250)
   assert.throws(() => { previous.session.balance = 42 }, TypeError)
-  assert.deepEqual(store.debit(9851), { ok: false, reason: 'insufficient-credits' })
-  assert.equal(store.getSnapshot().session.balance, 9850)
+  assert.deepEqual(store.debit(INITIAL_CREDITS - 149), { ok: false, reason: 'insufficient-credits' })
+  assert.equal(store.getSnapshot().session.balance, INITIAL_CREDITS - 150)
   assert.equal(store.reset().ok, true)
   assert.equal(store.getSnapshot().session.balance, INITIAL_CREDITS)
   assert.equal(store.getSnapshot().session.transactions.at(-1).kind, 'reset')
@@ -76,7 +76,7 @@ test('corruption, unknown/older schemas and inconsistent records safely reset', 
   good.debit(10)
   const state = good.getSnapshot().session
   const invalid = ['{bad', 'null', '[]', 'x'.repeat(32769),
-    ...[{ ...state, version: 0 }, { ...state, version: 2 }, { ...state, balance: -1 },
+    ...[{ ...state, version: 0 }, { ...state, version: 3 }, { ...state, balance: -1 },
       { ...state, balance: 99 }, { ...state, settings: { sound: 'true', haptics: false } },
       { ...state, transactions: [] }, { ...state, transactions: [null] },
       { ...state, transactions: [{ ...state.transactions[0], sequence: 4 }] },

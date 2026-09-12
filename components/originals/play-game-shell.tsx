@@ -6,6 +6,7 @@ import { useCountry } from '@/components/country-context'
 import { useDemoSession } from './demo-session'
 import { PlayRealCTA } from './play-real-cta'
 import { originalsCopy } from '@/lib/originals/copy'
+import { formatCredits } from '@/lib/originals/credits'
 import { trackFreePlay } from '@/lib/originals/analytics'
 import type { OriginalGameDefinition } from '@/lib/originals/definition'
 
@@ -25,7 +26,7 @@ export function PlayGameShell({ game, children, controls, roundActive = false, c
   const { locale, countryCode } = useCountry()
   const { session, storageStatus, wallet } = useDemoSession()
   const copy = originalsCopy(locale)
-  const format = (value: number) => new Intl.NumberFormat(locale).format(value)
+  const format = (value: number) => formatCredits(value, locale)
   const root = useRef<HTMLElement>(null)
   const opened = useRef<string | null>(null)
   const [resetOpen, setResetOpen] = useState(false)
@@ -54,7 +55,7 @@ export function PlayGameShell({ game, children, controls, roundActive = false, c
         <p className="mt-2 text-xs font-semibold tracking-wide">{copy.freePlay} · {copy.demo}</p></div>
       <div className={`rounded-xl border border-border bg-card ${compact ? 'p-2 sm:px-4' : 'px-4 py-3'}`}>
         <p className="text-xs text-muted-foreground">{copy.balance}</p>
-        <p className="font-display text-xl font-bold" aria-live="polite">{format(session.balance)} <span className={compact ? 'block text-[10px] sm:inline sm:text-xs' : 'text-sm'}>{copy.credits}</span></p>
+        <p className={`font-display font-bold ${compact ? 'text-base sm:text-xl' : 'text-xl'}`} aria-live="polite">{format(session.balance)} <span className={compact ? 'block text-[10px] sm:inline sm:text-xs' : 'text-sm'}>{copy.credits}</span></p>
       </div>
     </header>
     <p className={`${compact ? 'text-xs' : 'text-sm'} text-muted-foreground`}>{copy.boundary}</p>

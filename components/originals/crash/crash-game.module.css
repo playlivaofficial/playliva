@@ -8,10 +8,11 @@
 .hud { position: absolute; z-index: 1; top: 32px; inset-inline: 10px; text-align: center; pointer-events: none; color: #fffefa; text-shadow: 0 2px 0 #19495944; }
 .phase { display: inline-block; border-radius: 999px; padding: 3px 9px; background: #d8fff066; backdrop-filter: blur(5px); font-size: clamp(11px, 1.4vw, 15px); font-weight: 800; letter-spacing: .16em; color: #164b62; }
 .multiplier { white-space: nowrap; font-variant-numeric: tabular-nums; font-size: clamp(64px, 6vw, 88px); line-height: 1.08; letter-spacing: -.055em; font-weight: 900; text-shadow: 0 4px 0 #25637b55, 0 8px 30px #1c586944; }
-.multiplier[data-safe] { color: #e4ffc1; text-shadow: 0 3px 0 #286640; }
 .multiplier[data-crashed] { color: #ffe29a; text-shadow: 0 3px 0 #9a582b; }
-.result { position: absolute; top: 250px; inset-inline-start: 8px; display: inline-block; max-width: calc(100% - 16px); border: 1px solid #d9fff044; border-radius: 999px; background: #0b344de8; backdrop-filter: blur(8px); padding: 8px 16px; color: #fff; font-size: 14px; font-weight: 700; text-shadow: none; box-shadow: 0 8px 24px #052b3e33; }
+.result { position: absolute; z-index: 1; bottom: 16px; inset-inline-start: 16px; display: grid; max-width: 42%; border: 1px solid #d9fff044; border-radius: 12px; background: #0b344de8; backdrop-filter: blur(8px); padding: 8px 12px; color: #fff; font-size: 14px; font-weight: 700; text-shadow: none; box-shadow: 0 8px 24px #052b3e33; pointer-events: none; overflow-wrap: anywhere; }
+.result[data-won=true] { border-color: #b9f56b88; }
 .result span { font-weight: 400; font-size: 11px; }
+.result strong { font-variant-numeric: tabular-nums; font-size: 18px; }
 .loader { position: absolute; inset: 0; z-index: 2; isolation: isolate; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 8px; padding: 24px; text-align: center; background: #173b4b; color: #f2fbff; }
 .loadingPoster { z-index: -2; object-fit: cover; }
 .loader::before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, #09253505 10%, #09253560 40%, #071c31f5 100%); }
@@ -45,7 +46,8 @@
 .action:active:enabled { transform: translateY(2px); box-shadow: inset 0 1px #a7e5ff, 0 2px 0 #12629e; }
 .action:disabled { background: #23374a; color: #89a0b4; box-shadow: inset 0 1px #35536a; cursor: default; font-size: 13px; }
 .cashout { background: linear-gradient(130deg, #d7ff92, #8ade59); color: #203e1e; box-shadow: inset 0 1px #efffcc, 0 4px 0 #508336; }
-.cashout strong { display: block; font-size: 24px; line-height: 1.2; }
+.action strong { display: block; font-size: clamp(14px, 1.5vw, 24px); line-height: 1.2; font-variant-numeric: tabular-nums; letter-spacing: 0; overflow-wrap: anywhere; }
+.action[data-action=locked] { color: #c4e3ae; }
 .error { grid-column: 1 / -1; font-size: 13px; color: #ffc7a3; }
 .details { max-width: 1280px; margin: 0 auto; padding: 0 24px 36px; color: #91a8ba; font-size: 13px; }
 .details > p { margin-top: 16px; font-size: 12px; }
@@ -63,15 +65,17 @@
   .controls { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
   .actionGroup { grid-column: 1 / -1; grid-row: 3; }
   .action { min-height: 60px; font-size: 18px; }
-  .cashout { display: flex; align-items: center; justify-content: center; gap: 20px; }
+  .action[data-action=cashout], .action[data-action=locked] { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 7px 8px; }
+  .action > span { font-size: 12px; line-height: 14px; }
+  .action strong { font-size: clamp(14px, 5.5vw, 22px); line-height: 24px; }
   .autoToggle { font-size: 11px; }
   .viewport { height: 320px; }
   .sceneBrand { font-size: 8px; top: 12px; left: 12px; }
   .sceneBrand span { font-size: 9px; }
   .hud { top: 44px; }
   .phase { letter-spacing: .1em; }
-  .result { top: 220px; font-size: 12px; padding: 6px 12px; }
+  .result { bottom: 12px; inset-inline-start: 10px; font-size: 12px; padding: 6px 8px; }
   .details { padding-inline: 16px; }
 }
-@media (max-width: 360px) { .viewport { height: 260px; } .hud { top: 35px; } .phase { font-size: 10px; } .multiplier { font-size: 58px; } .result { top: 165px; inset-inline-start: 0; padding: 5px 8px; font-size: 11px; } }
+@media (max-width: 360px) { .viewport { height: 260px; } .hud { top: 35px; } .phase { font-size: 10px; } .multiplier { font-size: 58px; } .result span { font-size: 10px; } .result strong { font-size: 15px; } }
 @media (prefers-reduced-motion: reduce) { .loadingBar::after { animation: none; width: 100%; } }
