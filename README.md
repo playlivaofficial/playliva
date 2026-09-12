@@ -98,6 +98,12 @@ for normal development/CI. pnpm may report blocked build scripts for transitive
 `msw`/`unrs-resolver`; the verified gates do not need those scripts, and they
 must not be broadly enabled just to silence the notice.
 
+Vercel manages Node minor/patch releases within the selected major version.
+`engines.node` therefore declares `24.x` compatibility; `.nvmrc` and GitHub CI
+still pin Node 24.20.0 for reproducible development. Keep pnpm pinned to 10.30.3
+and keep `.npmrc` strict checks enabled. An exact Node patch in `engines.node`
+blocks Vercel installs when its managed Node 24 release differs.
+
 ## Current boundaries
 
 URL locales are `/en`, `/pt-br` and `/es-mx`; selected market is independent.
