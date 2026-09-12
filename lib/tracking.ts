@@ -21,6 +21,12 @@ export type TrackEventName =
   | 'operator_view'
   | 'affiliate_impression'
   | 'affiliate_click'
+  | 'free_play_open'
+  | 'demo_round_start'
+  | 'demo_round_complete'
+  | 'demo_balance_reset'
+  | 'play_real_view'
+  | 'play_real_click'
 
 export type PageType =
   | 'home'

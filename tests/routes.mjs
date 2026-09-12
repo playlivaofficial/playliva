@@ -143,7 +143,8 @@ try {
   }
   for (const locale of LOCALE_SEGMENTS) {
     for (const path of [`/${locale}/missing-page`, `/${locale}/games/missing-game`, `/${locale}/operators/missing-operator`,
-      `/${locale}/sports/missing-sport`, `/${locale}/play/crash`]) {
+      `/${locale}/sports/missing-sport`,
+      ...['crash', 'slots', 'blackjack', 'roulette', 'mines', 'plinko', 'test-only'].map(slug => `/${locale}/play/${slug}`)]) {
       const response = await fetch(base + path)
       assert.equal(response.status, 404, path)
       const doc = new JSDOM(await response.text()).window.document

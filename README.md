@@ -134,5 +134,13 @@ LivaSports redirect; a verified target and route mapping require separate approv
 
 The existing `/[locale]/play` discovery page remains; only its category shortcuts
 changed. Nested `/[locale]/play/...` routes need no preparatory routing changes.
-M4 must define that boundary before implementation. No free-game placeholders,
-balances, Play Real flows, Originals sections, or M11 homepage features were added.
+No public free-game placeholders, balances, Play Real flows, Originals sections,
+or M11 homepage features were added by M3 or M4.
+
+## M4 shared Free Play foundation
+
+Read [the Originals integration contract](docs/originals.md) before building a
+game. Reusable wallet/session logic lives in `lib/originals/`; the isolated
+provider, game shell and Play Real component live in `components/originals/`.
+No current route imports them. M4 registers no games, adds no public play URLs,
+and adds no game-engine dependency. The UI harness exists only in tests.
