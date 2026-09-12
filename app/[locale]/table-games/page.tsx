@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
-import { SportsLandingView } from '@/components/sports/sports-landing-view'
+import { CategoryPageView } from '@/components/category-page-view'
+import { getCategoryContent } from '@/lib/content'
 import { pageMetadata } from '@/lib/seo'
 import {
   DEFAULT_LOCALE_SEGMENT,
@@ -18,15 +19,15 @@ export async function generateMetadata({
     isLocaleSegment(localeSegment) ? localeSegment : DEFAULT_LOCALE_SEGMENT,
   )
   const t = createTranslator(locale)
+  const category = getCategoryContent('table-games', locale)
   return pageMetadata({
-    title: t('seo.sportsPageTitle'),
-    description: t('seo.sportsPageDescription'),
-    path: '/sports',
+    title: category.name,
+    description: `${category.description} ${t('seo.categoryAvailabilitySuffix')}`,
+    path: '/table-games',
     localeSegment,
-    index: false,
   })
 }
 
-export default function SportsPage() {
-  return <SportsLandingView />
+export default function TableGamesPage() {
+  return <CategoryPageView slug="table-games" />
 }

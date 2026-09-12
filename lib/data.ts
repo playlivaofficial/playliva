@@ -107,10 +107,16 @@ export const CATEGORIES: Category[] = [
     cta: 'Explore Live',
   },
   {
-    slug: 'sports',
-    name: 'Sports',
-    description: 'Find sportsbooks and betting options available in your market.',
-    cta: 'Explore Sports',
+    slug: 'table-games',
+    name: 'Table Games',
+    description: 'Explore casino table games and their rules.',
+    cta: 'Explore Table Games',
+  },
+  {
+    slug: 'instant-games',
+    name: 'Instant Games',
+    description: 'Discover Mines, Plinko and their instant-game mechanics.',
+    cta: 'Explore Instant Games',
   },
 ]
 
@@ -201,7 +207,7 @@ export const GAMES: Game[] = [
     id: 'g4',
     slug: 'mines',
     title: 'Mines',
-    category: 'crash',
+    category: 'instant-games',
     provider: 'Spribe',
     image: '/games/mines.jpeg',
     imageAlt: 'Mines by Spribe',
@@ -326,7 +332,7 @@ export const GAMES: Game[] = [
     id: 'g10',
     slug: 'plinko',
     title: 'Plinko',
-    category: 'crash',
+    category: 'instant-games',
     provider: 'Spribe',
     image: '/games/plinko.jpeg',
     imageAlt: 'Plinko by Spribe',
@@ -376,7 +382,8 @@ export const GAMES: Game[] = [
     id: 'g12',
     slug: 'blackjack-live',
     title: 'Blackjack Live',
-    category: 'live-casino',
+    category: 'table-games',
+    affiliateCategory: 'live-casino',
     provider: 'Evolution',
     image: '/games/blackjack-live.jpg',
     imageAlt: 'Blackjack Live',
@@ -418,7 +425,7 @@ export function getRelatedGames(
   country?: CountryCode,
   limit = 4,
 ): Game[] {
-  let list = getGamesByIds(game.relatedGameIds)
+  let list = getGamesByIds(game.relatedGameIds).filter((g) => g.category === game.category && g.id !== game.id)
   // Backfill with same-category games if editorial list is short.
   if (list.length < limit) {
     const extra = GAMES.filter(
@@ -599,7 +606,7 @@ export const GAME_LISTS: GameList[] = [
     title: 'Best Crash Games in Brazil',
     country: 'BR',
     category: 'crash',
-    gameIds: ['g1', 'g2', 'g3', 'g4'],
+    gameIds: ['g1', 'g2', 'g3'],
     intro:
       'Crash games are among the most-played titles in Brazil. This editorial selection highlights the crash games Brazilian players discover most often, with a short explanation of what makes each one distinct.',
     editorialContent:
@@ -613,7 +620,7 @@ export const GAME_LISTS: GameList[] = [
     title: 'Best Crash Games in Mexico',
     country: 'MX',
     category: 'crash',
-    gameIds: ['g1', 'g3', 'g2', 'g4'],
+    gameIds: ['g1', 'g3', 'g2'],
     intro:
       'Crash games have a strong following in Mexico. This selection covers the crash titles Mexican players explore most, with clear notes on how they differ.',
     editorialContent:
@@ -1064,6 +1071,13 @@ export function affiliateGameSlug(context: AffiliateContext): string | undefined
   return context.gameSlug || (gamePage ? context.pageSlug || undefined : undefined)
 }
 
+/** Resolve commercial classification without changing partner records or destinations. */
+export function affiliateCategory(context: AffiliateContext): string | undefined {
+  const slug = affiliateGameSlug(context)
+  const game = slug ? getGame(slug) : undefined
+  return game?.affiliateCategory ?? context.category ?? game?.category
+}
+
 /** Authoritative public outbound gate, shared by lists, CTAs and redirects. */
 export function isAffiliateEligible(
   operator: Operator | undefined,
@@ -1072,14 +1086,17 @@ export function isAffiliateEligible(
 ): boolean {
   if (!operator || !operator.active || !operator.verified || operator.isMock ||
     operator.affiliateStatus !== 'approved' ||
+    !operator.categories.some(isCategorySlug) ||
     !PUBLIC_COUNTRIES.some((c) => c.code === country) ||
     !operator.countries.includes(country) ||
     !isAffiliateUrl(operator.affiliateUrl[country])) return false
 
   // Sports fixtures have no verified operator availability model yet.
   if (context.matchSlug || context.placement === 'sports_odds') return false
-  if (context.category && (!isCategorySlug(context.category) ||
-    !operator.categories.includes(context.category))) return false
+  if (context.category && !isCategorySlug(context.category)) return false
+  const commercialCategory = affiliateCategory(context)
+  if (commercialCategory && (!isCategorySlug(commercialCategory) ||
+    !operator.categories.includes(commercialCategory))) return false
 
   const gameSlug = affiliateGameSlug(context)
   const requiresGame = ['game', 'games_like', 'where_to_play'].includes(context.pageType ?? '') ||
@@ -1088,11 +1105,12 @@ export function isAffiliateEligible(
   if (gameSlug) {
     const game = getGame(gameSlug)
     if (!game || !game.countries.includes(country) ||
-      !operator.categories.includes(game.category) ||
-      (context.category && context.category !== game.category) ||
+      !operator.categories.includes(game.affiliateCategory ?? game.category) ||
+      // Preserve previously issued game links carrying the commercial category.
+      (context.category && context.category !== game.category && context.category !== game.affiliateCategory) ||
       !isGameVerifiedAtOperator(operator, game.id, country)) return false
   }
-  const category = context.category || (gameSlug ? getGame(gameSlug)?.category : undefined)
+  const category = commercialCategory
   const destination = category && isCategorySlug(category)
     ? operator.categoryAffiliateUrl?.[category]?.[country] ?? operator.affiliateUrl[country]
     : operator.affiliateUrl[country]

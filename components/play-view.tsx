@@ -1,7 +1,7 @@
 'use client'
 
 import { LocaleLink } from '@/components/locale-link'
-import { Rocket, Dices, Radio, Trophy, Zap } from 'lucide-react'
+import { Rocket, Dices, Radio, Spade, Zap } from 'lucide-react'
 import { useCountry } from '@/components/country-context'
 import { getCountryName } from '@/lib/data'
 import { Section, SectionHeading } from '@/components/section'
@@ -15,7 +15,8 @@ const QUICK: { slug: CategorySlug; key: string; icon: typeof Zap }[] = [
   { slug: 'crash', key: 'nav.crash', icon: Zap },
   { slug: 'slots', key: 'nav.slots', icon: Dices },
   { slug: 'live-casino', key: 'nav.live', icon: Radio },
-  { slug: 'sports', key: 'nav.sports', icon: Trophy },
+  { slug: 'table-games', key: 'nav.tableGames', icon: Spade },
+  { slug: 'instant-games', key: 'nav.instantGames', icon: Zap },
 ]
 
 export function PlayView() {

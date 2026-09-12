@@ -108,8 +108,31 @@ blocks Vercel installs when its managed Node 24 release differs.
 
 URL locales are `/en`, `/pt-br` and `/es-mx`; selected market is independent.
 Affiliate redirects use `/go`, static operator eligibility and source data.
-Sports remains demo data. The contact form opens a draft in the visitor's email
+Legacy PlayLiva Sports pages remain an unpromoted demo archive. The contact form opens a draft in the visitor's email
 app and has no delivery backend or sent-message confirmation. Do not
 mistake those existing limitations for a request to implement product changes.
 Vercel project/environment/domain settings are managed outside this repository;
 the canonical-host redirect is owned there. No deployment is part of setup.
+
+## M3 structure and transition boundaries
+
+Discovery categories are Crash, Slots, Live Casino, Table Games and Instant
+Games. Mines/Plinko are Instant Games; Blackjack Live is Table Games. Game
+slugs remain stable. Blackjack retains its verified live-casino commercial
+classification via `affiliateCategory`; discovery changes do not grant new
+operator/category approvals or alter partner URLs.
+
+Sports in desktop/mobile navigation and the fourth homepage card links directly
+to `https://livasports.com` in the same tab, without locale paths or affiliate
+tracking. It is a cross-network entry, not an internal discovery category.
+Table Games and Instant Games remain available through navigation and the game
+explorer. Legacy Sports pages have no betting actions. Existing
+localized Sports landing and detail pages remain HTTP 200/noindex and outside
+the sitemap. Crawlers can still access them to read the noindex directive. All
+show archive/demo notices. Their URLs are preserved for a future explicit
+LivaSports redirect; a verified target and route mapping require separate approval.
+
+The existing `/[locale]/play` discovery page remains; only its category shortcuts
+changed. Nested `/[locale]/play/...` routes need no preparatory routing changes.
+M4 must define that boundary before implementation. No free-game placeholders,
+balances, Play Real flows, Originals sections, or M11 homepage features were added.

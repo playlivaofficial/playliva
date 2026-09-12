@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Menu, X } from 'lucide-react'
+import { Dropdown } from '@/components/ui/dropdown'
 import { Logo } from '@/components/logo'
 import { Button } from '@/components/ui/button'
 import { LanguageSelector } from '@/components/language-selector'
@@ -16,8 +17,11 @@ const NAV: { href: string; key: string }[] = [
   { href: '/crash', key: 'nav.crash' },
   { href: '/slots', key: 'nav.slots' },
   { href: '/live-casino', key: 'nav.liveCasino' },
-  { href: '/sports', key: 'nav.sports' },
+  { href: 'https://livasports.com', key: 'nav.sports' },
+  { href: '/table-games', key: 'nav.tableGames' },
+  { href: '/instant-games', key: 'nav.instantGames' },
   { href: '/offers', key: 'nav.offers' },
+  { href: '/operators', key: 'nav.operators' },
 ]
 
 export function SiteHeader() {
@@ -51,7 +55,7 @@ export function SiteHeader() {
         <div className="flex items-center gap-8">
           <Logo />
           <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary">
-            {NAV.map((item) => {
+            {NAV.slice(0, 5).map((item) => {
               const active = activePath === item.href
               return (
                 <LocaleLink
@@ -68,6 +72,14 @@ export function SiteHeader() {
                 </LocaleLink>
               )
             })}
+            <Dropdown trigger={t('nav.more')} label={t('nav.more')} align="start">
+              {(close) => NAV.slice(5).map((item) => (
+                <LocaleLink key={item.href} href={item.href} role="menuitem" onClick={close}
+                  className={cn('block rounded-lg px-3 py-2 text-sm hover:bg-muted', activePath === item.href && 'text-primary')}>
+                  {t(item.key)}
+                </LocaleLink>
+              ))}
+            </Dropdown>
           </nav>
         </div>
 
@@ -80,8 +92,8 @@ export function SiteHeader() {
           </Button>
 
           {/* Mobile controls */}
-          <div className="flex items-center gap-2 md:hidden">
-            <LanguageSelector compact />
+          <div className="flex items-center gap-2 lg:hidden">
+            <div className="md:hidden"><LanguageSelector compact /></div>
             <button
               type="button"
               aria-label={menuOpen ? t('nav.closeMenu') : t('nav.openMenu')}

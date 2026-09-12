@@ -533,7 +533,7 @@ interface CategoryContent {
   cta: string
 }
 
-const CATEGORY_CONTENT: Record<Locale, Record<CategorySlug, CategoryContent>> = {
+const CATEGORY_CONTENT: Record<Locale, Record<CategorySlug | 'sports', CategoryContent>> = {
   'pt-BR': {
     crash: {
       name: 'Crash',
@@ -550,10 +550,12 @@ const CATEGORY_CONTENT: Record<Locale, Record<CategorySlug, CategoryContent>> = 
       description: 'Explore mesas com dealer ao vivo e experiências de cassino.',
       cta: 'Explorar ao Vivo',
     },
+    'table-games': { name: 'Jogos de Mesa', description: 'Explore jogos de mesa de cassino e suas regras.', cta: 'Explorar Jogos de Mesa' },
+    'instant-games': { name: 'Jogos Instantâneos', description: 'Descubra Mines, Plinko e suas mecânicas de jogos instantâneos.', cta: 'Explorar Jogos Instantâneos' },
     sports: {
-      name: 'Apostas Esportivas',
-      description: 'Encontre casas de apostas e opções disponíveis no seu mercado.',
-      cta: 'Explorar Esportes',
+      name: 'Esportes',
+      description: 'Visite o LivaSports, o site de esportes da nossa rede.',
+      cta: 'Visitar LivaSports',
     },
   },
   'es-MX': {
@@ -572,10 +574,12 @@ const CATEGORY_CONTENT: Record<Locale, Record<CategorySlug, CategoryContent>> = 
       description: 'Explora mesas con dealer en vivo y experiencias de casino.',
       cta: 'Explorar en Vivo',
     },
+    'table-games': { name: 'Juegos de Mesa', description: 'Explora juegos de mesa de casino y sus reglas.', cta: 'Explorar Juegos de Mesa' },
+    'instant-games': { name: 'Juegos Instantáneos', description: 'Descubre Mines, Plinko y sus mecánicas de juegos instantáneos.', cta: 'Explorar Juegos Instantáneos' },
     sports: {
-      name: 'Apuestas Deportivas',
-      description: 'Encuentra casas de apuestas y opciones disponibles en tu mercado.',
-      cta: 'Explorar Deportes',
+      name: 'Deportes',
+      description: 'Visita LivaSports, el sitio de deportes de nuestra red.',
+      cta: 'Visitar LivaSports',
     },
   },
   en: {
@@ -594,15 +598,17 @@ const CATEGORY_CONTENT: Record<Locale, Record<CategorySlug, CategoryContent>> = 
       description: 'Explore live dealer tables and casino experiences.',
       cta: 'Explore Live',
     },
+    'table-games': { name: 'Table Games', description: 'Explore casino table games and their rules.', cta: 'Explore Table Games' },
+    'instant-games': { name: 'Instant Games', description: 'Discover Mines, Plinko and their instant-game mechanics.', cta: 'Explore Instant Games' },
     sports: {
-      name: 'Sports Betting',
-      description: 'Find sportsbooks and betting options available in your market.',
-      cta: 'Explore Sports',
+      name: 'Sports',
+      description: 'Visit LivaSports, the sports site in our network.',
+      cta: 'Visit LivaSports',
     },
   },
 }
 
-export function getCategoryContent(slug: CategorySlug, locale: Locale): CategoryContent {
+export function getCategoryContent(slug: CategorySlug | 'sports', locale: Locale): CategoryContent {
   return (
     CATEGORY_CONTENT[locale]?.[slug] ?? {
       name: slug,
@@ -1038,7 +1044,7 @@ export const getGameListContent = getListContent
 /* ------------------------------------------------------------------ */
 
 /** Localized category display name only. */
-export function getCategoryName(slug: CategorySlug, locale: Locale): string {
+export function getCategoryName(slug: CategorySlug | 'sports', locale: Locale): string {
   return getCategoryContent(slug, locale).name
 }
 

@@ -22,7 +22,9 @@ export type LanguageCode = 'PT' | 'ES' | 'EN'
  */
 export type Locale = 'pt-BR' | 'es-MX' | 'en'
 
-export type CategorySlug = 'crash' | 'slots' | 'live-casino' | 'sports'
+export type CategorySlug = 'crash' | 'slots' | 'live-casino' | 'table-games' | 'instant-games'
+/** Legacy commercial records may retain Sports; it is not a discovery category. */
+export type OperatorCategorySlug = CategorySlug | 'sports'
 
 export interface Country {
   code: CountryCode
@@ -67,6 +69,8 @@ export interface Game {
   slug: string
   title: string
   category: CategorySlug
+  /** Existing verified commercial classification, independent of discovery taxonomy. */
+  affiliateCategory?: CategorySlug
   provider: string
   /**
    * Path to the game's artwork, or `null` when no authorized asset exists
@@ -159,7 +163,7 @@ export interface Operator {
   /** Markets this operator is being (or could be) activated for. Spec: `supportedGeos`. */
   countries: CountryCode[]
   /** Verticals this operator offers. Spec: `supportedProducts`. */
-  categories: CategorySlug[]
+  categories: OperatorCategorySlug[]
   paymentMethods: string[]
   gameTypes: string[]
   /** Whether this operator record is enabled in the system at all (independent of affiliate readiness). Spec: `status`. */
@@ -197,7 +201,7 @@ export interface Operator {
    * undefined until the affiliate program issues real category-specific
    * tracking links.
    */
-  categoryAffiliateUrl?: Partial<Record<CategorySlug, Partial<Record<CountryCode, string>>>>
+  categoryAffiliateUrl?: Partial<Record<OperatorCategorySlug, Partial<Record<CountryCode, string>>>>
   /**
    * Functional partner attribution appended at redirect time regardless of
    * analytics consent, keyed by GEO. Supports tokens: {geo} {language} {pageType}
@@ -227,7 +231,7 @@ export interface Offer {
   country: CountryCode
   title: string
   description: string
-  category: CategorySlug | 'welcome'
+  category: OperatorCategorySlug | 'welcome'
   terms: string
   affiliateUrl: string
   /** Internal enable/disable toggle, independent of verification. */

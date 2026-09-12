@@ -39,9 +39,10 @@ export function HomePageClient() {
           description={t('home.exploreByTypeSub')}
         />
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {CATEGORIES.map((c) => (
+          {CATEGORIES.filter((c) => c.slug !== 'table-games' && c.slug !== 'instant-games').map((c) => (
             <CategoryCard key={c.slug} {...c} />
           ))}
+          <CategoryCard slug="sports" />
         </div>
       </Section>
 

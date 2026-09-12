@@ -14,6 +14,8 @@ import cookieBannerModule from '../components/cookie-banner.tsx'
 const { CookieBanner } = cookieBannerModule
 import siteFooterModule from '../components/site-footer.tsx'
 const { SiteFooter } = siteFooterModule
+import siteHeaderModule from '../components/site-header.tsx'
+const { SiteHeader } = siteHeaderModule
 import contactFormModule from '../components/contact-form.tsx'
 const { ContactForm } = contactFormModule
 import affiliateButtonModule from '../components/affiliate-button.tsx'
@@ -65,12 +67,31 @@ test('consent UI gates loaders/events, supports revocation/revisit, and preserve
       root.render(React.createElement(AppRouterContext.Provider, { value: { push() {} } },
         React.createElement(PathnameContext.Provider, { value: '/en' },
           React.createElement(CountryProvider, { initialLocale: 'en' },
-            React.createElement(CookieBanner), React.createElement(SiteFooter),
+            React.createElement(CookieBanner), React.createElement(SiteHeader), React.createElement(SiteFooter),
             React.createElement(ContactForm), React.createElement(ConsentedAnalytics),
             React.createElement(AffiliateButton, { operatorSlug: 'betsson-group-affiliates', category: 'crash' }, 'Partner link'),
             React.createElement(OperatorProfileView, { operator: dataModule.getOperator('betsson-group-affiliates') }),
             React.createElement(TestMarketControl)))))
     })
+    const desktopSports = document.querySelector('header nav[aria-label="Primary"] a[href="https://livasports.com"]')
+    assert.ok(desktopSports, 'Sports is a direct desktop navigation entry')
+    assert.equal(desktopSports.textContent, 'Sports')
+    assert.equal(desktopSports.getAttribute('target'), null, 'network navigation stays in the same tab')
+    await click(document.querySelector('button[aria-label="More"]'))
+    assert.deepEqual([...document.querySelectorAll('header [role="menuitem"]')].map(a => a.getAttribute('href')),
+      ['/en/table-games', '/en/instant-games', '/en/offers', '/en/operators'])
+    await act(() => document.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Escape', bubbles: true })))
+    assert.equal(document.querySelector('header [role="menu"]'), null)
+    await click(document.querySelector('button[aria-label="Open menu"]'))
+    const headerLinks = [...document.querySelectorAll('header a')].map(a => a.getAttribute('href'))
+    for (const path of ['games', 'crash', 'slots', 'live-casino', 'table-games', 'instant-games', 'offers', 'operators']) {
+      assert.ok(headerLinks.includes(`/en/${path}`), `mobile navigation: ${path}`)
+    }
+    assert.ok(headerLinks.every(href => !href.includes('/sports')))
+    const mobileSports = document.querySelector('header nav[aria-label="Menu"] a[href="https://livasports.com"]')
+    assert.ok(mobileSports, 'mobile Sports links directly to the network root')
+    assert.equal(mobileSports.getAttribute('target'), null)
+    await click(document.querySelector('button[aria-label="Close menu"]'))
     const link = document.querySelector('a[href^="/go?"]')
     assert.ok(link)
     const href = link.getAttribute('href')

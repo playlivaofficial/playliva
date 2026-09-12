@@ -14,7 +14,7 @@ const { LOCALE_SEGMENTS } = localeModule
 import seoModule from '../lib/seo.ts'
 const { SITE_URL } = seoModule
 import dataModule from '../lib/data.ts'
-const { getOperator } = dataModule
+const { getOperator, CATEGORIES, GAMES } = dataModule
 import consentModule from '../lib/consent.ts'
 const { ANALYTICS_COOKIE } = consentModule
 
@@ -32,7 +32,9 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 const failures = []
 const publicPaths = sitemap().map((entry) => new URL(entry.url).pathname)
 const paths = new Set(publicPaths)
+const linkedPaths = new Set()
 for (const locale of LOCALE_SEGMENTS) {
+  paths.add(`/${locale}/sports`)
   for (const sport of SPORTS) paths.add(`/${locale}/sports/${sport.slug}`)
   for (const league of LEAGUES) paths.add(`/${locale}/sports/${league.sport}/${league.slug}`)
   for (const match of MATCHES) paths.add(`/${locale}/sports/${match.sport}/${getLeagueById(match.leagueId).slug}/${match.slug}`)
@@ -46,8 +48,20 @@ try {
     await pause(250)
   }
   assert.ok(ready, 'local production server starts')
+  assert.ok(publicPaths.every(path => !/^\/(en|pt-br|es-mx)\/sports(?:\/|$)/.test(path)), 'Sports archive URLs excluded from sitemap')
+  const sitemapResponse = await fetch(`${base}/sitemap.xml`)
+  assert.equal(sitemapResponse.status, 200)
+  assert.doesNotMatch(await sitemapResponse.text(), /\/(?:en|pt-br|es-mx)\/sports(?:[\/<"])/, 'served sitemap excludes Sports archive URLs')
   const partner = getOperator('betsson-group-affiliates')
   for (const consent of [undefined, 'denied', 'granted']) {
+    for (const category of ['table-games', 'live-casino']) {
+      const query = new URLSearchParams({ operator: partner.slug, country: 'BR', game: 'blackjack-live', category })
+      const response = await fetch(`${base}/go?${query}`, {
+        redirect: 'manual', headers: consent ? { cookie: `${ANALYTICS_COOKIE}=${consent}` } : {},
+      })
+      assert.equal(response.status, 302)
+      assert.equal(response.headers.get('location'), partner.categoryAffiliateUrl['live-casino'].BR)
+    }
     for (const category of [undefined, 'crash', 'live-casino', 'slots']) {
       const query = new URLSearchParams({ operator: partner.slug, country: 'BR' })
       if (category) query.set('category', category)
@@ -65,7 +79,46 @@ try {
     const doc = dom.window.document
     const canonical = doc.querySelector('link[rel="canonical"]')?.href
     if (canonical !== SITE_URL + path) failures.push(`${path}: canonical ${canonical}`)
+    const routePath = path.replace(/^\/(en|pt-br|es-mx)/, '')
+    const sportsNav = doc.querySelector('header nav[aria-label="Primary"] a[href="https://livasports.com"]')
+    assert.ok(sportsNav, `${path}: visible desktop Sports network entry`)
+    assert.equal(sportsNav.getAttribute('target'), null, `${path}: same-tab Sports navigation`)
+    if (routePath === '') {
+      const cards = [...doc.querySelectorAll('#game-types a')]
+      assert.equal(cards.length, 4, `${path}: preserve four-card homepage structure`)
+      assert.deepEqual(cards.map(card => card.getAttribute('href')), [
+        `${path}/crash`, `${path}/slots`, `${path}/live-casino`, 'https://livasports.com',
+      ], `${path}: homepage category and network destinations`)
+      assert.equal(cards[3].getAttribute('target'), null)
+      assert.ok(cards[3].textContent.includes('LivaSports'), `${path}: network destination is explicit`)
+    }
+    for (const segment of LOCALE_SEGMENTS) {
+      assert.equal(doc.querySelector(`link[hreflang="${segment}"]`)?.href, `${SITE_URL}/${segment}${routePath}`, `${path}: hreflang ${segment}`)
+    }
+    assert.equal(doc.querySelector('link[hreflang="x-default"]')?.href, `${SITE_URL}/pt-br${routePath}`, `${path}: x-default`)
+    for (const link of doc.querySelectorAll('a[href]')) {
+      const url = new URL(link.getAttribute('href'), base + path)
+      if (url.origin === base && !url.pathname.startsWith('/go')) linkedPaths.add(url.pathname)
+      if ((!routePath.startsWith('/sports') || link.closest('header, footer')) && /\/(?:en|pt-br|es-mx)\/sports(?:\/|$)/.test(url.pathname)) {
+        failures.push(`${path}: Sports link in normal discovery/navigation`)
+      }
+    }
+    if (routePath.startsWith('/sports')) {
+      assert.ok(doc.body.textContent.includes('LivaSports'), `${path}: archive notice`)
+      assert.equal(doc.querySelector('a[href^="/go"], a[href="#"]'), null, `${path}: archive outbound action`)
+      const bettingLabels = ['Bet', 'Apostar']
+      assert.ok([...doc.querySelectorAll('button')].every(b => !bettingLabels.includes(b.textContent.trim())), `${path}: mock betting CTA`)
+    }
+    const category = CATEGORIES.find(c => routePath === `/${c.slug}`)
+    if (category) {
+      const gameLinks = [...doc.querySelectorAll('main a[href*="/games/"]')].map(link => new URL(link.href, base).pathname.split('/').pop())
+      const expected = GAMES.filter(g => g.category === category.slug).map(g => g.slug)
+      assert.deepEqual([...new Set(gameLinks)].sort(), expected.sort(), `${path}: category membership`)
+    }
     const robots = [...doc.querySelectorAll('meta[name="robots"], meta[name="googlebot"]')].map((meta) => meta.content)
+    if (routePath.startsWith('/sports')) {
+      assert.ok(robots.length && robots.every(value => value.includes('noindex')), `${path}: archive robots ${robots}`)
+    }
     if (publicPaths.includes(path) ? robots.some((v) => v.includes('noindex')) : !robots.some((v) => v.includes('noindex'))) failures.push(`${path}: robots ${robots}`)
     if ((doc.title.match(/PlayLiva/gi) ?? []).length !== 1) failures.push(`${path}: title ${doc.title}`)
     for (const script of doc.querySelectorAll('script[type="application/ld+json"]')) {
@@ -83,8 +136,14 @@ try {
     if (placeholders) failures.push(`${path}: unresolved ${[...new Set(placeholders)].join(', ')}`)
     dom.window.close()
   }
+  for (const path of linkedPaths) {
+    if (paths.has(path)) continue
+    const response = await fetch(base + path, { redirect: 'manual' })
+    assert.ok(response.status >= 200 && response.status < 400, `${path}: broken internal link ${response.status}`)
+  }
   for (const locale of LOCALE_SEGMENTS) {
-    for (const path of [`/${locale}/missing-page`, `/${locale}/games/missing-game`, `/${locale}/operators/missing-operator`]) {
+    for (const path of [`/${locale}/missing-page`, `/${locale}/games/missing-game`, `/${locale}/operators/missing-operator`,
+      `/${locale}/sports/missing-sport`, `/${locale}/play/crash`]) {
       const response = await fetch(base + path)
       assert.equal(response.status, 404, path)
       const doc = new JSDOM(await response.text()).window.document

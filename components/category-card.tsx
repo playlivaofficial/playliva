@@ -1,31 +1,38 @@
 'use client'
 
 import { LocaleLink } from '@/components/locale-link'
-import { ArrowRight, Rocket, Cherry, Spade, Trophy } from 'lucide-react'
+import { ArrowRight, Rocket, Cherry, Spade, Dices, Zap, Trophy } from 'lucide-react'
 import type { CategorySlug } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import { useCountry } from '@/components/country-context'
 import { getCategoryContent } from '@/lib/content'
 
-const ICONS: Record<CategorySlug, typeof Rocket> = {
+// Sports is a network link, not an internal game category or affiliate approval.
+type CardSlug = CategorySlug | 'sports'
+
+const ICONS: Record<CardSlug, typeof Rocket> = {
   crash: Rocket,
   slots: Cherry,
   'live-casino': Spade,
+  'table-games': Dices,
+  'instant-games': Zap,
   sports: Trophy,
 }
 
-const HREFS: Record<CategorySlug, string> = {
+const HREFS: Record<CardSlug, string> = {
   crash: '/crash',
   slots: '/slots',
   'live-casino': '/live-casino',
-  sports: '/sports',
+  'table-games': '/table-games',
+  'instant-games': '/instant-games',
+  sports: 'https://livasports.com',
 }
 
 export function CategoryCard({
   slug,
   className,
 }: {
-  slug: CategorySlug
+  slug: CardSlug
   className?: string
   // Raw props from the data object are accepted but ignored; copy is localized.
   name?: string

@@ -6,15 +6,14 @@ import { useCountry } from '@/components/country-context'
 import { OperatorCard } from '@/components/operator-card'
 import { AffiliateDisclosureLine } from '@/components/notices'
 import { cn } from '@/lib/utils'
-import type { CategorySlug, CountryCode } from '@/lib/types'
+import type { OperatorCategorySlug, CountryCode } from '@/lib/types'
 
-type Filter = 'all' | 'casino' | 'sports' | 'crash'
+type Filter = 'all' | 'casino' | 'crash'
 
-function matchesFilter(categories: CategorySlug[], filter: Filter) {
+function matchesFilter(categories: OperatorCategorySlug[], filter: Filter) {
   if (filter === 'all') return true
-  if (filter === 'sports') return categories.includes('sports')
   if (filter === 'crash') return categories.includes('crash')
-  return categories.includes('slots') || categories.includes('live-casino')
+  return categories.includes('slots') || categories.includes('live-casino') || categories.includes('table-games') || categories.includes('instant-games')
 }
 
 export function OperatorsDirectory() {
@@ -25,7 +24,6 @@ export function OperatorsDirectory() {
   const FILTERS: { key: Filter; label: string }[] = [
     { key: 'all', label: t('operators.filterAll') },
     { key: 'casino', label: t('operators.filterCasino') },
-    { key: 'sports', label: t('operators.filterSports') },
     { key: 'crash', label: t('operators.filterCrash') },
   ]
 

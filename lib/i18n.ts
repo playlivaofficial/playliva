@@ -30,6 +30,9 @@ const ptBR: Dict = {
   'nav.slots': 'Slots',
   'nav.liveCasino': 'Cassino ao Vivo',
   'nav.sports': 'Esportes',
+  'nav.tableGames': 'Jogos de Mesa',
+  'nav.instantGames': 'Jogos Instantâneos',
+  'nav.more': 'Mais',
   'nav.offers': 'Ofertas',
   'nav.operators': 'Operadores',
   'nav.about': 'Sobre',
@@ -89,12 +92,12 @@ const ptBR: Dict = {
     'Os operadores exibidos correspondem ao país selecionado. Termos e disponibilidade variam.',
 
   // Sports — odds discovery & comparison
-  'sports.pageTitle': 'Apostas Esportivas',
+  'sports.pageTitle': "Arquivo de Esportes",
   'sports.pageSub':
-    'Descubra partidas e compare odds de diferentes casas de apostas. A PlayLiva não aceita apostas — apenas ajuda você a comparar.',
-  'sports.eyebrow': 'Comparação de Odds',
+    "Arquivo demonstrativo mantido para links existentes. Esportes não fazem mais parte das categorias principais da PlayLiva.",
+  'sports.eyebrow': "Arquivo",
   'sports.demoNotice':
-    'Dados de demonstração. As partidas, odds e casas de apostas mostradas são exemplos e não refletem eventos reais em tempo real.',
+    "Arquivo demonstrativo: partidas, odds e casas são exemplos, não dados ao vivo. Apostas indisponíveis. LivaSports é um produto separado; nenhum destino de redirecionamento foi anunciado aqui.",
   'sports.sport.football': 'Futebol',
   'sports.sport.basketball': 'Basquete',
   'sports.sport.tennis': 'Tênis',
@@ -138,7 +141,7 @@ const ptBR: Dict = {
   'sports.allLeagues': 'Todas as ligas',
   'sports.noMatches': 'Nenhuma partida encontrada para este filtro.',
   'sports.comingSoonForMarket':
-    'Mais competições chegando em breve para o seu mercado.',
+    "Nenhum serviço de apostas está disponível neste arquivo.",
   'sports.leagueMatchesTitle': 'Partidas de {league}',
   'sports.leaguesTitle': 'Ligas e Competições',
   'sports.viewLeague': 'Ver liga',
@@ -492,7 +495,7 @@ const ptBR: Dict = {
     'Compare a disponibilidade no seu mercado.',
   'seo.gamesPageTitle': 'Explorar Jogos',
   'seo.gamesPageDescription':
-    'Navegue por jogos populares de crash, slots, casino em vivo e esportes, e descubra onde jogá-los no seu mercado.',
+    "Explore jogos de crash, slots, cassino ao vivo, jogos de mesa e jogos instantâneos e descubra sua disponibilidade no seu mercado.",
   'seo.operatorsPageTitle': 'Operadores',
   'seo.operatorsPageDescription':
     'Navegue e compare operadores licenciados por país e categoria. A PlayLiva pode receber comissão de parceiros selecionados.',
@@ -502,9 +505,9 @@ const ptBR: Dict = {
   'seo.playPageTitle': 'Pronto para Jogar',
   'seo.playPageDescription':
     'Escolha um jogo e compare os operadores disponíveis no seu mercado com a PlayLiva.',
-  'seo.sportsPageTitle': 'Comparação de Odds Esportivas',
+  'seo.sportsPageTitle': "Arquivo de Esportes",
   'seo.sportsPageDescription':
-    'Compare odds de apostas esportivas entre casas de apostas para futebol, basquete e tênis. A PlayLiva não aceita apostas — apenas ajudamos você a comparar.',
+    "Arquivo demonstrativo mantido para links existentes. Esportes não fazem mais parte das categorias principais da PlayLiva.",
   'seo.sportOddsTitle': 'Comparação de Odds de {sport}',
   'seo.sportOddsDescription':
     'Compare odds de apostas de {sport} entre casas de apostas. Dados de demonstração — a PlayLiva não aceita apostas.',
@@ -541,6 +544,9 @@ const esMX: Dict = {
   'nav.slots': 'Slots',
   'nav.liveCasino': 'Casino en Vivo',
   'nav.sports': 'Deportes',
+  'nav.tableGames': 'Juegos de Mesa',
+  'nav.instantGames': 'Juegos Instantáneos',
+  'nav.more': 'Más',
   'nav.offers': 'Ofertas',
   'nav.operators': 'Operadores',
   'nav.about': 'Acerca de',
@@ -596,12 +602,12 @@ const esMX: Dict = {
     'Los operadores mostrados corresponden al país seleccionado. Los términos y la disponibilidad varían.',
 
   // Sports — odds discovery & comparison
-  'sports.pageTitle': 'Apuestas Deportivas',
+  'sports.pageTitle': "Archivo de Deportes",
   'sports.pageSub':
-    'Descubre partidos y compara cuotas de diferentes casas de apuestas. PlayLiva no acepta apuestas — solo te ayuda a comparar.',
-  'sports.eyebrow': 'Comparación de Cuotas',
+    "Archivo de demostración conservado para enlaces existentes. Los deportes ya no forman parte de las categorías principales de PlayLiva.",
+  'sports.eyebrow': "Archivo",
   'sports.demoNotice':
-    'Datos de demostración. Los partidos, cuotas y casas de apuestas mostrados son ejemplos y no reflejan eventos reales en tiempo real.',
+    "Archivo de demostración: partidos, cuotas y casas son ejemplos, no datos en vivo. Apuestas no disponibles. LivaSports es un producto separado; aquí no se ha anunciado un destino de redirección.",
   'sports.sport.football': 'Fútbol',
   'sports.sport.basketball': 'Baloncesto',
   'sports.sport.tennis': 'Tenis',
@@ -645,7 +651,7 @@ const esMX: Dict = {
   'sports.allLeagues': 'Todas las ligas',
   'sports.noMatches': 'No se encontraron partidos para este filtro.',
   'sports.comingSoonForMarket':
-    'Más competiciones llegando próximamente para tu mercado.',
+    "No hay ningún servicio de apuestas disponible en este archivo.",
   'sports.leagueMatchesTitle': 'Partidos de {league}',
   'sports.leaguesTitle': 'Ligas y Competiciones',
   'sports.viewLeague': 'Ver liga',
@@ -978,7 +984,7 @@ const esMX: Dict = {
     'Compara la disponibilidad en tu mercado.',
   'seo.gamesPageTitle': 'Explorar Juegos',
   'seo.gamesPageDescription':
-    'Explora juegos populares de crash, slots, casino en vivo y deportes, y descubre dónde jugarlos en tu mercado.',
+    "Explora juegos crash, slots, casino en vivo, juegos de mesa e instantáneos y descubre su disponibilidad en tu mercado.",
   'seo.operatorsPageTitle': 'Operadores',
   'seo.operatorsPageDescription':
     'Explora y compara operadores con licencia por país y categoría. PlayLiva puede recibir una comisión de socios seleccionados.',
@@ -988,9 +994,9 @@ const esMX: Dict = {
   'seo.playPageTitle': 'Listo para Jugar',
   'seo.playPageDescription':
     'Elige un juego y compara los operadores disponibles en tu mercado con PlayLiva.',
-  'seo.sportsPageTitle': 'Comparación de Cuotas Deportivas',
+  'seo.sportsPageTitle': "Archivo de Deportes",
   'seo.sportsPageDescription':
-    'Compara cuotas de apuestas deportivas entre casas de apuestas para fútbol, baloncesto y tenis. PlayLiva no acepta apuestas — solo te ayudamos a comparar.',
+    "Archivo de demostración conservado para enlaces existentes. Los deportes ya no forman parte de las categorías principales de PlayLiva.",
   'seo.sportOddsTitle': 'Comparación de Cuotas de {sport}',
   'seo.sportOddsDescription':
     'Compara cuotas de apuestas de {sport} entre casas de apuestas. Datos de demostración — PlayLiva no acepta apuestas.',
@@ -1027,6 +1033,9 @@ const en: Dict = {
   'nav.slots': 'Slots',
   'nav.liveCasino': 'Live Casino',
   'nav.sports': 'Sports',
+  'nav.tableGames': 'Table Games',
+  'nav.instantGames': 'Instant Games',
+  'nav.more': 'More',
   'nav.offers': 'Offers',
   'nav.operators': 'Operators',
   'nav.about': 'About',
@@ -1082,12 +1091,12 @@ const en: Dict = {
     'Operators shown match the selected country. Terms and availability vary.',
 
   // Sports — odds discovery & comparison
-  'sports.pageTitle': 'Sports Betting',
+  'sports.pageTitle': "Sports Archive",
   'sports.pageSub':
-    "Discover matches and compare odds across different bookmakers. PlayLiva doesn't accept bets — we just help you compare.",
-  'sports.eyebrow': 'Odds Comparison',
+    "Demonstration archive retained for existing links. Sports is no longer a core PlayLiva category.",
+  'sports.eyebrow': "Archive",
   'sports.demoNotice':
-    'Demo data. The matches, odds and bookmakers shown are examples and do not reflect real, live events.',
+    "Demonstration archive: matches, odds and bookmakers are examples, not live data. Betting is unavailable. LivaSports is a separate product; no redirect destination has been announced here.",
   'sports.sport.football': 'Football',
   'sports.sport.basketball': 'Basketball',
   'sports.sport.tennis': 'Tennis',
@@ -1131,7 +1140,7 @@ const en: Dict = {
   'sports.allLeagues': 'All leagues',
   'sports.noMatches': 'No matches found for this filter.',
   'sports.comingSoonForMarket':
-    'More competitions coming soon for your market.',
+    "No betting service is available in this archive.",
   'sports.leagueMatchesTitle': '{league} Matches',
   'sports.leaguesTitle': 'Leagues & Competitions',
   'sports.viewLeague': 'View league',
@@ -1484,7 +1493,7 @@ const en: Dict = {
     'Compare availability in your market.',
   'seo.gamesPageTitle': 'Explore Games',
   'seo.gamesPageDescription':
-    'Browse popular crash, slots, live casino and sports games, and discover where to play them in your market.',
+    "Browse crash, slots, live casino, table games and instant games, and discover their availability in your market.",
   'seo.operatorsPageTitle': 'Operators',
   'seo.operatorsPageDescription':
     'Browse and compare licensed operators by country and category. PlayLiva may receive commission from selected partners.',
@@ -1494,9 +1503,9 @@ const en: Dict = {
   'seo.playPageTitle': 'Ready to Play',
   'seo.playPageDescription':
     'Choose a game and compare available operators in your market with PlayLiva.',
-  'seo.sportsPageTitle': 'Sports Betting Odds Comparison',
+  'seo.sportsPageTitle': "Sports Archive",
   'seo.sportsPageDescription':
-    'Compare sports betting odds across bookmakers for football, basketball and tennis. PlayLiva does not accept bets — we help you compare.',
+    "Demonstration archive retained for existing links. Sports is no longer a core PlayLiva category.",
   'seo.sportOddsTitle': '{sport} Odds Comparison',
   'seo.sportOddsDescription':
     'Compare {sport} betting odds across bookmakers. Demo data — PlayLiva does not accept bets.',

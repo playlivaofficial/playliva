@@ -29,12 +29,8 @@ export function OffersView() {
   const casino = useMemo(
     () =>
       offers.filter((o) =>
-        ['slots', 'live-casino'].includes(o.category as string),
+        ['crash', 'slots', 'live-casino', 'table-games', 'instant-games'].includes(o.category as string),
       ),
-    [offers],
-  )
-  const sports = useMemo(
-    () => offers.filter((o) => o.category === 'sports'),
     [offers],
   )
   const newPlayer = useMemo(
@@ -99,12 +95,6 @@ export function OffersView() {
             </Section>
           )}
 
-          {sports.length > 0 && (
-            <Section className="border-t border-border">
-              <SectionHeading title={t('offers.sports')} />
-              <OfferGrid offers={sports} />
-            </Section>
-          )}
 
           {newPlayer.length > 0 && (
             <Section className="border-t border-border bg-card/30">

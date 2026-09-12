@@ -55,7 +55,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/best/crash-games', priority: 0.7 },
     { path: '/slots', priority: 0.7 },
     { path: '/live-casino', priority: 0.7 },
-    { path: '/sports', priority: 0.7 },
+    { path: '/table-games', priority: 0.7 },
+    { path: '/instant-games', priority: 0.7 },
+    // Sports archive URLs remain accessible but noindex and outside the sitemap.
     { path: '/about', priority: 0.4 },
     { path: '/responsible-gaming', priority: 0.5 },
     { path: '/contact', priority: 0.3 },

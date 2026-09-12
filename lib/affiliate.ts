@@ -7,8 +7,8 @@
  * inactive operators or unsupported markets.
  */
 
-import { getOperator, getOperatorById, getOffers, getGame, getPublicOperators,
-  isAffiliateEligible, isOfferEligible, isCategorySlug, affiliateGameSlug,
+import { getOperator, getOperatorById, getOffers, getPublicOperators,
+  isAffiliateEligible, isOfferEligible, isCategorySlug, affiliateGameSlug, affiliateCategory,
   type AffiliateContext } from './data'
 import type { CountryCode } from './types'
 import { DEFAULT_LOCALE_SEGMENT, isLocaleSegment, localeToSegment } from './locale'
@@ -120,7 +120,7 @@ export function resolveDestination(params: AffiliateContext & {
 }): ResolvedDestination | null {
   const { operatorSlug, offerId, country, analyticsAllowed = false, ...context } = params
   const gameSlug = affiliateGameSlug(context)
-  const category = context.category || (gameSlug ? getGame(gameSlug)?.category : undefined)
+  const category = affiliateCategory(context)
   const ctx = { ...context, gameSlug }
 
   // Offer-based resolution (validate the offer is live and verified in this market).
