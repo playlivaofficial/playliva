@@ -15,11 +15,12 @@ function subscribeFullscreen(listener: () => void) {
 }
 
 /** Composed only by a future real game route; children must be an implemented viewport. */
-export function PlayGameShell({ game, children, controls, roundActive = false }: {
+export function PlayGameShell({ game, children, controls, roundActive = false, compact = false }: {
   game: OriginalGameDefinition
   children: ReactNode
   controls: ReactNode
   roundActive?: boolean
+  compact?: boolean
 }) {
   const { locale, countryCode } = useCountry()
   const { session, storageStatus, wallet } = useDemoSession()
@@ -46,17 +47,17 @@ export function PlayGameShell({ game, children, controls, roundActive = false }:
     } catch { setFullscreenError(true) }
   }
   const ready = storageStatus !== 'loading'
-  return <section ref={root} className="mx-auto w-full max-w-7xl space-y-5 overflow-auto bg-background p-4 text-foreground sm:p-6">
-    <header className="flex flex-wrap items-start justify-between gap-4">
+  return <section ref={root} className={`mx-auto w-full max-w-7xl overflow-auto bg-background text-foreground ${compact ? 'space-y-3 p-3 sm:p-4' : 'space-y-5 p-4 sm:p-6'}`}>
+    <header className={compact ? 'grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3' : 'flex flex-wrap items-start justify-between gap-4'}>
       <div><p className="text-sm font-semibold text-primary">PlayLiva Originals</p>
-        <h1 className="font-display text-2xl font-bold sm:text-3xl">{game.title[locale]}</h1>
+        <h1 className={`font-display font-bold ${compact ? 'text-lg leading-tight sm:text-2xl' : 'text-2xl sm:text-3xl'}`}>{game.title[locale]}</h1>
         <p className="mt-2 text-xs font-semibold tracking-wide">{copy.freePlay} · {copy.demo}</p></div>
-      <div className="rounded-xl border border-border bg-card px-4 py-3">
+      <div className={`rounded-xl border border-border bg-card ${compact ? 'p-2 sm:px-4' : 'px-4 py-3'}`}>
         <p className="text-xs text-muted-foreground">{copy.balance}</p>
-        <p className="font-display text-xl font-bold" aria-live="polite">{format(session.balance)} <span className="text-sm">{copy.credits}</span></p>
+        <p className="font-display text-xl font-bold" aria-live="polite">{format(session.balance)} <span className={compact ? 'block text-[10px] sm:inline sm:text-xs' : 'text-sm'}>{copy.credits}</span></p>
       </div>
     </header>
-    <p className="text-sm text-muted-foreground">{copy.boundary}</p>
+    <p className={`${compact ? 'text-xs' : 'text-sm'} text-muted-foreground`}>{copy.boundary}</p>
     {storageStatus === 'memory-only' && <p role="status" className="text-sm text-muted-foreground">{copy.memoryOnly}</p>}
     {storageStatus === 'recovered' && <p role="status" className="text-sm text-muted-foreground">{copy.recovered}</p>}
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_18rem]">

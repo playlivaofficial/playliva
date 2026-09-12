@@ -41,12 +41,53 @@ their one reusable rig). Ordinary discovery routes load zero character bytes.
 Final browser transfers and rendering QA will be recorded after integration;
 structural asset validation is not a claim of completed visual QA.
 
+## Checkpoint 2/3: route and engine
+
+The three localized `/play/crash` routes reuse M4's provider, wallet, compact
+shell and eligible Play Real surface. Only the client game dynamically imports
+Three.js 0.186.0 and GLTFLoader. Other discovery pages are untouched. The runtime
+supports WebP through its documented `EXT_texture_webp` loader extension.
+Unknown play slugs remain 404/noindex; only Crash enters the sitemap.
+
+The engine follows ready → preparing → kick → flying → cashed_out/crashed →
+settled → ready. Preparation takes 650ms, kick 1500ms, result 3200ms and reset
+transition 600ms. The kick animation runs at 2.1×: its extended-foot contact
+near source time 2s aligns with the shared 950ms impact marker. Rendering never
+settles money. Normal animation crossfades take 220ms; reduced motion removes
+camera shake, flight sway, moving scenery and burst particles.
+
+One uint32 sample from `crypto.getRandomValues` chooses the crash before debit
+and flight. `max(100, min(10000, floor(97 / (1 - u))))` gives a demo inverse
+survival distribution (roughly 97% / multiplier), with a 100× ceiling. Outcomes
+are local, not authoritative or certified. Multipliers use integer hundredths;
+payout uses integer multiplication/division and rounds down to whole credits.
+
+Start reserves wallet capacity for the maximum possible return and two history
+entries. Invalid inputs/RNG failures spend nothing. A transient M4 wallet round
+lock blocks reset and unrelated mutations during risk. Synchronous engine guards
+prevent re-entry from wallet notifications, repeated starts/cashouts and stale
+round IDs. Terminal state is set before credit. Auto cashout uses absolute
+deadlines, so an earlier target still wins if a hidden tab skips the flight.
+Equality with the crash point loses. A regression caught and fixed floating-point
+subtraction at that equality boundary.
+
+Reload creates a ready engine around persisted M4 credits/transactions: the
+spent stake remains spent, no active round resumes and no refund or second
+settlement occurs. Session transaction history persists; the 12-flight visual
+strip describes only completed rounds in the current visit. No parallel wallet
+or persistence schema was added.
+
+Initial browser smoke: both textured characters load, a loss and manual cashout
+complete, rejecting optional analytics does not stop play/Play Real, and the
+320px compact view keeps the primary button above the existing bottom nav.
+No browser renderer errors were logged. Full visual/interaction acceptance and
+production performance measurements are still required before main integration.
+
 ## Continuation
 
-Checkpoint 1 provides optimized assets and preservation/binding tests only.
-Next: isolate a Three.js renderer to the three localized Crash routes, reuse
-M4 provider/shell, implement and test deterministic round settlement, build the
-tropical scene and localized controls, then complete actual browser/mobile QA.
-No M5 public route is exposed by checkpoint 1. No main merge is authorized until
-all final acceptance conditions are satisfied. Preserve existing discovery,
-Sports/LivaSports, locale/GEO and partner attribution behavior.
+Continue on `codex/m5-island-crash`. Main must remain untouched until final M5
+acceptance passes. Complete expanded browser QA (auto, repeated/reload/reset,
+all locales, phone/tablet/desktop, animation contact/flight/crash polish), verify
+bundle isolation and transfers, complete full gates, and record CI/Preview
+evidence. Then update this report and only integrate the fully verified result.
+Preserve existing discovery, Sports/LivaSports, GEO and partner attribution.
