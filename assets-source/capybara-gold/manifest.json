@@ -1,0 +1,76 @@
+{
+  "created": "2026-09-13",
+  "provenance": "Original generated art for PlayLiva; no third-party provider assets or references. Source PNGs are not publicly served. Runtime derivatives retain transparency.",
+  "assets": [
+    {
+      "id": "wild",
+      "generator": "built-in imagegen",
+      "source": "wild.png",
+      "generatedFile": "exec-a180614f-eabd-4a4c-bc10-233b63f25f83.png",
+      "prompt": "Use case: stylized-concept. Asset type: original transparent game mascot and Wild reel symbol for PlayLiva's Liva Capybara Gold. Create one original golden capybara character: warm caramel-gold fur, unmistakable broad square capybara muzzle, tiny rounded ears, expressive relaxed dark eyes, short legs, charming confident smile, subtle emerald river-stone pendant on a slim gold cord. Cute-but-premium polished hand-painted 2.5D game illustration, rich clean shapes, softly sculpted volume, luminous warm sunset rim light, restrained fur detail, silhouette readable at 44 pixels. Full body seated in a relaxed three-quarter pose, head large and instantly recognizable, centered with 12% clear padding on every side. Genuine transparent background and alpha, no ground scene, no shadow extending to canvas edges. No text, no letters, no numbers, no coins, no crown, no flag, no carnival or football motif, no watermark, no provider or existing character resemblance. One mascot only, no contact sheet. Square image."
+    },
+    {
+      "id": "coconut",
+      "prompt": "Use case: stylized-concept. Asset type: one original transparent reel symbol for Liva Capybara Gold, an original premium tropical Brazil-inspired free-play game. Subject: A single golden coconut: rounded warm polished amber-gold husk, a neatly open ivory rim showing luminous coconut milk, small emerald leaf accent. Strong simple silhouette. Style: polished hand-painted 2.5D game illustration, softly sculpted volume, premium colorful materials, warm sunset rim light, restrained surface detail, high contrast edges. One centered isolated object, square canvas, 15% clear padding, fills about 70% of canvas. Readable at 44 pixels. Genuinely transparent background and alpha. No text, letters, numbers, badges, frame, other objects, scene, watermark, provider artwork or copied game iconography. Original asset only.",
+      "generator": "built-in imagegen",
+      "source": "coconut.png",
+      "generatedFile": "exec-846c6948-2fd1-4ac0-afdb-d8c84d089b44.png"
+    },
+    {
+      "id": "emerald",
+      "prompt": "Use case: stylized-concept. Asset type: one original transparent reel symbol for Liva Capybara Gold, an original premium tropical Brazil-inspired free-play game. Subject: One large brilliant-cut emerald gemstone, deep green body with luminous mint facets, a restrained warm golden bevel around its base. Strong geometric octagonal silhouette. Style: polished hand-painted 2.5D game illustration, softly sculpted volume, premium colorful materials, warm sunset rim light, restrained surface detail, high contrast edges. One centered isolated object, square canvas, 15% clear padding, fills about 70% of canvas. Readable at 44 pixels. Genuinely transparent background and alpha. No text, letters, numbers, badges, frame, other objects, scene, watermark, provider artwork or copied game iconography. Original asset only.",
+      "generator": "built-in imagegen",
+      "source": "emerald.png",
+      "generatedFile": "exec-bebdec3f-b8de-44fd-8258-24db34c85669.png"
+    },
+    {
+      "id": "flower",
+      "prompt": "Use case: stylized-concept. Asset type: one original transparent reel symbol for Liva Capybara Gold, an original premium tropical Brazil-inspired free-play game. Subject: One lush tropical hibiscus flower, coral-pink and sunset orange petals, golden stamen, two small glossy emerald leaves. Strong five-petal silhouette, no vase. Style: polished hand-painted 2.5D game illustration, softly sculpted volume, premium colorful materials, warm sunset rim light, restrained surface detail, high contrast edges. One centered isolated object, square canvas, 15% clear padding, fills about 70% of canvas. Readable at 44 pixels. Genuinely transparent background and alpha. No text, letters, numbers, badges, frame, other objects, scene, watermark, provider artwork or copied game iconography. Original asset only.",
+      "generator": "built-in imagegen",
+      "source": "flower.png",
+      "generatedFile": "exec-317a985a-21a0-492b-b22c-9698b0dfa7d4.png"
+    },
+    {
+      "id": "toucan",
+      "prompt": "Use case: stylized-concept. Asset type: original transparent reel symbol for Liva Capybara Gold. Subject: One friendly elegant toucan perched on a tiny curved twig: navy-black body, ivory throat, large orange and turquoise beak, emerald eye accent. Strong iconic side-profile silhouette. Style: polished hand-painted 2.5D game illustration, softly sculpted volume, premium colorful materials, warm sunset rim light, restrained surface detail, high contrast edges. One centered isolated object, square canvas, 15% clear padding, fills about 70% of canvas. Readable at 44 pixels. Genuinely transparent background and alpha. No watermark, no provider artwork or copied game iconography. Original asset only.",
+      "generator": "built-in imagegen",
+      "source": "toucan.png",
+      "generatedFile": "exec-a8ae8ed3-f0e6-4509-9f32-25cc0c03d1ef.png"
+    },
+    {
+      "id": "pearl",
+      "prompt": "Use case: stylized-concept. Asset type: original transparent reel symbol for Liva Capybara Gold. Subject: One luminous turquoise-white river pearl resting in a small open mother-of-pearl shell with a delicate warm gold rim. Broad simple circular silhouette, no scenery. Style: polished hand-painted 2.5D game illustration, softly sculpted volume, premium colorful materials, warm sunset rim light, restrained surface detail, high contrast edges. One centered isolated object, square canvas, 15% clear padding, fills about 70% of canvas. Readable at 44 pixels. Genuinely transparent background and alpha. No watermark, no provider artwork or copied game iconography. Original asset only.",
+      "generator": "built-in imagegen",
+      "source": "pearl.png",
+      "generatedFile": "exec-06fb0f66-967b-4cc4-855d-3b40f38d4140.png"
+    },
+    {
+      "id": "acai",
+      "prompt": "Use case: stylized-concept. Asset type: original transparent reel symbol for Liva Capybara Gold. Subject: A small compact cluster of three glossy deep-purple açaí berries attached to one short golden stem with a single small green leaf. Distinct bold purple rounded silhouette. Style: polished hand-painted 2.5D game illustration, softly sculpted volume, premium colorful materials, warm sunset rim light, restrained surface detail, high contrast edges. One centered isolated object, square canvas, 15% clear padding, fills about 70% of canvas. Readable at 44 pixels. Genuinely transparent background and alpha. No watermark, no provider artwork or copied game iconography. Original asset only.",
+      "generator": "built-in imagegen",
+      "source": "acai.png",
+      "generatedFile": "exec-c2f3a2e2-4be7-44e5-a62a-98d1e78cd4f6.png"
+    },
+    {
+      "id": "leaf",
+      "prompt": "Use case: stylized-concept. Asset type: original transparent reel symbol for Liva Capybara Gold. Subject: One broad emerald tropical leaf with rounded lobes and a warm gold central vein. Bright mint highlights, strong simple leaf silhouette with clean edges. Style: polished hand-painted 2.5D game illustration, softly sculpted volume, premium colorful materials, warm sunset rim light, restrained surface detail, high contrast edges. One centered isolated object, square canvas, 15% clear padding, fills about 70% of canvas. Readable at 44 pixels. Genuinely transparent background and alpha. No watermark, no provider artwork or copied game iconography. Original asset only.",
+      "generator": "built-in imagegen",
+      "source": "leaf.png",
+      "generatedFile": "exec-cadad881-af36-48e4-9964-6b8a39442e8f.png"
+    },
+    {
+      "id": "scatter",
+      "prompt": "Use case: stylized-concept. Asset type: original transparent reel symbol for Liva Capybara Gold. Subject: One original Jungle Bonus emblem: a glowing turquoise river droplet inside a sculpted golden sun disc with eight short rounded rays and two small emerald leaf accents at the base. Strong round sun silhouette. No writing or numbers. Style: polished hand-painted 2.5D game illustration, softly sculpted volume, premium colorful materials, warm sunset rim light, restrained surface detail, high contrast edges. One centered isolated object, square canvas, 15% clear padding, fills about 70% of canvas. Readable at 44 pixels. Genuinely transparent background and alpha. No watermark, no provider artwork or copied game iconography. Original asset only.",
+      "generator": "built-in imagegen",
+      "source": "scatter.png",
+      "generatedFile": "exec-5bb240d5-4d66-4cd7-a099-61e02b38a75a.png"
+    },
+    {
+      "id": "river",
+      "prompt": "Use case: stylized-concept. Asset type: original game backdrop for Liva Capybara Gold. Subject: A premium tropical Brazil-inspired river/jungle environment at golden sunset, deep emerald foliage framing the edges, a turquoise river gently winding into distant forest, warm golden shafts of light, painterly atmospheric depth. Wide landscape composition, relatively calm darker teal open center for game UI overlays, detailed lush corners but no busy center. No characters, no reels, no UI, no letters, no logos, no flag, no carnival or football. Full opaque background, not transparent. Style: polished hand-painted 2.5D game illustration, softly sculpted volume, premium colorful materials, warm sunset rim light, restrained surface detail, high contrast edges. Landscape 3:2 image. No watermark, no provider artwork or copied game iconography. Original asset only.",
+      "generator": "built-in imagegen",
+      "source": "river.png",
+      "generatedFile": "exec-cf7edab2-8d5c-4967-b3f8-9b183a0c0e7a.png"
+    }
+  ]
+}
