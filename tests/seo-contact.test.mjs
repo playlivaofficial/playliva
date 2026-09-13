@@ -30,7 +30,7 @@ test('title branding is applied once; indexability is explicit for known pages',
   assert.equal(metadata.robots.googleBot.index, false)
 })
 
-test('generic Blackjack Live uses Evolution Live Blackjack art and withholds the Speed tile', () => {
+test('generic Blackjack Live uses the approved local cover and withholds the Speed tile', () => {
   const game = getGame('blackjack-live')
   assert.equal(game.title, 'Blackjack Live')
   assert.equal(hasApprovedArtwork(game), true)

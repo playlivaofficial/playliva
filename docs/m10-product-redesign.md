@@ -124,6 +124,6 @@ Hosted CI and final live deployment evidence are recorded separately after
 release verification. Browser resizing is not physical low-end-phone testing;
 keyboard/focus checks are not a complete screen-reader/WCAG audit. Provider artwork
 continues to require existing rights approval. Generic Blackjack Live later
-received official Evolution Live Blackjack cover art; the mismatched Speed tile
-stays withheld. Existing gameplay, affiliate and legacy Sports limitations are
+received user-provided cover art at `/games/blackjack-live.webp`; the mismatched
+Speed tile stays withheld. Existing gameplay, affiliate and legacy Sports limitations are
 unchanged. No new operator relationship, backend, analytics or external capability.

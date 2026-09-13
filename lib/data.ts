@@ -388,8 +388,8 @@ export const GAMES: Game[] = [
     image: '/games/blackjack-live.webp',
     imageAlt: 'Blackjack Live by Evolution',
     imageSource:
-      'Official Evolution Games Live Blackjack product photo (pid-11): https://games.evolution.com/wp-content/uploads/2022/03/live-blackjack-pid-11.jpg from https://games.evolution.com/live-casino/live-blackjack/. Generic classic seven-seat Evolution table; not Speed, Infinite, Lightning, Lobby or Party. SoftSwiss evolution/blackjack is Blackjack Lobby Live and was not used. The older Speed Blackjack Live jpg remains withheld.',
-    assetStatus: 'official',
+      'User-provided final artwork for the existing Blackjack Live listing. Title, provider, slug and editorial copy unchanged. The older Speed Blackjack Live jpg remains withheld.',
+    assetStatus: 'approved',
     assetRightsStatus: 'approved',
     description: 'Classic live-dealer blackjack tables in multiple limits.',
     shortDescription: 'Classic live-dealer blackjack tables.',

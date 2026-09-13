@@ -5,7 +5,7 @@ Source of truth: https://github.com/playlivaofficial/playliva.
 [M11 provider reference catalog](docs/m11-provider-catalog.md) adds 31 sourced,
 localized factual game references with authentic catalog covers, bounded discovery and
 build-time integrity checks. The leftover generic Blackjack Live listing uses
-Evolution's official Live Blackjack photo; Speed and Lobby tiles stay withheld.
+user-provided cover art; the Speed tile stays withheld.
 New records do not extend operator availability or referral behavior; all five
 Originals remain unchanged.
 
