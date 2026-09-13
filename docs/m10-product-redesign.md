@@ -90,10 +90,38 @@ Single-sample local LCP proxies: homepage 276→416ms, lobby 1548→188ms, Crash
 not a claimed speedup or a field Core Web Vitals certification. Cold proxy image
 request totals vary with preload reuse and native lazy-loading thresholds.
 
-## Remaining verification / limits
+## Responsive and interaction QA
 
-Full four-size, three-locale visual checks and hosted release verification follow
-the stable checkpoint. Browser resizing is not physical low-end-phone testing;
+The first remote checkpoint is `15cd1db577afaecb7b7fd6775bc0832baacf6336`.
+The production build passed **126 browser layout checks**: 21 PT-BR pages at
+320×720, 360×800, 390×844 and 1440×900, plus those 21 pages in EN and ES-MX
+at 320×720. Actual document viewport dimensions were verified; an incorrectly
+resized preliminary batch was discarded, not counted as another breakpoint.
+Every checked page had one H1, no document overflow and no broken loaded image.
+All five Original routes had no fixed bottom navigation. Representative screenshots
+cover desktop homepage/provider detail, 320px lobby/provider detail, 360px Live
+Casino and 390px comparisons.
+
+The 21-page set comprises homepage, Play, Games, four primary categories, five
+Originals, four provider details (Aviator, Gates of Olympus, Blackjack Live, Mines),
+operator directory/profile, Aviator–JetX comparison, Aviator alternatives and its
+where-to-play page. The complete 258-route crawl separately validates all public
+routes, including legal, legacy, editorial and locale URL/SEO structure.
+
+Hands-on checks passed: provider search, combined category/search filters, A–Z
+selection, zero-result recovery, Originals cards/roulette filtering, mobile menu
+and Escape dismissal, route-preserving locale switching, visible keyboard focus,
+and 44px operator filters. The virtual-credit Mines start/reveal/cashout cycle
+settled and returned to its replay state. At 320×720 its initial Start control was
+fully visible (y=663–707); existing gameplay layout and logic are unchanged.
+No new browser console errors were observed in the QA tab. Spanish footer text
+was verified rendered, not only in source. Existing outbound links retain the
+same market, attribution, sponsored relationship and new-tab behavior.
+
+## Remaining release verification / limits
+
+Hosted CI and final live deployment evidence are recorded separately after
+release verification. Browser resizing is not physical low-end-phone testing;
 keyboard/focus checks are not a complete screen-reader/WCAG audit. Provider artwork
 continues to require existing rights approval; generic Blackjack Live retains the
 neutral fallback. Existing gameplay, affiliate and legacy Sports limitations are
