@@ -239,4 +239,30 @@ See [the rules, architecture and verification report](docs/roulette.md).
 Play Real only recommends the separately verified external Lightning Roulette
 listing where the existing operator, exact game, Live Casino and selected GEO
 approvals permit it. No Liva Roulette availability is claimed at any operator.
-Mines, Plinko and other unfinished slugs remain 404/noindex. No M9 work is included.
+Plinko and other unfinished slugs remain 404/noindex.
+
+## M9 Liva Mines: Jungle Gold
+
+The fifth Original is playable at `/[locale]/play/mines`. Its 5×5 jungle board
+supports 1/3/5/7/10 mines, immediate safe reveals, an ordered golden Treasure
+Trail and a live Cash Out return. All mine positions are generated before play
+using cryptographic rejection sampling and partial Fisher–Yates. Exact
+combinatorial probability, one centralized 3% demo edge and integer-credit
+settlement stay outside rendering. The next round is ready 600ms after a result.
+
+The Play hub, homepage and separate Instant Games block include localized
+discovery and owned lightweight SVG art. Instant Games has no approved category
+destination today, so Play Real truthfully shows no eligible operators. It does
+not borrow the provider Mines listing or the Blackjack/Roulette exceptions.
+See [the math, architecture, payload and QA report](docs/mines.md).
+
+- `node --import tsx scripts/mines-simulate.mjs 100000 9132026` verifies 100,000
+  layouts per mode, position frequency and exact combinatorial progression.
+- `node scripts/mines-visual-qa.mjs` serves local-only real-component scenarios
+  and visible presentation-clock controls on :3109. No public overrides exist.
+- `node scripts/mines-performance-qa.mjs` adds a visible timing/resource report
+  on :3110 to an existing production preview on :3102.
+
+Reloading an active round keeps the stake spent, drops the unfinished board and
+starts ready without refund/resume/payout. No new dependencies or runtime pin
+changes were needed. Plinko/M10 is not included.

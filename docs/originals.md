@@ -123,6 +123,12 @@ Exact game/market/operator/destination checks remain mandatory. Public copy
 states this is not Liva Roulette and has different rules/payouts. No provider
 record, partner approval or affiliate destination was changed.
 
+M9 Liva Mines remains category-only: `instant-games` passes through the existing
+category/GEO resolver. No approved category destination exists today, so its
+Play Real section shows the localized empty state. The separately catalogued
+provider Mines game is preserved and never used to borrow eligibility. No
+Blackjack/Roulette exact-listing exception applies. See [M9 details](mines.md).
+
 Navigation is a normal anchor independent of consent. M2 continues to preserve
 functional partner tracking while gating optional measurement. Do not put
 required campaign IDs in the optional analytics template.

@@ -19,4 +19,4 @@ createServer(async (req, res) => {
     if ((response.headers.get('content-type') ?? '').includes('text/html')) res.end((await response.text()).replace('</head>', probe + '</head>'))
     else res.end(Buffer.from(await response.arrayBuffer()))
   } catch { res.writeHead(502); res.end('Local preview unavailable') }
-}).listen(3110, '127.0.0.1', () => console.log('Mines local performance evidence: http://127.0.0.1:3108/pt-br/play/mines'))
+}).listen(3110, '127.0.0.1', () => console.log('Mines local performance evidence: http://127.0.0.1:3110/pt-br/play/mines'))
