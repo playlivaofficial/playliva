@@ -109,6 +109,14 @@ terms, offers and required partner attribution remain unchanged. The existing
 `/go` route resolves the destination again at navigation time. Links use the
 existing affiliate new-tab convention and sponsored/noopener/noreferrer.
 
+M7 adds an explicitly labelled exception to category-only recommendations:
+Liva Blackjack may recommend the separately verified external `blackjack-live`
+listing. This is not an Original/provider identity mapping. The resolver must
+verify that exact external listing, market, operator and destination; a generic
+live-casino/category approval alone cannot enable it. The Original's ID/slug is
+never passed as the external game. Player-facing copy names the separate listing
+and disclaims Original availability. Table Games still has no blanket approval.
+
 Navigation is a normal anchor independent of consent. M2 continues to preserve
 functional partner tracking while gating optional measurement. Do not put
 required campaign IDs in the optional analytics template.

@@ -22,9 +22,9 @@ test('Crash has complete original copy and reciprocal canonical/hreflang for all
     assert.ok(metadata.alternates.languages['x-default'].endsWith('/pt-br/play/crash'))
   }
 })
-test('only the implemented Crash and Capybara subroutes enter the sitemap', () => {
+test('only the three implemented Originals subroutes enter the sitemap', () => {
   const urls = sitemapModule.default().map(entry => new URL(entry.url).pathname).filter(path => /\/play\//.test(path))
-  assert.deepEqual(urls.sort(), ['/en/play/capybara-gold', '/en/play/crash', '/es-mx/play/capybara-gold', '/es-mx/play/crash', '/pt-br/play/capybara-gold', '/pt-br/play/crash'])
+  assert.deepEqual(urls.sort(), ['en', 'es-mx', 'pt-br'].flatMap(locale => ['blackjack', 'capybara-gold', 'crash'].map(slug => `/${locale}/play/${slug}`)))
 })
 test('manual auto cashout input supports localized decimals without silently rounding', () => {
   assert.equal(parseAutoInput('2.47'), 247)

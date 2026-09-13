@@ -142,6 +142,26 @@ try {
       const real = doc.querySelector('a[href^="/go?"]')
       assert.equal(new URL(real.href, base).searchParams.get('category'), 'slots')
     }
+    if (['', '/play', '/table-games'].includes(routePath)) {
+      const blackjack = doc.querySelectorAll('[data-original-card="blackjack"]')
+      assert.equal(blackjack.length, 1, `${path}: one implemented Blackjack card`)
+      for (const link of blackjack[0].querySelectorAll('a')) assert.equal(link.getAttribute('href'), `/${segment}/play/blackjack`)
+      if (routePath === '/table-games') {
+        assert.ok(doc.querySelector('[data-originals-section="table-games"]'))
+        assert.ok(blackjack[0].compareDocumentPosition(doc.querySelector('main a[href*="/games/"]')) & 4)
+      } else assert.deepEqual([...doc.querySelectorAll('[data-original-card]')].map(e => e.getAttribute('data-original-card')), ['island-crash', 'capybara-gold', 'blackjack'])
+    }
+    if (routePath === '/play/blackjack') {
+      assert.ok(doc.querySelector('[data-blackjack-game]'), `${path}: real blackjack shell`)
+      assert.ok(doc.querySelector('[data-blackjack-deal]'))
+      assert.equal(doc.querySelector('nav.fixed'), null)
+      const real = doc.querySelector('a[href^="/go?"]'), target = new URL(real.href, base)
+      assert.equal(target.searchParams.get('category'), 'table-games')
+      assert.equal(target.searchParams.get('game'), 'blackjack-live')
+      assert.equal(real.getAttribute('target'), '_blank'); assert.ok(real.rel.includes('sponsored'))
+      const outbound = await fetch(base + target.pathname + target.search, { redirect: 'manual' })
+      assert.equal(outbound.status, 302); assert.equal(outbound.headers.get('location'), partner.categoryAffiliateUrl['live-casino'].BR)
+    }
     if (routePath !== '/play/crash') {
       for (const script of doc.querySelectorAll('script[src], link[rel="modulepreload"]')) {
         const url = script.getAttribute('src') ?? script.getAttribute('href')
@@ -215,7 +235,7 @@ try {
   for (const locale of LOCALE_SEGMENTS) {
     for (const path of [`/${locale}/missing-page`, `/${locale}/games/missing-game`, `/${locale}/operators/missing-operator`,
       `/${locale}/sports/missing-sport`,
-      ...['slots', 'blackjack', 'roulette', 'mines', 'plinko', 'test-only'].map(slug => `/${locale}/play/${slug}`)]) {
+      ...['slots', 'roulette', 'mines', 'plinko', 'test-only'].map(slug => `/${locale}/play/${slug}`)]) {
       const response = await fetch(base + path)
       assert.equal(response.status, 404, path)
       const doc = new JSDOM(await response.text()).window.document

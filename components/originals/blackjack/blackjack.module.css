@@ -1,0 +1,98 @@
+.game { width: 100%; min-width: 0; }
+.game fieldset { padding: 10px 12px; }
+.table { position: relative; isolation: isolate; min-height: 290px; padding: 10px 8px 0; overflow: hidden; color: #f8eed8; background: radial-gradient(ellipse at 50% 30%, #176451, #073d34 54%, #031f22); box-shadow: inset 0 0 0 3px #c5a76660, inset 0 0 0 6px #082c29, inset 0 0 50px #00171c; }
+.table::before { content: ''; position: absolute; z-index: -1; inset: 6px; pointer-events: none; border: 1px solid #dbc38550; border-radius: 40% 40% 20% 20% / 8% 8% 6% 6%; background-image: repeating-linear-gradient(45deg, #fff2 0, #fff2 .3px, transparent .3px, transparent 5px); opacity: .13; }
+.table::after { content: ''; position: absolute; z-index: -1; left: 10%; right: 10%; top: 62px; height: 150px; border-bottom: 1px solid #e2c98755; border-radius: 0 0 50% 50%; pointer-events: none; }
+.tableHeader { display: flex; flex-direction: column; align-items: center; gap: 2px; min-height: 28px; }
+.tableHeader > span:first-child { color: #93c7ba; font-size: 7px; font-weight: 700; letter-spacing: .24em; }
+.tableHeader b { color: #e9d6a3; font-family: var(--font-display); font-size: 15px; font-weight: 750; letter-spacing: .14em; }
+.tableHeader em { font-style: normal; color: #faf0d2; }
+.shoe { position: absolute; top: 16px; right: 15px; width: 23px; height: 32px; display: grid; place-items: center; border: 1px solid #c5aa71; border-radius: 3px; background: repeating-linear-gradient(135deg,#102e43 0 3px,#234452 3px 4px); box-shadow: 2px 2px #06192c,3px 3px #b7a87f,5px 5px #06192c; color: #dfc98e; font-size: 17px; transform: rotate(12deg); }
+.dealerZone { position: relative; width: 100%; margin-inline: auto; max-width: 650px; padding-top: 3px; }
+.zoneLabel { display: flex; justify-content: center; align-items: center; gap: 8px; min-height: 22px; margin-bottom: 3px; font-size: 10px; font-weight: 700; color: #c1ddd1; }
+.zoneLabel strong { padding: 1px 6px; min-width: 28px; border-radius: 6px; background: #001d23c7; color: #fff2c5; font-size: 16px; font-variant-numeric: tabular-nums; line-height: 1.25; }
+.zoneLabel small { font-size: 8px; font-weight: 500; }
+.cards { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px; min-height: 68px; }
+.card { display: block; flex: 0 0 auto; width: 48px; height: auto; aspect-ratio: 88 / 124; filter: drop-shadow(0 3px 3px #00181e80); animation: cardDeal .2s cubic-bezier(.16,.76,.27,1) both; transform-origin: center; }
+.fullFace { display: block; width: 100%; height: auto; }
+.miniFace { display: none; }
+.flip { animation: cardFlip .2s ease-out both; }
+.tableRule { display: flex; flex-direction: column; align-items: center; gap: 1px; margin: 4px 0; color: #dec58d; text-align: center; font-weight: 650; line-height: 1.25; }
+.tableRule span { font-size: 9px; letter-spacing: .14em; }
+.tableRule small { font-size: 8px; color: #b1c9b8; font-weight: 500; }
+.hands { display: grid; grid-template-columns: repeat(var(--hands), minmax(0, 1fr)); align-items: start; gap: 5px; width: 100%; max-width: 780px; margin-inline: auto; }
+.hand { position: relative; min-width: 0; padding: 4px 2px 3px; border-radius: 11px; border: 1px solid #8cae9040; background: linear-gradient(#002a283d,#06292590); transition: border-color .18s, background .18s; }
+.hand[data-active] { border-color: #f3cf7d; background: radial-gradient(ellipse at top,#b5953630,#06292590); box-shadow: 0 0 13px #e9c56320; }
+.hand[data-outcome='win'],.hand[data-outcome='blackjack'] { border-color: #edcc88; background: #47633865; }
+.hand[data-outcome='bust'],.hand[data-outcome='loss'] { border-color: #b65b664a; }
+.hand .cards { min-height: 68px; }
+.handMeta { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 3px; margin-top: 4px; color: #c6d4c4; font-size: 9px; line-height: 1.3; font-variant-numeric: tabular-nums; }
+.handMeta b { color: #ffedbc; font-weight: 750; }
+.chip { flex: 0 0 auto; width: 12px; height: 12px; border-radius: 50%; border: 2px dashed #efdfac; background: #b28c3d; box-shadow: 0 1px 0 #795528; }
+.handState { min-height: 13px; margin-top: 2px; text-align: center; color: #f3d798; font-size: 9px; line-height: 1.35; font-weight: 750; }
+.handReturn { text-align: center; font-size: 8px; color: #bcd9cd; font-variant-numeric: tabular-nums; }
+.handReturn b { color: #fff2ca; font-size: 12px; }
+.emptySeat { grid-column: 1/-1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; min-height: 112px; color: #b3d0bf; font-size: 11px; }
+.seatMark { display: grid; place-items: center; width: 52px; height: 68px; border: 1px solid #d6bb7045; border-radius: 10px; color: #d6bb7066; font-size: 28px; }
+.result { min-height: 32px; display: flex; flex-direction: column; gap: 2px; align-items: center; justify-content: center; text-align: center; color: #f4e5c0; font-size: 11px; font-weight: 750; }
+.result > span:first-child { letter-spacing: .04em; }
+.table[data-finished] .result { padding: 6px 0 8px; }
+.returnAmount { display: flex; flex-wrap: wrap; gap: 5px; align-items: baseline; justify-content: center; }
+.returnAmount strong { font-size: 22px; color: #f4d58c; line-height: 1; font-variant-numeric: tabular-nums; }
+.returnAmount small { color: #c1d1c0; font-size: 8px; font-weight: 500; }
+.table[data-hands='2'] .hand .card { width: 44px; }
+.table[data-hands='3'] .hand .card { width: 35px; }
+.table[data-hands='3'] .hand .cards { gap: 2px; min-height: 46px; }
+.table[data-hands='3'] .hand .zoneLabel { gap: 3px; font-size: 9px; }
+.controls { display: flex; flex-direction: column; gap: 7px; }
+.betRow { display: grid; grid-template-columns: minmax(0,.7fr) minmax(0,1.3fr); align-items: end; gap: 12px; }
+.betRow label { display: flex; flex-direction: column; gap: 3px; font-size: 10px; color: var(--muted-foreground); font-weight: 650; }
+.betRow select { width: 100%; min-width: 0; height: 34px; padding: 3px 9px; border: 1px solid var(--border); border-radius: 8px; background: var(--background); color: var(--foreground); font-size: 16px; font-weight: 750; }
+.deal { display: flex; justify-content: center; align-items: center; gap: 8px; min-height: 44px; padding: 7px; border: 1px solid #fce6a3; border-radius: 9px; background: linear-gradient(130deg,#f7e2a7,#d9af55); color: #123d31; font-size: 16px; font-weight: 800; box-shadow: 0 3px 0 #84703b; cursor: pointer; }
+.deal span { font-size: 22px; }
+.totalBet { display: flex; justify-content: flex-end; gap: 7px; flex-wrap: wrap; align-items: baseline; color: var(--muted-foreground); font-size: 11px; padding-bottom: 8px; }
+.totalBet b { color: #f0d28e; font-size: 16px; font-variant-numeric: tabular-nums; }
+.actions { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 6px; }
+.actions button { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; border: 1px solid #739e8d80; border-radius: 8px; background: #173c37; color: #eaf6e9; font-size: 13px; font-weight: 750; cursor: pointer; }
+.actions button span { font-size: 18px; line-height: 1; }
+.actions .hit { background: linear-gradient(135deg,#f5dea0,#d6ae59); border-color: #f5dea0; color: #163c32; }
+.actions .stand { background: #16495a; border-color: #457e8f; }
+.actions button:disabled { color: #85948e; background: #12252a; opacity: .6; border-color: #33443d; cursor: default; }
+.deal:hover:not(:disabled),.actions button:hover:not(:disabled) { filter: brightness(1.12); }
+.deal:active:not(:disabled),.actions button:active:not(:disabled) { transform: translateY(1px); }
+.deal:disabled { opacity: .5; cursor: default; }
+.error { font-size: 12px; color: #f9b6a3; }
+.retry { min-height: 44px; border: 1px solid #d5c284; border-radius: 8px; background: #163b31; color: #eddfbd; }
+.controls :focus-visible,.details summary:focus-visible { outline: 3px solid #58c9ff; outline-offset: 3px; }
+.details { max-width: 80rem; margin: 0 auto; padding: 0 16px 30px; color: var(--muted-foreground); font-size: 13px; line-height: 1.7; }
+.details details { border-bottom: 1px solid var(--border); padding: 12px 0; }
+.details summary { min-height: 32px; font-size: 15px; color: var(--foreground); font-weight: 700; cursor: pointer; }
+.details p { margin-top: 12px; }
+@keyframes cardDeal { from { opacity: .15; transform: translate(85px,-75px) rotate(12deg) scale(.84); } to { opacity: 1; transform: none; } }
+@keyframes cardFlip { from { transform: rotateY(90deg); } to { transform: rotateY(0); } }
+@media(max-width:639px) {
+  .tableHeader > span:first-child { display: none; }
+  .table[data-blackjack-phase='player_turn']:not([data-hands='1']) { padding-top: 8px; }
+  .table[data-blackjack-phase='player_turn']:not([data-hands='1']) .result { min-height: 24px; }
+  .table[data-blackjack-phase='player_turn']:not([data-hands='1']) .dealerZone { display: flex; align-items: center; justify-content: center; gap: 12px; }
+  .table[data-blackjack-phase='player_turn']:not([data-hands='1']) .dealerZone .card { width: 38px; }
+  .table[data-blackjack-phase='player_turn']:not([data-hands='1']) .dealerZone .cards { min-height: 54px; }
+  .table[data-blackjack-phase='player_turn']:not([data-hands='1']) .tableRule small { display: none; }
+  .table[data-blackjack-phase='player_turn']:not([data-hands='1']) .hands { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .table[data-blackjack-phase='player_turn']:not([data-hands='1']) .hand[data-active] { grid-column: 1/-1; order: -1; }
+  .table[data-blackjack-phase='player_turn']:not([data-hands='1']) .hand[data-active] .card { width: 40px; }
+  .table[data-blackjack-phase='player_turn']:not([data-hands='1']) .hand[data-active] .cards { min-height: 56px; }
+  .table[data-blackjack-phase='player_turn']:not([data-hands='1']) .hand:not([data-active]) .card { width: auto; height: 22px; aspect-ratio: auto; animation: none; }
+  .table[data-blackjack-phase='player_turn']:not([data-hands='1']) .hand:not([data-active]) .fullFace { display: none; }
+  .table[data-blackjack-phase='player_turn']:not([data-hands='1']) .hand:not([data-active]) .miniFace { display: flex; align-items: center; justify-content: center; gap: 2px; padding: 2px 4px; min-width: 25px; height: 22px; border-radius: 3px; background: #fff5dc; font-size: 12px; font-weight: 800; line-height: 1; }
+  .miniFace i { font-style: normal; }
+  .table[data-blackjack-phase='player_turn']:not([data-hands='1']) .hand:not([data-active]) .cards { min-height: 22px; gap: 3px; }
+  .table[data-blackjack-phase='player_turn']:not([data-hands='1']) .hand:not([data-active]) .zoneLabel { min-height: 18px; margin-bottom: 2px; }
+  .table[data-blackjack-phase='player_turn']:not([data-hands='1']) .hand:not([data-active]) .handState { position: absolute; top: 5px; right: 3px; margin: 0; font-size: 7px; }
+  .table[data-blackjack-phase='player_turn']:not([data-hands='1']) .hand:not([data-active]) .zoneLabel { justify-content: flex-start; }
+  .table[data-blackjack-phase] .hands .hand[data-long] .card { width: 30px; }
+}
+@media(min-width:360px) { .card { width: 52px; } .table[data-hands='3'] .hand .card { width: 37px; } .table { padding-inline: 10px; } .zoneLabel { font-size: 11px; } .handState { font-size: 10px; } }
+@media(min-width:640px) { .table { padding: 16px 20px 4px; } .tableHeader { min-height: 44px; } .tableHeader b { font-size: 22px; } .tableHeader > span:first-child { font-size: 9px; } .card { width: 70px; } .cards,.hand .cards { min-height: 99px; gap: 6px; } .tableRule { margin-block: 10px; } .tableRule span { font-size: 12px; } .tableRule small { font-size: 10px; } .hands { gap: 12px; } .hand { padding: 8px; } .handMeta { font-size: 12px; } .handState { font-size: 12px; } .handReturn { font-size: 10px; } .handReturn b { font-size: 16px; } .zoneLabel { font-size: 13px; min-height: 28px; } .zoneLabel strong { font-size: 21px; } .zoneLabel small { font-size: 10px; } .table[data-hands='2'] .hand .card,.table[data-hands='3'] .hand .card { width: 60px; } .result { min-height: 52px; font-size: 14px; } .returnAmount strong { font-size: 29px; } .returnAmount small { font-size: 10px; } .shoe { width: 34px; height: 47px; top: 24px; right: 34px; } .actions { grid-template-columns: repeat(4,minmax(0,1fr)); } .emptySeat { min-height: 160px; } }
+@media(min-width:1024px) and (max-height:850px) { .card { width: 60px; } .cards,.hand .cards { min-height: 85px; } .table { padding-top: 10px; } .tableHeader { min-height: 36px; } .tableRule { margin-block: 7px; } .zoneLabel { min-height: 24px; } .result { min-height: 45px; } }
+@media(prefers-reduced-motion:reduce) { .table *,.controls * { animation: none !important; transition: none !important; } }

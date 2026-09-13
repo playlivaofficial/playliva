@@ -198,3 +198,24 @@ report](docs/capybara-gold.md). Offline tools:
 
 No public debug/simulation UI is shipped. Unknown unfinished play slugs remain
 404/noindex. Existing Island Crash gameplay and character assets are unchanged.
+
+## M7 Liva Blackjack
+
+The third Original is available at `/[locale]/play/blackjack`, with separate
+Play hub, homepage and Table Games discovery. Its actual six-deck local shoe
+uses secure Fisher–Yates, S17, natural 3:2, Double After Split and at most three
+hands. Code-owned SVG cards/table art keep the lazy game lightweight. All
+wagers use the shared integer-credit wallet; unfinished reloads are not refunded
+or resumed. See [the rules, architecture and verification report](docs/blackjack.md).
+
+- `node --import tsx scripts/blackjack-simulate.mjs 1000000 7132026` runs seeded,
+  offline engine verification, not an RTP/basic-strategy certification.
+- `node scripts/blackjack-visual-qa.mjs` serves the real component with isolated
+  deterministic scenarios on localhost:3105. No public outcome override exists.
+- `node scripts/blackjack-performance-qa.mjs` adds a visible local timing report
+  on :3106 to an existing production preview on :3102.
+
+Blackjack Play Real explicitly recommends the separately verified external
+Blackjack Live listing where approved. It does not claim the Original exists
+at an operator or grant blanket Table Games eligibility. Roulette/M8 remains
+unfinished and 404/noindex.

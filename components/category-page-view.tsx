@@ -16,6 +16,7 @@ import { useCountry } from '@/components/country-context'
 import { PageHero } from '@/components/page-hero'
 import { OriginalsDiscoverySection } from '@/components/originals/island-crash-feature'
 import { CapybaraDiscoverySection } from '@/components/originals/capybara-feature'
+import { BlackjackDiscoverySection } from '@/components/originals/blackjack-feature'
 import { Section, SectionHeading } from '@/components/section'
 import { GameCard } from '@/components/game-card'
 import { ComparisonCard } from '@/components/comparison-card'
@@ -77,6 +78,7 @@ export function CategoryPageView({ slug }: { slug: CategorySlug }) {
 
       {slug === 'crash' && <OriginalsDiscoverySection surface="category" />}
       {slug === 'slots' && <CapybaraDiscoverySection />}
+      {slug === 'table-games' && <BlackjackDiscoverySection />}
 
       <Section>
         <SectionHeading
