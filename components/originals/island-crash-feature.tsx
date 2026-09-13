@@ -6,6 +6,7 @@ import { useCountry } from '@/components/country-context'
 import { LocaleLink } from '@/components/locale-link'
 import { ISLAND_CRASH_PLAY_PATH, ISLAND_CRASH_POSTER, originalsDiscoveryCopy } from '@/lib/originals/discovery'
 import styles from './originals-discovery.module.css'
+import { CapybaraFeature } from './capybara-feature'
 
 /** A poster and ordinary links only; the game runtime stays on /play/crash. */
 export function IslandCrashFeature({ surface }: { surface: 'home' | 'hub' | 'category' }) {
@@ -49,6 +50,7 @@ export function OriginalsDiscoverySection({ surface }: { surface: 'home' | 'cate
         <LocaleLink href="/play" className={styles.hubLink}>{copy.hubLink}<ArrowRight size={17} aria-hidden="true" /></LocaleLink>
       </div>
       <IslandCrashFeature surface={surface} />
+      {surface === 'home' && <CapybaraFeature surface="home" />}
     </section>
   )
 }

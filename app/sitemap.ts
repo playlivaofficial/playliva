@@ -50,6 +50,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/games', priority: 0.9 },
     { path: '/play', priority: 0.8 },
     { path: '/play/crash', priority: 0.8 },
+    { path: '/play/capybara-gold', priority: 0.8 },
     { path: '/offers', priority: 0.7 },
     { path: '/operators', priority: 0.6 },
     { path: '/crash', priority: 0.7 },

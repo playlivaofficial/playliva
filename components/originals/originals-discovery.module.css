@@ -9,6 +9,14 @@
 .hubLink svg { flex-shrink: 0; }
 .hubLink:hover { text-decoration: underline; text-underline-offset: 4px; }
 .card { display: grid; min-width: 0; overflow: hidden; border: 1px solid color-mix(in srgb, var(--primary) 30%, var(--border)); border-radius: 1.5rem; background: linear-gradient(125deg, color-mix(in srgb, var(--primary) 8%, var(--card)), var(--card) 75%); }
+.card + .card { margin-top: 1.5rem; }
+.capybaraCard { border-color: #728a4f; background: linear-gradient(125deg, #124333, var(--card) 80%); }
+.capybaraPoster { isolation: isolate; background: #124a42; }
+.capybaraPoster::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, #001b27c9, transparent 80%); z-index: -1; }
+.capybaraPoster > .poster { z-index: -2; }
+.capybaraMascot { position: absolute; right: 2%; bottom: -2%; width: 57%; height: 94%; object-fit: contain; filter: drop-shadow(0 6px 18px #063330); }
+.capybaraTitle { position: absolute; top: 45%; left: 6%; color: #fff0cc; font-family: var(--font-display); font-size: clamp(23px, 4vw, 46px); font-weight: 850; line-height: .98; letter-spacing: -.03em; text-shadow: 0 3px 12px #003d31; }
+.capybaraTitle b { color: #ffd46f; font-size: 1.3em; }
 .posterLink { position: relative; display: block; min-width: 0; aspect-ratio: 16 / 9; overflow: hidden; background: #287f83; }
 .poster { object-fit: cover; transition: transform .3s ease; }
 .posterLink:hover .poster { transform: scale(1.025); }

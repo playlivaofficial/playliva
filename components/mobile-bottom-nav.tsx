@@ -15,6 +15,7 @@ export function MobileBottomNav() {
   // Crash already has a compact, persistent action surface. Keeping a second
   // fixed navigation layer here obscures Start/Cash Out on 320px screens.
   if (activePath === '/play/crash') return null
+  if (activePath === '/play/capybara-gold') return null
 
   const items = [
     { href: '/', label: t('nav.home') || 'Home', icon: Home },

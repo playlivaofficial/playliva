@@ -178,3 +178,23 @@ The action shows a live two-decimal return and then a disabled, locked payout.
 Wallet schema v2 uses integer hundredths with a validated, one-time v1 migration;
 no floating-point balance accounting is introduced. See the
 [M5.4 implementation and QA report](docs/m5.4-continuous-cashout.md).
+
+## M6 Liva Capybara Gold
+
+The second playable Original lives at `/[locale]/play/capybara-gold` and joins
+Island Crash in the Play hub and homepage. The Slots category has a separate
+Originals block; no provider data or partner approvals are changed. Its 5×4
+grid uses 1,024 adjacent ways, deterministic Wild multipliers and eight Jungle
+Bonus free spins with a persistent multiplier. It reuses the local fixed-point
+wallet and truthful Slots Play Real boundary. See [the math, artwork and QA
+report](docs/capybara-gold.md). Offline tools:
+
+- `node --import tsx scripts/capybara-simulate.mjs 1000000 6242026`
+- `node scripts/capybara-assets.mjs` regenerates small WebP derivatives.
+- `node scripts/capybara-visual-qa.mjs` serves isolated deterministic scenarios
+  on localhost:3103, using the real game component with test-only outcomes.
+- `node scripts/capybara-performance-qa.mjs` proxies a local production preview
+  on :3102 to :3104 and adds a visible, local-only timing/resource report.
+
+No public debug/simulation UI is shipped. Unknown unfinished play slugs remain
+404/noindex. Existing Island Crash gameplay and character assets are unchanged.

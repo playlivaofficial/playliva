@@ -64,7 +64,55 @@ alpha-preserving WebP derivatives. Runtime art totals 267,670 bytes: nine
 game framework, WebGL or 3D model are needed. Review readability in the actual
 cabinet at all target widths; do not infer quality from source resolution.
 
-## Release status
+## UI and integration
 
-Math/art checkpoint only. Public UI, integration and release verification are
-still in progress; this document does not claim production completion.
+The actual slot is lazy-loaded only on the three localized Capybara routes.
+The shared shell owns wallet, settings, fullscreen, history and the truthful
+Slots Play Real CTA. Original short synthesized cues are opt-in; sound defaults
+off, haptics are optional and capability-gated. Reduced-motion preferences
+disable decorative animations. Symbols remain the same deterministic outcome.
+
+Spin presentation is 1,400ms, with a 160ms stagger across the five stop reveals;
+the next paid spin unlocks at 1,800ms. Bonus spins automatically advance after
+a 700ms result beat. A compact count-up lasts 280ms. Celebrations use actual
+return/stake thresholds: medium ≥2×, big ≥10×, super ≥25×, mega ≥50×. Smaller
+returns use only a compact highlight and amount, never a big-win label.
+
+Original generated mascot/river artwork is composed into lightweight discovery
+cards on the Play hub, homepage and Slots category. Island Crash remains first
+and unchanged. EN/PT-BR/ES-MX rules, controls, symbol names, bonus, paytable,
+errors, titles and descriptions are complete; canonical/hreflang/x-default and
+sitemap include only the two implemented Originals. No provider game records,
+partner links, GEO rules, lockfile, runtime pins or Crash gameplay changed.
+
+## Local verification
+
+Pinned Node 24.20.0 / pnpm 10.30.3. Frozen install, lint (the existing three
+warnings), types, **105 tests**, production build and **249-route** crawl pass.
+Baseline ignored dependency build-script and middleware-deprecation notices
+remain; no warning budget, suppressions or TypeScript validation were weakened.
+
+Browser QA uses the actual production build plus isolated local scenarios:
+loss, 0.04-credit small win, one Wild ×2, multi-Wild ×3 (2.01-credit return),
+two-Scatter near miss, three-Scatter bonus, all eight free spins, capped
+50,000-credit win at 50.00 stake, insufficient balance and repeated spins.
+Both controlled stepping and an uninterrupted automatic eight-spin sequence
+finish with one paid debit, eight correctly booked returns and multiplier ×9.
+No separate UI win generator exists. A mounted-cabinet test verifies hidden
+outcomes, exact highlights, localized states and restrained win tiers.
+
+320×720, 360×800, 390×844 and desktop are the release viewport matrix. Desktop
+cells are height-aware with contained, centered artwork so Spin stays visible;
+mobile bonus labels use a two-line treatment. The real production release
+must still independently verify these dimensions, discovery/Play Real, hosted
+CI, Vercel Ready/Current Production and exact source SHA. Final external
+evidence is recorded in the task release report rather than causing an extra
+post-verification deployment solely to add its own commit SHA here.
+
+## Limitations
+
+This is a local-only virtual-credit demo, not a regulated/certified slot. The
+sample RTP is not a theoretical guarantee. Reload ends pending spins/unused
+free spins as disclosed; there is no account, server recovery, cross-tab atomic
+wallet or physical low-end-phone certification. Raster mascot reactions are
+restrained 2D transforms, not a rigged character. No M7 work is included.

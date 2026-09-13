@@ -125,6 +125,23 @@ try {
         else assert.ok(cards[0].compareDocumentPosition(doc.querySelector('main a[href*="/games/"]')) & 4, 'Original precedes provider grid')
       }
     }
+    if (['', '/play', '/slots'].includes(routePath)) {
+      const capybara = doc.querySelectorAll('[data-original-card="capybara-gold"]')
+      assert.equal(capybara.length, 1, `${path}: one implemented Capybara card`)
+      for (const link of capybara[0].querySelectorAll('a')) assert.equal(link.getAttribute('href'), `/${segment}/play/capybara-gold`)
+      if (routePath === '/slots') {
+        assert.ok(doc.querySelector('[data-originals-section="slots"]'))
+        assert.ok(capybara[0].compareDocumentPosition(doc.querySelector('main a[href*="/games/"]')) & 4)
+      }
+    }
+    if (routePath === '/play/capybara-gold') {
+      assert.ok(doc.querySelector('[data-capybara-game]'), `${path}: real slot shell`)
+      assert.equal(doc.querySelectorAll('[data-symbol]').length, 20, `${path}: five reels by four rows`)
+      assert.ok(doc.querySelector('[data-slot-spin]'))
+      assert.equal(doc.querySelector('nav.fixed'), null, `${path}: controls unobstructed by mobile nav`)
+      const real = doc.querySelector('a[href^="/go?"]')
+      assert.equal(new URL(real.href, base).searchParams.get('category'), 'slots')
+    }
     if (routePath !== '/play/crash') {
       for (const script of doc.querySelectorAll('script[src], link[rel="modulepreload"]')) {
         const url = script.getAttribute('src') ?? script.getAttribute('href')

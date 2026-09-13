@@ -11,6 +11,7 @@ const en = {
   recovered: 'Saved demo data could not be restored. A new demo balance has been created.',
   playReal: 'Play Real', realBoundary: 'Play real-money games at approved operators. This does not mean this PlayLiva Original is available there.',
   crashRealBoundary: 'Play real-money crash games at approved operators. This does not mean this PlayLiva Original is available there.',
+  slotsRealBoundary: 'Play real-money slots at approved operators. This does not mean Liva Capybara Gold is available there.',
   noOperators: 'No approved operators are available for this category in your selected market.',
 }
 type Copy = { [K in keyof typeof en]: string }
@@ -27,6 +28,7 @@ const copy: Record<Locale, Copy> = {
     recovered: 'Não foi possível restaurar os dados demo. Um novo saldo demo foi criado.',
     playReal: 'Jogar com Dinheiro Real', realBoundary: 'Jogue com dinheiro real em operadores aprovados. Isso não significa que este PlayLiva Original esteja disponível lá.',
     crashRealBoundary: 'Jogue crash com dinheiro real em operadores aprovados. Isso não significa que este PlayLiva Original esteja disponível lá.',
+    slotsRealBoundary: 'Jogue slots com dinheiro real em operadores aprovados. Isso não significa que Liva Capybara Gold esteja disponível lá.',
     noOperators: 'Não há operadores aprovados para esta categoria no mercado selecionado.',
   },
   'es-MX': {
@@ -40,6 +42,7 @@ const copy: Record<Locale, Copy> = {
     recovered: 'No se pudieron restaurar los datos demo. Se creó un nuevo saldo demo.',
     playReal: 'Jugar con Dinero Real', realBoundary: 'Juega con dinero real en operadores aprobados. Esto no significa que este PlayLiva Original esté disponible allí.',
     crashRealBoundary: 'Juega crash con dinero real en operadores aprobados. Esto no significa que este PlayLiva Original esté disponible allí.',
+    slotsRealBoundary: 'Juega slots con dinero real en operadores aprobados. Esto no significa que Liva Capybara Gold esté disponible allí.',
     noOperators: 'No hay operadores aprobados para esta categoría en el mercado seleccionado.',
   },
 }
