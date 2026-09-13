@@ -2,6 +2,11 @@
 
 Source of truth: https://github.com/playlivaofficial/playliva.
 
+[M11 provider reference catalog](docs/m11-provider-catalog.md) adds 31 sourced,
+localized factual game references with neutral covers, bounded discovery and
+build-time integrity checks. New records do not extend operator availability
+or referral behavior; all five Originals remain unchanged.
+
 [M10 product redesign](docs/m10-product-redesign.md) continues the released visual
 foundation with provider/editorial layouts, localized detail metadata, compact
 catalog cards, delivery measurements and explicit unchanged-game regression checks.

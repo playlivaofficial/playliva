@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import { CategoryPageView } from '@/components/category-page-view'
+import { CategoryReferenceSection } from '@/components/catalog/reference-views'
+import { catalogLocale } from '@/lib/catalog/metadata'
 import { getCategoryContent } from '@/lib/content'
 import { pageMetadata } from '@/lib/seo'
 import {
@@ -28,6 +30,7 @@ export async function generateMetadata({
   })
 }
 
-export default function InstantGamesPage() {
-  return <CategoryPageView slug="instant-games" />
+export default async function InstantGamesPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params
+  return <CategoryPageView slug="instant-games" referenceCatalog={<CategoryReferenceSection category="instant-games" locale={catalogLocale(locale)} />} />
 }

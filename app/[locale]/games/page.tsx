@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { Section } from '@/components/section'
-import { GamesExplorer } from '@/components/games-explorer'
+import { CatalogExplorer } from '@/components/catalog/catalog-explorer'
+import { catalogSummaries } from '@/lib/catalog'
+import { catalogLocale } from '@/lib/catalog/metadata'
 import { GamesPageHero } from '@/components/games-page-hero'
 import { pageMetadata } from '@/lib/seo'
 import {
@@ -28,12 +30,13 @@ export async function generateMetadata({
   })
 }
 
-export default function GamesPage() {
+export default async function GamesPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params
   return (
     <>
       <GamesPageHero />
       <Section className="py-8 sm:py-12">
-        <GamesExplorer />
+        <CatalogExplorer entries={catalogSummaries(catalogLocale(locale))} />
       </Section>
     </>
   )

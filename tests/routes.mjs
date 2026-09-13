@@ -20,6 +20,9 @@ import consentModule from '../lib/consent.ts'
 import discoveryModule from '../lib/originals/discovery.ts'
 import i18nModule from '../lib/i18n.ts'
 import productModule from '../lib/product-discovery.ts'
+import catalogModule from '../lib/catalog/index.ts'
+import catalogCopyModule from '../lib/catalog/copy.ts'
+import catalogQueryModule from '../lib/catalog/query.ts'
 const { originalsDiscoveryCopy, ISLAND_CRASH_POSTER } = discoveryModule
 const { ANALYTICS_COOKIE } = consentModule
 
@@ -245,6 +248,11 @@ try {
     if (category) {
       const gameLinks = [...doc.querySelectorAll('main a[href*="/games/"]')].map(link => new URL(link.href, base).pathname.split('/').pop())
       const expected = GAMES.filter(g => productModule.discoveryCategory(g) === category.slug || category.slug === 'table-games' && g.category === 'table-games').map(g => g.slug)
+      // Preserve every legacy category member; append the bounded M11 reference
+      // page only. Remaining entries are exercised through pagination tests.
+      expected.push(...catalogModule.REFERENCE_GAMES.filter(g => g.category === category.slug)
+        .sort((a, b) => a.title.localeCompare(b.title, localeModule.segmentToLocale(segment)))
+        .slice(0, catalogQueryModule.CATALOG_PAGE_SIZE).map(g => g.slug))
       assert.deepEqual([...new Set(gameLinks)].sort(), expected.sort(), `${path}: category membership`)
     }
     const robots = [...doc.querySelectorAll('meta[name="robots"], meta[name="googlebot"]')].map((meta) => meta.content)
@@ -262,6 +270,17 @@ try {
     if (doc.querySelector('script[src*="googletagmanager"], script[src*="insights/script"]')) failures.push(`${path}: analytics script before consent`)
     if (path.includes('blackjack-live') && doc.querySelector('img[src*="blackjack-live"]')) failures.push(`${path}: mismatched artwork`)
     const metadataText = [...doc.querySelectorAll('meta[name="description"], img[alt]')].map((node) => node.content ?? node.alt).join(' ')
+    if (doc.querySelector('[data-reference-detail]')) {
+      const game = catalogModule.getReferenceGame(routePath.split('/').pop())
+      const locale = localeModule.segmentToLocale(segment), c = catalogCopyModule.catalogCopy(locale)
+      assert.equal(doc.querySelector('h1').textContent, game.title)
+      for (const field of ['summary', 'overview', 'howItWorks']) assert.ok(doc.querySelector('main').textContent.includes(game.content[locale][field]), `${path}: ${field}`)
+      assert.ok(doc.querySelector('[data-artwork-status="fallback"]'))
+      assert.equal(doc.querySelector('main img, main iframe, main a[href^="/go"], main a[href*="/where-to-play/"]'), null)
+      assert.ok(doc.querySelector('main').textContent.includes(c.evidence))
+      assert.equal(doc.querySelector('meta[name="description"]').content, game.content[locale].summary)
+    }
+    if (doc.querySelector('[data-catalog-explorer]')) assert.ok(doc.querySelectorAll('[data-catalog-results] > a').length <= 12)
     if (routePath.startsWith('/games/') && doc.querySelector('[data-provider-detail]')) {
       assert.ok(doc.querySelector('[data-provider-hero-art]'), `${path}: provider artwork remains part of identity`)
       for (const anchor of doc.querySelectorAll('nav a[href^="#"]')) assert.ok(doc.querySelector(anchor.getAttribute('href')), `${path}: guide anchor target`)
@@ -279,6 +298,14 @@ try {
     assert.ok(response.status >= 200 && response.status < 400, `${path}: broken internal link ${response.status}`)
   }
   for (const locale of LOCALE_SEGMENTS) {
+    // M11 references never create inferred availability pages or automatic
+    // Games Like pages; unknown providers also remain genuine 404s.
+    for (const game of catalogModule.REFERENCE_GAMES) {
+      assert.equal((await fetch(`${base}/${locale}/where-to-play/${game.slug}`)).status, 404)
+    }
+    for (const suffix of ['/providers/missing-provider', '/games-like/fruit-party', '/compare/fruit-party-vs-sugar-rush']) {
+      assert.equal((await fetch(`${base}/${locale}${suffix}`)).status, 404)
+    }
     for (const path of [`/${locale}/missing-page`, `/${locale}/games/missing-game`, `/${locale}/operators/missing-operator`,
       `/${locale}/sports/missing-sport`,
       ...['slots', 'plinko', 'test-only'].map(slug => `/${locale}/play/${slug}`)]) {

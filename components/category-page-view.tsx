@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, type ReactNode } from 'react'
 import { LocaleLink } from '@/components/locale-link'
 import { ArrowRight, Trophy } from 'lucide-react'
 import {
@@ -29,7 +29,7 @@ import { cn } from '@/lib/utils'
 import { discoveryCategory, DISCOVERY_ORDER, productCopy } from '@/lib/product-discovery'
 import styles from '@/components/product-design.module.css'
 
-export function CategoryPageView({ slug }: { slug: CategorySlug }) {
+export function CategoryPageView({ slug, referenceCatalog }: { slug: CategorySlug; referenceCatalog?: ReactNode }) {
   const { countryCode: country, t, locale } = useCountry()
   const category = getCategoryContent(slug, locale)
   const countryName = getCountryName(country, locale)
@@ -111,6 +111,8 @@ export function CategoryPageView({ slug }: { slug: CategorySlug }) {
           <p className="text-muted-foreground">{t('category.empty')}</p>
         )}
       </Section>
+
+      {referenceCatalog}
 
       {bestList && bestListContent && (
         <Section className="pt-0">

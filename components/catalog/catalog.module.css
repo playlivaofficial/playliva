@@ -1,0 +1,38 @@
+.explorer { min-width: 0; }
+.tools { display: flex; flex-wrap: wrap; gap: 1rem; padding: 1rem; border: 1px solid var(--border); border-radius: 1.1rem; background: var(--card); }
+.tools label { display: grid; gap: .5rem; flex: 1 1 180px; min-width: 0; font-size: .8rem; font-weight: 600; color: var(--muted-foreground); }
+.tools .search { flex: 3 1 280px; }
+.tools select { width: 100%; min-height: 44px; min-width: 0; border: 1px solid var(--border); border-radius: .6rem; padding: .6rem; background: var(--background); color: var(--foreground); }
+.resultLine { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .5rem 1rem; margin-top: 1rem; color: var(--muted-foreground); font-size: .8rem; }
+.resultLine button, .resultLine a, .empty button { color: var(--primary); min-height: 44px; display: inline-flex; align-items: center; text-decoration: underline; text-underline-offset: 4px; }
+.pagination { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 1rem; margin-top: 1.75rem; font-size: .85rem; }
+.pagination button { min-height: 44px; padding: .6rem 1rem; border: 1px solid var(--border); border-radius: .7rem; background: var(--card); }
+.pagination button:disabled { opacity: .4; }
+.empty { padding: 3rem 1rem; text-align: center; }
+.cover { position: absolute; inset: 0; overflow: hidden; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: .55rem; padding: 1rem; background: radial-gradient(ellipse at 100% 0%, #304c7055, transparent 80%), #101b2c; color: #dbeaff; }
+.cover[data-category='slots'] { background: radial-gradient(ellipse at 100% 0%, #73518e55, transparent 80%), #211a30; color: #edd9ff; }
+.cover[data-category='crash'] { background: radial-gradient(ellipse at 100% 0%, #38896a55, transparent 80%), #122b29; color: #b9f9dc; }
+.cover[data-category='instant-games'] { background: radial-gradient(ellipse at 100% 0%, #99733f55, transparent 80%), #302418; color: #ffe7ae; }
+.coverBrand { font-size: .6rem; letter-spacing: .09em; text-transform: uppercase; opacity: .75; }
+.coverTitle { font-family: var(--font-display), sans-serif; font-size: clamp(.85rem, 1.5vw, 1.4rem); line-height: 1.15; font-weight: 700; overflow-wrap: anywhere; }
+.cover small { font-size: .65rem; opacity: .75; }
+.heroArt { position: relative; width: 100%; min-height: 230px; border-radius: 1rem; overflow: hidden; border: 1px solid var(--border); }
+.heroArt .cover { padding: 1.5rem; }
+.heroArt .coverTitle { font-size: 1.8rem; }
+.article { max-width: 78rem; margin: auto; padding: 2.5rem 1rem; }
+.articleGrid { display: grid; gap: 2rem; grid-template-columns: minmax(0, 1fr); }
+.prose p { line-height: 1.8; color: var(--muted-foreground); max-width: 70ch; }
+.prose h2 { font-family: var(--font-display), sans-serif; font-size: 1.4rem; font-weight: 700; margin: 1.6rem 0 .8rem; }
+.prose h2:first-child { margin-top: 0; }
+.features { list-style: disc; padding-left: 1.2rem; color: var(--muted-foreground); line-height: 1.9; }
+.links { display: flex; flex-wrap: wrap; gap: .5rem 1rem; margin-top: 1rem; }
+.links a { display: inline-flex; align-items: center; min-height: 44px; color: var(--primary); text-decoration: underline; text-underline-offset: 4px; }
+.evidence { border-top: 1px solid var(--border); padding-top: 1.5rem; margin-top: 2rem; font-size: .85rem; }
+.evidence a { overflow-wrap: anywhere; }
+.related { margin-top: 2rem; }
+.comparison { display: grid; grid-template-columns: minmax(0,1fr); gap: 1rem; margin: 1rem 0; }
+.compareCell { padding: 1.25rem; border: 1px solid var(--border); border-radius: 1rem; background: var(--card); }
+.compareCell h3 { font-weight: 700; font-size: 1.1rem; margin-bottom: .75rem; }
+@media (min-width: 640px) { .comparison { grid-template-columns: repeat(2, minmax(0, 1fr)); } .article { padding: 3rem 1.5rem; } }
+@media (min-width: 900px) { .articleGrid { grid-template-columns: minmax(0, 2fr) minmax(250px, 1fr); } }
+@media (max-width: 359px) { .cover { gap: .3rem; padding: .45rem; } .coverBrand, .cover small { display: none; } .coverTitle { font-size: .65rem; } .cover svg { width: 18px; height: 18px; } .heroArt .cover svg { width: 32px; height: 32px; } .heroArt { min-height: 190px; } .heroArt .coverTitle { font-size: 1.6rem; } }

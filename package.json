@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node --import tsx scripts/validate-catalog.mjs && next build",
     "start": "next start",
     "lint": "eslint . --max-warnings 3",
     "typecheck": "next typegen && tsc --noEmit",

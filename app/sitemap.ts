@@ -6,6 +6,7 @@ import {
   getPublicOperators,
 } from '@/lib/data'
 import { absoluteUrl } from '@/lib/seo'
+import { REFERENCE_PATHS } from '@/lib/catalog/paths'
 import { DEFAULT_LOCALE_SEGMENT, LOCALE_SEGMENTS, type LocaleSegment } from '@/lib/locale'
 
 /**
@@ -94,5 +95,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     entries.push(...localizedEntry(`/operators/${operator.slug}`, now, 'monthly', 0.5))
   }
 
+  // M11 neutral reference pages do not extend commercial availability routes.
+  for (const path of REFERENCE_PATHS) {
+    entries.push(...localizedEntry(path, now, 'monthly', 0.6))
+  }
   return entries
 }

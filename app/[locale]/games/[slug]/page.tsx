@@ -11,9 +11,12 @@ import {
   segmentToLocale,
 } from '@/lib/locale'
 import { createTranslator } from '@/lib/i18n'
+import { REFERENCE_GAMES, getReferenceGame } from '@/lib/catalog'
+import { ReferenceGameView } from '@/components/catalog/reference-views'
+import { catalogLocale, referenceMetadata } from '@/lib/catalog/metadata'
 
 export function generateStaticParams() {
-  return GAMES.map((g) => ({ slug: g.slug }))
+  return [...GAMES, ...REFERENCE_GAMES].map((g) => ({ slug: g.slug }))
 }
 
 export async function generateMetadata({
@@ -22,6 +25,8 @@ export async function generateMetadata({
   params: Promise<{ slug: string; locale: string }>
 }): Promise<Metadata> {
   const { slug, locale: localeSegment } = await params
+  const reference = referenceMetadata('games', slug, localeSegment)
+  if (reference) return reference
   const game = getGame(slug)
   if (!game) return { title: 'Game not found', robots: { index: false } }
   // Metadata copy must match the page's own LANGUAGE (URL locale segment),
@@ -47,9 +52,11 @@ export async function generateMetadata({
 export default async function GamePage({
   params,
 }: {
-  params: Promise<{ slug: string }>
+  params: Promise<{ slug: string; locale: string }>
 }) {
-  const { slug } = await params
+  const { slug, locale } = await params
+  const reference = getReferenceGame(slug)
+  if (reference) return <ReferenceGameView game={reference} locale={catalogLocale(locale)} />
   const game = getGame(slug)
   if (!game) notFound()
   return <GameDetailView game={game} />

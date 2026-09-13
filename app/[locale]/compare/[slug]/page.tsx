@@ -4,6 +4,9 @@ import { COMPARISONS, getComparison, getGameById } from '@/lib/data'
 import { getComparisonContent } from '@/lib/content'
 import { ComparisonView } from '@/components/comparison-view'
 import { pageMetadata } from '@/lib/seo'
+import { REFERENCE_COMPARISONS, getReferenceComparison } from '@/lib/catalog/editorial'
+import { ReferenceComparisonView } from '@/components/catalog/reference-views'
+import { catalogLocale, referenceMetadata } from '@/lib/catalog/metadata'
 import {
   DEFAULT_LOCALE_SEGMENT,
   isLocaleSegment,
@@ -11,7 +14,7 @@ import {
 } from '@/lib/locale'
 
 export function generateStaticParams() {
-  return COMPARISONS.map((c) => ({ slug: c.slug }))
+  return [...COMPARISONS, ...REFERENCE_COMPARISONS].map((c) => ({ slug: c.slug }))
 }
 
 export async function generateMetadata({
@@ -20,6 +23,8 @@ export async function generateMetadata({
   params: Promise<{ slug: string; locale: string }>
 }): Promise<Metadata> {
   const { slug, locale: localeSegment } = await params
+  const reference = referenceMetadata('compare', slug, localeSegment)
+  if (reference) return reference
   const comparison = getComparison(slug)
   if (!comparison) return { title: 'Game Comparison Not Found' }
   const a = getGameById(comparison.gameAId)
@@ -41,9 +46,11 @@ export async function generateMetadata({
 export default async function ComparePage({
   params,
 }: {
-  params: Promise<{ slug: string }>
+  params: Promise<{ slug: string; locale: string }>
 }) {
-  const { slug } = await params
+  const { slug, locale } = await params
+  const reference = getReferenceComparison(slug)
+  if (reference) return <ReferenceComparisonView comparison={reference} locale={catalogLocale(locale)} />
   const comparison = getComparison(slug)
   if (!comparison) notFound()
   return <ComparisonView comparison={comparison} />
