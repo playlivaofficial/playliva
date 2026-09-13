@@ -8,6 +8,7 @@ import { ISLAND_CRASH_PLAY_PATH, ISLAND_CRASH_POSTER, originalsDiscoveryCopy } f
 import styles from './originals-discovery.module.css'
 import { CapybaraFeature } from './capybara-feature'
 import { BlackjackFeature } from './blackjack-feature'
+import { RouletteFeature } from './roulette-feature'
 
 /** A poster and ordinary links only; the game runtime stays on /play/crash. */
 export function IslandCrashFeature({ surface }: { surface: 'home' | 'hub' | 'category' }) {
@@ -53,6 +54,7 @@ export function OriginalsDiscoverySection({ surface }: { surface: 'home' | 'cate
       <IslandCrashFeature surface={surface} />
       {surface === 'home' && <CapybaraFeature surface="home" />}
       {surface === 'home' && <BlackjackFeature surface="home" />}
+      {surface === 'home' && <RouletteFeature surface="home" />}
     </section>
   )
 }

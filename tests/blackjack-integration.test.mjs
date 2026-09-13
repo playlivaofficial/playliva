@@ -12,7 +12,7 @@ const source = path => readFile(new URL('../' + path, import.meta.url), 'utf8')
 const { blackjackCopy } = copyModule, { LIVA_BLACKJACK } = definitionModule
 const { getVerifiedBlackjackReferrals } = referralModule
 
-test('Blackjack: localized rules, action labels, safe SEO and nine Original URLs', () => {
+test('Blackjack: localized rules, action labels, safe SEO and its three Original URLs', () => {
   for (const [locale, segment] of [['en', 'en'], ['pt-BR', 'pt-br'], ['es-MX', 'es-mx']]) {
     const copy = blackjackCopy(locale)
     assert.deepEqual(Object.keys(copy), Object.keys(blackjackCopy('en')))
@@ -24,7 +24,7 @@ test('Blackjack: localized rules, action labels, safe SEO and nine Original URLs
     for (const s of ['en', 'pt-br', 'es-mx']) assert.ok(metadata.alternates.languages[s].endsWith(`/${s}/play/blackjack`))
     assert.ok(metadata.alternates.languages['x-default'].endsWith('/pt-br/play/blackjack'))
   }
-  assert.equal(sitemapModule.default().filter(e => /\/play\//.test(e.url)).length, 9)
+  assert.equal(sitemapModule.default().filter(e => /\/play\/blackjack$/.test(e.url)).length, 3)
 })
 test('Blackjack: exact verified external referral, never an Original availability claim or blanket category approval', () => {
   const partner = dataModule.getOperator('betsson-group-affiliates')

@@ -45,3 +45,42 @@ developer documentation/tests, not public marketing.
 Standard profit payouts were cross-checked against the official
 [Casino Estoril roulette rules](https://casino-estoril.pt/en/game/roulette).
 This reference is not an endorsement, certification or affiliate approval.
+
+Seed `8132026`, 1,000,000 draws: zero 26,974; red 485,999; black 487,027;
+odd 486,057; even 486,969. Dozens: 324,042 / 324,205 / 324,779.
+Columns: 324,541 / 324,315 / 324,170. Individual pocket counts range from
+26,616 to 27,412 (uniform expectation ≈27,027). All 155 bets independently
+derive the same exact 36/37 theoretical return.
+
+## Public integration
+
+- Localized EN/PT-BR/ES-MX route `/[locale]/play/roulette`, reciprocal metadata,
+  canonical/hreflang/x-default and sitemap. Unfinished slugs remain 404/noindex.
+- Fourth Original on Play hub/homepage; separate Table Games block and clearly
+  non-live demo context on Live Casino. No provider-game registration.
+- Play Real explicitly recommends the separately verified external
+  `lightning-roulette` game through existing Live Casino/market eligibility.
+  It never claims Liva Roulette is available at that operator. Category approval
+  alone, unverified exact game, unsupported GEO or paused partner fail closed.
+- Code-owned SVG wheel and poster, CSS table, no WebGL/3D framework or new runtime
+  dependency. Discovery never imports the renderer/simulator. SVG trig coordinates
+  are quantized to four decimal places to prevent cross-platform hydration drift.
+- Mobile separates Outside / Numbers / Inside. Number pages retain a zero target;
+  precise group buttons list exact covered numbers. Inside lists scroll vertically,
+  not the whole page horizontally. Spin/chip/total/Undo/Clear/Repeat stay together.
+- Shared wallet, optional sound/haptics, consent-aware events, fullscreen and
+  truthful demo boundaries are retained. No previous game's engine is changed.
+
+## Local visual evidence (in progress)
+
+Actual-browser checks of the real component used a separate, localhost-only
+scenario server. Captured 25%, 70%, 90% and final wheel frames: opposite motion,
+continuous radial entry and exact 23 landing. Seven simultaneous winning bets
+debited 70 credits once and returned 730 once. A zero straight plus losing red
+ticket debited 20 and returned 360. Complete-loss red produced no credit.
+Repeat restored the completed ticket without spending; interrupted reload kept
+the spent debit and started empty. Insufficient credits placed nothing.
+
+At 320×720, precise Corner targets measured 122×44px, Spin bottom 643px for the
+Inside view and 627px on zero result. No horizontal overflow. Final production
+build, remaining viewport/locales, performance and hosted release QA follow.

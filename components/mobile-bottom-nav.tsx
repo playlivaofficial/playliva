@@ -17,6 +17,7 @@ export function MobileBottomNav() {
   if (activePath === '/play/crash') return null
   if (activePath === '/play/capybara-gold') return null
   if (activePath === '/play/blackjack') return null
+  if (activePath === '/play/roulette') return null
 
   const items = [
     { href: '/', label: t('nav.home') || 'Home', icon: Home },

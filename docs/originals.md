@@ -117,6 +117,12 @@ live-casino/category approval alone cannot enable it. The Original's ID/slug is
 never passed as the external game. Player-facing copy names the separate listing
 and disclaims Original availability. Table Games still has no blanket approval.
 
+M8 applies the same boundary to Liva Roulette: the separately verified external
+`lightning-roulette` listing retains its existing Live Casino classification.
+Exact game/market/operator/destination checks remain mandatory. Public copy
+states this is not Liva Roulette and has different rules/payouts. No provider
+record, partner approval or affiliate destination was changed.
+
 Navigation is a normal anchor independent of consent. M2 continues to preserve
 functional partner tracking while gating optional measurement. Do not put
 required campaign IDs in the optional analytics template.

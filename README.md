@@ -217,5 +217,26 @@ or resumed. See [the rules, architecture and verification report](docs/blackjack
 
 Blackjack Play Real explicitly recommends the separately verified external
 Blackjack Live listing where approved. It does not claim the Original exists
-at an operator or grant blanket Table Games eligibility. Roulette/M8 remains
-unfinished and 404/noindex.
+at an operator or grant blanket Table Games eligibility.
+
+## M8 Liva Roulette: Golden Orbit
+
+The fourth Original uses European single-zero roulette on `/[locale]/play/roulette`.
+The Play hub, homepage, Table Games and an explicitly non-live Live Casino context
+link to the free-play demo without adding provider records. A lightweight owned
+SVG wheel presents predetermined cryptographic outcomes; 155 canonical bets use
+the shared integer wallet with one debit and at most one return per ticket.
+Mobile uses separate outside, paged-number and precise inside-bet surfaces.
+See [the rules, architecture and verification report](docs/roulette.md).
+
+- `node --import tsx scripts/roulette-simulate.mjs 1000000 8132026` runs seeded
+  developer verification and all-bet mathematical return derivation, not certification.
+- `node scripts/roulette-visual-qa.mjs` serves isolated real-component scenarios
+  and visible frame-step controls on localhost:3107. No public overrides exist.
+- `node scripts/roulette-performance-qa.mjs` adds visible local timing/resource
+  evidence on :3108 to an existing production preview on :3102.
+
+Play Real only recommends the separately verified external Lightning Roulette
+listing where the existing operator, exact game, Live Casino and selected GEO
+approvals permit it. No Liva Roulette availability is claimed at any operator.
+Mines, Plinko and other unfinished slugs remain 404/noindex. No M9 work is included.

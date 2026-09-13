@@ -1,0 +1,96 @@
+import type { Locale } from '@/lib/types'
+import type { RouletteBet } from './bets'
+
+const en = {
+  description: 'Play Liva Roulette: Golden Orbit free. European single-zero roulette, a golden wheel and precise virtual bets. Liva Credits only; no deposits or withdrawals.',
+  discovery: 'Find your number. Place your chips. Follow the golden orbit in our original European roulette demo.',
+  posterAlt: 'An original gold-trimmed European roulette wheel over a deep emerald table.',
+  category: 'Table Games', categoryTitle: 'Your number. Your golden orbit.',
+  categoryDescription: 'European single-zero roulette with virtual credits. A PlayLiva Original, separate from the provider games below.',
+  liveTitle: 'Free Play Roulette Demo · No Live Dealer',
+  liveDescription: 'Try our animated roulette Original with virtual credits. There is no human dealer, live feed or real-money betting on PlayLiva.',
+  loading: 'Preparing your golden wheel…', wheel: 'European roulette wheel',
+  betting: 'Place your bets', closing: 'Bets closed', spinning: 'Ball in orbit', settling: 'Ball landed', result: 'Round complete', error: 'Round interrupted',
+  spin: 'Spin', chip: 'Chip', total: 'Total bet', undo: 'Undo', clear: 'Clear', repeat: 'Repeat bet',
+  outside: 'Outside', numbers: 'Numbers', inside: 'Inside', range: 'Number range', betType: 'Bet type',
+  straight: 'Straight', split: 'Split', street: 'Street', corner: 'Corner', 'six-line': 'Six line', 'first-four': 'First four',
+  dozen: 'Dozen', column: 'Column', red: 'Red', black: 'Black', green: 'Green', odd: 'Odd', even: 'Even', low: '1–18', high: '19–36',
+  dozen1: '1st 12', dozen2: '2nd 12', dozen3: '3rd 12', column1: 'Column 1', column2: 'Column 2', column3: 'Column 3',
+  choose: 'Choose a chip, then tap a bet.', groupHint: 'Exact numbers · profit odds', selected: 'Placed', ticket: 'Your bets', noBets: 'No chips placed yet.',
+  won: 'Win', lost: 'No win', returned: 'Return', profit: 'Net result', includesStake: 'Includes winning stakes', zero: 'Zero', last: 'Last result',
+  insufficient: 'Not enough Liva Credits for this bet.', limit: 'Ticket limit: 10,000 credits or 250 chips.',
+  unavailable: 'This round could not continue safely. Reload to start a new round.', retry: 'Return to betting',
+  how: 'How to play & payouts', rules: 'European roulette has 37 pockets: 0–36, with one green zero. Pick a chip and tap a betting location. Inside bets list their exact numbers. Multiple bets and chip stacks are allowed. Press Spin to debit the total bet once and lock your ticket.',
+  controls: 'Undo removes the last chip. Clear removes all unplayed chips. Repeat restores the last completed ticket when the table is empty; it does not debit credits until Spin. Limits: 10,000 credits and 250 chip placements per ticket.',
+  payouts: 'Profit payouts: straight 35:1, split 17:1, street 11:1, corner and first four 8:1, six line 5:1, dozen and column 2:1, red/black, odd/even and low/high 1:1. Return includes each winning stake. Net result subtracts the entire ticket. Zero loses all outside bets.',
+  interruption: 'Local demo only. Reloading or leaving after Spin keeps the debited virtual stake spent. An unfinished spin does not resume and receives no automatic refund or payout. The next visit starts a new betting round.',
+  notice: 'Liva Credits have no monetary value. No deposits, withdrawals or live dealer. Take breaks and play responsibly.',
+  realBoundary: 'Explore real-money roulette at eligible operators for your selected market. Liva Roulette is our free-play Original, not a game offered by these operators.',
+  verifiedReferral: 'The link below is for the separately verified external Lightning Roulette listing. It is not Liva Roulette and its rules and payouts differ.',
+}
+type RouletteCopy = { [K in keyof typeof en]: string }
+const copy: Record<Locale, RouletteCopy> = {
+  en,
+  'pt-BR': {
+    description: 'Jogue Liva Roulette: Golden Orbit grátis. Roleta europeia com zero único, roda dourada e apostas virtuais precisas. Só Liva Credits; sem depósitos ou saques.',
+    discovery: 'Escolha seus números, coloque suas fichas e acompanhe a órbita dourada no nosso demo original de roleta europeia.',
+    posterAlt: 'Roda original de roleta europeia com detalhes dourados sobre uma mesa verde-esmeralda.',
+    category: 'Jogos de Mesa', categoryTitle: 'Seu número. Sua órbita dourada.',
+    categoryDescription: 'Roleta europeia com zero único e créditos virtuais. Um PlayLiva Original, separado dos jogos de provedores abaixo.',
+    liveTitle: 'Demo de roleta grátis · Sem crupiê ao vivo',
+    liveDescription: 'Experimente nossa roleta animada Original com créditos virtuais. Não há crupiê humano, transmissão ao vivo ou apostas com dinheiro real no PlayLiva.',
+    loading: 'Preparando sua roda dourada…', wheel: 'Roda de roleta europeia',
+    betting: 'Faça suas apostas', closing: 'Apostas encerradas', spinning: 'Bola em órbita', settling: 'Bola na casa', result: 'Rodada concluída', error: 'Rodada interrompida',
+    spin: 'Girar', chip: 'Ficha', total: 'Aposta total', undo: 'Desfazer', clear: 'Limpar', repeat: 'Repetir aposta',
+    outside: 'Externas', numbers: 'Números', inside: 'Internas', range: 'Faixa de números', betType: 'Tipo de aposta',
+    straight: 'Pleno', split: 'Cavalo', street: 'Rua', corner: 'Quadra', 'six-line': 'Seisena', 'first-four': 'Primeiros quatro',
+    dozen: 'Dúzia', column: 'Coluna', red: 'Vermelho', black: 'Preto', green: 'Verde', odd: 'Ímpar', even: 'Par', low: '1–18', high: '19–36',
+    dozen1: '1ª dúzia', dozen2: '2ª dúzia', dozen3: '3ª dúzia', column1: 'Coluna 1', column2: 'Coluna 2', column3: 'Coluna 3',
+    choose: 'Escolha a ficha e toque na aposta.', groupHint: 'Números exatos · prêmio líquido', selected: 'Apostado', ticket: 'Suas apostas', noBets: 'Nenhuma ficha na mesa.',
+    won: 'Vitória', lost: 'Sem prêmio', returned: 'Retorno', profit: 'Resultado líquido', includesStake: 'Inclui as apostas vencedoras', zero: 'Zero', last: 'Último resultado',
+    insufficient: 'Liva Credits insuficientes para esta aposta.', limit: 'Limite: 10.000 créditos ou 250 fichas por rodada.',
+    unavailable: 'Não foi possível continuar esta rodada com segurança. Recarregue para iniciar outra.', retry: 'Voltar às apostas',
+    how: 'Como jogar e pagamentos', rules: 'A roleta europeia tem 37 casas: 0–36, com um zero verde. Escolha a ficha e toque em uma aposta. As apostas internas mostram os números exatos. Você pode combinar apostas e empilhar fichas. Girar debita o total uma única vez e bloqueia as apostas.',
+    controls: 'Desfazer remove a última ficha. Limpar remove as fichas ainda não jogadas. Repetir restaura as apostas da última rodada concluída quando a mesa está vazia; os créditos só são debitados ao girar. Limites: 10.000 créditos e 250 fichas por rodada.',
+    payouts: 'Prêmios líquidos: pleno 35:1, cavalo 17:1, rua 11:1, quadra e primeiros quatro 8:1, seisena 5:1, dúzia e coluna 2:1, vermelho/preto, par/ímpar e faixas 1–18/19–36 1:1. O retorno inclui cada aposta vencedora. O resultado líquido desconta todas as apostas da rodada. O zero perde em todas as apostas externas.',
+    interruption: 'Demo local. Recarregar ou sair após Girar mantém os créditos virtuais debitados como gastos. Uma rodada inacabada não é retomada e não recebe reembolso nem pagamento automático. Na próxima visita, uma nova rodada de apostas começa.',
+    notice: 'Liva Credits não têm valor monetário. Sem depósitos, saques ou crupiê ao vivo. Faça pausas e jogue com responsabilidade.',
+    realBoundary: 'Explore roleta com dinheiro real em operadores elegíveis para o mercado selecionado. Liva Roulette é nosso Original grátis, não um jogo oferecido por esses operadores.',
+    verifiedReferral: 'O link abaixo leva ao jogo externo Lightning Roulette, verificado separadamente. Não é Liva Roulette; suas regras e pagamentos são diferentes.',
+  },
+  'es-MX': {
+    description: 'Juega Liva Roulette: Golden Orbit gratis. Ruleta europea de un solo cero, rueda dorada y apuestas virtuales precisas. Solo Liva Credits; sin depósitos ni retiros.',
+    discovery: 'Elige tus números, coloca tus fichas y sigue la órbita dorada en nuestro demo original de ruleta europea.',
+    posterAlt: 'Rueda original de ruleta europea con detalles dorados sobre una mesa verde esmeralda.',
+    category: 'Juegos de Mesa', categoryTitle: 'Tu número. Tu órbita dorada.',
+    categoryDescription: 'Ruleta europea de un solo cero con créditos virtuales. Un PlayLiva Original, separado de los juegos de proveedores de abajo.',
+    liveTitle: 'Demo de ruleta gratis · Sin crupier en vivo',
+    liveDescription: 'Prueba nuestra ruleta animada Original con créditos virtuales. No hay crupier humano, transmisión en vivo ni apuestas con dinero real en PlayLiva.',
+    loading: 'Preparando tu rueda dorada…', wheel: 'Rueda de ruleta europea',
+    betting: 'Haz tus apuestas', closing: 'Apuestas cerradas', spinning: 'Bola en órbita', settling: 'Bola en la casilla', result: 'Ronda terminada', error: 'Ronda interrumpida',
+    spin: 'Girar', chip: 'Ficha', total: 'Apuesta total', undo: 'Deshacer', clear: 'Limpiar', repeat: 'Repetir apuesta',
+    outside: 'Externas', numbers: 'Números', inside: 'Internas', range: 'Rango de números', betType: 'Tipo de apuesta',
+    straight: 'Pleno', split: 'Caballo', street: 'Calle', corner: 'Cuadro', 'six-line': 'Seisena', 'first-four': 'Primeros cuatro',
+    dozen: 'Docena', column: 'Columna', red: 'Rojo', black: 'Negro', green: 'Verde', odd: 'Impar', even: 'Par', low: '1–18', high: '19–36',
+    dozen1: '1.ª docena', dozen2: '2.ª docena', dozen3: '3.ª docena', column1: 'Columna 1', column2: 'Columna 2', column3: 'Columna 3',
+    choose: 'Elige la ficha y toca una apuesta.', groupHint: 'Números exactos · ganancia neta', selected: 'Apostado', ticket: 'Tus apuestas', noBets: 'Aún no hay fichas en la mesa.',
+    won: 'Victoria', lost: 'Sin premio', returned: 'Retorno', profit: 'Resultado neto', includesStake: 'Incluye las apuestas ganadoras', zero: 'Cero', last: 'Último resultado',
+    insufficient: 'No tienes suficientes Liva Credits para esta apuesta.', limit: 'Límite: 10,000 créditos o 250 fichas por ronda.',
+    unavailable: 'No se pudo continuar esta ronda de forma segura. Recarga para iniciar otra.', retry: 'Volver a las apuestas',
+    how: 'Cómo jugar y pagos', rules: 'La ruleta europea tiene 37 casillas: 0–36, con un cero verde. Elige la ficha y toca una apuesta. Las apuestas internas muestran los números exactos. Puedes combinar apuestas y apilar fichas. Girar descuenta el total una sola vez y bloquea las apuestas.',
+    controls: 'Deshacer quita la última ficha. Limpiar quita todas las fichas aún no jugadas. Repetir restaura las apuestas de la última ronda terminada cuando la mesa está vacía; no descuenta créditos hasta Girar. Límites: 10,000 créditos y 250 fichas por ronda.',
+    payouts: 'Ganancias netas: pleno 35:1, caballo 17:1, calle 11:1, cuadro y primeros cuatro 8:1, seisena 5:1, docena y columna 2:1, rojo/negro, par/impar y rangos 1–18/19–36 1:1. El retorno incluye cada apuesta ganadora. El resultado neto resta todas las apuestas de la ronda. El cero pierde en todas las apuestas externas.',
+    interruption: 'Demo local. Recargar o salir después de Girar mantiene los créditos virtuales descontados como gastados. Una ronda sin terminar no se reanuda ni recibe reembolso o pago automático. La siguiente visita inicia una nueva ronda de apuestas.',
+    notice: 'Liva Credits no tienen valor monetario. Sin depósitos, retiros ni crupier en vivo. Toma descansos y juega con responsabilidad.',
+    realBoundary: 'Explora ruleta con dinero real en operadores elegibles para el mercado seleccionado. Liva Roulette es nuestro Original gratuito, no un juego ofrecido por esos operadores.',
+    verifiedReferral: 'El enlace de abajo es para el juego externo Lightning Roulette, verificado por separado. No es Liva Roulette; sus reglas y pagos son distintos.',
+  },
+}
+export const rouletteCopy = (locale: Locale): RouletteCopy => copy[locale]
+export function rouletteBetLabel(bet: RouletteBet, locale: Locale) {
+  const c = rouletteCopy(locale)
+  if (bet.type === 'dozen') return [c.dozen1, c.dozen2, c.dozen3][Number(bet.id.split(':')[1]) - 1]
+  if (bet.type === 'column') return [c.column1, c.column2, c.column3][Number(bet.id.split(':')[1]) - 1]
+  if (['red', 'black', 'odd', 'even', 'low', 'high'].includes(bet.type)) return c[bet.type]
+  return `${c[bet.type]} ${bet.numbers.join(' · ')}`
+}

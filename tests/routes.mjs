@@ -149,7 +149,7 @@ try {
       if (routePath === '/table-games') {
         assert.ok(doc.querySelector('[data-originals-section="table-games"]'))
         assert.ok(blackjack[0].compareDocumentPosition(doc.querySelector('main a[href*="/games/"]')) & 4)
-      } else assert.deepEqual([...doc.querySelectorAll('[data-original-card]')].map(e => e.getAttribute('data-original-card')), ['island-crash', 'capybara-gold', 'blackjack'])
+      } else assert.deepEqual([...doc.querySelectorAll('[data-original-card]')].map(e => e.getAttribute('data-original-card')), ['island-crash', 'capybara-gold', 'blackjack', 'roulette'])
     }
     if (routePath === '/play/blackjack') {
       assert.ok(doc.querySelector('[data-blackjack-game]'), `${path}: real blackjack shell`)
@@ -158,6 +158,25 @@ try {
       const real = doc.querySelector('a[href^="/go?"]'), target = new URL(real.href, base)
       assert.equal(target.searchParams.get('category'), 'table-games')
       assert.equal(target.searchParams.get('game'), 'blackjack-live')
+      assert.equal(real.getAttribute('target'), '_blank'); assert.ok(real.rel.includes('sponsored'))
+      const outbound = await fetch(base + target.pathname + target.search, { redirect: 'manual' })
+      assert.equal(outbound.status, 302); assert.equal(outbound.headers.get('location'), partner.categoryAffiliateUrl['live-casino'].BR)
+    }
+    if (['', '/play', '/table-games', '/live-casino'].includes(routePath)) {
+      const roulette = doc.querySelectorAll('[data-original-card="roulette"]')
+      assert.equal(roulette.length, 1, `${path}: one implemented Roulette card`)
+      for (const link of roulette[0].querySelectorAll('a')) assert.equal(link.getAttribute('href'), `/${segment}/play/roulette`)
+      if (routePath === '/live-casino') assert.ok(doc.querySelector('[data-originals-roulette="live-context"]'))
+      if (routePath === '/table-games') assert.ok(roulette[0].compareDocumentPosition(doc.querySelector('main a[href*="/games/"]')) & 4)
+    }
+    if (routePath === '/play/roulette') {
+      assert.ok(doc.querySelector('[data-roulette-game]'), `${path}: real roulette shell`)
+      assert.ok(doc.querySelector('[data-roulette-spin]'))
+      assert.equal(doc.querySelectorAll('[data-pocket]').length, 37)
+      assert.equal(doc.querySelector('nav.fixed'), null)
+      const real = doc.querySelector('a[href^="/go?"]'), target = new URL(real.href, base)
+      assert.equal(target.searchParams.get('category'), 'live-casino')
+      assert.equal(target.searchParams.get('game'), 'lightning-roulette')
       assert.equal(real.getAttribute('target'), '_blank'); assert.ok(real.rel.includes('sponsored'))
       const outbound = await fetch(base + target.pathname + target.search, { redirect: 'manual' })
       assert.equal(outbound.status, 302); assert.equal(outbound.headers.get('location'), partner.categoryAffiliateUrl['live-casino'].BR)
@@ -235,7 +254,7 @@ try {
   for (const locale of LOCALE_SEGMENTS) {
     for (const path of [`/${locale}/missing-page`, `/${locale}/games/missing-game`, `/${locale}/operators/missing-operator`,
       `/${locale}/sports/missing-sport`,
-      ...['slots', 'roulette', 'mines', 'plinko', 'test-only'].map(slug => `/${locale}/play/${slug}`)]) {
+      ...['slots', 'mines', 'plinko', 'test-only'].map(slug => `/${locale}/play/${slug}`)]) {
       const response = await fetch(base + path)
       assert.equal(response.status, 404, path)
       const doc = new JSDOM(await response.text()).window.document
