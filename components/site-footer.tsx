@@ -15,6 +15,7 @@ export function SiteFooter() {
     {
       title: t('footer.discover'),
       links: [
+        { href: '/play', label: t('nav.play') },
         { href: '/games', label: t('nav.games') },
         { href: '/crash', label: t('nav.crash') },
         { href: '/slots', label: t('nav.slots') },
@@ -45,7 +46,7 @@ export function SiteFooter() {
   ]
 
   return (
-    <footer className="border-t border-border bg-card/40">
+    <footer className="border-t border-border bg-[linear-gradient(180deg,#101d32,#090f20)] pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-2">
@@ -64,7 +65,7 @@ export function SiteFooter() {
                   <li key={link.href}>
                     <LocaleLink
                       href={link.href}
-                      className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                      className="inline-flex min-h-9 items-center text-sm text-muted-foreground transition-colors hover:text-foreground"
                     >
                       {link.label}
                     </LocaleLink>

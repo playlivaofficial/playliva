@@ -7,6 +7,7 @@ import { getApprovedArtwork, hasApprovedArtwork } from '@/lib/game-artwork'
 import { useTranslation } from '@/components/country-context'
 import { getCategoryName } from '@/lib/content'
 import { cn } from '@/lib/utils'
+import { discoveryCategory, productCopy } from '@/lib/product-discovery'
 
 /**
  * Single centralized surface for every game image on PlayLiva — game
@@ -39,7 +40,7 @@ export function GameArtwork({
   className?: string
   compact?: boolean
 }) {
-  const { locale } = useTranslation()
+  const { locale, t } = useTranslation()
 
   // `getApprovedArtwork` reads a static, module-level object literal keyed
   // by `game.id` — the exact same value on the server render and the
@@ -53,7 +54,7 @@ export function GameArtwork({
     return (
       <Image
         src={artwork.src}
-        alt={game.imageAlt || artwork.alt}
+        alt={`${game.title} — ${t('game.byProvider', { provider: game.provider })}`}
         fill={fill}
         priority={priority}
         sizes={sizes}
@@ -62,12 +63,12 @@ export function GameArtwork({
     )
   }
 
-  const categoryLabel = getCategoryName(game.category, locale)
+  const categoryLabel = getCategoryName(discoveryCategory(game), locale)
 
   return (
     <div
       role="img"
-      aria-label={`${game.title} — ${game.provider}, ${categoryLabel}. Artwork pending approval.`}
+      aria-label={`${game.title} — ${game.provider}, ${categoryLabel}. ${productCopy(locale).artworkPending}`}
       className={cn(
         'flex flex-col items-center justify-center gap-2 bg-background text-center',
         compact ? 'gap-1 px-1.5' : 'px-4',

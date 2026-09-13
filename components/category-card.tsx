@@ -6,6 +6,7 @@ import type { CategorySlug } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import { useCountry } from '@/components/country-context'
 import { getCategoryContent } from '@/lib/content'
+import styles from '@/components/product-design.module.css'
 
 // Sports is a network link, not an internal game category or affiliate approval.
 type CardSlug = CategorySlug | 'sports'
@@ -45,17 +46,10 @@ export function CategoryCard({
   return (
     <LocaleLink
       href={HREFS[slug]}
-      className={cn(
-        'group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card p-6 transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:glow-primary',
-        className,
-      )}
+      className={cn(styles.categoryCard, className)} data-category={slug}
     >
-      <div
-        className="absolute -right-8 -top-8 size-32 rounded-full bg-primary/10 blur-2xl transition-opacity duration-300 group-hover:opacity-100 opacity-0"
-        aria-hidden="true"
-      />
-      <span className="grid size-12 place-items-center rounded-xl bg-primary/15 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-        <Icon className="size-6" />
+      <span className={styles.categoryIcon}>
+        <Icon className="size-6" aria-hidden="true" />
       </span>
       <h3 className="mt-5 font-display text-xl font-bold text-foreground">
         {name}

@@ -2,7 +2,7 @@
 
 import { LocaleLink } from '@/components/locale-link'
 import { usePathname } from 'next/navigation'
-import { Home, Gamepad2, Zap, Tag } from 'lucide-react'
+import { Home, Compass, Gamepad2, Trophy } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useTranslation } from '@/components/country-context'
 import { stripLocaleFromPath } from '@/lib/locale'
@@ -22,15 +22,15 @@ export function MobileBottomNav() {
 
   const items = [
     { href: '/', label: t('nav.home') || 'Home', icon: Home },
-    { href: '/games', label: t('nav.games'), icon: Gamepad2 },
-    { href: '/play', label: t('nav.play'), icon: Zap },
-    { href: '/offers', label: t('nav.offers'), icon: Tag },
+    { href: '/play', label: t('nav.play'), icon: Gamepad2 },
+    { href: '/games', label: t('nav.games'), icon: Compass },
+    { href: 'https://livasports.com', label: t('nav.sports'), icon: Trophy },
   ]
 
   return (
     <nav
       aria-label={t('nav.menu')}
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/90 backdrop-blur-xl md:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden"
     >
       <div className="mx-auto flex max-w-md items-stretch justify-around">
         {items.map((item) => {
@@ -43,9 +43,10 @@ export function MobileBottomNav() {
             <LocaleLink
               key={item.href}
               href={item.href}
+              aria-current={active ? 'page' : undefined}
               className={cn(
-                'flex flex-1 flex-col items-center gap-1 py-2.5 text-xs font-medium transition-colors',
-                active ? 'text-primary' : 'text-muted-foreground',
+                'flex min-h-16 flex-1 flex-col items-center justify-center gap-1 text-[11px] font-semibold transition-colors',
+                active ? 'bg-primary/10 text-primary' : 'text-muted-foreground',
               )}
             >
               <Icon className={cn('size-5', active && 'drop-shadow-[0_0_8px_var(--primary)]')} />

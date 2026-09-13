@@ -1,6 +1,7 @@
 'use client'
 
 import { ArrowRight, Check } from 'lucide-react'
+import { useState } from 'react'
 import { LocaleLink } from '@/components/locale-link'
 import { useCountry } from '@/components/country-context'
 import { IslandCrashFeature } from '@/components/originals/island-crash-feature'
@@ -10,28 +11,41 @@ import { RouletteFeature } from '@/components/originals/roulette-feature'
 import { MinesFeature } from '@/components/originals/mines-feature'
 import { originalsDiscoveryCopy } from '@/lib/originals/discovery'
 import styles from '@/components/originals/originals-discovery.module.css'
+import { productCopy } from '@/lib/product-discovery'
 
 export function PlayView() {
   const { locale } = useCountry()
   const copy = originalsDiscoveryCopy(locale)
+  const product = productCopy(locale)
+  const [filter, setFilter] = useState('all')
+  const groups = [
+    { id: 'all', label: product.all, count: 5 }, { id: 'crash', label: product.crash, count: 1 },
+    { id: 'slots', label: product.slots, count: 1 }, { id: 'cards', label: product.cards, count: 2 },
+    { id: 'instant', label: product.instant, count: 1 },
+  ]
   return (
     <div className={styles.hub} data-play-hub>
       <header className={styles.hubIntro}>
-        <p className={styles.eyebrow}>{copy.originals} · {copy.demoGames}</p>
-        <h1 className={styles.hubTitle}>{copy.hubTitle}</h1>
-        <p className={styles.hubDescription}>{copy.hubDescription}</p>
+        <p className={styles.eyebrow}>{copy.originals} · {product.hubEyebrow}</p>
+        <h1 className={styles.hubTitle}>{product.hubTitle}</h1>
+        <p className={styles.hubDescription}>{product.hubSub}</p>
         <ul className={styles.trust}>
           {[copy.noDeposits, copy.noWithdrawals, copy.noValue].map(label => (
             <li key={label}><Check size={16} aria-hidden="true" />{label}</li>
           ))}
         </ul>
       </header>
-      <p className={styles.available}>{copy.available}</p>
-      <IslandCrashFeature surface="hub" />
-      <CapybaraFeature surface="hub" />
-      <BlackjackFeature surface="hub" />
-      <RouletteFeature surface="hub" />
-      <MinesFeature surface="hub" />
+      <div className={styles.filters} role="group" aria-label={product.all}>
+        {groups.map(group => <button type="button" key={group.id} aria-pressed={filter === group.id} onClick={() => setFilter(group.id)}>{group.label}</button>)}
+      </div>
+      <p className={styles.available} role="status">{product.resultCount.replace('{count}', String(groups.find(group => group.id === filter)?.count ?? 5))}</p>
+      <div className={styles.hubGrid} data-filter={filter}>
+        <div hidden={filter !== 'all' && filter !== 'crash'}><IslandCrashFeature surface="hub" /></div>
+        <div hidden={filter !== 'all' && filter !== 'slots'}><CapybaraFeature surface="hub" /></div>
+        <div hidden={filter !== 'all' && filter !== 'cards'}><BlackjackFeature surface="hub" /></div>
+        <div hidden={filter !== 'all' && filter !== 'cards'}><RouletteFeature surface="hub" /></div>
+        <div hidden={filter !== 'all' && filter !== 'instant'}><MinesFeature surface="hub" /></div>
+      </div>
       <p className={styles.hubDisclaimer}>{copy.disclaimer}</p>
       <section className={styles.keepDiscovering}>
         <h2>{copy.discoverTitle}</h2>

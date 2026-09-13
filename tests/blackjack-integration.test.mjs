@@ -53,7 +53,7 @@ test('Blackjack: discovery stays lightweight and does not register a provider ga
   assert.doesNotMatch(feature, /import .*engine|import .*blackjack-game|import .*simulation/)
   assert.match(await source('components/play-view.tsx'), /IslandCrashFeature surface="hub"[\s\S]*CapybaraFeature surface="hub"[\s\S]*BlackjackFeature surface="hub"/)
   assert.match(await source('components/originals/island-crash-feature.tsx'), /surface === 'home' && <BlackjackFeature surface="home"/)
-  assert.match(await source('components/category-page-view.tsx'), /slug === 'table-games' && <BlackjackDiscoverySection/)
+  assert.match(await source('components/category-page-view.tsx'), /slug === 'live-casino' && <BlackjackDiscoverySection/)
   assert.match(await source('components/mobile-bottom-nav.tsx'), /activePath === '\/play\/blackjack'\) return null/)
 })
 test('Blackjack: original vector art, lazy game and no production outcome overrides', async () => {

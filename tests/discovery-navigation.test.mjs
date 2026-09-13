@@ -20,7 +20,11 @@ test('desktop and mobile Play preserve every locale; game keeps the unobstructed
     assert.equal(entries.length, 2)
     for (const entry of entries) assert.equal(entry.textContent, label)
     assert.equal(doc.querySelector('a[href="https://livasports.com"]')?.getAttribute('target'), null)
-    assert.equal(render(`/${segment}/play/crash`, React.createElement(mobileModule.MobileBottomNav)), '')
+    for (const slug of ['crash', 'capybara-gold', 'blackjack', 'roulette', 'mines']) {
+      assert.equal(render(`/${segment}/play/${slug}`, React.createElement(mobileModule.MobileBottomNav)), '')
+    }
+    for (const slug of ['games', 'crash', 'slots', 'live-casino', 'instant-games']) assert.ok(doc.querySelector(`header nav a[href="/${segment}/${slug}"]`))
+    assert.ok(doc.querySelector('nav.fixed a[href="https://livasports.com"]'))
     assert.ok(render(`/${segment}/crash`, React.createElement(mobileModule.MobileBottomNav)).includes(`/${segment}/play`))
   }
 })

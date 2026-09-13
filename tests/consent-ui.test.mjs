@@ -5,7 +5,16 @@ import React, { act } from 'react'
 import { createRoot } from 'react-dom/client'
 import { AppRouterContext } from 'next/dist/shared/lib/app-router-context.shared-runtime.js'
 import { PathnameContext } from 'next/dist/shared/lib/hooks-client-context.shared-runtime.js'
-import profileModule from '../components/operator-profile-view.tsx'
+import { registerHooks } from 'node:module'
+// Match the CSS-only module shim used by the game UI tests. Application logic
+// and assertions still execute; browser QA covers actual computed styling.
+const cssHooks = registerHooks({ load(url, context, next) {
+  if (url.endsWith('.module.css')) return { format: 'commonjs', shortCircuit: true, source: 'module.exports = {}' }
+  return next(url, context)
+} })
+const profileImport = await import('../components/operator-profile-view.tsx')
+const profileModule = profileImport.default ?? profileImport
+cssHooks.deregister()
 import dataModule from '../lib/data.ts'
 const { OperatorProfileView } = profileModule
 import countryContextModule from '../components/country-context.tsx'
@@ -80,7 +89,7 @@ test('consent UI gates loaders/events, supports revocation/revisit, and preserve
     assert.equal(document.querySelector('header nav[aria-label="Primary"] a[href="/en/play"]')?.textContent, 'Play')
     await click(document.querySelector('button[aria-label="More"]'))
     assert.deepEqual([...document.querySelectorAll('header [role="menuitem"]')].map(a => a.getAttribute('href')),
-      ['/en/table-games', '/en/instant-games', '/en/offers', '/en/operators'])
+      ['/en/table-games', '/en/offers', '/en/operators', '/en/about', '/en/responsible-gaming'])
     await act(() => document.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Escape', bubbles: true })))
     assert.equal(document.querySelector('header [role="menu"]'), null)
     await click(document.querySelector('button[aria-label="Open menu"]'))

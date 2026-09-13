@@ -1,15 +1,15 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import { Menu, X } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { ArrowUpRight, ChevronDown, Menu, X } from 'lucide-react'
 import { Dropdown } from '@/components/ui/dropdown'
 import { Logo } from '@/components/logo'
-import { Button } from '@/components/ui/button'
 import { LanguageSelector } from '@/components/language-selector'
 import { LocaleLink } from '@/components/locale-link'
-import { useTranslation } from '@/components/country-context'
+import { useCountry } from '@/components/country-context'
 import { stripLocaleFromPath } from '@/lib/locale'
+import { productCopy } from '@/lib/product-discovery'
 import { cn } from '@/lib/utils'
 
 const NAV: { href: string; key: string }[] = [
@@ -18,19 +18,23 @@ const NAV: { href: string; key: string }[] = [
   { href: '/crash', key: 'nav.crash' },
   { href: '/slots', key: 'nav.slots' },
   { href: '/live-casino', key: 'nav.liveCasino' },
-  { href: 'https://livasports.com', key: 'nav.sports' },
-  { href: '/table-games', key: 'nav.tableGames' },
   { href: '/instant-games', key: 'nav.instantGames' },
+  { href: 'https://livasports.com', key: 'nav.sports' },
+]
+const SECONDARY = [
+  { href: '/table-games', key: 'nav.tableGames' },
   { href: '/offers', key: 'nav.offers' },
   { href: '/operators', key: 'nav.operators' },
+  { href: '/about', key: 'nav.about' },
+  { href: '/responsible-gaming', key: 'footer.responsible' },
 ]
 
 export function SiteHeader() {
-  const pathname = usePathname()
-  const activePath = stripLocaleFromPath(pathname)
-  const { t } = useTranslation()
+  const pathname = usePathname(), activePath = stripLocaleFromPath(pathname)
+  const { t, locale } = useCountry(), copy = productCopy(locale)
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const toggle = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8)
@@ -38,107 +42,50 @@ export function SiteHeader() {
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
-
+  useEffect(() => { setMenuOpen(false) }, [pathname])
   useEffect(() => {
-    setMenuOpen(false)
-  }, [pathname])
+    if (!menuOpen) return
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') { setMenuOpen(false); toggle.current?.focus() }
+    }
+    document.addEventListener('keydown', closeOnEscape)
+    return () => document.removeEventListener('keydown', closeOnEscape)
+  }, [menuOpen])
 
-  return (
-    <header
-      className={cn(
-        'sticky top-0 z-50 w-full border-b transition-all duration-300',
-        scrolled
-          ? 'border-border bg-background/80 backdrop-blur-xl'
-          : 'border-transparent bg-background/40 backdrop-blur-sm',
-      )}
-    >
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center gap-4">
-          <Logo />
-          <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary">
-            {NAV.slice(0, 6).map((item) => {
-              const active = activePath === item.href || item.href === '/play' && activePath.startsWith('/play/')
-              return (
-                <LocaleLink
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    'rounded-lg px-2 py-2 text-sm font-medium transition-colors',
-                    item.href === '/play' && 'bg-primary/10',
-                    active
-                      ? 'text-primary'
-                      : 'text-muted-foreground hover:text-foreground',
-                  )}
-                >
-                  {t(item.key)}
-                </LocaleLink>
-              )
-            })}
-            <Dropdown trigger={t('nav.more')} label={t('nav.more')} align="start">
-              {(close) => NAV.slice(6).map((item) => (
-                <LocaleLink key={item.href} href={item.href} role="menuitem" onClick={close}
-                  className={cn('block rounded-lg px-3 py-2 text-sm hover:bg-muted', activePath === item.href && 'text-primary')}>
-                  {t(item.key)}
-                </LocaleLink>
-              ))}
-            </Dropdown>
-          </nav>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <div className="hidden items-center gap-2 md:flex">
-            <LanguageSelector />
-          </div>
-          <Button size="lg" render={<LocaleLink href="/games" />} className="hidden sm:inline-flex">
-            {t('cta.exploreGames')}
-          </Button>
-
-          {/* Mobile controls */}
-          <div className="flex items-center gap-2 lg:hidden">
-            <div className="md:hidden"><LanguageSelector compact /></div>
-            <button
-              type="button"
-              aria-label={menuOpen ? t('nav.closeMenu') : t('nav.openMenu')}
-              aria-expanded={menuOpen}
-              onClick={() => setMenuOpen((v) => !v)}
-              className="grid size-11 place-items-center rounded-lg border border-border bg-card/60 text-foreground"
-            >
-              {menuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
-            </button>
-          </div>
-        </div>
+  const active = (href: string) => activePath === href || href === '/play' && activePath.startsWith('/play/')
+  return <header data-site-header className={cn('sticky top-0 z-50 w-full border-b backdrop-blur-xl transition-colors', scrolled ? 'border-border bg-background/95' : 'border-border/70 bg-background/90')}>
+    <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+      <Logo />
+      <nav className="hidden min-w-0 items-center gap-1 xl:flex" aria-label={copy.navPrimary}>
+        {NAV.map(item => <LocaleLink key={item.href} href={item.href} aria-current={active(item.href) ? 'page' : undefined}
+          className={cn('inline-flex min-h-11 items-center gap-1 rounded-xl px-3 text-sm font-medium transition-colors', item.href === '/play' && 'bg-primary/12', active(item.href) ? 'bg-primary/12 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground')}>
+          {t(item.key)}{item.href.startsWith('https:') && <ArrowUpRight size={13} aria-hidden="true" />}
+        </LocaleLink>)}
+        <Dropdown trigger={<>{t('nav.more')}<ChevronDown size={13} aria-hidden="true" /></>} label={t('nav.more')} align="end">
+          {close => SECONDARY.map(item => <LocaleLink key={item.href} href={item.href} role="menuitem" onClick={close}
+            className="flex min-h-11 items-center rounded-lg px-3 py-2 text-sm hover:bg-muted">{t(item.key)}</LocaleLink>)}
+        </Dropdown>
+      </nav>
+      <div className="flex shrink-0 items-center gap-2">
+        <LanguageSelector compact />
+        <button ref={toggle} type="button" aria-label={menuOpen ? t('nav.closeMenu') : t('nav.openMenu')}
+          aria-expanded={menuOpen} aria-controls="site-mobile-menu" onClick={() => setMenuOpen(value => !value)}
+          className="grid size-11 place-items-center rounded-xl border border-border bg-card text-foreground xl:hidden">
+          {menuOpen ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
+        </button>
       </div>
-
-      {/* Mobile menu */}
-      {menuOpen && (
-        <div className="max-h-[calc(100dvh-8rem)] overflow-y-auto border-t border-border bg-background/95 backdrop-blur-xl lg:hidden">
-          <nav
-            className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-4 sm:px-6"
-            aria-label={t('nav.menu')}
-          >
-            {NAV.map((item) => (
-              <LocaleLink
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  'min-h-11 rounded-lg px-3 py-2.5 text-base font-medium transition-colors',
-                  item.href === '/play' && 'bg-primary/10',
-                  activePath === item.href
-                    ? 'bg-muted text-primary'
-                    : 'text-foreground hover:bg-muted',
-                )}
-              >
-                {t(item.key)}
-              </LocaleLink>
-            ))}
-            <div className="mt-2 border-t border-border pt-4">
-              <Button render={<LocaleLink href="/games" />} size="lg" className="w-full">
-                {t('cta.exploreGames')}
-              </Button>
-            </div>
-          </nav>
+    </div>
+    {menuOpen && <div id="site-mobile-menu" className="max-h-[calc(100dvh-9rem)] overflow-y-auto border-t border-border bg-background xl:hidden">
+      <nav className="mx-auto max-w-7xl px-4 py-5 sm:px-6" aria-label={t('nav.menu')}>
+        <div className="grid grid-cols-2 gap-2">
+          {NAV.map(item => <LocaleLink key={item.href} href={item.href} aria-current={active(item.href) ? 'page' : undefined}
+            className={cn('flex min-h-12 items-center justify-between gap-2 rounded-xl border border-border px-3 py-3 text-sm font-medium', active(item.href) ? 'bg-primary/15 text-primary' : 'bg-card text-foreground hover:bg-muted')}>
+            {t(item.key)}{item.href.startsWith('https:') && <ArrowUpRight size={15} aria-hidden="true" />}
+          </LocaleLink>)}
         </div>
-      )}
-    </header>
-  )
+        <p className="mt-5 mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t('nav.more')}</p>
+        <div className="grid grid-cols-2 gap-x-2">{SECONDARY.map(item => <LocaleLink key={item.href} href={item.href} className="flex min-h-11 items-center rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground">{t(item.key)}</LocaleLink>)}</div>
+      </nav>
+    </div>}
+  </header>
 }

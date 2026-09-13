@@ -19,6 +19,7 @@ const { getOperator, CATEGORIES, GAMES } = dataModule
 import consentModule from '../lib/consent.ts'
 import discoveryModule from '../lib/originals/discovery.ts'
 import i18nModule from '../lib/i18n.ts'
+import productModule from '../lib/product-discovery.ts'
 const { originalsDiscoveryCopy, ISLAND_CRASH_POSTER } = discoveryModule
 const { ANALYTICS_COOKIE } = consentModule
 
@@ -104,7 +105,7 @@ try {
     const segment = path.split('/')[1]
     const copy = originalsDiscoveryCopy(localeModule.segmentToLocale(segment))
     const navCopy = i18nModule.createTranslator(localeModule.segmentToLocale(segment))
-    assert.equal(doc.querySelector('header nav[aria-label="Primary"] a[href="/' + segment + '/play"]')?.textContent, navCopy('nav.play'))
+    assert.equal(doc.querySelector('header nav a[href="/' + segment + '/play"]')?.textContent, navCopy('nav.play'))
     if (['', '/play', '/crash'].includes(routePath)) {
       const cards = doc.querySelectorAll('[data-original-card="island-crash"]')
       assert.equal(cards.length, 1, `${path}: exactly one available Original`)
@@ -121,7 +122,12 @@ try {
         assert.doesNotMatch(doc.querySelector('[data-play-hub]')?.textContent ?? '', /Betsson|Aviator|Coming soon/i)
       } else {
         assert.ok(doc.querySelector(`[data-originals-section="${routePath === '' ? 'home' : 'category'}"]`))
-        if (routePath === '') assert.equal(doc.querySelector('[data-hero-play-free]')?.getAttribute('href'), `/${segment}/play/crash`)
+        if (routePath === '') {
+          assert.equal(doc.querySelector('[data-hero-play-free]')?.getAttribute('href'), `/${segment}/play`)
+          assert.equal(doc.querySelector('[data-hero-explore]')?.getAttribute('href'), `/${segment}/games`)
+          assert.ok(doc.querySelector('#provider-games [data-provider-card]'))
+          assert.ok(doc.querySelector('[data-discovery-explainer]'))
+        }
         else assert.ok(cards[0].compareDocumentPosition(doc.querySelector('main a[href*="/games/"]')) & 4, 'Original precedes provider grid')
       }
     }
@@ -142,12 +148,12 @@ try {
       const real = doc.querySelector('a[href^="/go?"]')
       assert.equal(new URL(real.href, base).searchParams.get('category'), 'slots')
     }
-    if (['', '/play', '/table-games'].includes(routePath)) {
+    if (['', '/play', '/live-casino'].includes(routePath)) {
       const blackjack = doc.querySelectorAll('[data-original-card="blackjack"]')
       assert.equal(blackjack.length, 1, `${path}: one implemented Blackjack card`)
       for (const link of blackjack[0].querySelectorAll('a')) assert.equal(link.getAttribute('href'), `/${segment}/play/blackjack`)
-      if (routePath === '/table-games') {
-        assert.ok(doc.querySelector('[data-originals-section="table-games"]'))
+      if (routePath === '/live-casino') {
+        assert.ok(doc.querySelector('[data-originals-section="live-casino"]'))
         assert.ok(blackjack[0].compareDocumentPosition(doc.querySelector('main a[href*="/games/"]')) & 4)
       } else assert.deepEqual([...doc.querySelectorAll('[data-original-card]')].map(e => e.getAttribute('data-original-card')), ['island-crash', 'capybara-gold', 'blackjack', 'roulette', 'mines'])
     }
@@ -207,17 +213,16 @@ try {
       assert.doesNotMatch(doc.querySelector('main')?.textContent ?? '', /JetX|Aviator|SmartSoft|SPRIBE|Robinson Crusoe|\bFriday\b/i)
       assert.ok(doc.querySelector('[data-phase="ready"]'), `${path}: real game shell`)
     }
-    const sportsNav = doc.querySelector('header nav[aria-label="Primary"] a[href="https://livasports.com"]')
+    const sportsNav = doc.querySelector('header nav a[href="https://livasports.com"]')
     assert.ok(sportsNav, `${path}: visible desktop Sports network entry`)
     assert.equal(sportsNav.getAttribute('target'), null, `${path}: same-tab Sports navigation`)
     if (routePath === '') {
       const cards = [...doc.querySelectorAll('#game-types a')]
       assert.equal(cards.length, 4, `${path}: preserve four-card homepage structure`)
       assert.deepEqual(cards.map(card => card.getAttribute('href')), [
-        `${path}/crash`, `${path}/slots`, `${path}/live-casino`, 'https://livasports.com',
+        `${path}/slots`, `${path}/crash`, `${path}/live-casino`, `${path}/instant-games`,
       ], `${path}: homepage category and network destinations`)
       assert.equal(cards[3].getAttribute('target'), null)
-      assert.ok(cards[3].textContent.includes('LivaSports'), `${path}: network destination is explicit`)
     }
     for (const segment of LOCALE_SEGMENTS) {
       assert.equal(doc.querySelector(`link[hreflang="${segment}"]`)?.href, `${SITE_URL}/${segment}${routePath}`, `${path}: hreflang ${segment}`)
@@ -239,7 +244,7 @@ try {
     const category = CATEGORIES.find(c => routePath === `/${c.slug}`)
     if (category) {
       const gameLinks = [...doc.querySelectorAll('main a[href*="/games/"]')].map(link => new URL(link.href, base).pathname.split('/').pop())
-      const expected = GAMES.filter(g => g.category === category.slug).map(g => g.slug)
+      const expected = GAMES.filter(g => productModule.discoveryCategory(g) === category.slug || category.slug === 'table-games' && g.category === 'table-games').map(g => g.slug)
       assert.deepEqual([...new Set(gameLinks)].sort(), expected.sort(), `${path}: category membership`)
     }
     const robots = [...doc.querySelectorAll('meta[name="robots"], meta[name="googlebot"]')].map((meta) => meta.content)

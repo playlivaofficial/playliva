@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Compass, Layers3, Gamepad2 } from 'lucide-react'
 import { Hero } from '@/components/home/hero'
 import { OriginalsDiscoverySection } from '@/components/originals/island-crash-feature'
 import { Section, SectionHeading } from '@/components/section'
@@ -14,16 +14,20 @@ import { Button } from '@/components/ui/button'
 import { useCountry } from '@/components/country-context'
 import { LocaleLink } from '@/components/locale-link'
 import {
-  CATEGORIES,
   COMPARISONS,
-  GAMES,
   getGame,
   getRelatedGames,
 } from '@/lib/data'
+import { productCopy, DISCOVERY_ORDER } from '@/lib/product-discovery'
+import styles from '@/components/product-design.module.css'
 
 export function HomePageClient() {
-  const { t } = useCountry()
-  const trending = GAMES.filter((g) => g.featured).slice(0, 6)
+  const { t, locale } = useCountry()
+  const copy = productCopy(locale)
+  const trending = ['gates-of-olympus', 'aviator', 'blackjack-live', 'lightning-roulette', 'mines', 'sweet-bonanza'].flatMap(slug => {
+    const game = getGame(slug)
+    return game ? [game] : []
+  })
   const aviator = getGame('aviator')
   const aviatorAlternatives = aviator ? getRelatedGames(aviator, undefined, 4) : []
   const comparisons = COMPARISONS.slice(0, 3)
@@ -36,24 +40,23 @@ export function HomePageClient() {
       {/* Explore by game type */}
       <Section id="game-types">
         <SectionHeading
-          eyebrow={t('label.editorial')}
-          title={t('home.exploreByType')}
-          description={t('home.exploreByTypeSub')}
+          eyebrow={t('nav.games')}
+          title={copy.categories}
+          description={copy.categoriesSub}
         />
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {CATEGORIES.filter((c) => c.slug !== 'table-games' && c.slug !== 'instant-games').map((c) => (
-            <CategoryCard key={c.slug} {...c} />
+        <div className={styles.categoryGrid}>
+          {DISCOVERY_ORDER.slice(0, 4).map((slug) => (
+            <CategoryCard key={slug} slug={slug} />
           ))}
-          <CategoryCard slug="sports" />
         </div>
       </Section>
 
       {/* Trending games */}
-      <Section className="py-8">
+      <Section className={styles.providerSection} id="provider-games">
         <SectionHeading
-          eyebrow={t('label.popular')}
-          title={t('home.trending')}
-          description={t('home.trendingSub')}
+          eyebrow={copy.providerLabel}
+          title={copy.providerTitle}
+          description={copy.providerSub}
           action={
             <Button variant="outline" size="lg" render={<LocaleLink href="/games" />}>
               {t('cta.browseAllGames')}
@@ -61,10 +64,23 @@ export function HomePageClient() {
             </Button>
           }
         />
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+        <div className={styles.providerGrid}>
           {trending.map((game) => (
             <GameCard key={game.id} game={game} />
           ))}
+        </div>
+      </Section>
+
+      <Section className="pt-4">
+        <div className={styles.trust} data-discovery-explainer>
+          <SectionHeading eyebrow="PlayLiva" title={copy.trustTitle} description={copy.trustSub} />
+          <div className={styles.trustGrid}>
+            {[
+              { icon: Compass, title: copy.trustDiscover, body: copy.trustDiscoverBody },
+              { icon: Layers3, title: copy.trustCompare, body: copy.trustCompareBody },
+              { icon: Gamepad2, title: copy.trustPlay, body: copy.trustPlayBody },
+            ].map(({ icon: Icon, title, body }) => <article key={title}><Icon size={24} aria-hidden="true" /><h3>{title}</h3><p>{body}</p></article>)}
+          </div>
         </div>
       </Section>
 

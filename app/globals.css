@@ -51,19 +51,19 @@
 :root {
   color-scheme: dark;
   /* Deep navy / midnight blue base */
-  --background: oklch(0.16 0.03 262);
+  --background: #090f20;
   --foreground: oklch(0.98 0.005 250);
-  --card: oklch(0.2 0.035 262);
+  --card: #121e33;
   --card-foreground: oklch(0.98 0.005 250);
   --popover: oklch(0.19 0.035 262);
   --popover-foreground: oklch(0.98 0.005 250);
   /* Electric blue primary */
-  --primary: oklch(0.62 0.19 255);
+  --primary: #80abff;
   --primary-foreground: oklch(0.14 0.03 262);
   --secondary: oklch(0.26 0.04 262);
   --secondary-foreground: oklch(0.98 0.005 250);
   --muted: oklch(0.24 0.035 262);
-  --muted-foreground: oklch(0.7 0.02 258);
+  --muted-foreground: #a9b8d0;
   --accent: oklch(0.62 0.19 255);
   --accent-foreground: oklch(0.14 0.03 262);
   --destructive: oklch(0.62 0.2 22);
@@ -93,6 +93,16 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "ss01", "cv01";
+    background-image: radial-gradient(ellipse at 100% 800px, #15356820, transparent 1100px);
+  }
+  :focus-visible { outline: 2px solid #b0ceff; outline-offset: 4px; }
+  section[id] { scroll-margin-top: 5rem; }
+  [data-site-header] button { min-height: 44px; }
+  [data-game-shell] > header > div:last-child { border-color: #7497cc48; background: linear-gradient(135deg, #1d3559, #13223a); }
+  [data-session-panel] { background: linear-gradient(150deg, #172945, #111c30); }
+  [data-session-panel] button { min-height: 44px; }
+  @media (prefers-reduced-motion: reduce) {
+    .animate-float, .animate-fade-in-up { animation: none; }
   }
   .font-display {
     font-family: var(--font-display);

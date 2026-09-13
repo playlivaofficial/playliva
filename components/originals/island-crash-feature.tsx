@@ -10,6 +10,7 @@ import { CapybaraFeature } from './capybara-feature'
 import { BlackjackFeature } from './blackjack-feature'
 import { RouletteFeature } from './roulette-feature'
 import { MinesFeature } from './mines-feature'
+import { productCopy } from '@/lib/product-discovery'
 
 /** A poster and ordinary links only; the game runtime stays on /play/crash. */
 export function IslandCrashFeature({ surface }: { surface: 'home' | 'hub' | 'category' }) {
@@ -42,21 +43,24 @@ export function IslandCrashFeature({ surface }: { surface: 'home' | 'hub' | 'cat
 export function OriginalsDiscoverySection({ surface }: { surface: 'home' | 'category' }) {
   const { locale } = useCountry()
   const copy = originalsDiscoveryCopy(locale)
+  const product = productCopy(locale)
   return (
     <section className={styles.section} aria-labelledby={`originals-${surface}-title`} data-originals-section={surface}>
       <div className={styles.sectionHeading}>
         <div>
           <p className={styles.eyebrow}>{copy.originals}</p>
-          <h2 id={`originals-${surface}-title`}>{surface === 'home' ? copy.homeTitle : copy.categoryTitle}</h2>
-          <p className={styles.sectionDescription}>{surface === 'home' ? copy.homeDescription : copy.categoryDescription}</p>
+          <h2 id={`originals-${surface}-title`}>{surface === 'home' ? product.homeOriginals : copy.categoryTitle}</h2>
+          <p className={styles.sectionDescription}>{surface === 'home' ? product.homeOriginalsSub : copy.categoryDescription}</p>
         </div>
         <LocaleLink href="/play" className={styles.hubLink}>{copy.hubLink}<ArrowRight size={17} aria-hidden="true" /></LocaleLink>
       </div>
+      <div className={surface === 'home' ? styles.homeGrid : undefined}>
       <IslandCrashFeature surface={surface} />
       {surface === 'home' && <CapybaraFeature surface="home" />}
       {surface === 'home' && <BlackjackFeature surface="home" />}
       {surface === 'home' && <RouletteFeature surface="home" />}
       {surface === 'home' && <MinesFeature surface="home" />}
+      </div>
     </section>
   )
 }

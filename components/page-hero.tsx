@@ -21,7 +21,7 @@ export function PageHero({
   return (
     <section
       className={cn(
-        'relative overflow-hidden border-b border-border bg-grid',
+        'relative overflow-hidden border-b border-border bg-[radial-gradient(ellipse_at_80%_0%,#24477955,transparent_65%)]',
         className,
       )}
     >
@@ -29,7 +29,7 @@ export function PageHero({
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 -top-24 mx-auto h-64 max-w-3xl rounded-full bg-primary/20 blur-[100px]"
       />
-      <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+      <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
         {breadcrumbs && breadcrumbs.length > 0 && (
           <Breadcrumbs items={breadcrumbs} className="mb-4" />
         )}

@@ -10,6 +10,7 @@ import { getCategoryContent, getGameContent } from '@/lib/content'
 import { useCountry } from '@/components/country-context'
 import type { CategorySlug } from '@/lib/types'
 import { cn } from '@/lib/utils'
+import { discoveryCategory, DISCOVERY_ORDER } from '@/lib/product-discovery'
 
 type Filter = 'all' | CategorySlug
 type Sort = 'popular' | 'new' | 'az'
@@ -28,12 +29,12 @@ export function GamesExplorer() {
 
   const games = useMemo(() => {
     let list = [...GAMES]
-    if (filter !== 'all') list = list.filter((g) => g.category === filter)
+    if (filter !== 'all') list = list.filter((g) => discoveryCategory(g) === filter)
     if (query.trim()) {
       const q = query.toLowerCase()
       list = list.filter((g) => {
         const c = getGameContent(g, locale)
-        const cat = getCategoryContent(g.category, locale)
+        const cat = getCategoryContent(discoveryCategory(g), locale)
         return (
           g.title.toLowerCase().includes(q) ||
           g.provider.toLowerCase().includes(q) ||
@@ -57,8 +58,8 @@ export function GamesExplorer() {
           <FilterChip active={filter === 'all'} onClick={() => setFilter('all')}>
             {t('games.all')}
           </FilterChip>
-          {CATEGORIES.filter((c) =>
-            GAMES.some((g) => g.category === c.slug),
+          {DISCOVERY_ORDER.map(slug => CATEGORIES.find(c => c.slug === slug)!).filter((c) =>
+            GAMES.some((g) => discoveryCategory(g) === c.slug),
           ).map((c) => (
             <FilterChip
               key={c.slug}
@@ -84,15 +85,16 @@ export function GamesExplorer() {
         </div>
       </div>
 
-      <div className="mt-4 flex items-center gap-2">
+      <div className="mt-4 flex flex-wrap items-center gap-2">
         <span className="text-sm text-muted-foreground">{t('games.sortBy')}</span>
         {sorts.map((s) => (
           <button
             key={s.value}
             type="button"
             onClick={() => setSort(s.value)}
+            aria-pressed={sort === s.value}
             className={cn(
-              'rounded-lg px-2.5 py-1 text-sm font-medium transition-colors',
+              'min-h-11 rounded-lg px-2.5 py-1 text-sm font-medium transition-colors',
               sort === s.value
                 ? 'bg-primary/15 text-primary'
                 : 'text-muted-foreground hover:text-foreground',
@@ -101,7 +103,7 @@ export function GamesExplorer() {
             {s.label}
           </button>
         ))}
-        <span className="ml-auto text-sm text-muted-foreground">
+        <span className="ml-auto text-sm text-muted-foreground" role="status">
           {t('games.resultsCount', { count: games.length })}
         </span>
       </div>
@@ -143,8 +145,9 @@ function FilterChip({
     <button
       type="button"
       onClick={onClick}
+      aria-pressed={active}
       className={cn(
-        'rounded-full border px-4 py-1.5 text-sm font-medium transition-colors',
+        'min-h-11 rounded-xl border px-4 py-1.5 text-sm font-medium transition-colors',
         active
           ? 'border-primary bg-primary/15 text-primary'
           : 'border-border text-muted-foreground hover:border-primary/40 hover:text-foreground',

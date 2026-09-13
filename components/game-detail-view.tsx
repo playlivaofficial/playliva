@@ -37,9 +37,12 @@ import { Button } from '@/components/ui/button'
 import { track } from '@/lib/tracking'
 import type { Game } from '@/lib/types'
 
+import { discoveryCategory } from '@/lib/product-discovery'
+
 export function GameDetailView({ game }: { game: Game }) {
   const { countryCode, country, t, locale } = useCountry()
-  const categoryName = getCategoryName(game.category, locale)
+  const visibleCategory = discoveryCategory(game)
+  const categoryName = getCategoryName(visibleCategory, locale)
   const marketName = getCountryName(countryCode, locale)
   const content = getGameContent(game, locale)
 
@@ -84,7 +87,7 @@ export function GameDetailView({ game }: { game: Game }) {
               className="mb-4"
               items={[
                 { label: t('nav.home'), href: '/' },
-                { label: categoryName, href: `/${game.category}` },
+                { label: categoryName, href: `/${visibleCategory}` },
                 { label: game.title },
               ]}
             />
@@ -97,7 +100,7 @@ export function GameDetailView({ game }: { game: Game }) {
             </LocaleLink>
             <div className="flex items-center gap-2">
               <LocaleLink
-                href={`/${game.category}`}
+                href={`/${visibleCategory}`}
                 className="rounded-full bg-primary/15 px-3 py-1 text-xs font-semibold text-primary hover:bg-primary/25"
               >
                 {categoryName}

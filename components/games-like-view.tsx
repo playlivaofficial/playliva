@@ -21,10 +21,11 @@ import { AffiliateDisclosureLine, ResponsibleGamingNotice } from '@/components/n
 import { Button } from '@/components/ui/button'
 import { track } from '@/lib/tracking'
 import type { Game } from '@/lib/types'
+import { discoveryCategory } from '@/lib/product-discovery'
 
 export function GamesLikeView({ game }: { game: Game }) {
   const { countryCode, t, locale } = useCountry()
-  const categoryName = getCategoryName(game.category, locale)
+  const categoryName = getCategoryName(discoveryCategory(game), locale)
   const categoryLower = categoryName.toLowerCase()
   const marketName = getCountryName(countryCode, locale)
   const content = getGameContent(game, locale)
@@ -89,7 +90,7 @@ export function GamesLikeView({ game }: { game: Game }) {
             <Button
               size="lg"
               variant="outline"
-              render={<LocaleLink href={`/${game.category}`} />}
+              render={<LocaleLink href={`/${discoveryCategory(game)}`} />}
             >
               {t('like.allCategory', { category: categoryName })}
             </Button>

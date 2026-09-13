@@ -15,7 +15,7 @@ export function Logo({
   return (
     <LocaleLink
       href="/"
-      aria-label="PlayLiva home"
+      aria-label={`PlayLiva · ${t('nav.home')}`}
       className={cn('group inline-flex flex-col leading-none', className)}
     >
       <span className="flex items-center gap-2">

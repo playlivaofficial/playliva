@@ -2,6 +2,12 @@
 
 Source of truth: https://github.com/playlivaofficial/playliva.
 
+The current [visual and product UX redesign](docs/product-ux-redesign.md) separates
+the free-play lobby from provider discovery, refreshes responsive navigation and
+uses a display-only Live Casino classification for Blackjack. Older milestone
+notes below describe their original release states. Commercial infrastructure,
+game engines and existing SEO URLs are unchanged by this redesign.
+
 Next.js 16.3.0 App Router, React 19, TypeScript and Tailwind CSS 4. Application
 routes live in `app/`, UI in `components/`, static data/content in `lib/`, and
 runtime assets in `public/`. Immutable authoring inputs that must not be served

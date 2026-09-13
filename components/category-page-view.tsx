@@ -26,6 +26,8 @@ import { WhereToPlay } from '@/components/where-to-play'
 import { AffiliateDisclosureLine, ResponsibleGamingNotice } from '@/components/notices'
 import type { CategorySlug } from '@/lib/types'
 import { cn } from '@/lib/utils'
+import { discoveryCategory, DISCOVERY_ORDER, productCopy } from '@/lib/product-discovery'
+import styles from '@/components/product-design.module.css'
 
 export function CategoryPageView({ slug }: { slug: CategorySlug }) {
   const { countryCode: country, t, locale } = useCountry()
@@ -33,9 +35,10 @@ export function CategoryPageView({ slug }: { slug: CategorySlug }) {
   const countryName = getCountryName(country, locale)
   const categoryLower = category.name.toLowerCase()
 
-  const allGames = useMemo(() => GAMES.filter((g) => g.category === slug), [slug])
+  // Preserve the indexed Table Games archive as a secondary discovery path.
+  const allGames = useMemo(() => GAMES.filter((g) => discoveryCategory(g) === slug || slug === 'table-games' && g.category === slug), [slug])
   const popular = useMemo(
-    () => getPopularGamesForCountry(country, slug, 8),
+    () => getPopularGamesForCountry(country, undefined, GAMES.length).filter(g => discoveryCategory(g) === slug).slice(0, 8),
     [country, slug],
   )
   const bestList = getGameListByCategoryCountry(slug, country)
@@ -60,11 +63,12 @@ export function CategoryPageView({ slug }: { slug: CategorySlug }) {
       />
 
       <div className="border-b border-border bg-card/30">
-        <div className="mx-auto flex max-w-7xl flex-wrap gap-2 px-4 py-4 sm:px-6 lg:px-8">
-          {CATEGORIES.map((c) => (
+        <nav className={styles.categoryTabs} aria-label={t('home.exploreByType')}>
+          {DISCOVERY_ORDER.map(categorySlug => CATEGORIES.find(c => c.slug === categorySlug)!).map((c) => (
             <LocaleLink
               key={c.slug}
               href={`/${c.slug}`}
+              aria-current={c.slug === slug ? 'page' : undefined}
               className={cn(
                 'rounded-full border px-4 py-1.5 text-sm transition-colors',
                 c.slug === slug
@@ -75,19 +79,19 @@ export function CategoryPageView({ slug }: { slug: CategorySlug }) {
               {getCategoryContent(c.slug, locale).name}
             </LocaleLink>
           ))}
-        </div>
+        </nav>
       </div>
 
       {slug === 'crash' && <OriginalsDiscoverySection surface="category" />}
       {slug === 'slots' && <CapybaraDiscoverySection />}
-      {slug === 'table-games' && <BlackjackDiscoverySection />}
+      {slug === 'live-casino' && <BlackjackDiscoverySection />}
       {slug === 'table-games' && <RouletteDiscoverySection />}
       {slug === 'live-casino' && <RouletteDiscoverySection liveContext />}
       {slug === 'instant-games' && <MinesDiscoverySection />}
 
       <Section>
         <SectionHeading
-          eyebrow={t('category.gamesEyebrow')}
+          eyebrow={productCopy(locale).providerLabel}
           title={t('category.popularTitle', {
             category: categoryLower,
             market: countryName,
