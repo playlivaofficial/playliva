@@ -86,7 +86,9 @@ At 320×720, precise Corner targets measured 122×44px, Spin bottom 643px for th
 Inside view and 627px on zero result. Production-build verification covered
 320×720 PT-BR numbered bets (Spin bottom 640px), 360×800 EN outside bets
 (621px), 390×844 ES-MX six-line bets (616px), and 1280×720/900 desktop.
-Short-desktop wheel sizing accounts for the extra last-result line. No horizontal
+Short-desktop wheel sizing (240px) accounts for both the extra last-result line
+and the taller winning-return text; the initial 260px sizing fit losses but let
+a winning result push the Spin edge 2px below a 720px viewport in live QA. No horizontal
 game overflow; the local performance report may wrap long resource paths.
 Actual secure-RNG spins and deterministic exact-pocket scenarios were both checked.
 No hydration/console errors remained after the SVG coordinate fix.

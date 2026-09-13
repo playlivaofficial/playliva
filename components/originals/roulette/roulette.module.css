@@ -115,5 +115,6 @@
   .game section > div > aside > ol { max-height: 100px; }
 }
 @media(min-width:1200px) { .stage { grid-template-columns: minmax(0,.8fr) minmax(0,1.2fr); gap: 30px; padding: 24px; } .desktopNumbers button[data-bet] { min-height: 54px; font-size: 16px; } .outside button[data-bet] { font-size: 12px; } }
-@media(min-width:768px) and (max-height:850px) { .stage { min-height: 390px; padding-block: 12px; } .wheel { max-width: 260px; } .brand b { font-size: 18px; } .brand { gap: 2px; } .orbitZone { gap: 5px; } .reveal { min-height: 56px; } }
+/* Leave room for the taller winning-return reveal, not only a no-win result. */
+@media(min-width:768px) and (max-height:850px) { .stage { min-height: 390px; padding-block: 12px; } .wheel { max-width: 240px; } .brand b { font-size: 18px; } .brand { gap: 2px; } .orbitZone { gap: 5px; } .reveal { min-height: 56px; } }
 @media(prefers-reduced-motion:reduce) { .stage *,.controls * { animation: none !important; transition: none !important; } }
