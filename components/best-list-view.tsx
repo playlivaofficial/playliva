@@ -22,6 +22,7 @@ import { AffiliateDisclosureLine, ResponsibleGamingNotice } from '@/components/n
 import { Button } from '@/components/ui/button'
 import { track } from '@/lib/tracking'
 import type { GameList } from '@/lib/types'
+import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsored-banner'
 
 export function BestListView({ list }: { list: GameList }) {
   const { locale, countryCode } = useCountry()
@@ -58,6 +59,8 @@ export function BestListView({ list }: { list: GameList }) {
           { label: listContent.title },
         ]}
       />
+
+      <BetssonSponsoredBanner surface="best-list" layout="full" />
 
       {/* Ranked editorial list */}
       <Section className="py-10">

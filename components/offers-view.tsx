@@ -8,6 +8,7 @@ import { OfferCard } from '@/components/offer-card'
 import { CountrySelector } from '@/components/geo-selectors'
 import { AffiliateDisclosureLine } from '@/components/notices'
 import type { Offer } from '@/lib/types'
+import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsored-banner'
 
 function OfferGrid({ offers }: { offers: Offer[] }) {
   return (
@@ -64,8 +65,20 @@ export function OffersView() {
         </div>
       </section>
 
+      <div data-offers-sponsored>
+        <Section className="pb-8">
+          <SectionHeading
+            eyebrow={t('affiliate.sponsored')}
+            title={t('affiliate.sponsoredPartner')}
+          />
+          <BetssonSponsoredBanner surface="offers" layout="full" cta="visit" />
+        </Section>
+      </div>
+
       {offers.length === 0 ? (
         <Section>
+          <div data-offers-verified>
+          <SectionHeading title={t('affiliate.verifiedOffers')} />
           <div className="rounded-2xl border border-dashed border-border bg-card/40 p-10 text-center">
             <p className="text-base font-medium text-foreground">
               {t('offers.emptyTitle', { market: countryName })}
@@ -74,9 +87,10 @@ export function OffersView() {
               {t('offers.emptyBody')}
             </p>
           </div>
+          </div>
         </Section>
       ) : (
-        <>
+        <div data-offers-verified>
           {featured.length > 0 && (
             <Section>
               <SectionHeading
@@ -102,7 +116,7 @@ export function OffersView() {
               <OfferGrid offers={newPlayer} />
             </Section>
           )}
-        </>
+        </div>
       )}
 
       <Section className="border-t border-border">

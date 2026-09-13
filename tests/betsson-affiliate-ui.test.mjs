@@ -24,7 +24,6 @@ import rouletteConfig from '../lib/originals/roulette/config.ts'
 import consentModule from '../lib/consent.ts'
 import providerModule from '../components/originals/demo-session.tsx'
 import sessionModule from '../lib/originals/session.ts'
-import shellModule from '../components/originals/play-game-shell.tsx'
 
 const cssHooks = registerHooks({ load(url, context, next) {
   if (String(url).includes('.module.css')) {
@@ -33,9 +32,10 @@ const cssHooks = registerHooks({ load(url, context, next) {
   return next(url, context)
 } })
 const unwrap = module => module.default ?? module
-const bannerModule = unwrap(await import('../components/affiliates/betsson-home-banner.tsx'))
+const bannerModule = unwrap(await import('../components/affiliates/betsson-sponsored-banner.tsx'))
 const homeModule = unwrap(await import('../components/home/home-page-client.tsx'))
 const playRealCtaModule = unwrap(await import('../components/originals/play-real-cta.tsx'))
+const shellModule = unwrap(await import('../components/originals/play-game-shell.tsx'))
 cssHooks.deregister()
 
 const { resolveDestination } = affiliateModule
@@ -224,8 +224,9 @@ test('PT-BR, EN and ES-MX render localized Betsson CTAs without English leakage'
       assert.notEqual(t('affiliate.genericBoundary'), createTranslator('en')('affiliate.genericBoundary'))
     }
     const dom = new JSDOM('<div id="root"></div>', { url: `https://site.example.invalid/${segment}/play/mines`, virtualConsole: new VirtualConsole() })
+    dom.window.IntersectionObserver = class { observe() {} unobserve() {} disconnect() {} }
     const saved = new Map()
-    for (const key of ['window', 'self', 'document', 'location', 'navigator', 'Event', 'HTMLElement', 'Node']) {
+    for (const key of ['window', 'self', 'document', 'location', 'navigator', 'Event', 'HTMLElement', 'Node', 'IntersectionObserver']) {
       saved.set(key, Object.getOwnPropertyDescriptor(globalThis, key))
       Object.defineProperty(globalThis, key, { configurable: true, value: dom.window[key] })
     }

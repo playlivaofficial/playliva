@@ -23,6 +23,7 @@ import { track } from '@/lib/tracking'
 import type { Game } from '@/lib/types'
 import { discoveryCategory } from '@/lib/product-discovery'
 import { ContentCard } from '@/components/content-card'
+import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsored-banner'
 
 export function GamesLikeView({ game }: { game: Game }) {
   const { countryCode, t, locale } = useCountry()
@@ -66,6 +67,8 @@ export function GamesLikeView({ game }: { game: Game }) {
           { label: t('game.gamesLike', { game: game.title }) },
         ]}
       />
+
+      <BetssonSponsoredBanner surface="games-like" layout="full" />
 
       {/* Why players like X */}
       <Section className="py-10">

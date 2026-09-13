@@ -40,6 +40,8 @@ import type { Game } from '@/lib/types'
 import { discoveryCategory, productCopy } from '@/lib/product-discovery'
 import { ContentCard } from '@/components/content-card'
 import styles from '@/components/editorial-design.module.css'
+import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsored-banner'
+import { ProviderPlayRealCta } from '@/components/affiliates/provider-play-real-cta'
 
 export function GameDetailView({ game }: { game: Game }) {
   const { countryCode, country, t, locale } = useCountry()
@@ -129,7 +131,8 @@ export function GameDetailView({ game }: { game: Game }) {
               {content.description}
             </p>
             <div className={styles.detailActions}>
-              <Button size="lg" render={<a href="#where-to-play" />}>
+              <ProviderPlayRealCta gameSlug={game.slug} category={game.affiliateCategory ?? game.category} />
+              <Button size="lg" variant="outline" render={<a href="#where-to-play" />}>
                 {t('cta.seeWhereToPlay')}
               </Button>
               <Button
@@ -145,6 +148,8 @@ export function GameDetailView({ game }: { game: Game }) {
 
         </div>
       </section>
+
+      <BetssonSponsoredBanner surface="game" layout="compact" />
 
       <nav className={styles.contents} aria-label={copy.onPage}>
         <span>{copy.onPage}</span>

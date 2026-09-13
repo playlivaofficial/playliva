@@ -17,6 +17,7 @@ import type { Comparison } from '@/lib/types'
 import { ContentCard } from '@/components/content-card'
 import { discoveryCategory } from '@/lib/product-discovery'
 import styles from '@/components/editorial-design.module.css'
+import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsored-banner'
 
 export function ComparisonView({ comparison }: { comparison: Comparison }) {
   const { countryCode, t, locale } = useCountry()
@@ -51,6 +52,8 @@ export function ComparisonView({ comparison }: { comparison: Comparison }) {
           { label: `${t('compare.eyebrow')}: ${b.title}` },
         ]}
       />
+
+      <BetssonSponsoredBanner surface="comparison" layout="full" />
 
       {/* Side-by-side game cards */}
       <Section className="py-10">

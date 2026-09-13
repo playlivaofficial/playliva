@@ -73,7 +73,10 @@ test('M11: all three locales contain original copy, catalog artwork and meaningf
     assert.ok(doc.querySelectorAll('h2').length >= 5)
     assert.ok(doc.querySelector('[data-artwork-status="sourced"]'))
     assert.ok(game.artwork.status !== 'fallback' && doc.querySelector(`img[src="${game.artwork.assetPath}"]`))
-    assert.equal(doc.querySelector('a[href^="/go"], a[href*="/where-to-play/"], iframe, [data-game-shell]'), null)
+    assert.equal(doc.querySelector('a[href*="/where-to-play/"], iframe, [data-game-shell]'), null)
+    assert.ok(doc.querySelector('[data-betsson-game-cta] a[href^="/go"]'))
+    assert.ok(doc.querySelector('[data-betsson-banner="game"]'))
+    assert.doesNotMatch(doc.body.textContent, /Play Fruit Party at Betsson|Play .+ Splash at Betsson|This game may not be available at Betsson/i)
     assert.ok(doc.querySelector(`a[href="/${segment}/providers/${game.providerId}"]`))
     assert.ok(doc.querySelector(`a[href="/${segment}/${game.category}"]`))
     assert.ok(doc.querySelector('[data-catalog-evidence]'))
@@ -143,7 +146,8 @@ test('M11: selected reading lists and comparisons retain localized reasons and w
     for (const comparison of editorial.REFERENCE_COMPARISONS) {
       const dom = render(locale, segment, React.createElement(views.ReferenceComparisonView, { comparison, locale }))
       for (const text of [comparison.shared[locale], ...comparison.difference[locale]]) assert.ok(dom.window.document.body.textContent.includes(text))
-      assert.equal(dom.window.document.querySelector('a[href^="/go"]'), null)
+      assert.ok(dom.window.document.querySelector('[data-betsson-banner="comparison"] a[href^="/go"]'))
+      assert.equal(dom.window.document.querySelector('a[href*="/where-to-play/"]'), null)
       dom.window.close()
     }
   }
@@ -155,7 +159,8 @@ test('M11: provider pages have documented overviews, category links and their ow
     assert.ok(doc.body.textContent.includes(provider.overview[locale]))
     const count = REFERENCE_GAMES.filter(game => game.providerId === provider.id).length
     assert.equal(doc.querySelectorAll('[data-reference-card]').length, Math.min(12, count))
-    assert.equal(doc.querySelector('a[href^="/go"]'), null)
+    assert.ok(doc.querySelector('[data-betsson-banner="provider"] a[href^="/go"]'))
+    assert.equal(doc.querySelector('a[href*="/where-to-play/"]'), null)
     dom.window.close()
   }
 })

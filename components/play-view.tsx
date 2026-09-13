@@ -12,6 +12,7 @@ import { MinesFeature } from '@/components/originals/mines-feature'
 import { originalsDiscoveryCopy } from '@/lib/originals/discovery'
 import styles from '@/components/originals/originals-discovery.module.css'
 import { productCopy } from '@/lib/product-discovery'
+import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsored-banner'
 
 export function PlayView() {
   const { locale } = useCountry()
@@ -35,6 +36,7 @@ export function PlayView() {
           ))}
         </ul>
       </header>
+      <BetssonSponsoredBanner surface="play" layout="hub" />
       <div className={styles.filters} role="group" aria-label={product.all}>
         {groups.map(group => <button type="button" key={group.id} aria-pressed={filter === group.id} onClick={() => setFilter(group.id)}>{group.label}</button>)}
       </div>
