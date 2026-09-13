@@ -18,6 +18,7 @@ import { OriginalsDiscoverySection } from '@/components/originals/island-crash-f
 import { CapybaraDiscoverySection } from '@/components/originals/capybara-feature'
 import { BlackjackDiscoverySection } from '@/components/originals/blackjack-feature'
 import { RouletteDiscoverySection } from '@/components/originals/roulette-feature'
+import { MinesDiscoverySection } from '@/components/originals/mines-feature'
 import { Section, SectionHeading } from '@/components/section'
 import { GameCard } from '@/components/game-card'
 import { ComparisonCard } from '@/components/comparison-card'
@@ -82,6 +83,7 @@ export function CategoryPageView({ slug }: { slug: CategorySlug }) {
       {slug === 'table-games' && <BlackjackDiscoverySection />}
       {slug === 'table-games' && <RouletteDiscoverySection />}
       {slug === 'live-casino' && <RouletteDiscoverySection liveContext />}
+      {slug === 'instant-games' && <MinesDiscoverySection />}
 
       <Section>
         <SectionHeading

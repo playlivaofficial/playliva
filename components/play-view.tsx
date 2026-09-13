@@ -7,6 +7,7 @@ import { IslandCrashFeature } from '@/components/originals/island-crash-feature'
 import { CapybaraFeature } from '@/components/originals/capybara-feature'
 import { BlackjackFeature } from '@/components/originals/blackjack-feature'
 import { RouletteFeature } from '@/components/originals/roulette-feature'
+import { MinesFeature } from '@/components/originals/mines-feature'
 import { originalsDiscoveryCopy } from '@/lib/originals/discovery'
 import styles from '@/components/originals/originals-discovery.module.css'
 
@@ -30,6 +31,7 @@ export function PlayView() {
       <CapybaraFeature surface="hub" />
       <BlackjackFeature surface="hub" />
       <RouletteFeature surface="hub" />
+      <MinesFeature surface="hub" />
       <p className={styles.hubDisclaimer}>{copy.disclaimer}</p>
       <section className={styles.keepDiscovering}>
         <h2>{copy.discoverTitle}</h2>

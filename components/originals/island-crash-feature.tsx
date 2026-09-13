@@ -9,6 +9,7 @@ import styles from './originals-discovery.module.css'
 import { CapybaraFeature } from './capybara-feature'
 import { BlackjackFeature } from './blackjack-feature'
 import { RouletteFeature } from './roulette-feature'
+import { MinesFeature } from './mines-feature'
 
 /** A poster and ordinary links only; the game runtime stays on /play/crash. */
 export function IslandCrashFeature({ surface }: { surface: 'home' | 'hub' | 'category' }) {
@@ -55,6 +56,7 @@ export function OriginalsDiscoverySection({ surface }: { surface: 'home' | 'cate
       {surface === 'home' && <CapybaraFeature surface="home" />}
       {surface === 'home' && <BlackjackFeature surface="home" />}
       {surface === 'home' && <RouletteFeature surface="home" />}
+      {surface === 'home' && <MinesFeature surface="home" />}
     </section>
   )
 }

@@ -113,7 +113,7 @@ try {
       assert.ok(cards[0].querySelector('img')?.getAttribute('src')?.includes('island-crash-poster'))
       for (const link of cards[0].querySelectorAll('a')) assert.equal(link.getAttribute('href'), `/${segment}/play/crash`)
       assert.equal(cards[0].querySelector('[data-play-free]')?.textContent.trim(), copy.playFree)
-      assert.equal(doc.querySelector('main a[href*="/play/slots"], main a[href*="/play/mines"]'), null)
+      assert.equal(doc.querySelector('main a[href*="/play/slots"], main a[href*="/play/plinko"]'), null)
       if (routePath === '/play') {
         assert.equal(doc.title, copy.seoTitle)
         assert.equal(doc.querySelector('meta[name="description"]')?.content, copy.seoDescription)
@@ -149,7 +149,7 @@ try {
       if (routePath === '/table-games') {
         assert.ok(doc.querySelector('[data-originals-section="table-games"]'))
         assert.ok(blackjack[0].compareDocumentPosition(doc.querySelector('main a[href*="/games/"]')) & 4)
-      } else assert.deepEqual([...doc.querySelectorAll('[data-original-card]')].map(e => e.getAttribute('data-original-card')), ['island-crash', 'capybara-gold', 'blackjack', 'roulette'])
+      } else assert.deepEqual([...doc.querySelectorAll('[data-original-card]')].map(e => e.getAttribute('data-original-card')), ['island-crash', 'capybara-gold', 'blackjack', 'roulette', 'mines'])
     }
     if (routePath === '/play/blackjack') {
       assert.ok(doc.querySelector('[data-blackjack-game]'), `${path}: real blackjack shell`)
@@ -180,6 +180,23 @@ try {
       assert.equal(real.getAttribute('target'), '_blank'); assert.ok(real.rel.includes('sponsored'))
       const outbound = await fetch(base + target.pathname + target.search, { redirect: 'manual' })
       assert.equal(outbound.status, 302); assert.equal(outbound.headers.get('location'), partner.categoryAffiliateUrl['live-casino'].BR)
+    }
+    if (['', '/play', '/instant-games'].includes(routePath)) {
+      const mines = doc.querySelectorAll('[data-original-card="mines"]')
+      assert.equal(mines.length, 1, `${path}: one implemented Mines card`)
+      for (const link of mines[0].querySelectorAll('a')) assert.equal(link.getAttribute('href'), `/${segment}/play/mines`)
+      if (routePath === '/instant-games') {
+        assert.ok(doc.querySelector('[data-originals-mines]'))
+        assert.ok(mines[0].compareDocumentPosition(doc.querySelector('main a[href*="/games/"]')) & 4)
+      }
+    }
+    if (routePath === '/play/mines') {
+      assert.ok(doc.querySelector('[data-mines-game]'))
+      assert.equal(doc.querySelectorAll('[data-tile]').length, 25)
+      assert.ok(doc.querySelector('[data-mines-start]'))
+      assert.equal(doc.querySelectorAll('[data-mine]').length, 0)
+      assert.equal(doc.querySelector('nav.fixed'), null)
+      assert.equal(doc.querySelector('main a[href^="/go?"]'), null, 'no approved instant-games destination yet')
     }
     if (routePath !== '/play/crash') {
       for (const script of doc.querySelectorAll('script[src], link[rel="modulepreload"]')) {
@@ -254,7 +271,7 @@ try {
   for (const locale of LOCALE_SEGMENTS) {
     for (const path of [`/${locale}/missing-page`, `/${locale}/games/missing-game`, `/${locale}/operators/missing-operator`,
       `/${locale}/sports/missing-sport`,
-      ...['slots', 'mines', 'plinko', 'test-only'].map(slug => `/${locale}/play/${slug}`)]) {
+      ...['slots', 'plinko', 'test-only'].map(slug => `/${locale}/play/${slug}`)]) {
       const response = await fetch(base + path)
       assert.equal(response.status, 404, path)
       const doc = new JSDOM(await response.text()).window.document

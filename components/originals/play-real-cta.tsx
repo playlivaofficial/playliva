@@ -13,6 +13,7 @@ import { LIVA_BLACKJACK } from '@/lib/originals/blackjack/definition'
 import { LIVA_ROULETTE } from '@/lib/originals/roulette/config'
 import { rouletteCopy } from '@/lib/originals/roulette/copy'
 import { getVerifiedRouletteReferrals } from '@/lib/originals/roulette/play-real'
+import { minesCopy } from '@/lib/originals/mines/copy'
 
 function OperatorLink({ option, context, label }: {
   option: ReturnType<typeof getPlayRealOptions>[number]
@@ -48,7 +49,7 @@ export function PlayRealCTA({ game }: { game: OriginalGameDefinition }) {
   const context = { originalId: game.id, originalSlug: game.slug, category: game.category, country: countryCode, locale }
   return <aside className="space-y-3 rounded-2xl border border-border bg-card p-5" aria-label={copy.playReal}>
     <h2 className="font-display text-lg font-semibold">{copy.playReal}</h2>
-    <p className="text-sm text-muted-foreground">{roulette ? rouletteCopy(locale).realBoundary : blackjack ? blackjackCopy(locale).realBoundary : game.category === 'crash' ? copy.crashRealBoundary : game.id === 'liva-capybara-gold' ? copy.slotsRealBoundary : copy.realBoundary}</p>
+    <p className="text-sm text-muted-foreground">{roulette ? rouletteCopy(locale).realBoundary : blackjack ? blackjackCopy(locale).realBoundary : game.category === 'crash' ? copy.crashRealBoundary : game.id === 'liva-capybara-gold' ? copy.slotsRealBoundary : game.id === 'liva-mines' ? minesCopy(locale).realBoundary : copy.realBoundary}</p>
     {roulette && options.length > 0 && <p className="text-sm text-muted-foreground">{rouletteCopy(locale).verifiedReferral}</p>}
     {blackjack && options.length > 0 && <p className="text-sm text-muted-foreground">{blackjackCopy(locale).verifiedReferral}</p>}
     {options.length ? <div className="flex flex-wrap gap-3">{options.map(option =>

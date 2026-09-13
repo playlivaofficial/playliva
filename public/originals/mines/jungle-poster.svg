@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675">
+<defs>
+ <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#081b27"/><stop offset=".55" stop-color="#125441"/><stop offset="1" stop-color="#041a21"/></linearGradient>
+ <linearGradient id="stone" x2=".6" y2="1"><stop stop-color="#718776"/><stop offset=".45" stop-color="#3d6350"/><stop offset="1" stop-color="#15392f"/></linearGradient>
+ <linearGradient id="gold" x2="1" y2="1"><stop stop-color="#fff2b7"/><stop offset=".5" stop-color="#e5be63"/><stop offset="1" stop-color="#b28036"/></linearGradient>
+ <radialGradient id="light"><stop stop-color="#bef18b" stop-opacity=".3"/><stop offset="1" stop-color="#a3c879" stop-opacity="0"/></radialGradient>
+ <g id="leaf"><path d="M0 0Q210-95 235 110 50 95 0 0" fill="#1b513c"/><path d="M5 2Q135-10 225 99M75 8 63-30M128 31 125-19M168 51 175 14" fill="none" stroke="#397153" stroke-width="3"/></g>
+ <g id="tile"><rect width="76" height="76" rx="11" fill="url(#stone)" stroke="#b6c28d" stroke-width="2"/><path d="M7 15V64Q7 69 13 69H64" fill="none" stroke="#0e2f28" stroke-width="5"/><path d="M21 38 38 20 55 38 38 56Z" fill="none" stroke="#a9bd8d" stroke-opacity=".25" stroke-width="2"/></g>
+ <g id="row"><use href="#tile"/><use href="#tile" x="87"/><use href="#tile" x="174"/><use href="#tile" x="261"/><use href="#tile" x="348"/></g>
+ <g id="gem"><path d="M-24-18H24L37 0 0 38-37 0Z" fill="url(#gold)" stroke="#fff0b6" stroke-width="2"/><path d="M0-28 12 0 0 38-12 0Z" fill="#6aebae"/><path d="M-37 0H37M-24-18-12 0M24-18 12 0" fill="none" stroke="#fff1b5" stroke-width="2"/></g>
+</defs>
+<rect width="1200" height="675" fill="url(#bg)"/><ellipse cx="680" cy="110" rx="510" ry="580" fill="url(#light)"/>
+<path d="M680 0 320 675H385L750 0ZM845 0 608 675H631L915 0Z" fill="#d3eba7" opacity=".06"/>
+<g opacity=".8"><use href="#leaf" transform="translate(-50 45) rotate(5) scale(1.7)"/><use href="#leaf" transform="translate(1100 -40) rotate(85) scale(1.8)"/><use href="#leaf" transform="translate(70 655) rotate(-65) scale(1.4)"/><use href="#leaf" transform="translate(1230 660) rotate(-165) scale(1.8)"/></g>
+<g transform="translate(677 111) rotate(8 212 212)">
+ <rect x="-18" y="-18" width="460" height="460" rx="28" fill="#082d29" stroke="#c4b574" stroke-width="3"/>
+ <use href="#row"/><use href="#row" y="87"/><use href="#row" y="174"/><use href="#row" y="261"/><use href="#row" y="348"/>
+ <polyline points="38,386 125,299 38,212 125,125 212,212 299,125 386,38" fill="none" stroke="#e7c163" stroke-width="15" opacity=".18"/><polyline points="38,386 125,299 38,212 125,125 212,212 299,125 386,38" fill="none" stroke="#ffe5a0" stroke-width="4"/>
+ <use href="#gem" x="38" y="386"/><use href="#gem" x="125" y="299"/><use href="#gem" x="38" y="212"/><use href="#gem" x="125" y="125"/><use href="#gem" x="212" y="212"/><use href="#gem" x="299" y="125"/><use href="#gem" x="386" y="38"/>
+</g>
+<text x="92" y="245" fill="#b8d2ad" font-family="Arial,sans-serif" font-size="23" letter-spacing="7">PLAYLIVA ORIGINALS</text>
+<text x="87" y="340" fill="#fff0bd" font-family="Georgia,serif" font-weight="bold" font-size="77">LIVA MINES</text>
+<path d="M95 370H516" stroke="#ddbd71" stroke-opacity=".5"/>
+<text x="92" y="429" fill="url(#gold)" font-family="Arial,sans-serif" font-weight="bold" font-size="42" letter-spacing="8">JUNGLE GOLD</text>
+<g fill="#ead294"><path d="m560 179 3 10 10 3-10 3-3 10-3-10-10-3 10-3Z"/><circle cx="542" cy="474" r="2"/><circle cx="640" cy="92" r="2"/></g>
+</svg>

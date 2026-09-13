@@ -53,6 +53,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/play/capybara-gold', priority: 0.8 },
     { path: '/play/blackjack', priority: 0.8 },
     { path: '/play/roulette', priority: 0.8 },
+    { path: '/play/mines', priority: 0.8 },
     { path: '/offers', priority: 0.7 },
     { path: '/operators', priority: 0.6 },
     { path: '/crash', priority: 0.7 },
