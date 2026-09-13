@@ -1,7 +1,8 @@
 # M8 — Liva Roulette: Golden Orbit
 
-European single-zero free-play Original. Implementation and QA are in progress on
-`codex/m8-liva-roulette`; this document does not claim a production release.
+European single-zero free-play Original, developed on `codex/m8-liva-roulette`.
+This document records the implementation and local validation. Exact deployed
+SHA, hosted CI and Production status are recorded in the release handoff.
 
 ## Engine contract
 
@@ -71,7 +72,7 @@ derive the same exact 36/37 theoretical return.
 - Shared wallet, optional sound/haptics, consent-aware events, fullscreen and
   truthful demo boundaries are retained. No previous game's engine is changed.
 
-## Local visual evidence (in progress)
+## Local visual and delivery evidence
 
 Actual-browser checks of the real component used a separate, localhost-only
 scenario server. Captured 25%, 70%, 90% and final wheel frames: opposite motion,
@@ -82,5 +83,38 @@ Repeat restored the completed ticket without spending; interrupted reload kept
 the spent debit and started empty. Insufficient credits placed nothing.
 
 At 320×720, precise Corner targets measured 122×44px, Spin bottom 643px for the
-Inside view and 627px on zero result. No horizontal overflow. Final production
-build, remaining viewport/locales, performance and hosted release QA follow.
+Inside view and 627px on zero result. Production-build verification covered
+320×720 PT-BR numbered bets (Spin bottom 640px), 360×800 EN outside bets
+(621px), 390×844 ES-MX six-line bets (616px), and 1280×720/900 desktop.
+Short-desktop wheel sizing accounts for the extra last-result line. No horizontal
+game overflow; the local performance report may wrap long resource paths.
+Actual secure-RNG spins and deterministic exact-pocket scenarios were both checked.
+No hydration/console errors remained after the SVG coordinate fix.
+
+The local timing probe reported cold FCP 672ms / interactive game 802ms, warm
+FCP 464ms / interactive game 445ms. Wheel-present RAF proxies were 507ms / 391ms;
+these are pre-paint lower bounds, not a standardized “first meaningful paint”.
+Measurements are unthrottled local-desktop evidence, not production latency or
+physical low-end-device certification. The server renders an immediate shell/SVG;
+the dynamic boundary also has a small loading poster.
+
+Observed modern-browser route JS: 706,907 bytes raw, 213,921 gzip / 183,623 Brotli
+estimates (sum of independently compressed build files). Lazy game chunk:
+51,207 raw / 17,370 gzip / 15,143 Brotli; roulette config/copy support chunk:
+17,850 raw / 6,889 gzip / 5,882 Brotli. The legacy nomodule polyfill is separate
+and was not requested by the test browser. Owned poster: 14,160 raw / 1,548 gzip /
+1,250 Brotli. The wheel is inline SVG; no models, raster downloads or remote art.
+Compression figures are reproducible build estimates, not claimed CDN transfers.
+
+Local full gates: frozen install, lint (existing three warnings), typecheck,
+161 tests, build and 255-route crawl. Existing middleware deprecation and ignored
+dependency build-script notices remain; no warning budget or runtime pin changed.
+Checkpoint `b4a74fb` also passed hosted
+[Quality gates #24](https://github.com/playlivaofficial/playliva/actions/runs/34735442180/job/103665929368).
+Final release must verify hosted CI again for its exact source SHA.
+
+Limitations: local-only wallet/authority and interruption policy; vector rather
+than 3D/live-dealer presentation; paged mobile numbers and scrolling exact-group
+picker; optional device-dependent audio/haptics/fullscreen; no physical phone
+certification. No racetrack/call bets, zero trios, double-zero, la partage or en
+prison. The pre-existing Spanish footer encoding issue is outside M8 and unchanged.
