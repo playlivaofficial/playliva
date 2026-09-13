@@ -41,7 +41,10 @@ test('M11: 31 sourced reference games are internally consistent and remain separ
   for (const game of REFERENCE_GAMES) {
     assert.equal(data.getGame(game.slug), undefined)
     assert.equal(game.availability.status, 'unverified')
-    assert.equal(game.artwork.status, 'fallback')
+    assert.notEqual(game.artwork.status, 'fallback')
+    assert.equal(game.artwork.rightsStatus, 'approved')
+    if (game.artwork.status === 'fallback') throw new Error('expected sourced artwork')
+    assert.equal(game.artwork.assetPath, `/catalog/covers/${game.slug}.webp`)
     assert.ok(game.sources.every(source => source.startsWith('https://')))
   }
 })
@@ -62,14 +65,14 @@ for (const [label, mutate, expected] of [
   assert.match(integrity.validateCatalog(games).join('\n'), expected)
 })
 
-test('M11: all three locales contain original copy, neutral covers and meaningful reference content for every new game', () => {
+test('M11: all three locales contain original copy, catalog artwork and meaningful reference content for every new game', () => {
   for (const [locale, segment] of locales) for (const game of REFERENCE_GAMES) {
     const dom = render(locale, segment, React.createElement(views.ReferenceGameView, { game, locale })), doc = dom.window.document
     assert.equal(doc.querySelector('h1').textContent, game.title)
     for (const field of ['summary', 'overview', 'howItWorks']) assert.ok(doc.body.textContent.includes(game.content[locale][field]))
     assert.ok(doc.querySelectorAll('h2').length >= 5)
-    assert.ok(doc.querySelector('[data-artwork-status="fallback"]'))
-    assert.equal(doc.querySelector('img'), null)
+    assert.ok(doc.querySelector('[data-artwork-status="sourced"]'))
+    assert.ok(game.artwork.status !== 'fallback' && doc.querySelector(`img[src="${game.artwork.assetPath}"]`))
     assert.equal(doc.querySelector('a[href^="/go"], a[href*="/where-to-play/"], iframe, [data-game-shell]'), null)
     assert.ok(doc.querySelector(`a[href="/${segment}/providers/${game.providerId}"]`))
     assert.ok(doc.querySelector(`a[href="/${segment}/${game.category}"]`))
@@ -86,7 +89,13 @@ test('M11: lightweight projections have only one locale and omit full editorial/
     assert.equal(summaries.length, 42)
     for (const game of summaries) {
       for (const key of ['content', 'sources', 'countries', 'affiliateUrl', 'operatorEvidence', 'relatedSlugs']) assert.equal(key in game, false)
-      if (game.reference) assert.equal(game.image, null)
+      if (game.reference) {
+        assert.equal(game.image, `/catalog/covers/${game.slug}.webp`)
+      }
+      if (game.slug === 'blackjack-live') {
+        assert.equal(game.reference, false)
+        assert.equal(game.image, '/games/blackjack-live.webp')
+      }
     }
     assert.ok(JSON.stringify(summaries).length < 45_000, 'single-language directory payload budget')
   }

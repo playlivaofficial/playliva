@@ -3,9 +3,11 @@
 Source of truth: https://github.com/playlivaofficial/playliva.
 
 [M11 provider reference catalog](docs/m11-provider-catalog.md) adds 31 sourced,
-localized factual game references with neutral covers, bounded discovery and
-build-time integrity checks. New records do not extend operator availability
-or referral behavior; all five Originals remain unchanged.
+localized factual game references with authentic catalog covers, bounded discovery and
+build-time integrity checks. The leftover generic Blackjack Live listing uses
+user-provided cover art; the Speed tile stays withheld.
+New records do not extend operator availability or referral behavior; all five
+Originals remain unchanged.
 
 [M10 product redesign](docs/m10-product-redesign.md) continues the released visual
 foundation with provider/editorial layouts, localized detail metadata, compact

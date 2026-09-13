@@ -1,0 +1,21 @@
+{
+  "generatedAt": "2026-09-13",
+  "title": "Blackjack Live",
+  "provider": "Evolution",
+  "status": "approved",
+  "source": "user-provided",
+  "sourceUrl": null,
+  "sourcePage": null,
+  "notes": "User-provided final artwork for the existing Blackjack Live listing. Title, provider, slug, route and editorial copy unchanged. Not displayed as Speed Blackjack. Previous Speed Blackjack Live jpg at /games/blackjack-live.jpg remains withheld.",
+  "originalFile": "blackjack-live.png",
+  "originalWidth": 400,
+  "originalHeight": 557,
+  "width": 603,
+  "height": 840,
+  "assetPath": "/games/blackjack-live.webp",
+  "avifPath": "/games/blackjack-live.avif",
+  "sha256": "3b5ef8c5a59e37b56e4df87ca03df871e44c5e6e5e57d7dd0aef778bfafbe4c5",
+  "bytes": 45582,
+  "avifBytes": 22269,
+  "verifiedAt": "2026-09-13"
+}

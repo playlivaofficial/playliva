@@ -82,6 +82,6 @@ release report; local gates alone do not prove hosted delivery.
 
 Responsive browser testing is not physical-device/low-end-phone certification
 or a complete screen-reader/WCAG audit. Provider artwork still follows existing
-rights-approval rules; generic Blackjack Live correctly retains its neutral
-artwork fallback. Existing affiliate limitations and gameplay mechanics are
+rights-approval rules. Generic Blackjack Live later received user-provided cover
+art; the mismatched Speed tile stays withheld. Existing affiliate limitations and gameplay mechanics are
 intentionally unchanged. No new backend, analytics or operator approval is added.

@@ -340,15 +340,18 @@ try {
       }
     }
     if (doc.querySelector('script[src*="googletagmanager"], script[src*="insights/script"]')) failures.push(`${path}: analytics script before consent`)
-    if (path.includes('blackjack-live') && doc.querySelector('img[src*="blackjack-live"]')) failures.push(`${path}: mismatched artwork`)
+    if (path.includes('blackjack-live') && doc.querySelector('img[src*="blackjack-live.jpg"]')) failures.push(`${path}: mismatched Speed Blackjack artwork`)
     const metadataText = [...doc.querySelectorAll('meta[name="description"], img[alt]')].map((node) => node.content ?? node.alt).join(' ')
     if (doc.querySelector('[data-reference-detail]')) {
       const game = catalogModule.getReferenceGame(routePath.split('/').pop())
       const locale = localeModule.segmentToLocale(segment), c = catalogCopyModule.catalogCopy(locale)
+      const art = game.artwork
       assert.equal(doc.querySelector('h1').textContent, game.title)
       for (const field of ['summary', 'overview', 'howItWorks']) assert.ok(doc.querySelector('main').textContent.includes(game.content[locale][field]), `${path}: ${field}`)
-      assert.ok(doc.querySelector('[data-artwork-status="fallback"]'))
-      assert.equal(doc.querySelector('main img, main iframe, main a[href^="/go"], main a[href*="/where-to-play/"]'), null)
+      assert.ok(art.status !== 'fallback')
+      assert.ok(doc.querySelector('[data-artwork-status="sourced"]'))
+      assert.ok(art.status !== 'fallback' && doc.querySelector(`main img[src="${art.assetPath}"]`))
+      assert.equal(doc.querySelector('main iframe, main a[href^="/go"], main a[href*="/where-to-play/"]'), null)
       assert.ok(doc.querySelector('main').textContent.includes(c.evidence))
       assert.equal(doc.querySelector('meta[name="description"]').content, game.content[locale].summary)
     }
