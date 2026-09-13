@@ -5,9 +5,9 @@ import { createHash } from 'node:crypto'
 
 // Release-specific protection requested for the visual redesign. Deliberate
 // future changes to this infrastructure require a separately reviewed baseline.
-// M11 explicitly authorizes sitemap additions only; its catalog tests also
-// preserve all 189 M10 URLs. All other protected hashes remain unchanged.
-test('redesign: protected outbound infrastructure remains unchanged; sitemap includes authorized M11 additions', async () => {
+// M11 authorized sitemap additions only. The Betsson affiliate UI pass updates
+// Originals play-real helpers/CTA hashes; remaining protected files stay put.
+test('redesign: protected outbound infrastructure remains unchanged except authorized Betsson play-real files', async () => {
   const expected = JSON.parse(await readFile(new URL('./fixtures/redesign-protected.json', import.meta.url), 'utf8'))
   for (const [path, hash] of Object.entries(expected)) {
     const source = (await readFile(new URL('../' + path, import.meta.url), 'utf8')).replace(/\r\n/g, '\n')

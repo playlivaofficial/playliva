@@ -125,6 +125,20 @@ test('Play Real uses existing approved category/GEO links without mapping Origin
   for (const category of ['table-games', 'instant-games', 'sports', 'unknown', undefined]) {
     assert.deepEqual(getPlayRealOptions('BR', category, 'en'), [])
   }
+  const generic = realModule.getGenericApprovedOperatorCtas('BR', 'en')
+  assert.equal(generic.length, 1)
+  assert.equal(generic[0].mode, 'generic-brand')
+  assert.equal(generic[0].operatorSlug, partner.slug)
+  const genericQuery = new URL(generic[0].href, 'https://site.example.invalid').searchParams
+  assert.equal(genericQuery.get('category'), null)
+  assert.equal(genericQuery.get('game'), null)
+  assert.equal(genericQuery.get('placement'), 'originals_generic_operator')
+  assert.equal(affiliateModule.resolveDestination({
+    operatorSlug: genericQuery.get('operator'), country: 'BR', pageType: 'play',
+    placement: genericQuery.get('placement'), analyticsAllowed: false,
+  })?.url, partner.affiliateUrl.BR)
+  assert.notEqual(partner.affiliateUrl.BR, partner.categoryAffiliateUrl.crash.BR)
+  assert.deepEqual(realModule.getGenericApprovedOperatorCtas('MX', 'en'), [])
   for (const country of ['MX', 'PT', 'unknown']) assert.deepEqual(getPlayRealOptions(country, 'crash', 'en'), [])
   const saved = { ...partner }
   try {

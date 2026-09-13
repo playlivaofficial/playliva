@@ -2,6 +2,7 @@
 
 import { ArrowRight, Compass, Layers3, Gamepad2 } from 'lucide-react'
 import { Hero } from '@/components/home/hero'
+import { BetssonHomeBanner } from '@/components/affiliates/betsson-home-banner'
 import { OriginalsDiscoverySection } from '@/components/originals/island-crash-feature'
 import { Section, SectionHeading } from '@/components/section'
 import { CategoryCard } from '@/components/category-card'
@@ -35,6 +36,7 @@ export function HomePageClient() {
   return (
     <>
       <Hero />
+      <BetssonHomeBanner />
       <OriginalsDiscoverySection surface="home" />
 
       {/* Explore by game type */}

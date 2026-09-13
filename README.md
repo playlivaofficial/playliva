@@ -124,6 +124,11 @@ blocks Vercel installs when its managed Node 24 release differs.
 
 URL locales are `/en`, `/pt-br` and `/es-mx`; selected market is independent.
 Affiliate redirects use `/go`, static operator eligibility and source data.
+Approved Betsson campaign/creative metadata lives in `lib/affiliates/betsson.ts`.
+The homepage banner and generic Originals CTA use the brand destination without
+claiming that a PlayLiva Original exists at Betsson. Category and verified-game
+CTAs stay on their existing eligibility paths. Required partner attribution is
+resolved by `/go` regardless of analytics consent.
 Legacy PlayLiva Sports pages remain an unpromoted demo archive. The contact form opens a draft in the visitor's email
 app and has no delivery backend or sent-message confirmation. Do not
 mistake those existing limitations for a request to implement product changes.

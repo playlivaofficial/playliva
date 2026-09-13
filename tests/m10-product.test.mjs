@@ -111,7 +111,7 @@ test('M10: footer and trust display have no replacement characters in any suppor
   }
 })
 
-test('M10: all 60 Original engine, wallet and game-renderer files remain byte-equivalent to the released baseline', async () => {
+test('M10: Original engine, wallet and game-renderer files stay frozen except authorized play-real routing', async () => {
   const roots = ['lib/originals', 'components/originals/crash', 'components/originals/capybara', 'components/originals/blackjack', 'components/originals/roulette', 'components/originals/mines']
   const paths = []
   async function walk(path) {
@@ -125,5 +125,5 @@ test('M10: all 60 Original engine, wallet and game-renderer files remain byte-eq
   const hash = createHash('sha256')
   for (const path of paths.sort()) hash.update(path + '\0' + (await readFile(new URL('../' + path, import.meta.url), 'utf8')).replace(/\r\n/g, '\n') + '\0')
   assert.equal(paths.length, 60)
-  assert.equal(hash.digest('hex'), 'd0bcd83b4d7d83ae7c01c03fa8649e9d2701b8036343e61fe198071c21ddc6c8')
+  assert.equal(hash.digest('hex'), '5844f129b1729fc5330548bf6ebd455d3c080796d4ef512e6e504497541cf88d')
 })

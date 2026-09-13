@@ -57,6 +57,14 @@ const ptBR: Dict = {
   'cta.backToGame': 'Voltar para {game}',
   'cta.backHome': 'Voltar ao início',
   'cta.explore': 'Explorar {name}',
+  'affiliate.sponsored': 'Patrocinado',
+  'affiliate.visitNamed': 'Visitar {name}',
+  'affiliate.playAtNamed': 'Jogar na {name}',
+  'affiliate.exploreNamed': 'Explorar {name}',
+  'affiliate.homeBannerBody':
+    'Conheça cassino e apostas na Betsson. A PlayLiva não aceita apostas nem depósitos.',
+  'affiliate.genericBoundary':
+    'Esta é uma indicação da marca do operador, não uma afirmação de que este PlayLiva Original esteja disponível lá.',
 
   // Selectors
   'selector.country': 'Selecionar país',
@@ -571,6 +579,14 @@ const esMX: Dict = {
   'cta.backToGame': 'Volver a {game}',
   'cta.backHome': 'Volver al inicio',
   'cta.explore': 'Explorar {name}',
+  'affiliate.sponsored': 'Patrocinado',
+  'affiliate.visitNamed': 'Visitar {name}',
+  'affiliate.playAtNamed': 'Jugar en {name}',
+  'affiliate.exploreNamed': 'Explorar {name}',
+  'affiliate.homeBannerBody':
+    'Explora casino y apuestas en Betsson. PlayLiva no acepta apuestas ni depósitos.',
+  'affiliate.genericBoundary':
+    'Esta es una indicación de la marca del operador, no una afirmación de que este PlayLiva Original esté disponible allí.',
 
   'selector.country': 'Seleccionar país',
   'selector.language': 'Seleccionar idioma',
@@ -1061,6 +1077,14 @@ const en: Dict = {
   'cta.backToGame': 'Back to {game}',
   'cta.backHome': 'Back home',
   'cta.explore': 'Explore {name}',
+  'affiliate.sponsored': 'Sponsored',
+  'affiliate.visitNamed': 'Visit {name}',
+  'affiliate.playAtNamed': 'Play at {name}',
+  'affiliate.exploreNamed': 'Explore {name}',
+  'affiliate.homeBannerBody':
+    'Explore casino and betting at Betsson. PlayLiva does not accept bets or deposits.',
+  'affiliate.genericBoundary':
+    'This is a brand referral to the operator, not a claim that this PlayLiva Original is available there.',
 
   'selector.country': 'Select country',
   'selector.language': 'Select language',

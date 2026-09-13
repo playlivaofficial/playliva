@@ -65,8 +65,9 @@ export function PlayGameShell({ game, children, controls, roundActive = false, c
     {storageStatus === 'recovered' && <p role="status" className="text-sm text-muted-foreground">{copy.recovered}</p>}
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_18rem]">
       <div className="min-w-0 space-y-4">
-        <div aria-label={copy.viewport} className="min-h-64 overflow-hidden rounded-2xl border border-border bg-card">{children}</div>
-        <fieldset disabled={!ready} aria-label={copy.controls} className="min-w-0 rounded-2xl border border-border bg-card p-4">{controls}</fieldset>
+        <div aria-label={copy.viewport} data-game-viewport className="min-h-64 overflow-hidden rounded-2xl border border-border bg-card">{children}</div>
+        <PlayRealCTA game={game} />
+        <fieldset disabled={!ready} aria-label={copy.controls} data-game-controls className="min-w-0 rounded-2xl border border-border bg-card p-4">{controls}</fieldset>
       </div>
       <aside data-session-panel aria-label={productCopy(locale).settings} className="space-y-4 rounded-2xl border border-border bg-card p-4">
         <div className="flex flex-wrap gap-3">
@@ -97,6 +98,5 @@ export function PlayGameShell({ game, children, controls, roundActive = false, c
           )}</ol>}
       </aside>
     </div>
-    <PlayRealCTA game={game} />
   </section>
 }

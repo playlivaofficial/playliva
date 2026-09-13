@@ -96,6 +96,14 @@ try {
       assert.equal(response.status, 302)
       assert.equal(response.headers.get('location'), partner.categoryAffiliateUrl?.[category]?.BR ?? partner.affiliateUrl.BR)
     }
+    for (const placement of ['homepage_banner', 'originals_generic_operator']) {
+      const query = new URLSearchParams({ operator: partner.slug, country: 'BR', placement })
+      const response = await fetch(`${base}/go?${query}`, {
+        redirect: 'manual', headers: consent ? { cookie: `${ANALYTICS_COOKIE}=${consent}` } : {},
+      })
+      assert.equal(response.status, 302)
+      assert.equal(response.headers.get('location'), partner.affiliateUrl.BR)
+    }
   }
   for (const path of paths) {
     const response = await fetch(base + path, { redirect: 'manual' })
@@ -130,6 +138,36 @@ try {
           assert.equal(doc.querySelector('[data-hero-explore]')?.getAttribute('href'), `/${segment}/games`)
           assert.ok(doc.querySelector('#provider-games [data-provider-card]'))
           assert.ok(doc.querySelector('[data-discovery-explainer]'))
+          const banner = doc.querySelector('[data-betsson-banner="homepage"]')
+          assert.ok(banner, `${path}: homepage Betsson banner`)
+          const bannerLink = banner.querySelector('a[href^="/go?"]')
+          const bannerQuery = new URL(bannerLink.href, base).searchParams
+          assert.equal(bannerQuery.get('operator'), partner.slug)
+          assert.equal(bannerQuery.get('placement'), 'homepage_banner')
+          assert.equal(bannerQuery.get('page'), 'home')
+          assert.equal(bannerQuery.get('category'), null)
+          assert.equal(bannerQuery.get('game'), null)
+          assert.doesNotMatch(banner.textContent, /bônus|bonus|100%|free spin|gire grátis|Play Liva/i)
+          if (segment === 'en') {
+            assert.doesNotMatch(banner.textContent, /Conheça cassino|Patrocinado|Explorar Betsson|não aceita apostas nem depósitos/)
+            assert.match(banner.textContent, /Sponsored/)
+            assert.match(banner.textContent, /Explore Betsson/)
+          }
+          if (segment === 'es-mx') {
+            assert.doesNotMatch(banner.textContent, /Conheça cassino|Sponsored|Explore Betsson|não aceita apostas nem depósitos/)
+            assert.match(banner.textContent, /Patrocinado/)
+            assert.match(banner.textContent, /Explorar Betsson/)
+          }
+          if (segment === 'pt-br') {
+            assert.doesNotMatch(banner.textContent, /Sponsored|Explore Betsson|Visit Betsson/)
+            assert.match(banner.textContent, /Patrocinado/)
+            assert.match(banner.textContent, /Explorar Betsson/)
+          }
+          assert.ok(banner.getAttribute('data-creative-language') === 'neutral' || banner.getAttribute('data-creative-language') === localeModule.segmentToLocale(segment))
+          if (segment !== 'pt-br') assert.notEqual(banner.getAttribute('data-creative-language'), 'pt-BR')
+          const bannerGo = await fetch(base + bannerLink.getAttribute('href'), { redirect: 'manual' })
+          assert.equal(bannerGo.status, 302)
+          assert.equal(bannerGo.headers.get('location'), partner.affiliateUrl.BR)
         }
         else assert.ok(cards[0].compareDocumentPosition(doc.querySelector('main a[href*="/games/"]')) & 4, 'Original precedes provider grid')
       }
@@ -150,6 +188,7 @@ try {
       assert.equal(doc.querySelector('nav.fixed'), null, `${path}: controls unobstructed by mobile nav`)
       const real = doc.querySelector('a[href^="/go?"]')
       assert.equal(new URL(real.href, base).searchParams.get('category'), 'slots')
+      assert.ok(doc.querySelector('[data-operator-cta="play-real"]').compareDocumentPosition(doc.querySelector('[data-game-controls]')) & 4)
     }
     if (['', '/play', '/live-casino'].includes(routePath)) {
       const blackjack = doc.querySelectorAll('[data-original-card="blackjack"]')
@@ -168,6 +207,7 @@ try {
       assert.equal(target.searchParams.get('category'), 'table-games')
       assert.equal(target.searchParams.get('game'), 'blackjack-live')
       assert.equal(real.getAttribute('target'), '_blank'); assert.ok(real.rel.includes('sponsored'))
+      assert.ok(doc.querySelector('[data-operator-cta="play-real"]').compareDocumentPosition(doc.querySelector('[data-game-controls]')) & 4)
       const outbound = await fetch(base + target.pathname + target.search, { redirect: 'manual' })
       assert.equal(outbound.status, 302); assert.equal(outbound.headers.get('location'), partner.categoryAffiliateUrl['live-casino'].BR)
     }
@@ -187,6 +227,7 @@ try {
       assert.equal(target.searchParams.get('category'), 'live-casino')
       assert.equal(target.searchParams.get('game'), 'lightning-roulette')
       assert.equal(real.getAttribute('target'), '_blank'); assert.ok(real.rel.includes('sponsored'))
+      assert.ok(doc.querySelector('[data-operator-cta="play-real"]').compareDocumentPosition(doc.querySelector('[data-game-controls]')) & 4)
       const outbound = await fetch(base + target.pathname + target.search, { redirect: 'manual' })
       assert.equal(outbound.status, 302); assert.equal(outbound.headers.get('location'), partner.categoryAffiliateUrl['live-casino'].BR)
     }
@@ -205,7 +246,16 @@ try {
       assert.ok(doc.querySelector('[data-mines-start]'))
       assert.equal(doc.querySelectorAll('[data-mine]').length, 0)
       assert.equal(doc.querySelector('nav.fixed'), null)
-      assert.equal(doc.querySelector('main a[href^="/go?"]'), null, 'no approved instant-games destination yet')
+      const real = doc.querySelector('main a[href^="/go?"]'), target = new URL(real.href, base)
+      assert.equal(target.searchParams.get('operator'), partner.slug)
+      assert.equal(target.searchParams.get('category'), null)
+      assert.equal(target.searchParams.get('game'), null)
+      assert.equal(target.searchParams.get('placement'), 'originals_generic_operator')
+      assert.equal(doc.querySelector('[data-operator-cta-mode]')?.getAttribute('data-operator-cta-mode'), 'generic-brand')
+      assert.doesNotMatch(doc.body.textContent, /Play Liva Mines at Betsson|Jogue Liva Mines na Betsson|This game is available at Betsson/i)
+      const outbound = await fetch(base + target.pathname + target.search, { redirect: 'manual' })
+      assert.equal(outbound.status, 302)
+      assert.equal(outbound.headers.get('location'), partner.affiliateUrl.BR)
     }
     if (routePath !== '/play/crash') {
       for (const script of doc.querySelectorAll('script[src], link[rel="modulepreload"]')) {
@@ -215,6 +265,13 @@ try {
     } else {
       assert.doesNotMatch(doc.querySelector('main')?.textContent ?? '', /JetX|Aviator|SmartSoft|SPRIBE|Robinson Crusoe|\bFriday\b/i)
       assert.ok(doc.querySelector('[data-phase="ready"]'), `${path}: real game shell`)
+      const real = doc.querySelector('main a[href^="/go?"]'), target = new URL(real.href, base)
+      assert.equal(target.searchParams.get('category'), 'crash')
+      assert.equal(target.searchParams.get('game'), null)
+      assert.ok(doc.querySelector('[data-operator-cta="play-real"]').compareDocumentPosition(doc.querySelector('[data-game-controls]')) & 4)
+      const outbound = await fetch(base + target.pathname + target.search, { redirect: 'manual' })
+      assert.equal(outbound.status, 302)
+      assert.equal(outbound.headers.get('location'), partner.categoryAffiliateUrl.crash.BR)
     }
     const sportsNav = doc.querySelector('header nav a[href="https://livasports.com"]')
     assert.ok(sportsNav, `${path}: visible desktop Sports network entry`)

@@ -1,22 +1,23 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
+import { AffiliateDisclosureLine } from '@/components/notices'
 import { useCountry } from '@/components/country-context'
 import { originalsCopy } from '@/lib/originals/copy'
-import { getPlayRealOptions } from '@/lib/originals/play-real'
+import { getOriginalOperatorCtas, type OperatorCtaOption } from '@/lib/originals/play-real'
 import { trackFreePlay, type FreePlayEventContext } from '@/lib/originals/analytics'
 import type { OriginalGameDefinition } from '@/lib/originals/definition'
-import { getVerifiedBlackjackReferrals } from '@/lib/originals/blackjack/play-real'
 import { blackjackCopy } from '@/lib/originals/blackjack/copy'
 import { LIVA_BLACKJACK } from '@/lib/originals/blackjack/definition'
 import { LIVA_ROULETTE } from '@/lib/originals/roulette/config'
 import { rouletteCopy } from '@/lib/originals/roulette/copy'
-import { getVerifiedRouletteReferrals } from '@/lib/originals/roulette/play-real'
 import { minesCopy } from '@/lib/originals/mines/copy'
+import { getOperator } from '@/lib/data'
 
 function OperatorLink({ option, context, label }: {
-  option: ReturnType<typeof getPlayRealOptions>[number]
+  option: OperatorCtaOption
   context: FreePlayEventContext
   label: string
 }) {
@@ -34,26 +35,49 @@ function OperatorLink({ option, context, label }: {
     observer.observe(node)
     return () => observer.disconnect()
   }, [originalId, originalSlug, category, country, locale, option.operatorSlug])
-  return <Button size="lg" render={<a ref={ref} href={option.href} target="_blank"
-    rel="sponsored noopener noreferrer" onClick={() => trackFreePlay('play_real_click', {
+  return <Button size="lg" className="min-h-11 min-w-11 w-full whitespace-normal px-4 sm:w-auto" render={<a ref={ref} href={option.href} target="_blank"
+    rel="sponsored noopener noreferrer" data-cta-mode={option.mode} onClick={() => trackFreePlay('play_real_click', {
       ...context, operatorSlug: option.operatorSlug,
-    })} />}>{label} · {option.name}</Button>
+    })} />}>{label}</Button>
 }
 
 export function PlayRealCTA({ game }: { game: OriginalGameDefinition }) {
-  const { countryCode, locale } = useCountry()
+  const { countryCode, locale, t } = useCountry()
   const copy = originalsCopy(locale)
   const blackjack = game.id === LIVA_BLACKJACK.id
   const roulette = game.id === LIVA_ROULETTE.id
-  const options = roulette ? getVerifiedRouletteReferrals(countryCode, locale) : blackjack ? getVerifiedBlackjackReferrals(countryCode, locale) : getPlayRealOptions(countryCode, game.category, locale)
+  const options = getOriginalOperatorCtas(game, countryCode, locale)
+  const mode = options[0]?.mode ?? 'none'
   const context = { originalId: game.id, originalSlug: game.slug, category: game.category, country: countryCode, locale }
-  return <aside className="space-y-3 rounded-2xl border border-border bg-card p-5" aria-label={copy.playReal}>
-    <h2 className="font-display text-lg font-semibold">{copy.playReal}</h2>
-    <p className="text-sm text-muted-foreground">{roulette ? rouletteCopy(locale).realBoundary : blackjack ? blackjackCopy(locale).realBoundary : game.category === 'crash' ? copy.crashRealBoundary : game.id === 'liva-capybara-gold' ? copy.slotsRealBoundary : game.id === 'liva-mines' ? minesCopy(locale).realBoundary : copy.realBoundary}</p>
-    {roulette && options.length > 0 && <p className="text-sm text-muted-foreground">{rouletteCopy(locale).verifiedReferral}</p>}
-    {blackjack && options.length > 0 && <p className="text-sm text-muted-foreground">{blackjackCopy(locale).verifiedReferral}</p>}
-    {options.length ? <div className="flex flex-wrap gap-3">{options.map(option =>
-      <OperatorLink key={`${countryCode}:${game.category}:${option.operatorSlug}`} option={option} context={context} label={copy.playReal} />,
-    )}</div> : <p className="text-sm text-muted-foreground">{copy.noOperators}</p>}
+  const generic = mode === 'generic-brand'
+  const boundary = generic ? t('affiliate.genericBoundary')
+    : roulette ? rouletteCopy(locale).realBoundary
+    : blackjack ? blackjackCopy(locale).realBoundary
+    : game.category === 'crash' ? copy.crashRealBoundary
+    : game.id === 'liva-capybara-gold' ? copy.slotsRealBoundary
+    : game.id === 'liva-mines' ? minesCopy(locale).realBoundary
+    : copy.realBoundary
+  const heading = generic ? t('affiliate.exploreNamed', { name: options[0].name }) : copy.playReal
+  const logo = options[0] ? getOperator(options[0].operatorSlug)?.logo : undefined
+  return <aside className="space-y-2 rounded-2xl border border-border bg-card p-3 sm:p-4" aria-label={heading}
+    data-operator-cta="play-real" data-operator-cta-mode={mode}>
+    <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center">
+      {logo ? <div className="relative size-10 shrink-0 overflow-hidden rounded-lg border border-border bg-secondary">
+        <Image src={logo} alt="" width={40} height={40} className="size-10 object-cover" />
+      </div> : null}
+      <div className="min-w-0 flex-1">
+        <p className="text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-primary">{t('affiliate.sponsored')}</p>
+        <h2 className="font-display text-base font-semibold leading-tight sm:text-lg">{heading}</h2>
+      </div>
+      {options.length ? <div className="flex w-full min-w-0 flex-wrap gap-3 sm:w-auto">{options.map(option =>
+        <OperatorLink key={`${countryCode}:${game.category}:${option.mode}:${option.operatorSlug}`} option={option} context={context}
+          label={generic ? t('affiliate.visitNamed', { name: option.name }) : `${copy.playReal} · ${option.name}`} />,
+      )}</div> : null}
+    </div>
+    <p className="text-xs leading-relaxed text-muted-foreground sm:text-sm">{boundary}</p>
+    {roulette && options.length > 0 && <p className="text-xs leading-relaxed text-muted-foreground sm:text-sm">{rouletteCopy(locale).verifiedReferral}</p>}
+    {blackjack && options.length > 0 && <p className="text-xs leading-relaxed text-muted-foreground sm:text-sm">{blackjackCopy(locale).verifiedReferral}</p>}
+    {options.length === 0 && <p className="text-xs leading-relaxed text-muted-foreground sm:text-sm">{copy.noOperators}</p>}
+    {options.length > 0 && <AffiliateDisclosureLine />}
   </aside>
 }

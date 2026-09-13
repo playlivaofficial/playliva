@@ -91,7 +91,14 @@ test('test-only shell: wallet/settings/reset, consent-aware events, truthful Pla
     const events = ['free_play_open', 'demo_round_start', 'demo_round_complete', 'demo_balance_reset', 'play_real_view', 'play_real_click']
     for (const event of events) trackFreePlay(event, context)
     assert.equal(window.dataLayer, undefined, 'rejected analytics blocks every Originals event')
-    assert.equal(link.getAttribute('href'), href, 'functional affiliate link survives rejection')
+    assert.equal(href, link.getAttribute('href'), 'functional affiliate link survives rejection')
+    const viewport = document.querySelector('[data-game-viewport]')
+    const cta = document.querySelector('[data-operator-cta="play-real"]')
+    const controls = document.querySelector('[data-game-controls]')
+    assert.equal(cta.getAttribute('data-operator-cta-mode'), 'verified-category')
+    assert.equal(Boolean(viewport.compareDocumentPosition(cta) & 4), true)
+    assert.equal(Boolean(cta.compareDocumentPosition(controls) & 4), true)
+    assert.doesNotMatch(cta.className, /fixed|absolute|inset-0/)
 
     saveConsent({ necessary: true, analytics: true, marketing: false })
     for (const event of events) trackFreePlay(event, { ...context, privateData: 'must-not-be-sent' })
