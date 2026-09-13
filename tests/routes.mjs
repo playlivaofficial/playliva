@@ -145,6 +145,8 @@ try {
           assert.equal(bannerQuery.get('operator'), partner.slug)
           assert.equal(bannerQuery.get('placement'), 'homepage_banner')
           assert.equal(bannerQuery.get('page'), 'home')
+          assert.equal(bannerQuery.get('country'), 'BR')
+          assert.equal(bannerQuery.get('language'), localeModule.segmentToLocale(segment))
           assert.equal(bannerQuery.get('category'), null)
           assert.equal(bannerQuery.get('game'), null)
           assert.doesNotMatch(banner.textContent, /bônus|bonus|100%|free spin|gire grátis|Play Liva/i)
@@ -188,6 +190,7 @@ try {
       assert.equal(doc.querySelector('nav.fixed'), null, `${path}: controls unobstructed by mobile nav`)
       const real = doc.querySelector('a[href^="/go?"]')
       assert.equal(new URL(real.href, base).searchParams.get('category'), 'slots')
+      assert.equal(new URL(real.href, base).searchParams.get('language'), localeModule.segmentToLocale(segment))
       assert.ok(doc.querySelector('[data-operator-cta="play-real"]').compareDocumentPosition(doc.querySelector('[data-game-controls]')) & 4)
     }
     if (['', '/play', '/live-casino'].includes(routePath)) {
@@ -206,6 +209,7 @@ try {
       const real = doc.querySelector('a[href^="/go?"]'), target = new URL(real.href, base)
       assert.equal(target.searchParams.get('category'), 'table-games')
       assert.equal(target.searchParams.get('game'), 'blackjack-live')
+      assert.equal(target.searchParams.get('language'), localeModule.segmentToLocale(segment))
       assert.equal(real.getAttribute('target'), '_blank'); assert.ok(real.rel.includes('sponsored'))
       assert.ok(doc.querySelector('[data-operator-cta="play-real"]').compareDocumentPosition(doc.querySelector('[data-game-controls]')) & 4)
       const outbound = await fetch(base + target.pathname + target.search, { redirect: 'manual' })
@@ -226,6 +230,7 @@ try {
       const real = doc.querySelector('a[href^="/go?"]'), target = new URL(real.href, base)
       assert.equal(target.searchParams.get('category'), 'live-casino')
       assert.equal(target.searchParams.get('game'), 'lightning-roulette')
+      assert.equal(target.searchParams.get('language'), localeModule.segmentToLocale(segment))
       assert.equal(real.getAttribute('target'), '_blank'); assert.ok(real.rel.includes('sponsored'))
       assert.ok(doc.querySelector('[data-operator-cta="play-real"]').compareDocumentPosition(doc.querySelector('[data-game-controls]')) & 4)
       const outbound = await fetch(base + target.pathname + target.search, { redirect: 'manual' })
@@ -251,8 +256,15 @@ try {
       assert.equal(target.searchParams.get('category'), null)
       assert.equal(target.searchParams.get('game'), null)
       assert.equal(target.searchParams.get('placement'), 'originals_generic_operator')
+      assert.equal(target.searchParams.get('language'), localeModule.segmentToLocale(segment))
       assert.equal(doc.querySelector('[data-operator-cta-mode]')?.getAttribute('data-operator-cta-mode'), 'generic-brand')
       assert.doesNotMatch(doc.body.textContent, /Play Liva Mines at Betsson|Jogue Liva Mines na Betsson|This game is available at Betsson/i)
+      if (segment === 'en') {
+        assert.doesNotMatch(doc.querySelector('[data-operator-cta="play-real"]')?.textContent ?? '', /Conheça cassino|Visitar Betsson|Patrocinado|não aceita apostas nem depósitos|Divulgação de afiliados/)
+      }
+      if (segment === 'es-mx') {
+        assert.doesNotMatch(doc.querySelector('[data-operator-cta="play-real"]')?.textContent ?? '', /Conheça cassino|Visit Betsson|Sponsored|não aceita apostas nem depósitos|Divulgação de afiliados/)
+      }
       const outbound = await fetch(base + target.pathname + target.search, { redirect: 'manual' })
       assert.equal(outbound.status, 302)
       assert.equal(outbound.headers.get('location'), partner.affiliateUrl.BR)
@@ -268,6 +280,7 @@ try {
       const real = doc.querySelector('main a[href^="/go?"]'), target = new URL(real.href, base)
       assert.equal(target.searchParams.get('category'), 'crash')
       assert.equal(target.searchParams.get('game'), null)
+      assert.equal(target.searchParams.get('language'), localeModule.segmentToLocale(segment))
       assert.ok(doc.querySelector('[data-operator-cta="play-real"]').compareDocumentPosition(doc.querySelector('[data-game-controls]')) & 4)
       const outbound = await fetch(base + target.pathname + target.search, { redirect: 'manual' })
       assert.equal(outbound.status, 302)

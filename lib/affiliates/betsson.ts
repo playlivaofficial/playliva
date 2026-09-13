@@ -79,11 +79,24 @@ export const BETSSON_CREATIVES = {
   logo: BETSSON_LOGO_CREATIVE,
 } as const
 
-export function selectHomepageCreative(locale: Locale): BetssonCreative {
-  const pool = HOMEPAGE_CREATIVES.filter((creative) => creative.placements.includes(HOMEPAGE_BANNER_PLACEMENT))
+/**
+ * Prefer a creative whose `language` matches the UI locale. Fall back to an
+ * approved language-neutral mark. Never use a Portuguese promo banner for
+ * `en` or `es-MX`, even if it is the only banner in the pool.
+ */
+export function selectCreativeForLocale(
+  creatives: readonly BetssonCreative[],
+  locale: Locale,
+  placement: string = HOMEPAGE_BANNER_PLACEMENT,
+): BetssonCreative {
+  const pool = creatives.filter((creative) => creative.placements.includes(placement))
   return pool.find((creative) => creative.language === locale)
     ?? pool.find((creative) => creative.language === 'neutral')
     ?? BETSSON_LOGO_CREATIVE
+}
+
+export function selectHomepageCreative(locale: Locale): BetssonCreative {
+  return selectCreativeForLocale(HOMEPAGE_CREATIVES, locale)
 }
 
 /** Partner-issued NetRefer path key from an approved destination. Never invent IDs. */

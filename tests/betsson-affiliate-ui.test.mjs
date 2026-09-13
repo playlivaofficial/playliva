@@ -15,6 +15,7 @@ import countryModule from '../components/country-context.tsx'
 import dataModule from '../lib/data.ts'
 import i18nModule from '../lib/i18n.ts'
 import playRealModule from '../lib/originals/play-real.ts'
+import originalsCopyModule from '../lib/originals/copy.ts'
 import blackjackDef from '../lib/originals/blackjack/definition.ts'
 import capybaraDef from '../lib/originals/capybara/definition.ts'
 import crashDef from '../lib/originals/crash/definition.ts'
@@ -34,15 +35,18 @@ const cssHooks = registerHooks({ load(url, context, next) {
 const unwrap = module => module.default ?? module
 const bannerModule = unwrap(await import('../components/affiliates/betsson-home-banner.tsx'))
 const homeModule = unwrap(await import('../components/home/home-page-client.tsx'))
+const playRealCtaModule = unwrap(await import('../components/originals/play-real-cta.tsx'))
 cssHooks.deregister()
 
 const { resolveDestination } = affiliateModule
 const {
   BETSSON_CREATIVES, BETSSON_OPERATOR_SLUG, GENERIC_BRAND_MODE, GENERIC_OPERATOR_PLACEMENT,
-  HOMEPAGE_BANNER_PLACEMENT, getBetssonCampaigns, getBetssonHomepageBanner, getBetssonOperator,
-  netreferTrackingKey, resolveGenericBrandDestination, selectHomepageCreative,
+  HOMEPAGE_BANNER_PLACEMENT, HOMEPAGE_CREATIVES, getBetssonCampaigns, getBetssonHomepageBanner,
+  getBetssonOperator, netreferTrackingKey, resolveGenericBrandDestination, selectCreativeForLocale,
+  selectHomepageCreative,
 } = betssonModule
 const { getGenericApprovedOperatorCtas, getOriginalOperatorCtas, getPlayRealOptions } = playRealModule
+const { originalsCopy } = originalsCopyModule
 const { CountryProvider } = countryModule
 const { createTranslator } = i18nModule
 const partner = dataModule.getOperator(BETSSON_OPERATOR_SLUG)
@@ -75,6 +79,7 @@ test('approved Betsson campaign data stays centralized and matches the operator 
   assert.notEqual(campaigns.brand.destination, campaigns.liveCasino.destination)
   assert.equal(BETSSON_CREATIVES.logo.assetPath, '/operators/betsson.png')
   assert.equal(BETSSON_CREATIVES.logo.language, 'neutral')
+  assert.deepEqual(HOMEPAGE_CREATIVES.map(creative => creative.id), ['betsson-operator-logo'])
   assert.match(BETSSON_CREATIVES.logo.source, /language-neutral|Media Store/)
   assert.equal(createHash('sha256').update(JSON.stringify([dataModule.OPERATORS, dataModule.offersByCountry])).digest('hex'),
     'e35965d2d9de5afa7fffd6d32aadb14b5648abc5c4555020e0b2efac615819cf')
@@ -139,6 +144,33 @@ test('homepage banner destination is the brand campaign and preserves required t
   assert.equal(getBetssonHomepageBanner('BR', 'es-MX')?.href.includes('language=es-MX'), true)
 })
 
+test('locale-matched creatives win; Portuguese promo art never fills EN or ES-MX', () => {
+  const ptPromo = {
+    ...BETSSON_CREATIVES.logo,
+    id: 'fixture-pt-br-casino-banner',
+    kind: 'banner',
+    language: 'pt-BR',
+    assetPath: '/operators/betsson.png',
+    source: 'Test fixture only; not a shipped Media Store creative.',
+  }
+  const enBanner = { ...ptPromo, id: 'fixture-en-casino-banner', language: 'en' }
+  const esBanner = { ...ptPromo, id: 'fixture-es-mx-casino-banner', language: 'es-MX' }
+  const ptAndNeutral = [ptPromo, BETSSON_CREATIVES.logo]
+  assert.equal(selectCreativeForLocale(ptAndNeutral, 'pt-BR').id, ptPromo.id)
+  assert.equal(selectCreativeForLocale(ptAndNeutral, 'en').id, BETSSON_CREATIVES.logo.id)
+  assert.equal(selectCreativeForLocale(ptAndNeutral, 'en').language, 'neutral')
+  assert.equal(selectCreativeForLocale(ptAndNeutral, 'es-MX').language, 'neutral')
+  assert.notEqual(selectCreativeForLocale(ptAndNeutral, 'en').language, 'pt-BR')
+  assert.notEqual(selectCreativeForLocale(ptAndNeutral, 'es-MX').language, 'pt-BR')
+  const allMatched = [ptPromo, enBanner, esBanner, BETSSON_CREATIVES.logo]
+  assert.equal(selectCreativeForLocale(allMatched, 'pt-BR').id, ptPromo.id)
+  assert.equal(selectCreativeForLocale(allMatched, 'en').id, enBanner.id)
+  assert.equal(selectCreativeForLocale(allMatched, 'es-MX').id, esBanner.id)
+  assert.equal(selectHomepageCreative('en').language, 'neutral')
+  assert.equal(selectHomepageCreative('es-MX').language, 'neutral')
+  assert.equal(selectHomepageCreative('pt-BR').language, 'neutral')
+})
+
 test('generic operator CTA does not claim exact game availability and does not reuse another listing', () => {
   assert.deepEqual(getPlayRealOptions('BR', 'instant-games', 'pt-BR'), [])
   assert.equal(resolveDestination({ operatorSlug: partner.slug, country: 'BR', category: 'instant-games' }), null)
@@ -162,12 +194,17 @@ test('generic operator CTA does not claim exact game availability and does not r
     [minesConfig.LIVA_MINES, GENERIC_BRAND_MODE, null, null],
   ]
   for (const [game, mode, category, gameSlug] of originals) {
-    const options = getOriginalOperatorCtas(game, 'BR', 'pt-BR')
-    assert.equal(options[0].mode, mode, game.id)
-    const params = new URL(options[0].href, 'https://www.playliva.com').searchParams
-    assert.equal(params.get('category'), category)
-    assert.equal(params.get('game'), gameSlug)
-    assert.equal(getOriginalOperatorCtas(game, 'MX', 'es-MX').length, 0)
+    for (const [locale] of locales) {
+      const options = getOriginalOperatorCtas(game, 'BR', locale)
+      assert.equal(options[0].mode, mode, game.id)
+      const params = new URL(options[0].href, 'https://www.playliva.com').searchParams
+      assert.equal(params.get('category'), category)
+      assert.equal(params.get('game'), gameSlug)
+      assert.equal(params.get('language'), locale)
+      assert.equal(params.get('country'), 'BR')
+      assert.equal(getOriginalOperatorCtas(game, 'MX', locale).length, 0)
+      assert.equal(getOriginalOperatorCtas(game, 'PT', locale).length, 0)
+    }
   }
   assert.notEqual(getOriginalOperatorCtas(minesConfig.LIVA_MINES, 'BR', 'en')[0].href,
     getOriginalOperatorCtas(crashDef.ISLAND_CRASH, 'BR', 'en')[0].href)
@@ -229,6 +266,53 @@ test('PT-BR, EN and ES-MX render localized Betsson CTAs without English leakage'
         else delete globalThis[key]
       }
       delete globalThis.IS_REACT_ACT_ENVIRONMENT
+    }
+  }
+})
+
+test('verified Originals CTAs localize in EN, PT-BR and ES-MX without Portuguese promo copy', () => {
+  const games = [
+    [crashDef.ISLAND_CRASH, 'verified-category'],
+    [capybaraDef.CAPYBARA_GOLD, 'verified-category'],
+    [blackjackDef.LIVA_BLACKJACK, 'verified-game'],
+    [rouletteConfig.LIVA_ROULETTE, 'verified-game'],
+    [minesConfig.LIVA_MINES, GENERIC_BRAND_MODE],
+  ]
+  for (const [locale, segment] of locales) {
+    const t = createTranslator(locale)
+    const copy = originalsCopy(locale)
+    for (const [game, mode] of games) {
+      const options = getOriginalOperatorCtas(game, 'BR', locale)
+      assert.equal(options[0].mode, mode, game.id)
+      const markup = renderToStaticMarkup(wrap(locale, `/${segment}/play/${game.slug}`,
+        React.createElement(playRealCtaModule.PlayRealCTA, { game })))
+      const doc = new JSDOM(markup).window.document
+      const root = doc.querySelector('[data-operator-cta="play-real"]')
+      assert.ok(root, game.id)
+      assert.equal(root.getAttribute('data-operator-cta-mode'), mode)
+      assert.equal(root.querySelector('a[href^="/go?"]').getAttribute('href'), options[0].href)
+      assert.ok(root.textContent.includes(t('affiliate.sponsored')))
+      if (mode === GENERIC_BRAND_MODE) {
+        assert.equal(root.querySelector('[data-cta-mode="generic-brand"]').textContent, t('affiliate.visitNamed', { name: 'Betsson' }))
+        assert.ok(root.textContent.includes(t('affiliate.genericBoundary')))
+      } else {
+        assert.ok(root.querySelector('[data-cta-mode]').textContent.includes(copy.playReal))
+        assert.ok(root.querySelector('[data-cta-mode]').textContent.includes('Betsson'))
+        assert.doesNotMatch(root.textContent, forbiddenExactClaims)
+      }
+      if (locale === 'pt-BR') {
+        assert.doesNotMatch(root.textContent, /Visit Betsson|Play Real|Explore Betsson|Sponsored/)
+      }
+      if (locale === 'en') {
+        assert.doesNotMatch(root.textContent, portuguesePromo)
+        assert.doesNotMatch(root.textContent, /Patrocinado|Visitar Betsson|Jogar com Dinheiro Real|Jogue crash com dinheiro real|Divulgação de afiliados/)
+        assert.match(root.textContent, /Sponsored/)
+      }
+      if (locale === 'es-MX') {
+        assert.doesNotMatch(root.textContent, portuguesePromo)
+        assert.doesNotMatch(root.textContent, /Visit Betsson|Play Real|Explore Betsson|Sponsored|Conheça cassino|Jogar com Dinheiro Real|Divulgação de afiliados/)
+        assert.match(root.textContent, /Patrocinado/)
+      }
     }
   }
 })

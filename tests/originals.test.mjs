@@ -115,6 +115,7 @@ test('Play Real uses existing approved category/GEO links without mapping Origin
       assert.equal(query.get('game'), null)
       assert.equal(query.get('category'), category)
       assert.equal(query.get('country'), 'BR')
+      assert.equal(query.get('language'), locale)
       for (const analyticsAllowed of [false, true]) {
         assert.equal(affiliateModule.resolveDestination({ operatorSlug: query.get('operator'), category,
           country: 'BR', pageType: query.get('page'), placement: query.get('placement'), analyticsAllowed })?.url,
@@ -132,6 +133,7 @@ test('Play Real uses existing approved category/GEO links without mapping Origin
   const genericQuery = new URL(generic[0].href, 'https://site.example.invalid').searchParams
   assert.equal(genericQuery.get('category'), null)
   assert.equal(genericQuery.get('game'), null)
+  assert.equal(genericQuery.get('language'), 'en')
   assert.equal(genericQuery.get('placement'), 'originals_generic_operator')
   assert.equal(affiliateModule.resolveDestination({
     operatorSlug: genericQuery.get('operator'), country: 'BR', pageType: 'play',

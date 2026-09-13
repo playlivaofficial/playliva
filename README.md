@@ -125,6 +125,9 @@ blocks Vercel installs when its managed Node 24 release differs.
 URL locales are `/en`, `/pt-br` and `/es-mx`; selected market is independent.
 Affiliate redirects use `/go`, static operator eligibility and source data.
 Approved Betsson campaign/creative metadata lives in `lib/affiliates/betsson.ts`.
+Homepage banners prefer a locale-matched approved creative, otherwise the
+neutral operator logo plus localized CTA copy; Portuguese promotional artwork
+is not shown on EN or ES-MX pages. GEO still gates eligibility and destinations.
 The homepage banner and generic Originals CTA use the brand destination without
 claiming that a PlayLiva Original exists at Betsson. Category and verified-game
 CTAs stay on their existing eligibility paths. Required partner attribution is
