@@ -19,7 +19,7 @@ describe specific mechanics and distinguish similarly named variants.
 - Providers: Pragmatic Play 14, Play’n GO 6, Evolution 7, SmartSoft 2, SPRIBE 2.
 - All records have stable explicit IDs, slugs, localized EN/PT-BR/ES-MX
   summaries/overviews/mechanics, official evidence URLs, verification date,
-  related references and explicit fallback provenance.
+  related references and recorded artwork provenance.
 - No RTP, volatility, release-date, max-win, market popularity or ranking
   field has been invented. Stated feature numbers are documented by providers.
 - New records are deliberately separate from `lib/data.ts`. The original
@@ -39,18 +39,23 @@ describe specific mechanics and distinguish similarly named variants.
 
 ## Artwork and evidence gaps
 
-All 31 new titles use code-owned, typographic neutral covers differentiated by
-category. These are explicitly not official game art. The provenance status is
-`fallback`, rights status `pending-rights`, source `playliva-neutral`, checked
-2026-09-13. No third-party artwork was downloaded. Existing approved imagery
-continues through its existing rights allowlist and lazy image loading.
+A later catalog artwork recovery pass replaced the 31 typographic fallback
+covers with local WebP/AVIF derivatives of exact-title official or catalog
+key art. Provenance (source URL, provider, checksum, date) is recorded in
+`assets-source/catalog/covers/manifest.json`. Production pages serve only
+repository files under `/catalog/covers/`; remote images are not hotlinked.
+Artwork on a reference card does not imply operator, GEO or playable
+availability. Existing approved imagery for the original eleven titles
+continues through its existing rights allowlist.
 
-Play’n GO and Evolution expressly reserve graphic redistribution for written
-consent. No authenticated affiliate media portal was available. Public provider
-evidence is not evidence of operator availability. The older indexed Betsson BR
-Sugar Rush URL opened a general casino lobby during the browser audit, not an
-exact-title result. No new-title availability was verified, and all 31 records
-remain unverified for GEO/operator availability. No access controls were bypassed.
+Play’n GO and Evolution still reserve graphic redistribution for written
+consent; this pass stores publicly published official/catalog covers as local
+reference derivatives. No authenticated affiliate media portal was available.
+Public provider evidence is not evidence of operator availability. The older
+indexed Betsson BR Sugar Rush URL opened a general casino lobby during the
+browser audit, not an exact-title result. No new-title availability was
+verified, and all 31 records remain unverified for GEO/operator availability.
+No access controls were bypassed.
 
 ## Delivery and discovery
 

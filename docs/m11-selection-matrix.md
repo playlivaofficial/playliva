@@ -73,3 +73,9 @@ explicit sitemap entries only. Existing outbound logic, original game code,
 operator records and eligibility snapshots remain protected. The sitemap's
 M10 snapshot may change solely for these explicitly authorized additions, with
 an additional regression assertion preserving the complete M10 URL set.
+
+## Later artwork recovery (2026-09-13)
+
+A subsequent catalog pass replaced the import-time fallback covers with local
+exact-title derivatives. The table above records the original import state;
+current artwork provenance lives in `assets-source/catalog/covers/manifest.json`.

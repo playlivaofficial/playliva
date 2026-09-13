@@ -3,7 +3,7 @@
 Source of truth: https://github.com/playlivaofficial/playliva.
 
 [M11 provider reference catalog](docs/m11-provider-catalog.md) adds 31 sourced,
-localized factual game references with neutral covers, bounded discovery and
+localized factual game references with authentic catalog covers, bounded discovery and
 build-time integrity checks. New records do not extend operator availability
 or referral behavior; all five Originals remain unchanged.
 

@@ -1,3 +1,5 @@
+import { existsSync } from 'node:fs'
+import { join } from 'node:path'
 import { GAMES, CATEGORIES, COMPARISONS, GAME_LISTS, OPERATORS, offersByCountry } from '@/lib/data'
 import { getGameContent } from '@/lib/content'
 import { REFERENCE_GAMES } from './games'
@@ -5,6 +7,11 @@ import { PROVIDERS } from './providers'
 import { REFERENCE_COMPARISONS, REFERENCE_READING_LISTS } from './editorial'
 import { REFERENCE_PATHS } from './paths'
 import type { ReferenceGame } from './types'
+
+const ARTWORK_HOSTS = new Set(['bsw-dk1.pragmaticplay.net', 'www.pragmaticplay.com', 'static.wixstatic.com', 'games.evolution.com', 'cdn.prod.website-files.com', 'cdn2.softswiss.net'])
+const OFFICIAL_SOURCES = new Set(['pragmatic-play-official', 'playngo-official', 'evolution-official', 'smartsoft-official'])
+const CATALOG_SOURCES = new Set(['catalog-softswiss'])
+const publicRoot = join(process.cwd(), 'public')
 
 export function validateCatalog(games: ReferenceGame[] = REFERENCE_GAMES): string[] {
   const errors: string[] = []
@@ -20,6 +27,7 @@ export function validateCatalog(games: ReferenceGame[] = REFERENCE_GAMES): strin
   unique([...GAMES, ...games].map(game => game.slug), 'game slugs')
   unique(PROVIDERS.map(provider => provider.id), 'provider IDs')
   unique(REFERENCE_PATHS, 'sitemap reference paths')
+  const usedArtworkPaths = new Set<string>()
   for (const provider of PROVIDERS) for (const locale of locales) check(provider.overview[locale]?.trim(), `${provider.id}: missing ${locale} overview`)
   for (const game of games) {
     const label = game.slug || game.id
@@ -28,8 +36,8 @@ export function validateCatalog(games: ReferenceGame[] = REFERENCE_GAMES): strin
     check(game.title?.trim(), `${label}: missing title`)
     check(providers.has(game.providerId), `${label}: invalid provider`)
     check(categories.has(game.category), `${label}: invalid category`)
-    check(game.artwork?.status === 'fallback' && game.artwork?.source === 'playliva-neutral' && game.artwork?.sourceUrl === null && game.artwork?.rightsStatus === 'pending-rights', `${label}: missing or invalid artwork/provenance`)
     check(game.artwork?.verifiedAt === game.verifiedAt && /^\d{4}-\d{2}-\d{2}$/.test(game.verifiedAt), `${label}: missing verification timestamp`)
+    validateArtwork(game, check, usedArtworkPaths)
     check(game.availability?.status === 'unverified' && game.availability?.operatorEvidence?.length === 0, `${label}: unauthorized availability claim`)
     check(game.sources?.length, `${label}: missing official evidence`)
     for (const source of game.sources ?? []) {
@@ -79,4 +87,27 @@ export function validateCatalog(games: ReferenceGame[] = REFERENCE_GAMES): strin
   }
   for (const offer of offers) check(operatorIds.has(offer.operatorId), `${offer.id}: invalid operator reference`)
   return errors
+}
+
+function validateArtwork(game: ReferenceGame, check: (condition: unknown, message: string) => void, usedPaths: Set<string>) {
+  const label = game.slug || game.id
+  const art = game.artwork
+  if (!art) { check(false, `${label}: missing or invalid artwork/provenance`); return }
+  if (art.status === 'fallback') {
+    check(art.source === 'playliva-neutral' && art.sourceUrl === null && art.rightsStatus === 'pending-rights', `${label}: missing or invalid artwork/provenance`)
+    return
+  }
+  check((art.status === 'official' && OFFICIAL_SOURCES.has(art.source)) || (art.status === 'approved' && CATALOG_SOURCES.has(art.source)), `${label}: missing or invalid artwork/provenance`)
+  check(art.rightsStatus === 'approved' && typeof art.sourceUrl === 'string' && typeof art.assetPath === 'string', `${label}: missing or invalid artwork/provenance`)
+  try {
+    const url = new URL(art.sourceUrl)
+    check(url.protocol === 'https:' && ARTWORK_HOSTS.has(url.hostname), `${label}: missing or invalid artwork/provenance`)
+  } catch { check(false, `${label}: missing or invalid artwork/provenance`) }
+  check(art.assetPath === `/catalog/covers/${game.slug}.webp`, `${label}: missing or invalid artwork/provenance`)
+  check(art.width >= 300 && art.height >= 300, `${label}: missing or invalid artwork/provenance`)
+  const webp = join(publicRoot, art.assetPath.slice(1))
+  const avif = join(publicRoot, art.assetPath.replace(/\.webp$/, '.avif').slice(1))
+  check(existsSync(webp) && existsSync(avif), `${label}: missing or invalid artwork/provenance`)
+  check(!usedPaths.has(art.assetPath), `${label}: missing or invalid artwork/provenance`)
+  usedPaths.add(art.assetPath)
 }

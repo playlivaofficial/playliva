@@ -8,6 +8,35 @@ export interface ReferenceCopy {
   howItWorks: string
   features: string[]
 }
+export type ArtworkSource =
+  | 'playliva-neutral'
+  | 'pragmatic-play-official'
+  | 'playngo-official'
+  | 'evolution-official'
+  | 'smartsoft-official'
+  | 'catalog-softswiss'
+
+export interface FallbackArtwork {
+  status: 'fallback'
+  source: 'playliva-neutral'
+  sourceUrl: null
+  rightsStatus: 'pending-rights'
+  verifiedAt: string
+}
+
+export interface SourcedArtwork {
+  status: 'official' | 'approved'
+  source: Exclude<ArtworkSource, 'playliva-neutral'>
+  sourceUrl: string
+  rightsStatus: 'approved'
+  verifiedAt: string
+  assetPath: string
+  width: number
+  height: number
+}
+
+export type CatalogArtworkRecord = FallbackArtwork | SourcedArtwork
+
 export interface ReferenceGame {
   id: string
   slug: string
@@ -18,13 +47,7 @@ export interface ReferenceGame {
   content: Localized<ReferenceCopy>
   sources: string[]
   verifiedAt: string
-  artwork: {
-    status: 'fallback'
-    source: 'playliva-neutral'
-    sourceUrl: null
-    rightsStatus: 'pending-rights'
-    verifiedAt: string
-  }
+  artwork: CatalogArtworkRecord
   // Documentary evidence only; deliberately NOT affiliate eligibility inputs.
   availability: { status: 'unverified'; market: 'BR'; operatorEvidence: never[] }
   relatedSlugs: string[]

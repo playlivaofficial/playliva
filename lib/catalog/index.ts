@@ -17,7 +17,7 @@ export function referenceSummary(game: ReferenceGame, locale: Locale): CatalogSu
   const categoryLabel = getCategoryName(game.category, locale)
   const summary = game.content[locale].summary
   return { id: game.id, slug: game.slug, title: game.title, provider, providerId: game.providerId, category: game.category,
-    categoryLabel, summary, image: null, artworkLabel: catalogCopy(locale).fallback, reference: true,
+    categoryLabel, summary, image: game.artwork.status === 'fallback' ? null : game.artwork.assetPath, artworkLabel: catalogCopy(locale).fallback, reference: true,
     searchText: normalizeSearch([game.title, provider, game.category, categoryLabel, summary, ...game.tags].join(' ')),
   }
 }

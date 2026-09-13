@@ -3,6 +3,7 @@
 // No availability, RTP, ranking or artwork permission is inferred from a title.
 import type { ReferenceGame, ProviderId, ReferenceCopy } from './types'
 import type { CategorySlug } from '@/lib/types'
+import { SOURCED_ARTWORK } from './artwork-records'
 
 const verifiedAt = '2026-09-13'
 type CopyInput = [summary: string, overview: string, howItWorks: string, features: string]
@@ -18,7 +19,7 @@ const pp = (path: string) => `https://www.pragmaticplay.com/en/games/${path}/`
 const ngo = (path: string) => `https://www.playngo.com/${path}`
 const evo = (path: string) => `https://games.evolution.com/live-casino/${path}/`
 
-export const REFERENCE_GAMES: ReferenceGame[] = [
+const REFERENCE_GAME_RECORDS: ReferenceGame[] = [
   game('m11-01', 'fruit-party', 'Fruit Party', 'pragmatic-play', 'slots', [pp('fruit-party-slot')], ['clusters', 'tumbles', 'fruit'], ['sugar-rush', 'reactoonz'],
     ['Fruit clusters with randomly assigned symbol multipliers.', 'Fruit Party fills a seven-by-seven grid with fruit. Its distinguishing feature is the multiplier attached to individual symbols, rather than to a fixed payline.', 'Winning clusters clear from the grid. Random multipliers can combine within a cluster; the free-spins feature changes the multiplier possibilities.', 'Connected clusters|Cascading symbols|Symbol multipliers'],
     ['Grupos de frutas com multiplicadores aleatórios nos símbolos.', 'Fruit Party usa uma grade de sete por sete. O diferencial está no multiplicador ligado ao símbolo, em vez de uma linha fixa de pagamento.', 'Os grupos vencedores saem da grade. Multiplicadores aleatórios podem se combinar no mesmo grupo; as rodadas grátis mudam as possibilidades de multiplicação.', 'Grupos conectados|Símbolos em cascata|Multiplicadores nos símbolos'],
@@ -144,3 +145,8 @@ export const REFERENCE_GAMES: ReferenceGame[] = [
     ['Jogo de sorteio com trinta e seis números, diferente de Keno 80 da SPRIBE.', 'Este Keno usa um campo numerado, não a revelação progressiva de Mines. Identificar o provedor e a edição é importante: jogos com o mesmo nome podem usar campos diferentes.', 'A seleção pode conter até dez dos trinta e seis números. O resultado depende da quantidade de acertos no sorteio e do tamanho da seleção.', 'Campo de trinta e seis números|Estrutura de seleção e sorteio|Resultado pela contagem de acertos'],
     ['Juego de sorteo con treinta y seis números, distinto de Keno 80 de SPRIBE.', 'Este Keno utiliza un campo numerado, no la revelación progresiva de Mines. Identificar proveedor y edición importa: juegos con el mismo nombre pueden usar campos distintos.', 'La selección puede contener hasta diez de los treinta y seis números. El resultado depende de cuántos coincidan con el sorteo y del tamaño de la selección.', 'Campo de treinta y seis números|Estructura de selección y sorteo|Resultado por cantidad de aciertos']),
 ]
+
+export const REFERENCE_GAMES: ReferenceGame[] = REFERENCE_GAME_RECORDS.map(game => {
+  const artwork = SOURCED_ARTWORK[game.slug]
+  return artwork ? { ...game, artwork } : game
+})
