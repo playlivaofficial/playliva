@@ -30,11 +30,12 @@ test('title branding is applied once; indexability is explicit for known pages',
   assert.equal(metadata.robots.googleBot.index, false)
 })
 
-test('mismatched Speed Blackjack art is withheld without renaming the generic game', () => {
+test('generic Blackjack Live uses Evolution Live Blackjack art and withholds the Speed tile', () => {
   const game = getGame('blackjack-live')
   assert.equal(game.title, 'Blackjack Live')
-  assert.equal(hasApprovedArtwork(game), false)
-  assert.equal(getGameOgImage(game), undefined)
+  assert.equal(hasApprovedArtwork(game), true)
+  assert.deepEqual(getGameOgImage(game), ['/games/blackjack-live.webp'])
+  assert.notEqual(game.image, '/games/blackjack-live.jpg')
 })
 
 test('contact produces only an encoded email draft using the existing address', () => {

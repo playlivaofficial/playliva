@@ -340,7 +340,7 @@ try {
       }
     }
     if (doc.querySelector('script[src*="googletagmanager"], script[src*="insights/script"]')) failures.push(`${path}: analytics script before consent`)
-    if (path.includes('blackjack-live') && doc.querySelector('img[src*="blackjack-live"]')) failures.push(`${path}: mismatched artwork`)
+    if (path.includes('blackjack-live') && doc.querySelector('img[src*="blackjack-live.jpg"]')) failures.push(`${path}: mismatched Speed Blackjack artwork`)
     const metadataText = [...doc.querySelectorAll('meta[name="description"], img[alt]')].map((node) => node.content ?? node.alt).join(' ')
     if (doc.querySelector('[data-reference-detail]')) {
       const game = catalogModule.getReferenceGame(routePath.split('/').pop())

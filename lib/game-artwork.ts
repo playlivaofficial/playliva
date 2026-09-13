@@ -31,8 +31,7 @@ const APPROVED_ARTWORK: Record<string, { src: string; alt: string }> = {
   g8: { src: '/games/crazy-time.webp', alt: 'Crazy Time by Evolution' },
   g10: { src: '/games/plinko.jpeg', alt: 'Plinko by Spribe' },
   g11: { src: '/games/big-bass.png', alt: 'Big Bass Bonanza by Pragmatic Play' },
-  // g12's supplied Speed Blackjack tile is withheld until it is matched to
-  // the generic Blackjack Live entry. Keep the existing fallback artwork.
+  g12: { src: '/games/blackjack-live.webp', alt: 'Blackjack Live by Evolution' },
 }
 
 /**

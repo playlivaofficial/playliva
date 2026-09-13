@@ -92,6 +92,10 @@ test('M11: lightweight projections have only one locale and omit full editorial/
       if (game.reference) {
         assert.equal(game.image, `/catalog/covers/${game.slug}.webp`)
       }
+      if (game.slug === 'blackjack-live') {
+        assert.equal(game.reference, false)
+        assert.equal(game.image, '/games/blackjack-live.webp')
+      }
     }
     assert.ok(JSON.stringify(summaries).length < 45_000, 'single-language directory payload budget')
   }

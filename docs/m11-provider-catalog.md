@@ -46,7 +46,10 @@ key art. Provenance (source URL, provider, checksum, date) is recorded in
 repository files under `/catalog/covers/`; remote images are not hotlinked.
 Artwork on a reference card does not imply operator, GEO or playable
 availability. Existing approved imagery for the original eleven titles
-continues through its existing rights allowlist.
+continues through its existing rights allowlist. The leftover generic Blackjack
+Live catalog card now uses Evolution's official Live Blackjack product photo
+(pid-11); Speed Blackjack Live, Blackjack Lobby, Infinite Blackjack and other
+named variants were not substituted.
 
 Play’n GO and Evolution still reserve graphic redistribution for written
 consent; this pass stores publicly published official/catalog covers as local
