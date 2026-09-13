@@ -2,6 +2,7 @@ import type { Locale } from '@/lib/types'
 
 const COPY = {
   en: {
+    directoryIntro: 'Browse game formats, providers and documented mechanics. Catalog inclusion alone does not establish availability in your market.',
     reference: 'Game reference', catalog: 'More provider game references', catalogIntro: 'Documented game mechanics, grouped by provider and format. These entries do not confirm operator or market availability.',
     providers: 'Providers', providersIntro: 'Browse the providers represented in this reference collection. Counts describe PlayLiva’s index, not each provider’s complete portfolio.', allProviders: 'All providers', provider: 'Provider',
     category: 'Category', all: 'All categories', search: 'Search title, provider or category', clear: 'Clear filters', empty: 'No games match these filters.', results: 'games found', previous: 'Previous', next: 'Next', page: 'Page', of: 'of', sort: 'Title A–Z',
@@ -13,6 +14,7 @@ const COPY = {
     back: 'All game references', catalogCount: 'games indexed', home: 'Home', games: 'Games', details: 'Mechanics and features', collection: 'In this collection', providerNote: 'Only games currently documented by PlayLiva appear here. Inclusion is not a claim of distribution in Brazil or Mexico.',
   },
   'pt-BR': {
+    directoryIntro: 'Explore formatos, provedores e mecânicas documentadas. A presença no catálogo, por si só, não comprova disponibilidade no seu mercado.',
     reference: 'Ficha do jogo', catalog: 'Mais fichas de jogos de provedores', catalogIntro: 'Mecânicas documentadas, organizadas por provedor e formato. Estas fichas não confirmam disponibilidade em operadores ou mercados.',
     providers: 'Provedores', providersIntro: 'Conheça os provedores representados nesta coleção de fichas. As quantidades se referem ao índice da PlayLiva, não ao catálogo completo de cada empresa.', allProviders: 'Todos os provedores', provider: 'Provedor',
     category: 'Categoria', all: 'Todas as categorias', search: 'Buscar título, provedor ou categoria', clear: 'Limpar filtros', empty: 'Nenhum jogo corresponde a estes filtros.', results: 'jogos encontrados', previous: 'Anterior', next: 'Próxima', page: 'Página', of: 'de', sort: 'Título A–Z',
@@ -24,6 +26,7 @@ const COPY = {
     back: 'Todas as fichas de jogos', catalogCount: 'jogos no índice', home: 'Início', games: 'Jogos', details: 'Mecânicas e recursos', collection: 'Nesta coleção', providerNote: 'Esta página reúne apenas jogos documentados pela PlayLiva. A inclusão não comprova distribuição no Brasil ou no México.',
   },
   'es-MX': {
+    directoryIntro: 'Explora formatos, proveedores y mecánicas documentadas. Aparecer en el catálogo, por sí solo, no demuestra disponibilidad en tu mercado.',
     reference: 'Ficha del juego', catalog: 'Más fichas de juegos de proveedores', catalogIntro: 'Mecánicas documentadas, organizadas por proveedor y formato. Estas fichas no confirman disponibilidad en operadores o mercados.',
     providers: 'Proveedores', providersIntro: 'Conoce los proveedores representados en esta colección de fichas. Las cantidades corresponden al índice de PlayLiva, no al catálogo completo de cada empresa.', allProviders: 'Todos los proveedores', provider: 'Proveedor',
     category: 'Categoría', all: 'Todas las categorías', search: 'Buscar título, proveedor o categoría', clear: 'Limpiar filtros', empty: 'Ningún juego coincide con estos filtros.', results: 'juegos encontrados', previous: 'Anterior', next: 'Siguiente', page: 'Página', of: 'de', sort: 'Título A–Z',

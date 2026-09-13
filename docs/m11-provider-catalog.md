@@ -92,9 +92,59 @@ below are observed transferred resources, not whole-site asset sizes.
 
 ## Verification status
 
-Implementation checkpoint under verification. Final responsive screenshots,
-after measurements, hosted CI and deployment evidence are recorded after the
-corresponding checks complete; none are implied by a local build.
+Stable implementation checkpoint: `6c1b10066eef8adeedf3964a6cfea3d7f2fa5f71`.
+The subsequent browsing correction clarifies the directory introduction and
+returns keyboard focus/scroll position to the first result after pagination.
+The focused result container starts about 80px below the viewport top, clear
+of the fixed header, verified at 320×720.
+
+Local gates: frozen install, lint (three baseline warnings), typecheck, **217
+tests**, production build with integrity guard, **387-route** crawl plus locale
+404/outbound probes, and `git diff --check` passed. The crawl includes 93 probes
+confirming new game availability pages remain 404, and nine probes for uncurated
+Games Like/comparison and unknown-provider routes. No old test was removed.
+
+Responsive browser QA: **52 page/viewport combinations**, 13 PT-BR page types
+at 320×720, 360×800, 390×844 and 1440×1000. Pages: homepage, Games, Slots, Crash,
+Live Casino, Instant Games, Sugar Rush, Bac Bo, Balloon, SPRIBE Keno, Play’n GO
+provider, Games Like Reactoonz, Lightning Baccarat vs Speed Baccarat.
+No document-width overflow or completed broken-image loads were found. Visual
+screenshots inspect compact paginated cards, the 320px comparison, 390px article
+and provider cards, and desktop article/comparison layouts. Search for Sugar
+Rush returns the two intended variants; applying Evolution simultaneously
+shows the clear empty state. Pragmatic pagination reaches the six final results
+with keyboard focus and the first result visible. All five homepage Originals
+remain present and each category retains its intended Original block.
+
+Screenshots are maintained as external release evidence, not deployed assets:
+`m11-local-games-320.png`, `m11-local-comparison-320.png`,
+`m11-local-detail-390.png`, `m11-local-provider-390.png`,
+`m11-local-comparison-desktop.png`, `m11-local-detail-desktop.png`.
+
+## M11 after measurements
+
+Same local probe and viewport as the M10 before table; no throttling. Network,
+font timing and device scheduling make these paint results noisy proxies.
+
+| Page (PT-BR) | JS gzip bytes | Change | CSS gzip bytes | Image bytes | LCP proxy ms | CLS proxy |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Homepage | 239847 | +563 (+0.24%) | 17889 | 297414 | 460 | 0 |
+| Games | 211470 | -12684 (-5.66%) | 17889 | 571655 | 356 | 0 |
+| Slots | 251242 | +12701 (+5.32%) | 17889 | 560604 | 492 | 0 |
+| Live Casino | 251242 | +12701 (+5.32%) | 17889 | 147135 | 472 | 0 |
+| Aviator detail | 234413 | +12750 (+5.75%) | 17889 | 422909 | 1024 | 0 |
+| Sugar Rush reference (new) | 234413 | New route | 17889 | 55250 | 304 | 0 |
+
+CSS grows by 801 compressed bytes. Category/detail JavaScript grows by about
+12.7 KB compressed for the shared reference UI, while the directory shrinks.
+No full localized articles or provenance registry is sent in the directory's
+summary projection. No new bitmap, video, GLB or provider-demo payload is added.
+The observed image budget includes existing shell/discovery resources; neutral
+reference covers themselves require no image transfers.
+
+Hosted CI, final main and Vercel Production are verified separately in the
+external release report. Local passes and a pushed feature checkpoint alone
+are not a release-completion claim.
 
 Pinned tools: Node 24.20.0 / pnpm 10.30.3. Existing warning baseline: three lint
 warnings, ignored dependency build scripts and Next middleware deprecation.

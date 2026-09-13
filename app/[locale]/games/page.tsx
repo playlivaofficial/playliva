@@ -3,6 +3,7 @@ import { Section } from '@/components/section'
 import { CatalogExplorer } from '@/components/catalog/catalog-explorer'
 import { catalogSummaries } from '@/lib/catalog'
 import { catalogLocale } from '@/lib/catalog/metadata'
+import { catalogCopy } from '@/lib/catalog/copy'
 import { GamesPageHero } from '@/components/games-page-hero'
 import { pageMetadata } from '@/lib/seo'
 import {
@@ -24,7 +25,7 @@ export async function generateMetadata({
   const t = createTranslator(locale)
   return pageMetadata({
     title: t('seo.gamesPageTitle'),
-    description: t('seo.gamesPageDescription'),
+    description: catalogCopy(locale).directoryIntro,
     path: '/games',
     localeSegment,
   })
