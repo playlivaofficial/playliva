@@ -22,6 +22,7 @@ import { Button } from '@/components/ui/button'
 import { track } from '@/lib/tracking'
 import type { Game } from '@/lib/types'
 import { discoveryCategory } from '@/lib/product-discovery'
+import { ContentCard } from '@/components/content-card'
 
 export function GamesLikeView({ game }: { game: Game }) {
   const { countryCode, t, locale } = useCountry()
@@ -68,7 +69,7 @@ export function GamesLikeView({ game }: { game: Game }) {
 
       {/* Why players like X */}
       <Section className="py-10">
-        <div className="rounded-2xl border border-border bg-card p-6 sm:p-8">
+        <ContentCard tone="guide">
           <div className="flex items-center gap-2 text-primary">
             <Sparkles className="size-5" />
             <h2 className="font-display text-xl font-bold text-foreground">
@@ -95,7 +96,7 @@ export function GamesLikeView({ game }: { game: Game }) {
               {t('like.allCategory', { category: categoryName })}
             </Button>
           </div>
-        </div>
+        </ContentCard>
       </Section>
 
       {/* Alternatives */}
@@ -118,14 +119,14 @@ export function GamesLikeView({ game }: { game: Game }) {
           <SectionHeading title={t('like.alternativesDetailTitle')} />
           <div className="space-y-6">
             {alternativeDetails.map(({ game: alt, note, comparison }) => (
-              <div
+              <ContentCard
                 key={alt.id}
-                className="flex flex-col gap-5 rounded-2xl border border-border bg-card p-6 sm:flex-row sm:items-start"
+                className="flex flex-col gap-5 sm:flex-row sm:items-start"
               >
                 <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden rounded-xl border border-border sm:w-48">
                   <GameArtwork game={alt} sizes="192px" compact />
                 </div>
-                <div className="flex-1">
+                <div className="min-w-0 flex-1">
                   <h2 className="font-display text-xl font-bold text-foreground">
                     {alt.title}
                   </h2>
@@ -151,7 +152,7 @@ export function GamesLikeView({ game }: { game: Game }) {
                     )}
                   </div>
                 </div>
-              </div>
+              </ContentCard>
             ))}
           </div>
         </Section>

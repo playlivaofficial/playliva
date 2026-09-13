@@ -11,6 +11,7 @@ import { useCountry } from '@/components/country-context'
 import type { CategorySlug } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import { discoveryCategory, DISCOVERY_ORDER } from '@/lib/product-discovery'
+import styles from '@/components/editorial-design.module.css'
 
 type Filter = 'all' | CategorySlug
 type Sort = 'popular' | 'new' | 'az'
@@ -53,8 +54,8 @@ export function GamesExplorer() {
 
   return (
     <div>
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex flex-wrap gap-2">
+      <div className={`flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between ${styles.catalogTools}`}>
+        <div className={styles.catalogFilters} role="group" aria-label={t('label.category')}>
           <FilterChip active={filter === 'all'} onClick={() => setFilter('all')}>
             {t('games.all')}
           </FilterChip>
@@ -70,7 +71,7 @@ export function GamesExplorer() {
             </FilterChip>
           ))}
         </div>
-        <div className="flex items-center gap-3">
+        <div className="order-first flex items-center gap-3 lg:order-last">
           <div className="relative flex-1 lg:w-72">
             <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
@@ -79,7 +80,7 @@ export function GamesExplorer() {
               onChange={(e) => setQuery(e.target.value)}
               placeholder={t('games.searchPlaceholder')}
               aria-label={t('games.searchPlaceholder')}
-              className="pl-9"
+              className={`pl-9 ${styles.catalogSearch}`}
             />
           </div>
         </div>
@@ -115,7 +116,7 @@ export function GamesExplorer() {
           ))}
         </div>
       ) : (
-        <div className="mt-12 flex flex-col items-center gap-4 text-center">
+        <div className={`mt-8 flex flex-col items-center gap-4 text-center ${styles.empty}`}>
           <p className="text-muted-foreground">{t('games.empty')}</p>
           <Button
             variant="outline"

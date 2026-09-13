@@ -32,7 +32,7 @@ export default function GamesPage() {
   return (
     <>
       <GamesPageHero />
-      <Section>
+      <Section className="py-8 sm:py-12">
         <GamesExplorer />
       </Section>
     </>

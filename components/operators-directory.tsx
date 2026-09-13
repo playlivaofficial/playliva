@@ -58,7 +58,7 @@ export function OperatorsDirectory() {
               onClick={() => setFilter(f.key)}
               aria-pressed={filter === f.key}
               className={cn(
-                'rounded-full border px-4 py-1.5 text-sm font-medium transition-colors',
+                'min-h-11 rounded-xl border px-4 py-1.5 text-sm font-medium transition-colors',
                 filter === f.key
                   ? 'border-primary bg-primary/15 text-foreground'
                   : 'border-border text-muted-foreground hover:border-primary/40 hover:text-foreground',
@@ -76,7 +76,7 @@ export function OperatorsDirectory() {
             onChange={(e) =>
               setCountryFilter(e.target.value as CountryCode | 'all')
             }
-            className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="min-h-11 max-w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <option value="all">{t('operators.allCountries')}</option>
             {PUBLIC_COUNTRIES.map((c) => (
@@ -90,7 +90,7 @@ export function OperatorsDirectory() {
 
       {operators.length > 0 ? (
         <>
-          <p className="mt-6 text-sm text-muted-foreground">
+          <p className="mt-6 text-sm text-muted-foreground" role="status">
             {t('operators.count', { count: String(operators.length) })}
           </p>
           <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

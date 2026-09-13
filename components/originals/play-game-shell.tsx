@@ -17,7 +17,7 @@ function subscribeFullscreen(listener: () => void) {
   return () => document.removeEventListener('fullscreenchange', listener)
 }
 
-/** Composed only by a future real game route; children must be an implemented viewport. */
+/** Shared by the five implemented Originals; game engines remain route-isolated. */
 export function PlayGameShell({ game, children, controls, roundActive = false, compact = false }: {
   game: OriginalGameDefinition
   children: ReactNode

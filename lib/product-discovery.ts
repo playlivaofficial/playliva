@@ -26,6 +26,8 @@ const en = {
   lobbyBack: 'All Originals', settings: 'Session & activity', noLiveDealer: 'Free-play demo · No live dealer',
   blackjackContext: 'Explore blackjack in Live Casino. This separate PlayLiva demo uses an automated dealer and virtual credits, not a live dealer.',
   artworkPending: 'Artwork pending approval.', skipContent: 'Skip to content',
+  onPage: 'In this guide', overview: 'Overview', details: 'Key facts', related: 'Similar games',
+  desktop: 'Computer', mobile: 'Phone', tablet: 'Tablet',
 }
 type Copy = { [K in keyof typeof en]: string }
 const COPY: Record<Locale, Copy> = {
@@ -50,6 +52,8 @@ const COPY: Record<Locale, Copy> = {
     lobbyBack: 'Todos os Originals', settings: 'Sessão e atividade', noLiveDealer: 'Demo grátis · Sem croupier ao vivo',
     blackjackContext: 'Conheça blackjack na área Cassino ao Vivo. Este demo separado do PlayLiva tem uma mesa automatizada e créditos virtuais, sem croupier ao vivo.',
     artworkPending: 'Ilustração aguardando aprovação.', skipContent: 'Pular para o conteúdo',
+    onPage: 'Neste guia', overview: 'Visão geral', details: 'Informações principais', related: 'Jogos parecidos',
+    desktop: 'Computador', mobile: 'Celular', tablet: 'Tablet',
   },
   'es-MX': {
     eyebrow: 'Tu próximo juego empieza aquí', heroLead: 'Descubre tu', heroAccent: 'próxima aventura.',
@@ -71,6 +75,8 @@ const COPY: Record<Locale, Copy> = {
     lobbyBack: 'Todos los Originals', settings: 'Sesión y actividad', noLiveDealer: 'Demo gratis · Sin crupier en vivo',
     blackjackContext: 'Explora blackjack en Casino en Vivo. Este demo independiente de PlayLiva usa un crupier automatizado y créditos virtuales, no un crupier en vivo.',
     artworkPending: 'Ilustración pendiente de aprobación.', skipContent: 'Saltar al contenido',
+    onPage: 'En esta guía', overview: 'Resumen', details: 'Datos principales', related: 'Juegos similares',
+    desktop: 'Computadora', mobile: 'Celular', tablet: 'Tablet',
   },
 }
 export const productCopy = (locale: Locale): Copy => COPY[locale]

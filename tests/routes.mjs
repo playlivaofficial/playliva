@@ -262,6 +262,11 @@ try {
     if (doc.querySelector('script[src*="googletagmanager"], script[src*="insights/script"]')) failures.push(`${path}: analytics script before consent`)
     if (path.includes('blackjack-live') && doc.querySelector('img[src*="blackjack-live"]')) failures.push(`${path}: mismatched artwork`)
     const metadataText = [...doc.querySelectorAll('meta[name="description"], img[alt]')].map((node) => node.content ?? node.alt).join(' ')
+    if (routePath.startsWith('/games/') && doc.querySelector('[data-provider-detail]')) {
+      assert.ok(doc.querySelector('[data-provider-hero-art]'), `${path}: provider artwork remains part of identity`)
+      for (const anchor of doc.querySelectorAll('nav a[href^="#"]')) assert.ok(doc.querySelector(anchor.getAttribute('href')), `${path}: guide anchor target`)
+    }
+    assert.doesNotMatch(doc.querySelector('footer')?.textContent ?? '', /\uFFFD/, `${path}: footer encoding`)
     doc.querySelectorAll('script,style').forEach((node) => node.remove())
     const text = `${doc.title} ${metadataText} ${doc.body.textContent}`
     const placeholders = text.match(/\{[A-Za-z][A-Za-z0-9_]*\}/g)

@@ -37,7 +37,9 @@ import { Button } from '@/components/ui/button'
 import { track } from '@/lib/tracking'
 import type { Game } from '@/lib/types'
 
-import { discoveryCategory } from '@/lib/product-discovery'
+import { discoveryCategory, productCopy } from '@/lib/product-discovery'
+import { ContentCard } from '@/components/content-card'
+import styles from '@/components/editorial-design.module.css'
 
 export function GameDetailView({ game }: { game: Game }) {
   const { countryCode, country, t, locale } = useCountry()
@@ -45,6 +47,8 @@ export function GameDetailView({ game }: { game: Game }) {
   const categoryName = getCategoryName(visibleCategory, locale)
   const marketName = getCountryName(countryCode, locale)
   const content = getGameContent(game, locale)
+  const copy = productCopy(locale)
+  const deviceNames: Record<string, string> = { Desktop: copy.desktop, Mobile: copy.mobile, Tablet: copy.tablet }
 
   const operators = getOperatorsForGame(game, countryCode)
   const related = getRelatedGames(game, undefined, 4)
@@ -65,8 +69,8 @@ export function GameDetailView({ game }: { game: Game }) {
   const info: { label: string; value: string }[] = [
     { label: t('label.category'), value: categoryName },
     { label: t('label.provider'), value: game.provider },
-    { label: t('label.gameType'), value: game.gameType },
-    { label: t('label.devices'), value: game.deviceSupport.join(', ') },
+    { label: t('label.gameType'), value: content.gameType },
+    { label: t('label.devices'), value: game.deviceSupport.map(device => deviceNames[device] ?? device).join(', ') },
     {
       label: t('label.markets'),
       value: t('game.marketsSupported', { count: publicMarkets.length }),
@@ -76,15 +80,10 @@ export function GameDetailView({ game }: { game: Game }) {
   return (
     <div>
       {/* Hero */}
-      <section className="relative overflow-hidden border-b border-border bg-grid">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 -top-24 mx-auto h-64 max-w-3xl rounded-full bg-primary/20 blur-[100px]"
-        />
-        <div className="relative mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 lg:grid-cols-2 lg:items-center lg:gap-12 lg:px-8 lg:py-16">
-          <div>
+      <section className={styles.detailHero} data-provider-detail={game.slug}>
+        <div className={styles.detailInner}>
+          <div className={styles.detailTrail}>
             <Breadcrumbs
-              className="mb-4"
               items={[
                 { label: t('nav.home'), href: '/' },
                 { label: categoryName, href: `/${visibleCategory}` },
@@ -93,32 +92,43 @@ export function GameDetailView({ game }: { game: Game }) {
             />
             <LocaleLink
               href="/games"
-              className="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              className={styles.backLink}
             >
               <ArrowLeft className="size-4" />
               {t('cta.backToGames')}
             </LocaleLink>
-            <div className="flex items-center gap-2">
+          </div>
+          <div className={styles.identity}>
+            <div className={styles.identityLabels}>
               <LocaleLink
                 href={`/${visibleCategory}`}
-                className="rounded-full bg-primary/15 px-3 py-1 text-xs font-semibold text-primary hover:bg-primary/25"
               >
                 {categoryName}
               </LocaleLink>
-              <span className="rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground">
+              <span>
                 {t(`label.${game.tag.toLowerCase()}`)}
               </span>
             </div>
-            <h1 className="mt-4 text-balance font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+            <h1>
               {content.seo?.game?.h1 ?? game.title}
             </h1>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p>
               {t('game.byProvider', { provider: game.provider })}
             </p>
-            <p className="mt-4 max-w-xl text-pretty text-lg leading-relaxed text-muted-foreground">
+          </div>
+          <div className={styles.detailArt} data-provider-hero-art>
+            <GameArtwork
+              game={game}
+              priority
+              compact
+              sizes="(max-width: 359px) 96px, (max-width: 639px) 112px, (max-width: 1023px) 220px, 560px"
+            />
+          </div>
+          <div className={styles.detailSummary}>
+            <p>
               {content.description}
             </p>
-            <div className="mt-8 flex flex-wrap items-center gap-3">
+            <div className={styles.detailActions}>
               <Button size="lg" render={<a href="#where-to-play" />}>
                 {t('cta.seeWhereToPlay')}
               </Button>
@@ -133,20 +143,20 @@ export function GameDetailView({ game }: { game: Game }) {
             <ResponsibleNotice className="mt-6" />
           </div>
 
-          <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-border glow-primary">
-            <GameArtwork
-              game={game}
-              priority
-              sizes="(max-width: 1024px) 100vw, 50vw"
-            />
-          </div>
         </div>
       </section>
 
+      <nav className={styles.contents} aria-label={copy.onPage}>
+        <span>{copy.onPage}</span>
+        <a href="#overview">{copy.overview}</a>
+        <a href="#key-facts">{copy.details}</a>
+        {related.length > 0 && <a href="#similar-games">{copy.related}</a>}
+      </nav>
+
       {/* About + How it works */}
-      <Section>
+      <Section id="overview">
         <div className="grid gap-8 lg:grid-cols-2">
-          <div className="rounded-2xl border border-border bg-card p-6">
+          <ContentCard>
             <div className="flex items-center gap-2 text-primary">
               <Gamepad2 className="size-5" />
               <h2 className="font-display text-xl font-bold text-foreground">
@@ -161,9 +171,9 @@ export function GameDetailView({ game }: { game: Game }) {
             <p className="mt-3 leading-relaxed text-muted-foreground">
               {t('game.ownershipNote', { game: game.title })}
             </p>
-          </div>
+          </ContentCard>
 
-          <div className="rounded-2xl border border-border bg-card p-6">
+          <ContentCard tone="guide">
             <div className="flex items-center gap-2 text-primary">
               <ListChecks className="size-5" />
               <h2 className="font-display text-xl font-bold text-foreground">
@@ -187,11 +197,11 @@ export function GameDetailView({ game }: { game: Game }) {
             <p className="mt-4 text-xs text-muted-foreground">
               {t('game.chanceNote')}
             </p>
-          </div>
+          </ContentCard>
         </div>
 
         {content.whyPopular && (
-          <div className="mt-8 rounded-2xl border border-border bg-card p-6">
+          <ContentCard className="mt-8">
             <div className="flex items-center gap-2 text-primary">
               <Sparkles className="size-5" />
               <h2 className="font-display text-xl font-bold text-foreground">
@@ -201,33 +211,33 @@ export function GameDetailView({ game }: { game: Game }) {
             <p className="mt-4 max-w-3xl leading-relaxed text-muted-foreground">
               {content.whyPopular}
             </p>
-          </div>
+          </ContentCard>
         )}
       </Section>
 
       {/* Key game information */}
-      <Section className="border-t border-border bg-card/30 py-10">
+      <Section id="key-facts" className="border-t border-border bg-card/30 py-10">
         <div className="mb-6 flex items-center gap-2 text-primary">
           <Info className="size-5" />
           <h2 className="font-display text-xl font-bold text-foreground">
             {t('game.keyInfoTitle')}
           </h2>
         </div>
-        <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-3 lg:grid-cols-5">
+        <dl className={styles.infoGrid}>
           {info.map((item) => (
-            <div key={item.label} className="bg-card p-5">
-              <dt className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <div key={item.label}>
+              <dt>
                 {item.label}
               </dt>
-              <dd className="mt-1.5 text-sm font-medium text-foreground">
+              <dd>
                 {item.value}
               </dd>
             </div>
           ))}
         </dl>
-        {game.mechanics.length > 0 && (
+        {content.mechanics.length > 0 && (
           <div className="mt-4 flex flex-wrap gap-2">
-            {game.mechanics.map((m) => (
+            {content.mechanics.map((m) => (
               <span
                 key={m}
                 className="rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground"
@@ -269,7 +279,7 @@ export function GameDetailView({ game }: { game: Game }) {
 
       {/* Games like X */}
       {related.length > 0 && (
-        <Section>
+        <Section id="similar-games">
           <SectionHeading
             eyebrow={t('game.discoveryEyebrow')}
             title={t('game.gamesLike', { game: game.title })}

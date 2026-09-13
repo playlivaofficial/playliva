@@ -937,7 +937,7 @@ const esMX: Dict = {
   'footer.risk': 'Apostar implica riesgo.',
   'footer.rights': '© {year} PlayLiva. Todos los derechos reservados.',
   'footer.disclaimer':
-    'PlayLiva es una plataforma informativa de descubrimiento de juegos y afiliación. No somos un casino, operador ni casa de apuestas. Contenido para mayores de 18 a��os.',
+    'PlayLiva es una plataforma informativa de descubrimiento de juegos y afiliación. No somos un casino, operador ni casa de apuestas. Contenido para mayores de 18 años.',
 
   'cookie.title': 'Valoramos tu privacidad',
   'cookie.body':
@@ -1473,7 +1473,7 @@ const en: Dict = {
   'notice.responsibleFull':
     'Betting involves financial risk and can be addictive. This platform is intended for ages 18+. If gaming stops being fun, take a break or seek help. Play responsibly and only bet what you can afford to lose.',
   'notice.trust':
-    '18+ ��� Play responsibly • Availability varies by location',
+    '18+ • Play responsibly • Availability varies by location',
   'notice.age': '18+',
 
   // 404

@@ -14,6 +14,9 @@ import { AffiliateDisclosureLine, ResponsibleGamingNotice } from '@/components/n
 import { Button } from '@/components/ui/button'
 import { track } from '@/lib/tracking'
 import type { Comparison } from '@/lib/types'
+import { ContentCard } from '@/components/content-card'
+import { discoveryCategory } from '@/lib/product-discovery'
+import styles from '@/components/editorial-design.module.css'
 
 export function ComparisonView({ comparison }: { comparison: Comparison }) {
   const { countryCode, t, locale } = useCountry()
@@ -57,14 +60,14 @@ export function ComparisonView({ comparison }: { comparison: Comparison }) {
             return (
               <div
                 key={g.id}
-                className="flex flex-col overflow-hidden rounded-2xl border border-border bg-card"
+                className={`flex flex-col ${styles.comparisonGame}`}
               >
                 <div className="relative aspect-[16/9]">
                   <GameArtwork game={g} sizes="(max-width: 640px) 100vw, 50vw" />
                 </div>
                 <div className="flex flex-1 flex-col p-5">
                   <span className="text-xs font-medium text-muted-foreground">
-                    {getCategoryName(g.category, locale)} · {g.provider}
+                    {getCategoryName(discoveryCategory(g), locale)} · {g.provider}
                   </span>
                   <h2 className="mt-1 font-display text-xl font-bold text-foreground">
                     {g.title}
@@ -100,7 +103,7 @@ export function ComparisonView({ comparison }: { comparison: Comparison }) {
       {/* Similarities + differences */}
       <Section className="border-t border-border bg-card/30">
         <div className="grid gap-8 lg:grid-cols-2">
-          <div className="rounded-2xl border border-border bg-card p-6">
+          <ContentCard>
             <div className="flex items-center gap-2 text-primary">
               <GitCompare className="size-5" />
               <h2 className="font-display text-xl font-bold text-foreground">
@@ -115,8 +118,8 @@ export function ComparisonView({ comparison }: { comparison: Comparison }) {
                 </li>
               ))}
             </ul>
-          </div>
-          <div className="rounded-2xl border border-border bg-card p-6">
+          </ContentCard>
+          <ContentCard>
             <div className="flex items-center gap-2 text-primary">
               <SplitSquareHorizontal className="size-5" />
               <h2 className="font-display text-xl font-bold text-foreground">
@@ -131,13 +134,13 @@ export function ComparisonView({ comparison }: { comparison: Comparison }) {
                 </li>
               ))}
             </ul>
-          </div>
+          </ContentCard>
         </div>
       </Section>
 
       {/* Which one may suit you */}
       <Section>
-        <div className="rounded-2xl border border-border bg-card p-6 sm:p-8">
+        <ContentCard tone="guide">
           <h2 className="font-display text-2xl font-bold text-foreground">
             {t('compare.which')}
           </h2>
@@ -147,7 +150,7 @@ export function ComparisonView({ comparison }: { comparison: Comparison }) {
           <p className="mt-4 text-xs text-muted-foreground">
             {t('compare.editorialNote')}
           </p>
-        </div>
+        </ContentCard>
       </Section>
 
       {/* Where to play */}

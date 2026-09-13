@@ -2,6 +2,10 @@
 
 Source of truth: https://github.com/playlivaofficial/playliva.
 
+[M10 product redesign](docs/m10-product-redesign.md) continues the released visual
+foundation with provider/editorial layouts, localized detail metadata, compact
+catalog cards, delivery measurements and explicit unchanged-game regression checks.
+
 The current [visual and product UX redesign](docs/product-ux-redesign.md) separates
 the free-play lobby from provider discovery, refreshes responsive navigation and
 uses a display-only Live Casino classification for Blackjack. Older milestone

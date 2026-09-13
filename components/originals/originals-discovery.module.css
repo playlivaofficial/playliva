@@ -68,7 +68,7 @@
 .homeGrid .credits, .hubGrid .credits { display: none; }
 .homeGrid .playButton, .hubGrid .playButton { background: #223d65; color: #e1ecff; border: 1px solid #739de044; margin-top: auto; min-width: 0; min-height: 46px; width: 100%; font-size: .85rem; padding: .65rem .8rem; }
 .homeGrid .playButton:hover, .hubGrid .playButton:hover { background: #315686; }
-.homeGrid .cardNote, .hubGrid .cardNote { font-size: .65rem; }
+.homeGrid .cardNote, .hubGrid .cardNote { font-size: .72rem; min-height: 2.2rem; }
 .homeGrid .posterMark { font-size: .55rem; top: .7rem; left: .7rem; }
 .homeGrid .capybaraTitle { font-size: 1.7rem; }
 .homeGrid .playIcon { width: 2.5rem; height: 2.5rem; }

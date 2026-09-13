@@ -7,6 +7,7 @@ import { getGameById } from '@/lib/data'
 import { getComparisonContent } from '@/lib/content'
 import { useTranslation } from '@/components/country-context'
 import { GameArtwork } from '@/components/game-artwork'
+import styles from '@/components/editorial-design.module.css'
 
 export function ComparisonCard({ comparison }: { comparison: Comparison }) {
   const { t, locale } = useTranslation()
@@ -19,31 +20,35 @@ export function ComparisonCard({ comparison }: { comparison: Comparison }) {
   return (
     <LocaleLink
       href={`/compare/${comparison.slug}`}
-      className="group flex flex-col rounded-2xl border border-border bg-card p-4 transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:glow-primary"
+      className={styles.comparisonCard}
+      data-comparison-card={comparison.slug}
     >
-      <div className="flex items-center gap-3">
+      <div className={styles.versusArt}>
         <GameThumb game={a} />
-        <span className="font-display text-sm font-bold text-primary">VS</span>
+        <span aria-hidden="true">VS</span>
         <GameThumb game={b} />
       </div>
-      <h3 className="mt-4 font-display text-base font-bold text-foreground">
+      <div className={styles.comparisonBody}>
+      <small>{t('compare.eyebrow')}</small>
+      <h3>
         {a.title} vs {b.title}
       </h3>
-      <p className="mt-1 line-clamp-2 flex-1 text-sm leading-relaxed text-muted-foreground">
+      <p>
         {content.intro}
       </p>
-      <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary">
+      <span>
         {t('cta.compare')}
-        <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+        <ArrowRight className="size-4" aria-hidden="true" />
       </span>
+      </div>
     </LocaleLink>
   )
 }
 
 function GameThumb({ game }: { game: Game }) {
   return (
-    <div className="relative size-16 shrink-0 overflow-hidden rounded-xl border border-border">
-      <GameArtwork game={game} sizes="64px" compact />
+    <div className={styles.comparisonThumb}>
+      <GameArtwork game={game} sizes="(max-width: 639px) 45vw, 192px" compact />
     </div>
   )
 }

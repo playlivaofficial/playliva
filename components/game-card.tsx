@@ -15,7 +15,7 @@ export function GameCard({ game }: { game: Game }) {
   const content = getGameContent(game, locale)
   return <LocaleLink href={`/games/${game.slug}`} className={styles.gameCard} data-provider-card={game.slug}>
     <div className={styles.gameArt}>
-      <GameArtwork game={game} sizes="(max-width: 639px) 50vw, (max-width: 1023px) 33vw, 400px" />
+      <GameArtwork game={game} sizes="(max-width: 359px) 88px, (max-width: 639px) 50vw, (max-width: 1023px) 33vw, 400px" compact />
     </div>
     <div className={styles.gameBody}>
       <small>{game.provider} · {category.name}</small>

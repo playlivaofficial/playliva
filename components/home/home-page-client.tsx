@@ -51,7 +51,7 @@ export function HomePageClient() {
         </div>
       </Section>
 
-      {/* Trending games */}
+      {/* Curated provider catalog: no measured popularity claim. */}
       <Section className={styles.providerSection} id="provider-games">
         <SectionHeading
           eyebrow={copy.providerLabel}

@@ -32,7 +32,7 @@
 .gameArt img { transition: transform .35s; }
 .gameCard:hover img { transform: scale(1.045); }
 .gameBody { display: flex; flex: 1; flex-direction: column; align-items: start; padding: .9rem; }
-.gameBody small { color: #9caecb; font-size: .65rem; line-height: 1.5; }
+.gameBody small { color: #b1c1da; font-size: .75rem; line-height: 1.5; }
 .gameBody h3 { font: 700 1.05rem/1.2 var(--font-display); letter-spacing: -.02em; margin-top: .4rem; }
 .gameBody p { color: #aebbce; font-size: .8rem; line-height: 1.6; margin-top: .6rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .gameLink { display: inline-flex; align-items: center; gap: .35rem; padding-top: 1rem; margin-top: auto; color: #94b8ff; font-size: .75rem; font-weight: 650; }
@@ -60,3 +60,13 @@
 @media (min-width: 1024px) { .heroInner { grid-template-columns: 1.08fr 1fr; padding: 4rem 2rem; gap: 3.5rem; } .spotlight { transform: rotate(2deg); } .categoryGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); } .categoryTabs { padding-inline: 2rem; } }
 @media (max-width: 359px) { .heroInner { padding-top: 2.3rem; } .hero h1 { font-size: 2.5rem; } .heroActions { flex-direction: column; } .heroDescription { font-size: .9rem; } .heroNote { font-size: .68rem; } .categoryCard { padding: .9rem; } .categoryCard p { display: none; } .gameBody { padding: .7rem; } .gameBody p { display: none; } }
 @media (prefers-reduced-motion: reduce) { .hero *, .gameCard, .gameArt img, .categoryCard { transition: none; } .spotlight:hover img, .gameCard:hover, .gameCard:hover img, .categoryCard:hover, .primaryAction:hover { transform: none; } }
+
+/* Narrow phones get readable editorial rows rather than shrunken desktop tiles. */
+@media (max-width: 359px) {
+  .gameCard { grid-column: 1 / -1; display: grid; grid-template-columns: 88px minmax(0, 1fr); }
+  .gameArt { aspect-ratio: auto; min-height: 145px; }
+  .gameBody { padding: .8rem; min-width: 0; }
+  .gameBody small { font-size: .7rem; }
+  .gameBody p { display: -webkit-box; font-size: .8rem; }
+  .gameLink { padding-top: .6rem; }
+}
