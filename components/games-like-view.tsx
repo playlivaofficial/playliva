@@ -67,9 +67,8 @@ export function GamesLikeView({ game }: { game: Game }) {
           { label: game.title, href: `/games/${game.slug}` },
           { label: t('game.gamesLike', { game: game.title }) },
         ]}
+        sponsor={<BetssonSponsoredBanner surface="games-like" layout="compact-header" />}
       />
-
-      <BetssonSponsoredBanner surface="games-like" layout="full" />
 
       {/* Why players like X */}
       <Section className="py-10">

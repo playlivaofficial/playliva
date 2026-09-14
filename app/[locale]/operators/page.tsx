@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { OperatorsDirectory } from '@/components/operators-directory'
 import { OperatorsPageHero } from '@/components/operators-page-hero'
-import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsored-banner'
 import { pageMetadata } from '@/lib/seo'
 import {
   DEFAULT_LOCALE_SEGMENT,
@@ -32,7 +31,6 @@ export default function OperatorsPage() {
   return (
     <div>
       <OperatorsPageHero />
-      <BetssonSponsoredBanner surface="operators" layout="full" />
       <OperatorsDirectory />
     </div>
   )

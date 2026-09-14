@@ -120,6 +120,9 @@ export function GameDetailView({ game }: { game: Game }) {
               {t('game.byProvider', { provider: game.provider })}
             </p>
           </div>
+          <div className={styles.detailSponsor} data-detail-sponsor="" data-sponsor-slot="game-detail">
+            <BetssonSponsoredBanner surface="game" layout="compact-header" />
+          </div>
           <div className={styles.detailArt} data-provider-hero-art>
             <GameArtwork
               game={game}
@@ -150,8 +153,6 @@ export function GameDetailView({ game }: { game: Game }) {
 
         </div>
       </section>
-
-      <BetssonSponsoredBanner surface="game" layout="compact" />
 
       <nav className={styles.contents} aria-label={copy.onPage}>
         <span>{copy.onPage}</span>

@@ -62,6 +62,7 @@ export function CategoryPageView({ slug, referenceCatalog }: { slug: CategorySlu
           { label: t('nav.home'), href: '/' },
           { label: category.name },
         ]}
+        sponsor={<BetssonSponsoredBanner surface={slug as BetssonBannerSurface} layout="compact-header" />}
       />
 
       <div className="border-b border-border bg-card/30">
@@ -83,8 +84,6 @@ export function CategoryPageView({ slug, referenceCatalog }: { slug: CategorySlu
           ))}
         </nav>
       </div>
-
-      <BetssonSponsoredBanner surface={slug as BetssonBannerSurface} layout="full" />
 
       {slug === 'crash' && <OriginalsDiscoverySection surface="category" />}
       {slug === 'slots' && <CapybaraDiscoverySection />}

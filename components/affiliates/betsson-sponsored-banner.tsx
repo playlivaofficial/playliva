@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { useCountry } from '@/components/country-context'
 import {
   getBetssonSponsoredBanner,
+  resolveBetssonBannerLayout,
   type BetssonBannerCta,
   type BetssonBannerLayout,
   type BetssonBannerSurface,
@@ -15,12 +16,12 @@ import { BrazilAdWarning } from './brazil-ad-warning'
 
 /** Homepage wrapper so existing homepage tests keep `data-betsson-banner="homepage"`. */
 export function BetssonHomeBanner() {
-  return <BetssonSponsoredBanner surface="homepage" layout="full" cta="explore" />
+  return <BetssonSponsoredBanner surface="homepage" layout="compact-header" cta="explore" />
 }
 
 export function BetssonSponsoredBanner({
   surface,
-  layout = 'full',
+  layout = 'compact-header',
   cta = 'explore',
   lazy = false,
 }: {
@@ -32,23 +33,26 @@ export function BetssonSponsoredBanner({
   const { countryCode, locale, t } = useCountry()
   const banner = getBetssonSponsoredBanner(countryCode, locale, surface)
   if (!banner) return null
+  const variant = resolveBetssonBannerLayout(layout)
+  const compact = variant === 'compact-header'
   const { creative } = banner
   const alt = creative.alt[locale]
   const label = cta === 'visit'
     ? t('affiliate.visitNamed', { name: banner.operatorName })
     : t('affiliate.exploreNamed', { name: banner.operatorName })
+  const showArt = !compact && creative.kind === 'banner'
   return (
     <section
-      className={`${styles.banner} ${layout === 'compact' ? styles.compact : ''} ${layout === 'hub' ? styles.hub : ''}`}
+      className={`${styles.banner} ${compact ? styles.compactHeader : styles.fullSupport}`}
       data-betsson-banner={banner.surface}
       data-operator-cta-mode={banner.mode}
       data-creative-id={creative.id}
       data-creative-language={creative.language}
-      data-banner-layout={layout}
+      data-banner-layout={variant}
       aria-label={`${t('affiliate.sponsored')}: ${banner.operatorName}`}
     >
       <div className={styles.card} data-betting-ad="" data-evidence-state="pending">
-        {creative.kind === 'banner' ? (
+        {showArt ? (
           <div className={styles.art}>
             <Image
               src={creative.assetPath}
@@ -64,7 +68,7 @@ export function BetssonSponsoredBanner({
               src={creative.assetPath}
               alt={alt}
               fill
-              sizes={layout === 'hub' ? '64px' : '48px'}
+              sizes={compact ? '40px' : '48px'}
               loading={lazy ? 'lazy' : undefined}
             />
           </div>
@@ -76,13 +80,13 @@ export function BetssonSponsoredBanner({
         </div>
         <Button
           size="lg"
-          className="min-h-11 min-w-11 w-full whitespace-normal px-4 sm:w-auto"
+          className={`${styles.cta} min-h-11 min-w-11 w-full whitespace-normal px-4 sm:w-auto`}
           render={<a href={banner.href} target="_blank" rel="sponsored noopener noreferrer" />}
         >
           {label}
         </Button>
         <div className={styles.meta}>
-          <AffiliateDisclosureLine />
+          <AffiliateDisclosureLine className={styles.disclosure} />
         </div>
         <BrazilAdWarning operatorId="op-betsson" />
       </div>

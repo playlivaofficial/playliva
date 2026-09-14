@@ -58,9 +58,8 @@ export function CrashGamesHubView() {
           { label: categoryName, href: '/crash' },
           { label: content.breadcrumbLabel },
         ]}
+        sponsor={<BetssonSponsoredBanner surface="best-list" layout="compact-header" />}
       />
-
-      <BetssonSponsoredBanner surface="best-list" layout="full" />
 
       {/* Featured crash games */}
       <Section className="py-10">

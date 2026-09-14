@@ -51,7 +51,16 @@ export const ORIGINALS_BANNER_PLACEMENT = 'originals_banner' as const
 
 export type BetssonCtaMode = 'verified-category' | 'verified-game' | 'generic-brand'
 export type CreativeLanguage = Locale | 'neutral'
-export type BetssonBannerLayout = 'full' | 'compact' | 'hub'
+export type BetssonBannerLayout = 'full' | 'compact' | 'hub' | 'compact-header' | 'full-support'
+export type BetssonBannerVariant = 'compact-header' | 'full-support'
+
+/** Map legacy layout names onto the two public variants. */
+export function resolveBetssonBannerLayout(
+  layout: BetssonBannerLayout = 'compact-header',
+): BetssonBannerVariant {
+  return layout === 'full' || layout === 'full-support' ? 'full-support' : 'compact-header'
+}
+
 export type BetssonBannerCta = 'explore' | 'visit'
 
 export const GENERIC_BRAND_MODE: BetssonCtaMode = 'generic-brand'

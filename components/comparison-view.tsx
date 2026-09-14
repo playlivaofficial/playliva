@@ -52,9 +52,8 @@ export function ComparisonView({ comparison }: { comparison: Comparison }) {
           { label: a.title, href: `/games/${a.slug}` },
           { label: `${t('compare.eyebrow')}: ${b.title}` },
         ]}
+        sponsor={<BetssonSponsoredBanner surface="comparison" layout="compact-header" />}
       />
-
-      <BetssonSponsoredBanner surface="comparison" layout="full" />
 
       {/* Side-by-side game cards */}
       <Section className="py-10">

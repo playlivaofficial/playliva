@@ -1,5 +1,5 @@
 .detailHero { border-bottom: 1px solid var(--border); background: radial-gradient(ellipse at 100% 0, #1c477357, transparent 68%), #0c1527; }
-.detailInner { max-width: 80rem; margin: auto; padding: 1.5rem 1rem 2rem; display: grid; grid-template-columns: minmax(0, 1fr) 112px; grid-template-areas: 'trail trail' 'identity art' 'summary summary'; gap: 1.25rem 1rem; align-items: center; }
+.detailInner { max-width: 80rem; margin: auto; padding: 1.5rem 1rem 2rem; display: grid; grid-template-columns: minmax(0, 1fr) 112px; grid-template-areas: 'trail trail' 'identity art' 'sponsor sponsor' 'summary summary'; gap: 1.25rem 1rem; align-items: center; }
 .detailTrail { grid-area: trail; min-width: 0; }
 .backLink { display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; color: var(--muted-foreground); font-size: .8rem; }
 .backLink:hover { color: var(--foreground); }
@@ -10,6 +10,7 @@
 .identityLabels a { color: #a6c5ff; text-decoration: underline; text-underline-offset: 4px; }
 .identityLabels span { padding: .25rem .5rem; border: 1px solid #d8bf842e; border-radius: .4rem; color: #e4cfaa; }
 .detailArt { grid-area: art; position: relative; aspect-ratio: 1; overflow: hidden; border: 1px solid #93b8f344; border-radius: 1.2rem; box-shadow: 0 14px 36px #0004; background: #14243a; }
+.detailSponsor { grid-area: sponsor; min-width: 0; }
 .detailSummary { grid-area: summary; min-width: 0; }
 .detailSummary > p:first-child { color: var(--muted-foreground); font-size: 1rem; line-height: 1.65; max-width: 37rem; }
 .detailActions { margin-top: 1.25rem; display: flex; flex-wrap: wrap; gap: .75rem; }
@@ -50,7 +51,7 @@
   .catalogTools { padding: 1.5rem; }
 }
 @media (min-width: 1024px) {
-  .detailInner { padding: 2rem 2rem 3rem; grid-template-columns: 1.1fr 1fr; grid-template-areas: 'trail trail' 'identity art' 'summary art'; gap: 1.25rem 3.5rem; }
+  .detailInner { padding: 2rem 2rem 3rem; grid-template-columns: 1.1fr 1fr; grid-template-areas: 'trail trail' 'identity art' 'sponsor art' 'summary summary'; gap: 1.25rem 3.5rem; }
   .detailArt { aspect-ratio: 4 / 3; width: 100%; }
   .detailSummary > p:first-child { font-size: 1.1rem; }
   .contents { padding-inline: 2rem; }
