@@ -253,8 +253,11 @@ test('PT-BR, EN and ES-MX render localized Betsson CTAs without English leakage'
         assert.doesNotMatch(cta.textContent, /Visit Betsson|Play Real|Explore Betsson|Sponsored/)
         assert.doesNotMatch(cta.textContent, portuguesePromo)
       }
-      assert.ok(document.querySelector('[data-game-viewport]').compareDocumentPosition(cta) & 4)
-      assert.ok(cta.compareDocumentPosition(document.querySelector('[data-game-controls]')) & 4)
+      const viewport = document.querySelector('[data-game-viewport]')
+      const controls = document.querySelector('[data-game-controls]')
+      assert.ok(cta.compareDocumentPosition(viewport) & 4)
+      assert.ok(viewport.compareDocumentPosition(controls) & 4)
+      assert.equal(Boolean(viewport.compareDocumentPosition(cta) & 4), false)
       assert.doesNotMatch(cta.className, /fixed|absolute|inset-0/)
       const href = document.querySelector('a[href^="/go?"]').getAttribute('href')
       consentModule.saveConsent({ necessary: true, analytics: false, marketing: false })

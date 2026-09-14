@@ -104,8 +104,9 @@ test('test-only shell: wallet/settings/reset, consent-aware events, truthful Pla
     const cta = document.querySelector('[data-operator-cta="play-real"]')
     const controls = document.querySelector('[data-game-controls]')
     assert.equal(cta.getAttribute('data-operator-cta-mode'), 'verified-category')
-    assert.equal(Boolean(viewport.compareDocumentPosition(cta) & 4), true)
-    assert.equal(Boolean(cta.compareDocumentPosition(controls) & 4), true)
+    assert.equal(Boolean(cta.compareDocumentPosition(viewport) & 4), true)
+    assert.equal(Boolean(viewport.compareDocumentPosition(controls) & 4), true)
+    assert.equal(Boolean(viewport.compareDocumentPosition(cta) & 4), false)
     assert.doesNotMatch(cta.className, /fixed|absolute|inset-0/)
 
     saveConsent({ necessary: true, analytics: true, marketing: false })
