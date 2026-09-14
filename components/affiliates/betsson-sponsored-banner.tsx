@@ -43,7 +43,7 @@ export function BetssonSponsoredBanner({
   const showArt = !compact && creative.kind === 'banner'
   return (
     <section
-      className={`${styles.banner} ${compact ? styles.compactHeader : styles.fullSupport}`}
+      className={`${styles.banner} ${compact ? styles.compactHeader : styles.fullSupport}${surface === 'originals' ? ` ${styles.originalsHeader}` : ''}`}
       data-betsson-banner={banner.surface}
       data-operator-cta-mode={banner.mode}
       data-creative-id={creative.id}

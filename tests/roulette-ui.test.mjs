@@ -12,7 +12,9 @@ import sessionModule from '../lib/originals/session.ts'
 import engineModule from '../lib/originals/roulette/engine.ts'
 import presentationModule from '../lib/originals/roulette/presentation.ts'
 const hooks = registerHooks({ load(url, context, next) {
-  if (url.endsWith('.module.css')) return { format: 'commonjs', shortCircuit: true, source: 'module.exports = Object.fromEntries(["game","stage","wheel","controls","reveal","stack"].map(k=>[k,k]))' }
+  if (String(url).includes('.module.css')) {
+    return { format: 'module', shortCircuit: true, source: 'const s = new Proxy({}, { get: (_, k) => String(k) }); export default s;' }
+  }
   return next(url, context)
 } })
 const gameModule = await import('../components/originals/roulette/roulette-game.tsx')
@@ -83,9 +85,19 @@ test('Roulette mounted: chosen chip, stacking, Undo/Clear, debit once, freeze, e
   await h.advance(1000); assert.equal(button('repeat').disabled, false)
   await click(button('repeat')); assert.equal(button('stake').textContent, '15,00')
   assert.equal(h.wallet.getSnapshot().session.transactions.length, 2)
-  assert.equal(document.querySelector('a[href^="/go?"]'), null)
+  const banner = document.querySelector('[data-betsson-banner="originals"]')
+  assert.ok(banner)
+  assert.ok(banner.closest('[data-originals-sponsor]'))
+  assert.ok(banner.querySelector('a[href^="/go?"]'))
+  assert.match(banner.querySelector('a[href^="/go?"]').getAttribute('href'), /placement=originals_banner/)
   assert.equal(document.querySelector('[data-operator-cta="play-real"]'), null)
-  assert.equal(document.querySelector('[data-betsson-banner]'), null)
+  assert.equal(document.querySelector('a[href*="betsson."]'), null)
+  const unit = document.querySelector('[data-game-unit]')
+  const viewport = document.querySelector('[data-game-viewport]')
+  const controls = document.querySelector('[data-game-controls]')
+  assert.equal(Boolean(banner.compareDocumentPosition(viewport) & 4), true)
+  assert.equal(Boolean(viewport.compareDocumentPosition(controls) & 4), true)
+  assert.equal(unit.querySelector('[data-operator-cta], [data-betsson-banner], a[href^="/go"]'), null)
 }))
 test('Roulette mounted: precise paged Split/Corner/first-four selection and insufficient reservations', async () => withDom(async root => {
   const h = harness(0)

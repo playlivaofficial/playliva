@@ -34,7 +34,8 @@ const gamesHeroModule = unwrap(await import('../components/games-page-hero.tsx')
 const operatorsHeroModule = unwrap(await import('../components/operators-page-hero.tsx'))
 cssHooks.deregister()
 
-const { resolveBetssonBannerLayout } = betssonModule
+const { getBetssonSponsoredBanner, resolveBetssonBannerLayout } = betssonModule
+const ORIGINALS_GAME_SLUGS = ['crash', 'capybara-gold', 'blackjack', 'roulette', 'mines']
 const { CountryProvider } = countryModule
 const locales = [['pt-BR', 'pt-br'], ['en', 'en'], ['es-MX', 'es-mx']]
 const FOLLOWING = 4
@@ -140,14 +141,48 @@ test('commercial surfaces keep page identity first and a compact header sponsor'
   }
 })
 
-test('Originals gameplay routes stay promo-clean with viewport immediately before controls', async () => {
+test('Originals banner surface stays GEO-gated and resolves only through /go', () => {
+  const banner = getBetssonSponsoredBanner('BR', 'en', 'originals')
+  assert.ok(banner)
+  assert.equal(banner.surface, 'originals')
+  assert.match(banner.href, /^\/go\?/)
+  assert.equal(new URL(banner.href, 'https://www.playliva.com').searchParams.get('placement'), 'originals_banner')
+  assert.doesNotMatch(banner.href, /https?:\/\//)
+  assert.equal(getBetssonSponsoredBanner('MX', 'en', 'originals'), null)
+  assert.equal(getBetssonSponsoredBanner('PT', 'pt-BR', 'originals'), null)
+  assert.equal(getBetssonSponsoredBanner('MX', 'es-MX', 'originals'), null)
+})
+
+test('Originals header compact sponsor sits above the viewport on all five routes', async () => {
   const shell = await readFile(new URL('../components/originals/play-game-shell.tsx', import.meta.url), 'utf8')
-  assert.equal(shell.includes('BetssonSponsoredBanner'), false)
+  assert.ok(shell.includes('BetssonSponsoredBanner'))
+  assert.match(shell, /surface="originals"/)
+  assert.match(shell, /layout="compact-header"/)
+  assert.match(shell, /data-sponsor-slot="originals-header"/)
   assert.equal(shell.includes('PlayRealCTA'), false)
-  assert.equal(shell.includes('data-sponsor-slot'), false)
+  assert.doesNotMatch(shell, /https?:\/\/(?:www\.)?betsson/i)
+  const header = shell.indexOf('data-sponsor-slot="originals-header"')
+  const unit = shell.indexOf('data-game-unit')
   const viewport = shell.indexOf('data-game-viewport')
   const controls = shell.indexOf('data-game-controls')
-  assert.ok(viewport > 0 && controls > viewport)
+  assert.ok(header > 0 && unit > header && viewport > unit && controls > viewport)
   const between = shell.slice(viewport, controls)
   assert.doesNotMatch(between, /BetssonSponsoredBanner|PlayRealCTA|data-betting-ad|data-betsson-banner/)
+
+  const gameFiles = {
+    crash: '../components/originals/crash/crash-game.tsx',
+    'capybara-gold': '../components/originals/capybara/capybara-game.tsx',
+    blackjack: '../components/originals/blackjack/blackjack-game.tsx',
+    roulette: '../components/originals/roulette/roulette-game.tsx',
+    mines: '../components/originals/mines/mines-game.tsx',
+  }
+  for (const slug of ORIGINALS_GAME_SLUGS) {
+    const page = await readFile(new URL(`../app/[locale]/play/${slug}/page.tsx`, import.meta.url), 'utf8')
+    assert.equal(page.includes('BetssonSponsoredBanner'), false, slug)
+    assert.equal(page.includes('PlayRealCTA'), false, slug)
+    const game = await readFile(new URL(gameFiles[slug], import.meta.url), 'utf8')
+    assert.match(game, /PlayGameShell/)
+    assert.equal(game.includes('BetssonSponsoredBanner'), false, slug)
+    assert.equal(game.includes('PlayRealCTA'), false, slug)
+  }
 })

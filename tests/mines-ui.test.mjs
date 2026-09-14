@@ -11,7 +11,9 @@ import providerModule from '../components/originals/demo-session.tsx'
 import sessionModule from '../lib/originals/session.ts'
 import engineModule from '../lib/originals/mines/engine.ts'
 const hooks = registerHooks({ load(url, context, next) {
-  if (url.endsWith('.module.css')) return { format: 'commonjs', shortCircuit: true, source: 'module.exports = Object.fromEntries(["game","stage","wheel","controls","reveal","stack"].map(k=>[k,k]))' }
+  if (String(url).includes('.module.css')) {
+    return { format: 'module', shortCircuit: true, source: 'const s = new Proxy({}, { get: (_, k) => String(k) }); export default s;' }
+  }
   return next(url, context)
 } })
 const gameModule = await import('../components/originals/mines/mines-game.tsx')
@@ -69,12 +71,19 @@ test('Mines mounted: 25 hidden tiles, immediate safe trail, single debit and liv
   assert.equal(document.querySelectorAll('[data-tile]:not(:disabled)').length,0)
   await h.advance(599); assert.equal(button('start').disabled,true)
   await h.advance(1); assert.equal(button('start').disabled,false)
-  assert.equal(document.querySelector('a[href^="/go?"]'), null)
+  const banner = document.querySelector('[data-betsson-banner="originals"]')
+  assert.ok(banner)
+  assert.ok(banner.closest('[data-originals-sponsor]'))
+  assert.ok(banner.querySelector('a[href^="/go?"]'))
+  assert.match(banner.querySelector('a[href^="/go?"]').getAttribute('href'), /placement=originals_banner/)
   assert.equal(document.querySelector('[data-operator-cta="play-real"]'), null)
-  assert.equal(document.querySelector('[data-betsson-banner]'), null)
+  assert.equal(document.querySelector('a[href*="betsson."]'), null)
   const viewport = document.querySelector('[data-game-viewport]')
   const controls = document.querySelector('[data-game-controls]')
+  const unit = document.querySelector('[data-game-unit]')
+  assert.equal(Boolean(banner.compareDocumentPosition(viewport) & 4), true)
   assert.equal(Boolean(viewport.compareDocumentPosition(controls) & 4), true)
+  assert.equal(unit.querySelector('[data-operator-cta], [data-betsson-banner], a[href^="/go"]'), null)
 }))
 test('Mines mounted: mine hit is immediate, no trail on mines and no credit, repeat and reload keep debit spent', async () => withDom(async root => {
   const h=harness(); await act(()=>root.render(tree(h,'es-MX')))
