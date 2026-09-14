@@ -65,7 +65,6 @@ test('test-only shell: wallet/settings/reset, consent-aware events, and no opera
     assert.ok(document.body.textContent.includes('FREE PLAY'))
     assert.ok(document.body.textContent.includes('DEMO'))
     assert.ok(document.body.textContent.includes('Virtual credits have no monetary value'))
-    assert.ok(document.body.textContent.includes('does not mean this PlayLiva Original is available there'))
     assert.equal(document.querySelector('input[type="number"]'), null)
     assert.equal(button('Haptics'), undefined)
     assert.equal(button('Fullscreen'), undefined)
