@@ -43,7 +43,7 @@ export function BetssonSponsoredBanner({
   const showArt = !compact && creative.kind === 'banner'
   return (
     <section
-      className={`${styles.banner} ${compact ? styles.compactHeader : styles.fullSupport}`}
+      className={`${styles.banner} ${compact ? styles.compactHeader : styles.fullSupport}${surface === 'originals' ? ` ${styles.originalsHeader}` : ''}`}
       data-betsson-banner={banner.surface}
       data-operator-cta-mode={banner.mode}
       data-creative-id={creative.id}
@@ -80,7 +80,7 @@ export function BetssonSponsoredBanner({
         </div>
         <Button
           size="lg"
-          className={`${styles.cta} min-h-11 min-w-11 w-full whitespace-normal px-4 sm:w-auto`}
+          className={`${styles.cta} min-h-11 min-w-11 whitespace-normal px-4 ${surface === 'originals' ? 'w-auto max-w-full' : 'w-full sm:w-auto'}`}
           render={<a href={banner.href} target="_blank" rel="sponsored noopener noreferrer" />}
         >
           {label}

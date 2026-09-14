@@ -12,9 +12,10 @@ SEO metadata and sitemaps retain the approved M3 behavior.
   existing `CountryProvider`. `useDemoSession()` exposes a stable snapshot,
   readiness/storage status, settings and wallet operations. Never mount this
   provider in the site root or existing editorial/discovery pages.
-- `PlayGameShell`: title, Originals branding, credit balance, supplied viewport
-  and controls, settings, history and reset confirmation. M12 does not mount
-  operator banners or Play Real affiliate CTAs on `/play/*` gameplay routes.
+- `PlayGameShell`: title, Originals branding, compact GEO-gated Betsson header
+  placement, credit balance, supplied viewport and controls, settings, history
+  and reset confirmation. Play Real affiliate CTAs stay unmounted on `/play/*`
+  gameplay routes; nothing commercial may sit between viewport and controls.
 - `PlayRealCTA`: category-level approved operator referrals, retained for
   commercial/isolated use and not mounted on Original gameplay routes.
 

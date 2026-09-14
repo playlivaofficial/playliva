@@ -193,12 +193,17 @@ test('M12 JSON-LD cannot terminate its script when editorial text contains marku
   dom.window.close()
 })
 
-test('M12 Original gameplay shell omits operator ads and keeps accessible warning styling', async () => {
+test('M12 Original gameplay shell keeps Play Real unmounted and warning styling accessible', async () => {
   const shell = await readFile(new URL('../components/originals/play-game-shell.tsx', import.meta.url), 'utf8')
   assert.equal(shell.includes('PlayRealCTA'), false)
-  assert.equal(shell.includes('BetssonSponsoredBanner'), false)
+  assert.ok(shell.includes('BetssonSponsoredBanner'))
+  assert.ok(shell.includes('data-originals-sponsor'))
   assert.ok(shell.includes('data-game-viewport'))
   assert.ok(shell.includes('data-game-controls'))
+  const viewport = shell.indexOf('data-game-viewport')
+  const controls = shell.indexOf('data-game-controls')
+  assert.ok(viewport > 0 && controls > viewport)
+  assert.doesNotMatch(shell.slice(viewport, controls), /BetssonSponsoredBanner|PlayRealCTA|data-betting-ad|data-betsson-banner/)
   const css = await readFile(new URL('../app/globals.css', import.meta.url), 'utf8')
   assert.match(css, /writing-mode: horizontal-tb/)
   assert.match(css, /\[data-betting-ad\]:not\(\[data-evidence-state="current"\]\)/)

@@ -10,6 +10,7 @@ import { trackFreePlay } from '@/lib/originals/analytics'
 import type { OriginalGameDefinition } from '@/lib/originals/definition'
 import { LocaleLink } from '@/components/locale-link'
 import { productCopy } from '@/lib/product-discovery'
+import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsored-banner'
 
 function subscribeFullscreen(listener: () => void) {
   document.addEventListener('fullscreenchange', listener)
@@ -50,11 +51,16 @@ export function PlayGameShell({ game, children, controls, roundActive = false, c
   }
   const ready = storageStatus !== 'loading'
   return <section ref={root} data-game-shell className={`mx-auto w-full max-w-7xl overflow-auto bg-background text-foreground ${compact ? 'space-y-3 p-3 sm:p-4' : 'space-y-5 p-4 sm:p-6'}`}>
-    <header className={compact ? 'grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3' : 'flex flex-wrap items-start justify-between gap-4'}>
-      <div><p className="text-sm font-semibold text-primary"><LocaleLink href="/play" aria-label={productCopy(locale).lobbyBack} className="hover:underline">‹ PlayLiva Originals</LocaleLink></p>
+    <header className={`originals-shell-header${compact ? ' originals-shell-header-compact' : ''}`}>
+      <div className="originals-shell-identity" data-originals-identity="">
+        <p className="text-sm font-semibold text-primary"><LocaleLink href="/play" aria-label={productCopy(locale).lobbyBack} className="hover:underline">‹ PlayLiva Originals</LocaleLink></p>
         <h1 className={`font-display font-bold ${compact ? 'text-lg leading-tight sm:text-2xl' : 'text-2xl sm:text-3xl'}`}>{game.title[locale]}</h1>
-        <p className="mt-2 text-xs font-semibold tracking-wide">{copy.freePlay} · {copy.demo}</p></div>
-      <div className={`rounded-xl border border-border bg-card ${compact ? 'p-2 sm:px-4' : 'px-4 py-3'}`}>
+        <p className={`${compact ? 'mt-1' : 'mt-2'} text-xs font-semibold tracking-wide`}>{copy.freePlay} · {copy.demo}</p>
+      </div>
+      <div className="originals-shell-sponsor" data-originals-sponsor="" data-sponsor-slot="originals-header">
+        <BetssonSponsoredBanner surface="originals" layout="compact-header" />
+      </div>
+      <div className={`originals-shell-balance rounded-xl border border-border bg-card ${compact ? 'p-2 sm:px-4' : 'px-4 py-3'}`}>
         <p className="text-xs text-muted-foreground">{copy.balance}</p>
         <p className={`font-display font-bold ${compact ? 'text-base sm:text-xl' : 'text-xl'}`} aria-live="polite">{format(session.balance)} <span className={compact ? 'block text-[10px] sm:inline sm:text-xs' : 'text-sm'}>{copy.credits}</span></p>
       </div>

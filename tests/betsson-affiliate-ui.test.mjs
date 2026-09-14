@@ -210,18 +210,26 @@ test('generic operator CTA does not claim exact game availability and does not r
     getOriginalOperatorCtas(crashDef.ISLAND_CRASH, 'BR', 'en')[0].href)
 })
 
-test('PT-BR, EN and ES-MX Originals shells omit operator promotion while remaining localized', async () => {
+test('PT-BR, EN and ES-MX Originals shells mount a compact header sponsor above the viewport', async () => {
   const { PlayGameShell } = unwrap(shellModule)
-  const game = minesConfig.LIVA_MINES
+  const originals = [
+    crashDef.ISLAND_CRASH,
+    capybaraDef.CAPYBARA_GOLD,
+    blackjackDef.LIVA_BLACKJACK,
+    rouletteConfig.LIVA_ROULETTE,
+    minesConfig.LIVA_MINES,
+  ]
   for (const [locale, segment] of locales) {
     const t = createTranslator(locale)
     assert.ok(t('affiliate.visitNamed', { name: 'Betsson' }))
     assert.ok(t('affiliate.exploreNamed', { name: 'Betsson' }))
     assert.ok(t('affiliate.genericBoundary'))
+    assert.ok(t('notice.affiliateShort'))
     if (locale !== 'en') {
       assert.notEqual(t('affiliate.exploreNamed', { name: 'Betsson' }), createTranslator('en')('affiliate.exploreNamed', { name: 'Betsson' }))
       assert.notEqual(t('affiliate.homeBannerBody'), createTranslator('en')('affiliate.homeBannerBody'))
       assert.notEqual(t('affiliate.genericBoundary'), createTranslator('en')('affiliate.genericBoundary'))
+      assert.notEqual(t('notice.affiliateShort'), createTranslator('en')('notice.affiliateShort'))
     }
     const dom = new JSDOM('<div id="root"></div>', { url: `https://site.example.invalid/${segment}/play/mines`, virtualConsole: new VirtualConsole() })
     const saved = new Map()
@@ -233,18 +241,48 @@ test('PT-BR, EN and ES-MX Originals shells omit operator promotion while remaini
     const root = createRoot(document.getElementById('root'))
     const store = sessionModule.createDemoSessionStore(() => window.localStorage, () => 1)
     try {
-      await act(() => root.render(wrap(locale, `/${segment}/play/mines`,
-        React.createElement(providerModule.DemoSessionProvider, { store },
-          React.createElement(PlayGameShell, { game, controls: React.createElement('button', { 'data-test-control': '' }, 'Start') },
-            React.createElement('div', {}, 'viewport'))))))
-      assert.equal(document.querySelector('[data-operator-cta="play-real"]'), null)
-      assert.equal(document.querySelector('[data-betsson-banner]'), null)
-      assert.equal(document.querySelector('a[href^="/go?"]'), null)
-      const viewport = document.querySelector('[data-game-viewport]')
-      const controls = document.querySelector('[data-game-controls]')
-      assert.ok(viewport && controls)
-      assert.ok(viewport.compareDocumentPosition(controls) & 4)
-      assert.ok(document.body.textContent.includes(game.title[locale]))
+      for (const game of originals) {
+        await act(() => root.render(wrap(locale, `/${segment}/play/${game.slug}`,
+          React.createElement(providerModule.DemoSessionProvider, { store },
+            React.createElement(PlayGameShell, { game, controls: React.createElement('button', { 'data-test-control': '' }, 'Start') },
+              React.createElement('div', {}, 'viewport'))))))
+        assert.equal(document.querySelector('[data-operator-cta="play-real"]'), null, game.slug)
+        const banner = document.querySelector('[data-betsson-banner="originals"]')
+        const viewport = document.querySelector('[data-game-viewport]')
+        const controls = document.querySelector('[data-game-controls]')
+        const unit = document.querySelector('[data-game-unit]')
+        assert.ok(banner && viewport && controls && unit, game.slug)
+        assert.equal(banner.getAttribute('data-banner-layout'), 'compact-header', game.slug)
+        assert.ok(banner.closest('[data-originals-sponsor]'), game.slug)
+        assert.ok(banner.closest('[data-sponsor-slot="originals-header"]'), game.slug)
+        assert.ok(banner.compareDocumentPosition(viewport) & 4, game.slug)
+        assert.ok(viewport.compareDocumentPosition(controls) & 4, game.slug)
+        const go = banner.querySelector('a[href^="/go?"]')
+        assert.ok(go, game.slug)
+        assert.match(go.getAttribute('href'), /^\/go\?/)
+        assert.match(go.getAttribute('href'), /placement=originals_banner/)
+        assert.doesNotMatch(banner.innerHTML, /https?:\/\/(?:www\.)?betsson/i)
+        assert.equal(document.querySelector('a[href*="betsson."]'), null, game.slug)
+        assert.ok(banner.textContent.includes(t('affiliate.sponsored')), game.slug)
+        assert.ok(banner.textContent.includes(t('affiliate.exploreNamed', { name: 'Betsson' })), game.slug)
+        assert.ok(banner.textContent.includes(t('notice.affiliateShort')), game.slug)
+        assert.ok(banner.querySelector('[data-brazil-ad-warning]'), game.slug)
+        assert.ok(banner.textContent.includes('18+'), game.slug)
+        assert.equal(unit.querySelector('[data-operator-cta], [data-betsson-banner], a[href^="/go"]'), null, game.slug)
+        assert.ok(document.body.textContent.includes(game.title[locale]), game.slug)
+        if (locale === 'en') {
+          assert.match(banner.textContent, /Sponsored/)
+          assert.doesNotMatch(banner.textContent, /Patrocinado|Conheça cassino/)
+        }
+        if (locale === 'pt-BR') {
+          assert.match(banner.textContent, /Patrocinado/)
+          assert.doesNotMatch(banner.textContent, /Sponsored|Explore Betsson/)
+        }
+        if (locale === 'es-MX') {
+          assert.match(banner.textContent, /Patrocinado/)
+          assert.doesNotMatch(banner.textContent, /Sponsored|Explore Betsson|Conheça cassino/)
+        }
+      }
     } finally {
       await act(() => root.unmount())
       dom.window.close()

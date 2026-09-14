@@ -11,7 +11,9 @@ import providerModule from '../components/originals/demo-session.tsx'
 import sessionModule from '../lib/originals/session.ts'
 import engineModule from '../lib/originals/blackjack/engine.ts'
 const hooks = registerHooks({ load(url, context, next) {
-  if (url.endsWith('.module.css')) return { format: 'commonjs', shortCircuit: true, source: 'module.exports = Object.fromEntries(["table","game","card","hand","cards","result","controls"].map(k=>[k,k]))' }
+  if (String(url).includes('.module.css')) {
+    return { format: 'module', shortCircuit: true, source: 'const s = new Proxy({}, { get: (_, k) => String(k) }); export default s;' }
+  }
   return next(url, context)
 } })
 const gameModule = await import('../components/originals/blackjack/blackjack-game.tsx')
@@ -72,9 +74,16 @@ test('Blackjack mounted game: Strict Mode, hidden hole, immediate busy controls,
   assert.deepEqual(h.wallet.getSnapshot().session.transactions.map(t => [t.kind, t.amount]), [['debit', 1000], ['debit', 1000], ['credit', 4000]])
   assert.ok(document.querySelector('[role="status"]').textContent.includes('40,00'))
   await h.until('ready'); assert.ok(document.querySelector('[data-blackjack-deal]').textContent.includes('Nova mão'))
-  assert.equal(document.querySelector('a[href^="/go?"]'), null)
+  const banner = document.querySelector('[data-betsson-banner="originals"]')
+  assert.ok(banner)
+  assert.ok(banner.closest('[data-originals-sponsor]'))
+  assert.ok(banner.querySelector('a[href^="/go?"]'))
+  assert.match(banner.querySelector('a[href^="/go?"]').getAttribute('href'), /placement=originals_banner/)
   assert.equal(document.querySelector('[data-operator-cta="play-real"]'), null)
-  assert.equal(document.querySelector('[data-betsson-banner]'), null)
+  assert.equal(document.querySelector('a[href*="betsson."]'), null)
+  const unit = document.querySelector('[data-game-unit]')
+  assert.ok(unit)
+  assert.equal(unit.querySelector('[data-operator-cta], [data-betsson-banner], a[href^="/go"]'), null)
 }))
 test('Blackjack mounted game: split active hand, per-hand stakes, previous states and independent results', async () => withDom(async root => {
   const h = harness('8 10 8 7 3 2 K')

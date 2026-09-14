@@ -4,9 +4,11 @@ Source of truth: https://github.com/playlivaofficial/playliva.
 
 [M12 hardening](docs/m12-final-hardening.md) adds dated BR authorization
 safeguards, centralized ad warnings, sourced optional RTP, privacy-minimal
-measurement and editorial trust checks. Real-money operator banners and Play
-Real affiliate CTAs are omitted from `/play/*` Original gameplay routes;
-commercial discovery surfaces keep existing compliant operator promotion.
+measurement and editorial trust checks. Play Real affiliate CTAs remain omitted
+from `/play/*` Original gameplay routes. Those five routes mount the compact
+Betsson header placement above the game viewport when GEO-eligible; viewport
+and controls stay one uninterrupted gameplay unit. Commercial discovery
+surfaces keep existing compliant operator promotion.
 Unresolved counsel items remain catalog-art rights, template legal pages,
 affiliate sub-ID capability and a complete consolidated-law review.
 

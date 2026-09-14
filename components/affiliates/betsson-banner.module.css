@@ -41,6 +41,16 @@
 .compactHeader .disclosure { font-size: .62rem; line-height: 1.35; }
 .compactHeader :global(.br-ad-compliance) { margin-top: 0.3rem; }
 
+.originalsHeader .body { display: none; }
+.originalsHeader .card {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  padding: 0.4rem 0.5rem;
+  gap: 0.3rem 0.45rem;
+}
+.originalsHeader .cta { grid-column: auto; width: auto; justify-self: end; }
+.originalsHeader .meta { grid-column: 1 / -1; }
+.originalsHeader .disclosure { overflow-wrap: anywhere; }
+
 .fullSupport { padding-bottom: 0.35rem; }
 
 @media (min-width: 640px) {

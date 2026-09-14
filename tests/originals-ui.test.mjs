@@ -35,7 +35,7 @@ function MarketControl() {
   return React.createElement('button', { onClick: () => setCountryCode('MX') }, 'Test MX')
 }
 
-test('test-only shell: wallet/settings/reset, consent-aware events, and no operator promotion', async () => {
+test('test-only shell: wallet/settings/reset, consent-aware events, header sponsor, and GEO gating', async () => {
   const dom = new JSDOM('<div id="root"></div>', { url: 'https://site.example.invalid/en/play/test-only?private=excluded', virtualConsole: new VirtualConsole() })
   const saved = new Map()
   for (const key of ['window', 'self', 'document', 'location', 'navigator', 'Event', 'HTMLElement', 'Node']) {
@@ -82,14 +82,23 @@ test('test-only shell: wallet/settings/reset, consent-aware events, and no opera
     await render(false)
 
     assert.equal(document.querySelector('[data-operator-cta="play-real"]'), null)
-    assert.equal(document.querySelector('[data-betsson-banner]'), null)
-    assert.equal(document.querySelector('a[href^="/go?"]'), null, 'Original gameplay routes must not mount operator CTAs')
+    const banner = document.querySelector('[data-betsson-banner="originals"]')
+    assert.ok(banner, 'compact Betsson placement lives in the Originals header')
+    assert.ok(banner.closest('[data-originals-sponsor]'))
+    assert.ok(banner.closest('[data-sponsor-slot="originals-header"]'))
+    assert.equal(banner.getAttribute('data-banner-layout'), 'compact-header')
+    const go = banner.querySelector('a[href^="/go?"]')
+    assert.ok(go, 'Originals header CTA uses the /go resolver')
+    assert.match(go.getAttribute('href'), /placement=originals_banner/)
+    assert.equal(document.querySelector('a[href*="betsson."]'), null, 'no direct Betsson destination is exposed')
+    assert.ok(banner.textContent.includes('18+'))
     const viewport = document.querySelector('[data-game-viewport]')
     const controls = document.querySelector('[data-game-controls]')
     const unit = document.querySelector('[data-game-unit]')
     assert.ok(viewport && controls && unit)
+    assert.equal(Boolean(banner.compareDocumentPosition(viewport) & 4), true)
     assert.equal(Boolean(viewport.compareDocumentPosition(controls) & 4), true)
-    assert.equal(unit.querySelector('[data-operator-cta], [data-betsson-banner]'), null)
+    assert.equal(unit.querySelector('[data-operator-cta], [data-betsson-banner], a[href^="/go"]'), null)
 
     const events = ['free_play_open', 'demo_round_start', 'demo_round_complete', 'demo_balance_reset', 'play_real_view', 'play_real_click']
     for (const event of events) trackFreePlay(event, context)
@@ -105,6 +114,7 @@ test('test-only shell: wallet/settings/reset, consent-aware events, and no opera
     assert.equal(window.dataLayer.length, count, 'revocation blocks subsequent events')
     await click(button('Test MX'))
     assert.equal(document.querySelector('a[href^="/go?"]'), null)
+    assert.equal(document.querySelector('[data-betsson-banner]'), null)
     assert.equal(document.querySelector('[data-operator-cta="play-real"]'), null)
   } finally {
     await act(() => root.unmount())
