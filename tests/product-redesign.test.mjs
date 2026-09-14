@@ -52,7 +52,14 @@ test('redesign: hero has two clear localized internal actions and one existing O
     assert.equal(doc.querySelector('[data-hero-play-free]').getAttribute('href'), `/${segment}/play`)
     assert.equal(doc.querySelector('[data-hero-explore]').getAttribute('href'), `/${segment}/games`)
     assert.equal(doc.querySelector('a[href$="/play/crash"]').getAttribute('href'), `/${segment}/play/crash`)
-    assert.equal(doc.querySelector('a[href^="/go"], a[href^="https:"]'), null)
+    const httpsLinks = [...doc.querySelectorAll('a[href^="https:"]')]
+    assert.ok(httpsLinks.every(link =>
+      link.closest('[data-hero-sponsor]') && /^https:\/\/www\.gov\.br\//.test(link.getAttribute('href'))))
+    assert.doesNotMatch(doc.body.innerHTML, /https?:\/\/(?:www\.)?betsson/i)
+    const goLinks = [...doc.querySelectorAll('a[href^="/go"]')]
+    assert.ok(goLinks.length >= 1)
+    assert.ok(goLinks.every(link => link.closest('[data-hero-sponsor]')))
+    assert.equal(doc.querySelector('[data-hero-sponsor] [data-betsson-banner="homepage"]').getAttribute('data-banner-layout'), 'compact-header')
     dom.window.close()
   }
 })
