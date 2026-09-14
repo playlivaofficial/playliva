@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { ArrowUpRight, ArrowRight, Play } from 'lucide-react'
 import { LocaleLink } from '@/components/locale-link'
 import { useCountry } from '@/components/country-context'
+import { BetssonHomeBanner } from '@/components/affiliates/betsson-home-banner'
 import { originalsDiscoveryCopy, ISLAND_CRASH_POSTER } from '@/lib/originals/discovery'
 import { productCopy } from '@/lib/product-discovery'
 import styles from '@/components/product-design.module.css'
@@ -22,6 +23,9 @@ export function Hero() {
           <LocaleLink href="/games" className={styles.secondaryAction} data-hero-explore>{copy.explore}<ArrowUpRight size={18} aria-hidden="true" /></LocaleLink>
         </div>
         <p className={styles.heroNote}>{copy.freeNote}</p>
+        <div className={styles.heroSponsor} data-hero-sponsor="" data-sponsor-slot="home-hero">
+          <BetssonHomeBanner />
+        </div>
       </div>
       <LocaleLink href="/play/crash" prefetch={false} className={styles.spotlight} aria-label={original.heroLink}>
         <Image src={ISLAND_CRASH_POSTER} alt={original.posterAlt} fill priority sizes="(max-width: 639px) 100vw, (max-width: 1023px) 80vw, 540px" />

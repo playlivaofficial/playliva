@@ -46,34 +46,41 @@ export function OffersView() {
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 -top-24 mx-auto h-64 max-w-3xl rounded-full bg-primary/20 blur-[100px]"
         />
-        <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
-          <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary">
-            {t('nav.offers')}
-          </p>
-          <h1 className="max-w-3xl text-balance font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-            {t('offers.heroTitle', { market: countryName })}
-          </h1>
-          <p className="mt-4 max-w-2xl text-pretty text-lg leading-relaxed text-muted-foreground">
-            {t('offers.heroSub')}
-          </p>
-          <div className="mt-8 flex items-center gap-3">
-            <span className="text-sm text-muted-foreground">
-              {t('offers.showingFor')}
-            </span>
-            <CountrySelector />
+        <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
+          <div className="page-hero-with-sponsor">
+            <div className="page-hero-title" data-page-hero-title="">
+              <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary">
+                {t('nav.offers')}
+              </p>
+              <h1 className="max-w-3xl text-balance font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+                {t('offers.heroTitle', { market: countryName })}
+              </h1>
+            </div>
+            <div
+              className="page-hero-sponsor"
+              data-offers-sponsored=""
+              data-page-hero-sponsor=""
+              data-sponsor-slot="offers"
+            >
+              <p className="mb-2 text-sm font-semibold text-primary">
+                {t('affiliate.sponsoredPartner')}
+              </p>
+              <BetssonSponsoredBanner surface="offers" layout="compact-header" cta="visit" />
+            </div>
+            <div className="page-hero-lede">
+              <p className="max-w-2xl text-pretty text-lg leading-relaxed text-muted-foreground">
+                {t('offers.heroSub')}
+              </p>
+              <div className="mt-8 flex items-center gap-3">
+                <span className="text-sm text-muted-foreground">
+                  {t('offers.showingFor')}
+                </span>
+                <CountrySelector />
+              </div>
+            </div>
           </div>
         </div>
       </section>
-
-      <div data-offers-sponsored>
-        <Section className="pb-8">
-          <SectionHeading
-            eyebrow={t('affiliate.sponsored')}
-            title={t('affiliate.sponsoredPartner')}
-          />
-          <BetssonSponsoredBanner surface="offers" layout="full" cta="visit" />
-        </Section>
-      </div>
 
       {offers.length === 0 ? (
         <Section>

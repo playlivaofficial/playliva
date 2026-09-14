@@ -110,6 +110,7 @@ test('public product templates expose one Betsson banner with localized copy', (
       const doc = render(locale, `/${segment}`, factory())
       const root = doc.querySelector(`[data-betsson-banner="${surface}"]`)
       assert.ok(root, `${surface} ${locale}`)
+      assert.equal(root.getAttribute('data-banner-layout'), 'compact-header', surface)
       assert.equal(doc.querySelectorAll(`[data-betsson-banner="${surface}"]`).length, 1, surface)
       assert.ok(root.querySelector('a[href^="/go?"]'))
       assert.ok(root.textContent.includes(t('affiliate.sponsored')))

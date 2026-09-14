@@ -158,12 +158,35 @@
    Space is reserved during hydration; without JS no operator ad is displayed. */
 [data-betting-ad]:not([data-evidence-state="current"]) { visibility: hidden; }
 [data-betting-ad][data-evidence-state="expired"] { display: none; }
-.br-ad-compliance { flex: 0 0 100%; grid-column: 1 / -1; width: 100%; min-width: 0; margin-top: 0.75rem; }
-.br-ad-identity { margin: 0 0 0.5rem; font-size: 0.75rem; line-height: 1.6; overflow-wrap: anywhere; }
-.br-ad-identity a { text-decoration: underline; text-underline-offset: 3px; }
-.br-ad-warning { box-sizing: border-box; display: flex; align-items: center; gap: 0.75rem; width: 100%; min-height: 96px; padding: 0.75rem; border: 2px solid #fff; border-radius: 0.5rem; background: #fff; color: #111; text-align: left; font-size: 1rem; font-weight: 700; line-height: 1.5; writing-mode: horizontal-tb; }
+.br-ad-compliance { flex: 0 0 100%; grid-column: 1 / -1; width: 100%; min-width: 0; margin-top: 0.35rem; }
+.br-ad-identity { margin: 0 0 0.25rem; font-size: 0.65rem; line-height: 1.35; overflow-wrap: anywhere; }
+.br-ad-identity a { text-decoration: underline; text-underline-offset: 2px; }
+.br-ad-warning { box-sizing: border-box; display: flex; align-items: center; gap: 0.5rem; width: 100%; min-height: 96px; padding: 0.45rem 0.55rem; border: 2px solid #fff; border-radius: 0.4rem; background: #fff; color: #111; text-align: left; font-size: 0.8125rem; font-weight: 700; line-height: 1.35; writing-mode: horizontal-tb; }
 .br-ad-warning p { margin: 0; min-width: 0; overflow-wrap: anywhere; }
-.br-ad-age { flex: none; border: 2px solid #111; border-radius: 0.25rem; padding: 0.2rem; font-size: 1.125rem; }
+.br-ad-age { flex: none; border: 2px solid #111; border-radius: 0.25rem; padding: 0.12rem 0.18rem; font-size: 0.95rem; }
+
+.page-hero-with-sponsor {
+  display: grid;
+  gap: 0.85rem 1.5rem;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "title"
+    "sponsor"
+    "lede";
+  align-items: start;
+}
+.page-hero-title { grid-area: title; min-width: 0; }
+.page-hero-sponsor { grid-area: sponsor; min-width: 0; }
+.page-hero-lede { grid-area: lede; min-width: 0; }
+.page-hero-lede > p:first-child { margin-top: 0; }
+@media (min-width: 1024px) {
+  .page-hero-with-sponsor {
+    grid-template-columns: minmax(0, 1fr) minmax(16.5rem, 22rem);
+    grid-template-areas:
+      "title sponsor"
+      "lede sponsor";
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   .animate-float, .animate-fade-in-up { animation: none; }
 }

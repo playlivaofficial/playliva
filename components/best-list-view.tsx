@@ -59,9 +59,8 @@ export function BestListView({ list }: { list: GameList }) {
           { label: categoryName, href: `/${list.category}` },
           { label: listContent.title },
         ]}
+        sponsor={<BetssonSponsoredBanner surface="best-list" layout="compact-header" />}
       />
-
-      <BetssonSponsoredBanner surface="best-list" layout="full" />
 
       {/* Ranked editorial list */}
       <Section className="py-10">

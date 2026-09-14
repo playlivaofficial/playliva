@@ -27,16 +27,22 @@ export function PlayView() {
   return (
     <div className={styles.hub} data-play-hub>
       <header className={styles.hubIntro}>
-        <p className={styles.eyebrow}>{copy.originals} · {product.hubEyebrow}</p>
-        <h1 className={styles.hubTitle}>{product.hubTitle}</h1>
-        <p className={styles.hubDescription}>{product.hubSub}</p>
-        <ul className={styles.trust}>
-          {[copy.noDeposits, copy.noWithdrawals, copy.noValue].map(label => (
-            <li key={label}><Check size={16} aria-hidden="true" />{label}</li>
-          ))}
-        </ul>
+        <div className={styles.hubCopyTitle}>
+          <p className={styles.eyebrow}>{copy.originals} · {product.hubEyebrow}</p>
+          <h1 className={styles.hubTitle}>{product.hubTitle}</h1>
+        </div>
+        <div className={styles.hubSponsor} data-hub-sponsor="" data-sponsor-slot="play-hub">
+          <BetssonSponsoredBanner surface="play" layout="compact-header" />
+        </div>
+        <div className={styles.hubCopyLede}>
+          <p className={styles.hubDescription}>{product.hubSub}</p>
+          <ul className={styles.trust}>
+            {[copy.noDeposits, copy.noWithdrawals, copy.noValue].map(label => (
+              <li key={label}><Check size={16} aria-hidden="true" />{label}</li>
+            ))}
+          </ul>
+        </div>
       </header>
-      <BetssonSponsoredBanner surface="play" layout="hub" />
       <div className={styles.filters} role="group" aria-label={product.all}>
         {groups.map(group => <button type="button" key={group.id} aria-pressed={filter === group.id} onClick={() => setFilter(group.id)}>{group.label}</button>)}
       </div>
