@@ -2,6 +2,12 @@
 
 Source of truth: https://github.com/playlivaofficial/playliva.
 
+[M12 hardening checkpoint](docs/m12-final-hardening.md) adds dated BR
+authorization safeguards, centralized ad warnings, sourced optional RTP,
+privacy-minimal measurement and editorial trust checks. It preserves the
+integrated Cursor Originals layout. Publication-policy/legal evidence remains
+unresolved; this checkpoint is not a production-release or v1-completion claim.
+
 [M11 provider reference catalog](docs/m11-provider-catalog.md) adds 31 sourced,
 localized factual game references with authentic catalog covers, bounded discovery and
 build-time integrity checks. The leftover generic Blackjack Live listing uses

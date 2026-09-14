@@ -4,9 +4,10 @@ import { LocaleLink } from '@/components/locale-link'
 import { Logo } from '@/components/logo'
 import { useTranslation } from '@/components/country-context'
 import { openCookiePreferences } from '@/lib/consent'
+import { editorialCopy } from '@/lib/editorial'
 
 export function SiteFooter() {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
 
   const columns: {
     title: string
@@ -29,6 +30,7 @@ export function SiteFooter() {
       title: t('footer.company'),
       links: [
         { href: '/about', label: t('nav.about') },
+        { href: '/editorial-policy', label: editorialCopy(locale).policy },
         { href: '/contact', label: t('footer.contact') },
         { href: '/affiliate-disclosure', label: t('footer.affiliateDisclosure') },
         { href: '/operators', label: t('nav.operators') },

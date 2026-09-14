@@ -3,8 +3,7 @@
  *
  * Events are pushed to `window.dataLayer` (GTM-compatible) and, in
  * development, logged for inspection. This is the single integration point
- * for future analytics/attribution: GEO → page → game → operator →
- * affiliate click → (later) registration → FTD → revenue.
+ * for consented, privacy-minimal product measurement.
  *
  * No private/sensitive data is captured — only editorial identifiers and
  * the current context.
@@ -46,6 +45,8 @@ export type PageType =
 export interface TrackPayload {
   country?: string
   language?: string
+  /** Legacy callers; normalized to the language field, never used as market. */
+  locale?: string
   url?: string
   pageType?: PageType
   /** Editorial slug of the current page (game slug, best-list slug, etc). */
@@ -64,7 +65,36 @@ export interface TrackPayload {
   placement?: string
   /** A stable identifier for the destination — never the raw affiliate URL. */
   destination?: string
-  [key: string]: unknown
+  originalId?: string
+  roundId?: string
+}
+
+const EVENTS: readonly TrackEventName[] = ['page_view', 'game_view', 'comparison_view',
+  'category_view', 'where_to_play_view', 'operator_view', 'affiliate_impression',
+  'affiliate_click', 'free_play_open', 'demo_round_start', 'demo_round_complete',
+  'demo_balance_reset', 'play_real_view', 'play_real_click']
+const CONTEXT_FIELDS = ['country', 'language', 'pageType', 'pageSlug', 'gameId', 'gameSlug',
+  'matchId', 'matchSlug', 'category', 'operatorId', 'operatorSlug', 'offerId', 'ctaLocation',
+  'placement', 'destination', 'originalId', 'roundId'] as const
+
+/** Never collect search terms, query strings, fragments, full URLs or free text. */
+export function analyticsPath(value: unknown): string | undefined {
+  if (typeof value !== 'string') return undefined
+  const path = value.split(/[?#]/, 1)[0]
+  return /^\/(?:[a-z0-9-]+\/)*[a-z0-9-]*$/.test(path) && path.length <= 240 ? path : undefined
+}
+
+export function sanitizeTrackPayload(payload: TrackPayload, currentPath: string): Record<string, string> {
+  const safe: Record<string, string> = {}
+  for (const key of CONTEXT_FIELDS) {
+    const value = payload[key]
+    const pattern = key === 'gameId' ? /^[a-zA-Z0-9][a-zA-Z0-9_+-]{0,99}$/ : /^[a-zA-Z0-9][a-zA-Z0-9_-]{0,99}$/
+    if (typeof value === 'string' && pattern.test(value)) safe[key] = value
+  }
+  if (!safe.language && typeof payload.locale === 'string' && ['en', 'pt-BR', 'es-MX'].includes(payload.locale)) safe.language = payload.locale
+  const path = analyticsPath(payload.url) ?? analyticsPath(currentPath)
+  if (path) safe.url = path
+  return safe
 }
 
 /** Best-effort device class, derived client-side only — never fingerprinting. */
@@ -76,19 +106,20 @@ function getDeviceClass(): 'mobile' | 'desktop' | undefined {
 }
 
 export function track(event: TrackEventName, payload: TrackPayload = {}): void {
-  if (typeof window === 'undefined' || !hasAnalyticsConsent()) return
+  if (typeof window === 'undefined' || !hasAnalyticsConsent() || !EVENTS.includes(event)) return
   const data: Record<string, unknown> = {
     event,
     timestamp: new Date().toISOString(),
     device: getDeviceClass(),
-    ...payload,
+    ...sanitizeTrackPayload(payload, window.location.pathname),
   }
 
   if (typeof window !== 'undefined') {
-    if (!payload.url) data.url = window.location.pathname + window.location.search
     window.dataLayer = window.dataLayer ?? []
     window.dataLayer.push(data)
-    window.gtag?.('event', event, data)
+    window.gtag?.('event', event, { ...data,
+      page_location: `${window.location.origin}${data.url ?? '/'}`, page_referrer: '',
+    })
   }
 
   if (process.env.NODE_ENV !== 'production') {

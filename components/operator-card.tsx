@@ -9,6 +9,8 @@ import { getCategoryName } from '@/lib/content'
 import { AffiliateButton } from '@/components/affiliate-button'
 import { useTranslation } from '@/components/country-context'
 import type { PageType } from '@/lib/tracking'
+import { BrazilAdWarning } from '@/components/affiliates/brazil-ad-warning'
+import { AffiliateDisclosureLine } from '@/components/notices'
 
 export function OperatorCard({
   operator,
@@ -37,7 +39,8 @@ export function OperatorCard({
   const countryName = getCountryName(country, locale)
 
   return (
-    <div className="flex flex-col rounded-2xl border border-border bg-card p-5 transition-colors hover:border-primary/40">
+    <div className="flex flex-col rounded-2xl border border-border bg-card p-5 transition-colors hover:border-primary/40"
+      data-betting-ad={hasAffiliate && country === 'BR' ? '' : undefined} data-evidence-state="pending">
       <div className="flex items-center gap-3">
         <div className="relative size-12 shrink-0 overflow-hidden rounded-xl border border-border bg-secondary">
           <Image
@@ -121,7 +124,7 @@ export function OperatorCard({
             size="lg"
             className="flex-1"
           >
-            {t('cta.viewOffer')}
+            {t('cta.visitOperator')}
           </AffiliateButton>
         ) : (
           <LocaleLink
@@ -132,6 +135,8 @@ export function OperatorCard({
           </LocaleLink>
         )}
       </div>
+      {hasAffiliate && <AffiliateDisclosureLine />}
+      {hasAffiliate && country === 'BR' && <BrazilAdWarning operatorId={operator.id} />}
     </div>
   )
 }

@@ -1,3 +1,5 @@
+import { isAuthorizedBrazilDestination } from './compliance/brazil'
+import { hasCurrentOfferEvidence } from './compliance/offers'
 import type {
   Category,
   CategorySlug,
@@ -1114,7 +1116,9 @@ export function isAffiliateEligible(
   const destination = category && isCategorySlug(category)
     ? operator.categoryAffiliateUrl?.[category]?.[country] ?? operator.affiliateUrl[country]
     : operator.affiliateUrl[country]
-  return isAffiliateUrl(destination)
+  return isAffiliateUrl(destination) && (country !== 'BR' ||
+    (isAuthorizedBrazilDestination(operator, operator.affiliateUrl[country]) &&
+      isAuthorizedBrazilDestination(operator, destination)))
 }
 
 export function isOfferEligible(
@@ -1123,12 +1127,13 @@ export function isOfferEligible(
   context: AffiliateContext = {},
 ): boolean {
   const operator = getOperatorById(offer.operatorId)
-  if (!offer.active || offer.status !== 'verified' || offer.country !== country ||
+  if (!offer.active || offer.status !== 'verified' || offer.country !== country || !hasCurrentOfferEvidence(offer) ||
     !isAffiliateUrl(offer.affiliateUrl) || !isAffiliateEligible(operator, country, context)) return false
   if (offer.category !== 'welcome' &&
     (!isAffiliateEligible(operator, country, { ...context, category: offer.category }) ||
       (context.category && context.category !== offer.category))) return false
   if (operator?.verifiedOffers && !operator.verifiedOffers.includes(offer.id)) return false
+  if (country === 'BR' && (!operator || !isAuthorizedBrazilDestination(operator, offer.affiliateUrl))) return false
   const now = Date.now()
   if (offer.validFrom && !(Date.parse(offer.validFrom) <= now)) return false
   if (offer.validUntil && !(Date.parse(offer.validUntil) >= now)) return false

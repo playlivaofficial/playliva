@@ -8,6 +8,14 @@ const { resolveDestination, affiliateFallbackPath } = affiliateModule
 
 const partner = getOperator('betsson-group-affiliates')
 const context = { operatorSlug: partner.slug, country: 'BR' }
+// Evidence fixture only. No live offer or real-world compliance approval is created.
+function publicationFixture() {
+  const verifiedAt = new Date().toISOString()
+  const reviewBy = new Date(Date.now() + 86400000).toISOString()
+  return { title: 'Process-local test', terms: 'Test only', source: 'https://betsson.bet.br',
+    lastVerifiedAt: verifiedAt, validUntil: reviewBy,
+    complianceReview: { market: 'BR', status: 'reviewed-permitted', legalSource: 'https://www.gov.br/fazenda', verifiedAt, reviewBy } }
+}
 
 test('approved partner retains exact configured base and category destinations', () => {
   for (const analyticsAllowed of [undefined, false, true]) {
@@ -59,7 +67,7 @@ test('unsafe destination configurations fail closed', () => {
 test('offer resolution and lists share operator, market, category, date and verification gates', () => {
   // Synthetic offer exists only in this process and reuses an existing approved
   // destination. It is never written to application data or sent externally.
-  const offer = { id: 'unit-test-offer', operatorId: partner.id, country: 'BR',
+  const offer = { ...publicationFixture(), id: 'unit-test-offer', operatorId: partner.id, country: 'BR',
     category: 'crash', status: 'verified', active: true, affiliateUrl: partner.affiliateUrl.BR }
   const offers = getOffers('BR')
   const saved = { ...partner }
@@ -109,7 +117,7 @@ test('functional partner template survives every consent state; optional measure
   // campaign IDs or production operator records are created or changed.
   partner.trackingTemplate = { BR: 'affiliate_id=test-only&campaign_id=test-only&tracking_code={geo}' }
   partner.analyticsTrackingTemplate = { BR: 'subid={pageSlug}&placement={placement}' }
-  const offer = { id: 'unit-test-attribution', operatorId: partner.id, country: 'BR',
+  const offer = { ...publicationFixture(), id: 'unit-test-attribution', operatorId: partner.id, country: 'BR',
     category: 'crash', status: 'verified', active: true, affiliateUrl: partner.affiliateUrl.BR }
   const offers = getOffers('BR')
   offers.push(offer)

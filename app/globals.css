@@ -153,3 +153,17 @@
 .animate-fade-in-up {
   animation: fade-in-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
+
+/* Fail closed while a cached advertisement's dated evidence is checked locally.
+   Space is reserved during hydration; without JS no operator ad is displayed. */
+[data-betting-ad]:not([data-evidence-state="current"]) { visibility: hidden; }
+[data-betting-ad][data-evidence-state="expired"] { display: none; }
+.br-ad-compliance { flex: 0 0 100%; grid-column: 1 / -1; width: 100%; min-width: 0; margin-top: 0.75rem; }
+.br-ad-identity { margin: 0 0 0.5rem; font-size: 0.75rem; line-height: 1.6; overflow-wrap: anywhere; }
+.br-ad-identity a { text-decoration: underline; text-underline-offset: 3px; }
+.br-ad-warning { box-sizing: border-box; display: flex; align-items: center; gap: 0.75rem; width: 100%; min-height: 96px; padding: 0.75rem; border: 2px solid #fff; border-radius: 0.5rem; background: #fff; color: #111; text-align: left; font-size: 1rem; font-weight: 700; line-height: 1.5; writing-mode: horizontal-tb; }
+.br-ad-warning p { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.br-ad-age { flex: none; border: 2px solid #111; border-radius: 0.25rem; padding: 0.2rem; font-size: 1.125rem; }
+@media (prefers-reduced-motion: reduce) {
+  .animate-float, .animate-fade-in-up { animation: none; }
+}

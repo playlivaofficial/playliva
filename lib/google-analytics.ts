@@ -1,4 +1,5 @@
 import { hasAnalyticsConsent, subscribeConsent, syncConsentCookie } from './consent'
+import { analyticsPath } from './tracking'
 
 declare global {
   interface Window {
@@ -65,6 +66,8 @@ export function connectGoogleAnalytics(measurementId: string | undefined): () =>
     window.gtag('config', measurementId, {
       allow_google_signals: false,
       allow_ad_personalization_signals: false,
+      page_location: `${location.origin}${analyticsPath(location.pathname) ?? '/'}`,
+      page_referrer: '',
     })
     if (!document.getElementById('playliva-ga4')) {
       const script = document.createElement('script')

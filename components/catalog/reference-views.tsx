@@ -15,6 +15,8 @@ import { getCategoryName } from '@/lib/content'
 import styles from './catalog.module.css'
 import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsored-banner'
 import { ProviderPlayRealCta } from '@/components/affiliates/provider-play-real-cta'
+import { RtpFact } from '@/components/rtp-fact'
+import { EditorialByline } from '@/components/editorial-byline'
 
 function Evidence({ games, locale }: { games: ReferenceGame[]; locale: Locale }) {
   const c = catalogCopy(locale)
@@ -34,6 +36,8 @@ export function ReferenceGameView({ game, locale }: { game: ReferenceGame; local
     <div className={styles.earlyCta}><ProviderPlayRealCta gameSlug={game.slug} category={game.category} /></div>
     <BetssonSponsoredBanner surface="game" layout="compact" />
     <article className={`${styles.article} ${styles.prose}`}>
+      <EditorialByline path={`/games/${game.slug}`} locale={locale} />
+      <RtpFact slug={game.slug} provider={summary.provider} locale={locale} />
       <div className={styles.articleGrid}>
         <div><h2>{c.overview}</h2><p>{content.overview}</p><h2>{c.how}</h2><p>{content.howItWorks}</p><h2>{c.features}</h2><ul className={styles.features}>{content.features.map(feature => <li key={feature}>{feature}</li>)}</ul></div>
         <aside><div className={styles.heroArt}><CatalogArtwork game={summary} hero /></div><div className={styles.links}><LocaleLink href={`/providers/${game.providerId}`}>{summary.provider}</LocaleLink><LocaleLink href={`/${game.category}`}>{summary.categoryLabel}</LocaleLink><LocaleLink href="/games">{c.back}</LocaleLink></div></aside>
@@ -51,7 +55,7 @@ export function ReferenceComparisonView({ comparison, locale }: { comparison: Re
   return <div data-reference-comparison={comparison.slug}>
     <PageHero eyebrow={c.comparisons} title={`${a.title} vs ${b.title}`} description={c.comparisonIntro} breadcrumbs={[{ label: c.home, href: '/' }, { label: c.games, href: '/games' }, { label: `${a.title} vs ${b.title}` }]} />
     <BetssonSponsoredBanner surface="comparison" layout="full" />
-    <article className={`${styles.article} ${styles.prose}`}><h2>{c.shared}</h2><p>{comparison.shared[locale]}</p><h2>{c.contrast}</h2>
+    <article className={`${styles.article} ${styles.prose}`}><EditorialByline path={`/compare/${comparison.slug}`} locale={locale} /><h2>{c.shared}</h2><p>{comparison.shared[locale]}</p><h2>{c.contrast}</h2>
       <div className={styles.comparison}>{[a, b].map((game, index) => <section key={game.id} className={styles.compareCell}><h3>{game.title}</h3><p>{comparison.difference[locale][index]}</p><ul className={`${styles.features} mt-4`}>{game.content[locale].features.map(feature => <li key={feature}>{feature}</li>)}</ul><div className={styles.links}><LocaleLink href={`/games/${game.slug}`}>{c.read} →</LocaleLink></div></section>)}</div>
       <Evidence games={[a, b]} locale={locale} />
     </article>
@@ -62,7 +66,7 @@ export function ReferenceReadingView({ list, locale }: { list: ReferenceReadingL
   const c = catalogCopy(locale), game = getReferenceGame(list.slug)!
   return <div data-reference-reading={list.slug}><PageHero eyebrow={c.related} title={`${c.similar} ${game.title}`} description={list.intro[locale]} breadcrumbs={[{ label: c.home, href: '/' }, { label: game.title, href: `/games/${game.slug}` }, { label: `${c.similar} ${game.title}` }]} />
     <BetssonSponsoredBanner surface="games-like" layout="full" />
-    <article className={`${styles.article} ${styles.prose}`}><p>{c.similarIntro}</p><div className="mt-6 grid gap-5 md:grid-cols-3">{list.alternatives.map(item => <ContentCard key={item.slug}><h2>{getReferenceGame(item.slug)!.title}</h2><p>{item.reason[locale]}</p><div className={styles.links}><LocaleLink href={`/games/${item.slug}`}>{c.read} →</LocaleLink></div></ContentCard>)}</div><Evidence games={[game]} locale={locale} /></article>
+    <article className={`${styles.article} ${styles.prose}`}><EditorialByline path={`/games-like/${list.slug}`} locale={locale} /><p>{c.similarIntro}</p><div className="mt-6 grid gap-5 md:grid-cols-3">{list.alternatives.map(item => <ContentCard key={item.slug}><h2>{getReferenceGame(item.slug)!.title}</h2><p>{item.reason[locale]}</p><div className={styles.links}><LocaleLink href={`/games/${item.slug}`}>{c.read} →</LocaleLink></div></ContentCard>)}</div><Evidence games={[game]} locale={locale} /></article>
   </div>
 }
 

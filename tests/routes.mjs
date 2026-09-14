@@ -23,6 +23,8 @@ import productModule from '../lib/product-discovery.ts'
 import catalogModule from '../lib/catalog/index.ts'
 import catalogCopyModule from '../lib/catalog/copy.ts'
 import catalogQueryModule from '../lib/catalog/query.ts'
+import brazilModule from '../lib/compliance/brazil.ts'
+import rtpModule from '../lib/rtp.ts'
 const { originalsDiscoveryCopy, ISLAND_CRASH_POSTER } = discoveryModule
 const { ANALYTICS_COOKIE } = consentModule
 
@@ -41,6 +43,7 @@ const failures = []
 const publicPaths = sitemap().map((entry) => new URL(entry.url).pathname)
 const paths = new Set(publicPaths)
 const linkedPaths = new Set()
+const titlesByLocale = new Map()
 const chunkRoot = new URL('../.next/static/chunks/', import.meta.url)
 const gameChunks = []
 for (const name of await readdir(chunkRoot)) {
@@ -114,6 +117,28 @@ try {
     if (canonical !== SITE_URL + path) failures.push(`${path}: canonical ${canonical}`)
     const routePath = path.replace(/^\/(en|pt-br|es-mx)/, '')
     const segment = path.split('/')[1]
+    // Next streaming keeps the pending replacement in a hidden container; it
+    // is not a second visible/accessibility heading alongside the fallback.
+    assert.equal([...doc.querySelectorAll('h1')].filter(node => !node.closest('[hidden]')).length, 1, `${path}: one semantic page heading`)
+    assert.ok(doc.querySelector('meta[name="description"]')?.content.trim().length > 10, `${path}: meaningful description`)
+    if (publicPaths.includes(path)) {
+      const key = `${segment}:${doc.title}`
+      if (titlesByLocale.has(key)) failures.push(`${path}: duplicate title with ${titlesByLocale.get(key)}`)
+      titlesByLocale.set(key, path)
+    }
+    for (const link of doc.querySelectorAll('a[href^="/go?"]')) {
+      const ad = link.closest('[data-betting-ad]')
+      assert.ok(ad, `${path}: every operator action belongs to a warned ad`)
+      assert.equal(ad.querySelectorAll('[data-brazil-ad-warning]').length, 1, `${path}: one central warning per ad`)
+      assert.ok(ad.textContent.includes(brazilModule.BRAZIL_AD_RULES.warnings[0]), `${path}: statutory warning wording`)
+      assert.ok(ad.textContent.includes('18+'), `${path}: age warning`)
+      assert.equal(ad.getAttribute('data-evidence-state'), 'pending', `${path}: cached ad evidence must be rechecked before display`)
+    }
+    if (routePath.startsWith('/games/')) {
+      const slug = routePath.split('/').pop()
+      assert.equal(doc.querySelectorAll('[data-rtp-fact]').length, rtpModule.RTP_EVIDENCE[slug] ? 1 : 0, `${path}: sourced RTP only`)
+      assert.ok(doc.querySelector('[data-editorial-byline]'), `${path}: editorial attribution`)
+    }
     const copy = originalsDiscoveryCopy(localeModule.segmentToLocale(segment))
     const navCopy = i18nModule.createTranslator(localeModule.segmentToLocale(segment))
     assert.equal(doc.querySelector('header nav a[href="/' + segment + '/play"]')?.textContent, navCopy('nav.play'))
@@ -352,12 +377,20 @@ try {
     }
     if (publicPaths.includes(path) ? robots.some((v) => v.includes('noindex')) : !robots.some((v) => v.includes('noindex'))) failures.push(`${path}: robots ${robots}`)
     if ((doc.title.match(/PlayLiva/gi) ?? []).length !== 1) failures.push(`${path}: title ${doc.title}`)
+    const schemaTypes = new Map()
     for (const script of doc.querySelectorAll('script[type="application/ld+json"]')) {
       const data = JSON.parse(script.textContent)
+      assert.equal(data['@context'], 'https://schema.org', `${path}: schema context`)
+      assert.ok(['WebSite', 'Organization', 'BreadcrumbList'].includes(data['@type']), `${path}: schema must have an audited visible use`)
+      assert.ok(!('aggregateRating' in data) && !('review' in data), `${path}: no invented ratings/reviews`)
+      schemaTypes.set(data['@type'], (schemaTypes.get(data['@type']) ?? 0) + 1)
       if (data['@type'] === 'BreadcrumbList') for (const item of data.itemListElement) {
         if (item.item && !item.item.startsWith(`${SITE_URL}/${path.split('/')[1]}`)) failures.push(`${path}: unlocalized breadcrumb ${item.item}`)
       }
     }
+    assert.equal(schemaTypes.get('WebSite'), 1, `${path}: one WebSite entity`)
+    assert.equal(schemaTypes.get('Organization'), 1, `${path}: one Organization entity`)
+    assert.ok((schemaTypes.get('BreadcrumbList') ?? 0) <= 1, `${path}: no duplicate breadcrumbs`)
     if (doc.querySelector('script[src*="googletagmanager"], script[src*="insights/script"]')) failures.push(`${path}: analytics script before consent`)
     if (path.includes('blackjack-live') && doc.querySelector('img[src*="blackjack-live.jpg"]')) failures.push(`${path}: mismatched Speed Blackjack artwork`)
     const metadataText = [...doc.querySelectorAll('meta[name="description"], img[alt]')].map((node) => node.content ?? node.alt).join(' ')

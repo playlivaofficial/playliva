@@ -26,6 +26,8 @@ import { OfferCard } from '@/components/offer-card'
 import { ResponsibleNotice } from '@/components/notices'
 import { track } from '@/lib/tracking'
 import type { Operator } from '@/lib/types'
+import { BrazilAdWarning } from '@/components/affiliates/brazil-ad-warning'
+import { OperatorEvidence } from '@/components/operator-evidence'
 
 function InfoRow({
   icon: Icon,
@@ -76,7 +78,8 @@ export function OperatorProfileView({ operator }: { operator: Operator }) {
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 -top-24 mx-auto h-64 max-w-3xl rounded-full bg-primary/20 blur-[100px]"
         />
-        <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8"
+          data-betting-ad={hasAffiliate && activeCountry === 'BR' ? '' : undefined} data-evidence-state="pending">
           <Breadcrumbs
             className="mb-4"
             items={[
@@ -139,12 +142,14 @@ export function OperatorProfileView({ operator }: { operator: Operator }) {
               </AffiliateButton>
             )}
           </div>
+          {hasAffiliate && activeCountry === 'BR' && <BrazilAdWarning operatorId={operator.id} />}
         </div>
       </section>
 
       <Section>
         <div className="grid gap-8 lg:grid-cols-3">
           <div className="lg:col-span-2">
+            <OperatorEvidence operatorId={operator.id} slug={operator.slug} locale={locale} />
             <div className="rounded-2xl border border-border bg-card p-6">
               <h2 className="font-display text-xl font-bold text-foreground">
                 {t('operators.detailsTitle')}
@@ -155,12 +160,12 @@ export function OperatorProfileView({ operator }: { operator: Operator }) {
                     .map((c) => getCountryName(c, locale))
                     .join(', ')}
                 </InfoRow>
-                <InfoRow icon={Gamepad2} label={t('operators.gameTypesLabel')}>
+                {operator.gameTypes.length > 0 && <InfoRow icon={Gamepad2} label={t('operators.gameTypesLabel')}>
                   {operator.gameTypes.join(' · ')}
-                </InfoRow>
-                <InfoRow icon={CreditCard} label={t('operators.paymentMethods')}>
+                </InfoRow>}
+                {operator.paymentMethods.length > 0 && <InfoRow icon={CreditCard} label={t('operators.paymentMethods')}>
                   {operator.paymentMethods.join(' · ')}
-                </InfoRow>
+                </InfoRow>}
               </div>
             </div>
 
@@ -195,7 +200,8 @@ export function OperatorProfileView({ operator }: { operator: Operator }) {
           </div>
 
           <aside className="space-y-4">
-            <div className="rounded-2xl border border-border bg-card p-5">
+            <div className="rounded-2xl border border-border bg-card p-5"
+              data-betting-ad={hasAffiliate && activeCountry === 'BR' ? '' : undefined} data-evidence-state="pending">
               <h3 className="font-display text-base font-bold text-foreground">
                 {t('operators.termsTitle')}
               </h3>
@@ -215,6 +221,7 @@ export function OperatorProfileView({ operator }: { operator: Operator }) {
                   {t('cta.visitOperator')}
                 </AffiliateButton>
               )}
+              {hasAffiliate && activeCountry === 'BR' && <BrazilAdWarning operatorId={operator.id} />}
             </div>
 
             <div className="rounded-2xl border border-border bg-secondary/30 p-5">

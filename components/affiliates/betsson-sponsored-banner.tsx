@@ -11,6 +11,7 @@ import {
   type BetssonBannerSurface,
 } from '@/lib/affiliates/betsson'
 import styles from './betsson-banner.module.css'
+import { BrazilAdWarning } from './brazil-ad-warning'
 
 /** Homepage wrapper so existing homepage tests keep `data-betsson-banner="homepage"`. */
 export function BetssonHomeBanner() {
@@ -46,7 +47,7 @@ export function BetssonSponsoredBanner({
       data-banner-layout={layout}
       aria-label={`${t('affiliate.sponsored')}: ${banner.operatorName}`}
     >
-      <div className={styles.card}>
+      <div className={styles.card} data-betting-ad="" data-evidence-state="pending">
         {creative.kind === 'banner' ? (
           <div className={styles.art}>
             <Image
@@ -83,6 +84,7 @@ export function BetssonSponsoredBanner({
         <div className={styles.meta}>
           <AffiliateDisclosureLine />
         </div>
+        <BrazilAdWarning operatorId="op-betsson" />
       </div>
     </section>
   )
