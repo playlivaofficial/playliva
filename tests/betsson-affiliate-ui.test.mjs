@@ -21,7 +21,6 @@ import capybaraDef from '../lib/originals/capybara/definition.ts'
 import crashDef from '../lib/originals/crash/definition.ts'
 import minesConfig from '../lib/originals/mines/config.ts'
 import rouletteConfig from '../lib/originals/roulette/config.ts'
-import consentModule from '../lib/consent.ts'
 import providerModule from '../components/originals/demo-session.tsx'
 import sessionModule from '../lib/originals/session.ts'
 
@@ -210,7 +209,7 @@ test('generic operator CTA does not claim exact game availability and does not r
     getOriginalOperatorCtas(crashDef.ISLAND_CRASH, 'BR', 'en')[0].href)
 })
 
-test('PT-BR, EN and ES-MX render localized Betsson CTAs without English leakage', async () => {
+test('PT-BR, EN and ES-MX Originals shells omit operator promotion while remaining localized', async () => {
   const { PlayGameShell } = unwrap(shellModule)
   const game = minesConfig.LIVA_MINES
   for (const [locale, segment] of locales) {
@@ -224,9 +223,8 @@ test('PT-BR, EN and ES-MX render localized Betsson CTAs without English leakage'
       assert.notEqual(t('affiliate.genericBoundary'), createTranslator('en')('affiliate.genericBoundary'))
     }
     const dom = new JSDOM('<div id="root"></div>', { url: `https://site.example.invalid/${segment}/play/mines`, virtualConsole: new VirtualConsole() })
-    dom.window.IntersectionObserver = class { observe() {} unobserve() {} disconnect() {} }
     const saved = new Map()
-    for (const key of ['window', 'self', 'document', 'location', 'navigator', 'Event', 'HTMLElement', 'Node', 'IntersectionObserver']) {
+    for (const key of ['window', 'self', 'document', 'location', 'navigator', 'Event', 'HTMLElement', 'Node']) {
       saved.set(key, Object.getOwnPropertyDescriptor(globalThis, key))
       Object.defineProperty(globalThis, key, { configurable: true, value: dom.window[key] })
     }
@@ -238,30 +236,14 @@ test('PT-BR, EN and ES-MX render localized Betsson CTAs without English leakage'
         React.createElement(providerModule.DemoSessionProvider, { store },
           React.createElement(PlayGameShell, { game, controls: React.createElement('button', { 'data-test-control': '' }, 'Start') },
             React.createElement('div', {}, 'viewport'))))))
-      const cta = document.querySelector('[data-operator-cta="play-real"]')
-      assert.equal(cta.getAttribute('data-operator-cta-mode'), GENERIC_BRAND_MODE)
-      assert.equal(document.querySelector('[data-cta-mode="generic-brand"]').textContent, t('affiliate.visitNamed', { name: 'Betsson' }))
-      assert.ok(cta.textContent.includes(t('affiliate.genericBoundary')))
-      assert.ok(cta.textContent.includes(t('affiliate.sponsored')))
-      assert.doesNotMatch(cta.textContent, forbiddenExactClaims)
-      if (locale === 'pt-BR') assert.doesNotMatch(cta.textContent, /Visit Betsson|Play Real|Explore Betsson|Sponsored/)
-      if (locale === 'en') {
-        assert.doesNotMatch(cta.textContent, portuguesePromo)
-        assert.doesNotMatch(cta.textContent, /Patrocinado|Visitar Betsson|Explorar Betsson/)
-      }
-      if (locale === 'es-MX') {
-        assert.doesNotMatch(cta.textContent, /Visit Betsson|Play Real|Explore Betsson|Sponsored/)
-        assert.doesNotMatch(cta.textContent, portuguesePromo)
-      }
+      assert.equal(document.querySelector('[data-operator-cta="play-real"]'), null)
+      assert.equal(document.querySelector('[data-betsson-banner]'), null)
+      assert.equal(document.querySelector('a[href^="/go?"]'), null)
       const viewport = document.querySelector('[data-game-viewport]')
       const controls = document.querySelector('[data-game-controls]')
-      assert.ok(cta.compareDocumentPosition(viewport) & 4)
+      assert.ok(viewport && controls)
       assert.ok(viewport.compareDocumentPosition(controls) & 4)
-      assert.equal(Boolean(viewport.compareDocumentPosition(cta) & 4), false)
-      assert.doesNotMatch(cta.className, /fixed|absolute|inset-0/)
-      const href = document.querySelector('a[href^="/go?"]').getAttribute('href')
-      consentModule.saveConsent({ necessary: true, analytics: false, marketing: false })
-      assert.equal(document.querySelector('a[href^="/go?"]').getAttribute('href'), href)
+      assert.ok(document.body.textContent.includes(game.title[locale]))
     } finally {
       await act(() => root.unmount())
       dom.window.close()

@@ -83,9 +83,9 @@ test('Roulette mounted: chosen chip, stacking, Undo/Clear, debit once, freeze, e
   await h.advance(1000); assert.equal(button('repeat').disabled, false)
   await click(button('repeat')); assert.equal(button('stake').textContent, '15,00')
   assert.equal(h.wallet.getSnapshot().session.transactions.length, 2)
-  const real = document.querySelector('a[href^="/go?"]')
-  assert.equal(new URL(real.href).searchParams.get('game'), 'lightning-roulette')
-  assert.ok(real.rel.includes('sponsored')); assert.ok(document.body.textContent.includes('Não é Liva Roulette'))
+  assert.equal(document.querySelector('a[href^="/go?"]'), null)
+  assert.equal(document.querySelector('[data-operator-cta="play-real"]'), null)
+  assert.equal(document.querySelector('[data-betsson-banner]'), null)
 }))
 test('Roulette mounted: precise paged Split/Corner/first-four selection and insufficient reservations', async () => withDom(async root => {
   const h = harness(0)

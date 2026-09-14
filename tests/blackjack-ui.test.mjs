@@ -72,9 +72,9 @@ test('Blackjack mounted game: Strict Mode, hidden hole, immediate busy controls,
   assert.deepEqual(h.wallet.getSnapshot().session.transactions.map(t => [t.kind, t.amount]), [['debit', 1000], ['debit', 1000], ['credit', 4000]])
   assert.ok(document.querySelector('[role="status"]').textContent.includes('40,00'))
   await h.until('ready'); assert.ok(document.querySelector('[data-blackjack-deal]').textContent.includes('Nova mão'))
-  const real = document.querySelector('a[href^="/go?"]')
-  assert.equal(new URL(real.href).searchParams.get('game'), 'blackjack-live'); assert.ok(real.rel.includes('sponsored'))
-  assert.ok(document.body.textContent.includes('Não é o PlayLiva Original'))
+  assert.equal(document.querySelector('a[href^="/go?"]'), null)
+  assert.equal(document.querySelector('[data-operator-cta="play-real"]'), null)
+  assert.equal(document.querySelector('[data-betsson-banner]'), null)
 }))
 test('Blackjack mounted game: split active hand, per-hand stakes, previous states and independent results', async () => withDom(async root => {
   const h = harness('8 10 8 7 3 2 K')

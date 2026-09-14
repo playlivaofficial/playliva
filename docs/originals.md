@@ -13,9 +13,10 @@ SEO metadata and sitemaps retain the approved M3 behavior.
   readiness/storage status, settings and wallet operations. Never mount this
   provider in the site root or existing editorial/discovery pages.
 - `PlayGameShell`: title, Originals branding, credit balance, supplied viewport
-  and controls, settings, history, reset confirmation and Play Real section.
-  Use the existing design tokens. The shell supplies no fake game viewport.
-- `PlayRealCTA`: category-level approved operator referrals, explained below.
+  and controls, settings, history and reset confirmation. M12 does not mount
+  operator banners or Play Real affiliate CTAs on `/play/*` gameplay routes.
+- `PlayRealCTA`: category-level approved operator referrals, retained for
+  commercial/isolated use and not mounted on Original gameplay routes.
 
 M5 may introduce `/[locale]/play/[gameSlug]` only when an approved game actually
 exists. Unknown slugs must use `notFound()`; keep unfinished pages absent from

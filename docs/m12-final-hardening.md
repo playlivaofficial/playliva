@@ -1,30 +1,29 @@
-# M12 — compliance, trust and technical hardening checkpoint
+# M12 — compliance, trust and technical hardening
 
-Evidence checked 14 September 2026. **Not a production release or legal
-certification. M12 / PlayLiva v1 is not closed.**
+Evidence checked 14 September 2026. Operator-authorization wording and RTP
+sources are dated snapshots, not a legal certification of the full Brazilian
+betting-advertising regime.
+
+The remaining `/play/*` publication-policy blocker is resolved by the
+authorized conservative policy: real-money operator banners and Play Real
+affiliate CTAs are removed from PlayLiva Original gameplay routes. Commercial
+discovery surfaces keep existing compliant operator promotion.
 
 ## Integration and release boundary
 
-Branch: `codex/m12-final-hardening`. Integrated baseline:
-`dbaa8f1f4635527d1429b1dcaa083ccff1076cf0`, including Cursor's
-`76d646cfde3233e9e36186a42dbc124e10742e23` Originals layout correction.
-A final remote fetch still returned that main SHA. Work is isolated from the
-shared checkout; its unrelated untracked directory was not touched.
+Built on checkpoint `7f4318be58e78b8c1d81822746b76a47f35946a4`, which is one
+commit ahead of production `dbaa8f1f4635527d1429b1dcaa083ccff1076cf0`
+(Cursor Originals layout correction `76d646c` and sitewide Betsson placements).
+Latest `origin/main` was fetched; no newer production commits exist beyond that
+merge-base. M12 was not restarted, and newer main history was not rewritten.
 
-The shared Originals shell is unchanged: title/demo identity, existing Play
-Real block, viewport, controls, then supporting content. All five engines,
+The shared Originals gameplay shell keeps title/demo identity, viewport,
+controls, wallet/session and history. It no longer mounts `PlayRealCTA` or
+`BetssonSponsoredBanner`. The CTA component, generic-brand resolver and `/go`
+route remain for commercial surfaces and isolated tests. All five engines,
 wallet/session/math, renderers, gameplay assets, catalog artwork and provider
 records remain unchanged. No dependency, lockfile, runtime, CI workflow or
 application host-normalization change is included.
-
-The authorized fallback is a stable feature checkpoint and hosted CI, not a
-main merge while the publication-policy requirements below remain unresolved.
-Cursor's [main CI run 49](https://github.com/playlivaofficial/playliva/actions/runs/34796565620)
-was independently observed successful at the baseline, and the
-[existing Vercel Production deployment](https://vercel.com/nikapopkha3-4447s-projects/playliva/4ZfYVNZHKFYZzEfczU7bbqNA4dP7)
-was observed Ready with source SHA matching `dbaa8f1f...`. Those are not M12
-deployment results. Exact feature SHA and hosted run evidence belong in the
-checkpoint handoff, after the commit exists.
 
 ## Official evidence versus policy decisions
 
@@ -52,14 +51,15 @@ checkpoint handoff, after the commit exists.
    24 February 2025. The record was checked on 14 September, not inferred from
    commercial approval.
 
-**Unresolved product/legal decision:** the original M12 brief preferred removing
-real-money promotion from `/play/*`. The latest integration instruction requires
-preserving Cursor's placement, so this checkpoint retains it and does not
-pretend the original conservative policy was adopted. No official evidence
-found establishes a mascot/free-play exemption. A documented compliance decision
-on separation is required before this acceptance criterion can pass; release
-authorization and an 18+ label are not legal clearance. No game engine needs to
-change to resolve that policy.
+**Adopted conservative publication policy:** real-money operator banners and
+Play Real affiliate CTAs are removed from all `/play/*` Original gameplay
+routes (crash, capybara-gold, blackjack, roulette, mines). Free-play games,
+navigation, rules, analytics, wallet/session and discovery cards are preserved.
+Operator promotion remains on provider-game pages, categories, offers,
+operators, comparisons, provider pages, homepage and the `/play` hub. No
+official evidence found establishes a mascot/free-play exemption; this is a
+product publication decision, not legal clearance. No game engine needed to
+change.
 
 The 30-day authorization evidence-review deadline is a conservative PlayLiva
 operating policy, **not the government's licence expiration date**. Likewise,
@@ -76,9 +76,9 @@ area, including padding. It is not added to purely editorial cards or articles.
 
 | Promotional component | Boundary covered |
 | --- | --- |
-| `BetssonSponsoredBanner` | Complete sponsored block on homepage, categories, Games, Providers, Comparisons, Games Like, Best lists, Offers, Play hub and existing Originals supporting content |
+| `BetssonSponsoredBanner` | Complete sponsored block on homepage, categories, Games, Providers, Comparisons, Games Like, Best lists, Offers and the Play hub. Not mounted on `/play/*` Original gameplay routes |
 | `ProviderPlayRealCta` | Existing early provider-game CTA and commercial disclosure |
-| `PlayRealCta` | Existing Original-page block, only when BR operator options exist |
+| `PlayRealCta` | Component retained for commercial/isolated use; not mounted on `/play/*` Original gameplay routes |
 | `OperatorCard` | Complete eligible operator card and disclosure |
 | `OperatorProfileView` | Operator hero promotion and separate terms/CTA block |
 | `OfferCard` | Complete eligible offer and disclosure; currently no published offers |
@@ -238,11 +238,9 @@ uses high contrast; new links/labels/headings are semantic. Two decorative
 shared animation utilities now respect reduced motion. Existing engine-level
 reduced-motion handling is unchanged. This is not a formal WCAG audit.
 
-**Visible tradeoff:** keeping Cursor's ad above the game and adding a legible
-warning moves Original controls below the initial 320x720 screen (approximately
-y991-1155 depending on game). They remain scrollable and keyboard-accessible;
-do not claim first-screen Start visibility. Resolving the promotion policy may
-also resolve this layout cost. No engine/control relocation was made.
+**Layout consequence:** removing Originals gameplay ads restores control
+visibility on small screens. Viewport and controls remain one `data-game-unit`.
+No engine/control relocation was made.
 
 Local production build, reused no-cache gzip proxy, 390x844 on desktop hardware,
 two seconds after load. These are initial-load proxies, not production, field
@@ -294,19 +292,15 @@ checks remain unchanged.
 
 Before declaring M12/v1 complete:
 
-1. Resolve `/play/*` advertising separation with documented compliance evidence
-   or a clearly authorized conservative publication policy; complete current
-   consolidated-law verification. Do not treat this checkpoint as clearance.
-2. Resolve existing catalog-art redistribution documentation (M11 explicitly
+1. Resolve existing catalog-art redistribution documentation (M11 explicitly
    records missing Play'n GO/Evolution written-permission evidence), and have
    the still-template legal pages reviewed. Technical asset validity is not a
    rights clearance. No licensed-asset claim is invented here.
-3. Obtain actual account-specific affiliate sub-ID evidence; retain the honest
+2. Obtain actual account-specific affiliate sub-ID evidence; retain the honest
    no-durable-store boundary. The unimplemented referral expansion must not be
-   silently described as delivered.
-4. Recheck evidence freshness, fetch latest main, preserve newer work, rerun
-   all gates/QA and verify hosted CI at the exact release SHA.
-5. Only after all required gates are resolved: authorized main integration,
-   main CI, Vercel Ready/current-production SHA verification, full production
-   crawl and mobile/interaction QA. None of these M12 production outcomes is
-   implied by the local passes in this report.
+   silently described as delivered. Capability remains unverified.
+3. Recheck evidence freshness before **2026-10-14 00:00 UTC**, fetch latest
+   main, preserve newer work, rerun all gates/QA and verify hosted CI at the
+   exact release SHA.
+4. Complete authorized main integration, main CI, Vercel Ready/current-production
+   SHA verification, full production crawl and mobile/interaction QA.

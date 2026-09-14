@@ -35,19 +35,12 @@ function MarketControl() {
   return React.createElement('button', { onClick: () => setCountryCode('MX') }, 'Test MX')
 }
 
-test('test-only shell: wallet/settings/reset, consent-aware events, truthful Play Real, and market change', async () => {
+test('test-only shell: wallet/settings/reset, consent-aware events, and no operator promotion', async () => {
   const dom = new JSDOM('<div id="root"></div>', { url: 'https://site.example.invalid/en/play/test-only?private=excluded', virtualConsole: new VirtualConsole() })
   const saved = new Map()
   for (const key of ['window', 'self', 'document', 'location', 'navigator', 'Event', 'HTMLElement', 'Node']) {
     saved.set(key, Object.getOwnPropertyDescriptor(globalThis, key))
     Object.defineProperty(globalThis, key, { configurable: true, value: dom.window[key] })
-  }
-  const priorObserver = globalThis.IntersectionObserver
-  const observers = []
-  globalThis.IntersectionObserver = class {
-    constructor(callback) { this.callback = callback; observers.push(this) }
-    observe() {}
-    disconnect() {}
   }
   globalThis.IS_REACT_ACT_ENVIRONMENT = true
   const root = createRoot(document.getElementById('root'))
@@ -89,41 +82,31 @@ test('test-only shell: wallet/settings/reset, consent-aware events, truthful Pla
     assert.equal(button('Reset Balance').disabled, true)
     await render(false)
 
-    const link = document.querySelector('a[href^="/go?"]')
-    assert.ok(link)
-    const href = link.getAttribute('href')
-    assert.equal(new URL(href, location.href).searchParams.has('game'), false)
-    link.addEventListener('click', event => event.preventDefault())
-    observers.forEach(observer => observer.callback([{ isIntersecting: true }]))
-    await click(link)
+    assert.equal(document.querySelector('[data-operator-cta="play-real"]'), null)
+    assert.equal(document.querySelector('[data-betsson-banner]'), null)
+    assert.equal(document.querySelector('a[href^="/go?"]'), null, 'Original gameplay routes must not mount operator CTAs')
+    const viewport = document.querySelector('[data-game-viewport]')
+    const controls = document.querySelector('[data-game-controls]')
+    const unit = document.querySelector('[data-game-unit]')
+    assert.ok(viewport && controls && unit)
+    assert.equal(Boolean(viewport.compareDocumentPosition(controls) & 4), true)
+    assert.equal(unit.querySelector('[data-operator-cta], [data-betsson-banner]'), null)
+
     const events = ['free_play_open', 'demo_round_start', 'demo_round_complete', 'demo_balance_reset', 'play_real_view', 'play_real_click']
     for (const event of events) trackFreePlay(event, context)
     assert.equal(window.dataLayer, undefined, 'rejected analytics blocks every Originals event')
-    assert.equal(href, link.getAttribute('href'), 'functional affiliate link survives rejection')
-    const viewport = document.querySelector('[data-game-viewport]')
-    const cta = document.querySelector('[data-operator-cta="play-real"]')
-    const controls = document.querySelector('[data-game-controls]')
-    assert.equal(cta.getAttribute('data-operator-cta-mode'), 'verified-category')
-    assert.equal(Boolean(cta.compareDocumentPosition(viewport) & 4), true)
-    assert.equal(Boolean(viewport.compareDocumentPosition(controls) & 4), true)
-    assert.equal(Boolean(viewport.compareDocumentPosition(cta) & 4), false)
-    assert.doesNotMatch(cta.className, /fixed|absolute|inset-0/)
 
     saveConsent({ necessary: true, analytics: true, marketing: false })
     for (const event of events) trackFreePlay(event, { ...context, privateData: 'must-not-be-sent' })
     assert.deepEqual(window.dataLayer.map(item => item.event), events)
     assert.ok(window.dataLayer.every(item => !item.url.includes('?') && !('privateData' in item) && !('balance' in item)))
-    await click(link)
-    assert.equal(window.dataLayer.at(-1).event, 'play_real_click')
     const count = window.dataLayer.length
     saveConsent({ necessary: true, analytics: false, marketing: false })
     for (const event of events) trackFreePlay(event, context)
-    await click(link)
     assert.equal(window.dataLayer.length, count, 'revocation blocks subsequent events')
-    assert.equal(link.getAttribute('href'), href)
     await click(button('Test MX'))
     assert.equal(document.querySelector('a[href^="/go?"]'), null)
-    assert.ok(document.body.textContent.includes('No approved operators'))
+    assert.equal(document.querySelector('[data-operator-cta="play-real"]'), null)
   } finally {
     await act(() => root.unmount())
     dom.window.close()
@@ -131,7 +114,6 @@ test('test-only shell: wallet/settings/reset, consent-aware events, truthful Pla
       if (descriptor) Object.defineProperty(globalThis, key, descriptor)
       else delete globalThis[key]
     }
-    globalThis.IntersectionObserver = priorObserver
     delete globalThis.IS_REACT_ACT_ENVIRONMENT
   }
 })
