@@ -80,7 +80,7 @@ export function BetssonSponsoredBanner({
         </div>
         <Button
           size="lg"
-          className={`${styles.cta} min-h-11 min-w-11 w-full whitespace-normal px-4 sm:w-auto`}
+          className={`${styles.cta} min-h-11 min-w-11 whitespace-normal px-4 ${surface === 'originals' ? 'w-auto max-w-full' : 'w-full sm:w-auto'}`}
           render={<a href={banner.href} target="_blank" rel="sponsored noopener noreferrer" />}
         >
           {label}

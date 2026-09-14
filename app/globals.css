@@ -197,7 +197,7 @@
     "identity balance"
     "sponsor sponsor";
 }
-.originals-shell-header-compact { gap: 0.55rem 0.75rem; }
+.originals-shell-header-compact { gap: 0.4rem 0.65rem; }
 .originals-shell-identity { grid-area: identity; min-width: 0; }
 .originals-shell-sponsor { grid-area: sponsor; min-width: 0; }
 .originals-shell-balance { grid-area: balance; }
