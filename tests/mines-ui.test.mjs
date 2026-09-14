@@ -83,8 +83,9 @@ test('Mines mounted: 25 hidden tiles, immediate safe trail, single debit and liv
   const viewport = document.querySelector('[data-game-viewport]')
   const cta = document.querySelector('[data-operator-cta="play-real"]')
   const controls = document.querySelector('[data-game-controls]')
-  assert.equal(Boolean(viewport.compareDocumentPosition(cta) & 4), true)
-  assert.equal(Boolean(cta.compareDocumentPosition(controls) & 4), true)
+  assert.equal(Boolean(cta.compareDocumentPosition(viewport) & 4), true)
+  assert.equal(Boolean(viewport.compareDocumentPosition(controls) & 4), true)
+  assert.equal(Boolean(viewport.compareDocumentPosition(cta) & 4), false)
   assert.doesNotMatch(cta.className, /fixed|absolute|inset-0/)
 }))
 test('Mines mounted: mine hit is immediate, no trail on mines and no credit, repeat and reload keep debit spent', async () => withDom(async root => {

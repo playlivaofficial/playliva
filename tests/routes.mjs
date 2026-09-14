@@ -278,6 +278,18 @@ try {
       assert.equal(outbound.status, 302)
       assert.equal(outbound.headers.get('location'), partner.affiliateUrl.BR)
     }
+    if (['/play/crash', '/play/capybara-gold', '/play/blackjack', '/play/roulette', '/play/mines'].includes(routePath)) {
+      const cta = doc.querySelector('[data-operator-cta="play-real"]')
+      const viewport = doc.querySelector('[data-game-viewport]')
+      const controls = doc.querySelector('[data-game-controls]')
+      const unit = doc.querySelector('[data-game-unit]')
+      assert.ok(cta && viewport && controls && unit, `${path}: Originals shell landmarks`)
+      assert.ok(cta.compareDocumentPosition(viewport) & 4, `${path}: Play Real precedes viewport`)
+      assert.ok(viewport.compareDocumentPosition(controls) & 4, `${path}: viewport precedes controls`)
+      assert.equal(Boolean(viewport.compareDocumentPosition(cta) & 4), false, `${path}: Play Real is not between viewport and controls`)
+      assert.equal(unit.contains(cta), false, `${path}: commercial block stays outside the game unit`)
+      assert.equal(unit.querySelector('[data-operator-cta], [data-betsson-banner]'), null, `${path}: no commercial inside game unit`)
+    }
     if (routePath !== '/play/crash') {
       for (const script of doc.querySelectorAll('script[src], link[rel="modulepreload"]')) {
         const url = script.getAttribute('src') ?? script.getAttribute('href')
