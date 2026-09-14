@@ -1,5 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
+import { registerHooks } from 'node:module'
 import { JSDOM, VirtualConsole } from 'jsdom'
 import React, { act } from 'react'
 import { createRoot } from 'react-dom/client'
@@ -7,10 +8,17 @@ import { AppRouterContext } from 'next/dist/shared/lib/app-router-context.shared
 import { PathnameContext } from 'next/dist/shared/lib/hooks-client-context.shared-runtime.js'
 import countryModule from '../components/country-context.tsx'
 import providerModule from '../components/originals/demo-session.tsx'
-import shellModule from '../components/originals/play-game-shell.tsx'
 import sessionModule from '../lib/originals/session.ts'
 import analyticsModule from '../lib/originals/analytics.ts'
 import consentModule from '../lib/consent.ts'
+const cssHooks = registerHooks({ load(url, context, next) {
+  if (String(url).includes('.module.css')) {
+    return { format: 'module', shortCircuit: true, source: 'const s = new Proxy({}, { get: (_, k) => String(k) }); export default s;' }
+  }
+  return next(url, context)
+} })
+const shellModule = await import('../components/originals/play-game-shell.tsx')
+cssHooks.deregister()
 const { CountryProvider, useCountry } = countryModule
 const { DemoSessionProvider } = providerModule
 const { PlayGameShell } = shellModule

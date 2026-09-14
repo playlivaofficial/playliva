@@ -96,7 +96,7 @@ try {
       assert.equal(response.status, 302)
       assert.equal(response.headers.get('location'), partner.categoryAffiliateUrl?.[category]?.BR ?? partner.affiliateUrl.BR)
     }
-    for (const placement of ['homepage_banner', 'originals_generic_operator']) {
+    for (const placement of ['homepage_banner', 'originals_generic_operator', 'play_hub_banner', 'game_detail_play_real']) {
       const query = new URLSearchParams({ operator: partner.slug, country: 'BR', placement })
       const response = await fetch(`${base}/go?${query}`, {
         redirect: 'manual', headers: consent ? { cookie: `${ANALYTICS_COOKIE}=${consent}` } : {},
@@ -130,7 +130,14 @@ try {
         assert.equal(doc.title, copy.seoTitle)
         assert.equal(doc.querySelector('meta[name="description"]')?.content, copy.seoDescription)
         assert.ok(doc.querySelector('[data-play-hub]')?.textContent.includes(copy.disclaimer))
-        assert.doesNotMatch(doc.querySelector('[data-play-hub]')?.textContent ?? '', /Betsson|Aviator|Coming soon/i)
+        const playBanner = doc.querySelector('[data-betsson-banner="play"]')
+        assert.ok(playBanner, `${path}: play hub Betsson banner`)
+        const playLink = playBanner.querySelector('a[href^="/go?"]')
+        assert.ok(playLink)
+        assert.equal(new URL(playLink.href, base).searchParams.get('placement'), 'play_hub_banner')
+        assert.equal(new URL(playLink.href, base).searchParams.get('page'), 'play')
+        assert.equal(new URL(playLink.href, base).searchParams.get('game'), null)
+        assert.doesNotMatch(doc.querySelector('[data-play-hub] [data-filter]')?.textContent ?? '', /Aviator|Coming soon/i)
       } else {
         assert.ok(doc.querySelector(`[data-originals-section="${routePath === '' ? 'home' : 'category'}"]`))
         if (routePath === '') {
@@ -351,7 +358,13 @@ try {
       assert.ok(art.status !== 'fallback')
       assert.ok(doc.querySelector('[data-artwork-status="sourced"]'))
       assert.ok(art.status !== 'fallback' && doc.querySelector(`main img[src="${art.assetPath}"]`))
-      assert.equal(doc.querySelector('main iframe, main a[href^="/go"], main a[href*="/where-to-play/"]'), null)
+      assert.equal(doc.querySelector('main iframe, main a[href*="/where-to-play/"]'), null)
+      const playReal = doc.querySelector('[data-betsson-game-cta] a[href^="/go"]')
+      assert.ok(playReal, `${path}: early Betsson CTA`)
+      assert.equal(new URL(playReal.href, base).searchParams.get('game'), null)
+      assert.doesNotMatch(playReal.textContent, /Play .+ at Betsson/i)
+      assert.doesNotMatch(doc.body.textContent, /This game may not be available at Betsson/i)
+      assert.ok(doc.querySelector('[data-betsson-banner="game"]'))
       assert.ok(doc.querySelector('main').textContent.includes(c.evidence))
       assert.equal(doc.querySelector('meta[name="description"]').content, game.content[locale].summary)
     }
@@ -359,6 +372,45 @@ try {
     if (routePath.startsWith('/games/') && doc.querySelector('[data-provider-detail]')) {
       assert.ok(doc.querySelector('[data-provider-hero-art]'), `${path}: provider artwork remains part of identity`)
       for (const anchor of doc.querySelectorAll('nav a[href^="#"]')) assert.ok(doc.querySelector(anchor.getAttribute('href')), `${path}: guide anchor target`)
+      const playReal = doc.querySelector('[data-betsson-game-cta] a[href^="/go"]')
+      assert.ok(playReal, `${path}: early Betsson CTA`)
+      assert.ok(doc.querySelector('[data-betsson-banner="game"]'))
+    }
+    const bannerByRoute = {
+      '': 'homepage',
+      '/play': 'play',
+      '/games': 'games',
+      '/slots': 'slots',
+      '/crash': 'crash',
+      '/live-casino': 'live-casino',
+      '/instant-games': 'instant-games',
+      '/table-games': 'table-games',
+      '/offers': 'offers',
+      '/operators': 'operators',
+      '/providers': 'providers',
+    }
+    if (bannerByRoute[routePath]) {
+      assert.ok(doc.querySelector(`[data-betsson-banner="${bannerByRoute[routePath]}"]`), `${path}: Betsson banner`)
+    }
+    if (routePath.startsWith('/providers/') && routePath !== '/providers') {
+      assert.ok(doc.querySelector('[data-betsson-banner="provider"]'), `${path}: provider Betsson banner`)
+    }
+    if (routePath.startsWith('/games-like/')) {
+      assert.ok(doc.querySelector('[data-betsson-banner="games-like"]'), `${path}: games-like Betsson banner`)
+    }
+    if (routePath.startsWith('/compare/')) {
+      assert.ok(doc.querySelector('[data-betsson-banner="comparison"]'), `${path}: comparison Betsson banner`)
+    }
+    if (routePath.startsWith('/best/')) {
+      assert.ok(doc.querySelector('[data-betsson-banner="best-list"]'), `${path}: best-list Betsson banner`)
+    }
+    if (routePath === '/offers') {
+      assert.ok(doc.querySelector('[data-offers-sponsored]'))
+      assert.ok(doc.querySelector('[data-offers-verified]'))
+      assert.match(doc.querySelector('[data-offers-sponsored]')?.textContent ?? '', /Sponsored Partner|Parceiro patrocinado|Socio patrocinado/)
+    }
+    if (['/terms', '/privacy-policy', '/affiliate-disclosure', '/responsible-gaming', '/cookie-policy'].includes(routePath)) {
+      assert.equal(doc.querySelector('[data-betsson-banner], [data-betsson-game-cta]'), null, `${path}: no commercial banner`)
     }
     assert.doesNotMatch(doc.querySelector('footer')?.textContent ?? '', /\uFFFD/, `${path}: footer encoding`)
     doc.querySelectorAll('script,style').forEach((node) => node.remove())
@@ -390,6 +442,7 @@ try {
       const robots = [...doc.querySelectorAll('meta[name="robots"], meta[name="googlebot"]')].map((meta) => meta.content)
       assert.ok(robots.length && robots.every((value) => value.includes('noindex')), `${path}: ${robots}`)
       assert.equal(doc.querySelector('link[rel="canonical"]'), null, path)
+      assert.equal(doc.querySelector('[data-betsson-banner], [data-betsson-game-cta]'), null, `${path}: no commercial banner`)
     }
     const response = await fetch(`${base}/go?country=MX&operator=${encodeURIComponent('//evil.invalid')}&language=${locale}`, { redirect: 'manual' })
     assert.equal(response.status, 302)

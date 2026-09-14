@@ -28,6 +28,8 @@ import type { CategorySlug } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import { discoveryCategory, DISCOVERY_ORDER, productCopy } from '@/lib/product-discovery'
 import styles from '@/components/product-design.module.css'
+import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsored-banner'
+import type { BetssonBannerSurface } from '@/lib/affiliates/betsson'
 
 export function CategoryPageView({ slug, referenceCatalog }: { slug: CategorySlug; referenceCatalog?: ReactNode }) {
   const { countryCode: country, t, locale } = useCountry()
@@ -81,6 +83,8 @@ export function CategoryPageView({ slug, referenceCatalog }: { slug: CategorySlu
           ))}
         </nav>
       </div>
+
+      <BetssonSponsoredBanner surface={slug as BetssonBannerSurface} layout="full" />
 
       {slug === 'crash' && <OriginalsDiscoverySection surface="category" />}
       {slug === 'slots' && <CapybaraDiscoverySection />}

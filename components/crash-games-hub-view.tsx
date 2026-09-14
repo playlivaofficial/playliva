@@ -13,6 +13,7 @@ import { WhereToPlay } from '@/components/where-to-play'
 import { AffiliateDisclosureLine, ResponsibleGamingNotice } from '@/components/notices'
 import { Button } from '@/components/ui/button'
 import { track } from '@/lib/tracking'
+import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsored-banner'
 
 // The three crash games that get a dedicated editorial H2 section. Order is
 // intentional (Aviator first, matching the featured grid).
@@ -58,6 +59,8 @@ export function CrashGamesHubView() {
           { label: content.breadcrumbLabel },
         ]}
       />
+
+      <BetssonSponsoredBanner surface="best-list" layout="full" />
 
       {/* Featured crash games */}
       <Section className="py-10">

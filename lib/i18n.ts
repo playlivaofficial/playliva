@@ -65,6 +65,9 @@ const ptBR: Dict = {
     'Conheça cassino e apostas na Betsson. A PlayLiva não aceita apostas nem depósitos.',
   'affiliate.genericBoundary':
     'Esta é uma indicação da marca do operador, não uma afirmação de que este PlayLiva Original esteja disponível lá.',
+  'affiliate.playRealBetsson': 'JOGAR NA BETSSON',
+  'affiliate.sponsoredPartner': 'Parceiro patrocinado',
+  'affiliate.verifiedOffers': 'Ofertas verificadas',
 
   // Selectors
   'selector.country': 'Selecionar país',
@@ -587,6 +590,9 @@ const esMX: Dict = {
     'Explora casino y apuestas en Betsson. PlayLiva no acepta apuestas ni depósitos.',
   'affiliate.genericBoundary':
     'Esta es una indicación de la marca del operador, no una afirmación de que este PlayLiva Original esté disponible allí.',
+  'affiliate.playRealBetsson': 'JUGAR EN BETSSON',
+  'affiliate.sponsoredPartner': 'Socio patrocinado',
+  'affiliate.verifiedOffers': 'Ofertas verificadas',
 
   'selector.country': 'Seleccionar país',
   'selector.language': 'Seleccionar idioma',
@@ -1085,6 +1091,9 @@ const en: Dict = {
     'Explore casino and betting at Betsson. PlayLiva does not accept bets or deposits.',
   'affiliate.genericBoundary':
     'This is a brand referral to the operator, not a claim that this PlayLiva Original is available there.',
+  'affiliate.playRealBetsson': 'PLAY REAL · BETSSON',
+  'affiliate.sponsoredPartner': 'Sponsored Partner',
+  'affiliate.verifiedOffers': 'Verified Offers',
 
   'selector.country': 'Select country',
   'selector.language': 'Select language',

@@ -63,7 +63,9 @@ test('redesign: all five implemented Originals remain localized, distinct and tr
     assert.deepEqual([...doc.querySelectorAll('[data-original-card]')].map(e => e.dataset.originalCard), ['island-crash', 'capybara-gold', 'blackjack', 'roulette', 'mines'])
     for (const slug of ['crash', 'capybara-gold', 'blackjack', 'roulette', 'mines']) assert.ok(doc.querySelector(`a[data-play-free][href="/${segment}/play/${slug}"]`))
     assert.ok(doc.querySelector('[data-original-card="blackjack"]').textContent.includes(productCopy(locale).noLiveDealer))
-    assert.equal(doc.querySelector('[data-provider-card], a[href^="/go"]'), null)
+    assert.equal(doc.querySelector('[data-provider-card]'), null)
+    assert.equal(doc.querySelector('[data-original-card] a[href^="/go"]'), null)
+    assert.ok(doc.querySelector('[data-betsson-banner="play"] a[href^="/go"]'))
     assert.equal(doc.querySelector('[role="group"] button[aria-pressed="true"]').textContent, productCopy(locale).all)
     dom.window.close()
   }

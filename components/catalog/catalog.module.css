@@ -16,6 +16,9 @@
 .coverBrand { font-size: .6rem; letter-spacing: .09em; text-transform: uppercase; opacity: .75; }
 .coverTitle { font-family: var(--font-display), sans-serif; font-size: clamp(.85rem, 1.5vw, 1.4rem); line-height: 1.15; font-weight: 700; overflow-wrap: anywhere; }
 .cover small { font-size: .65rem; opacity: .75; }
+.earlyCta { max-width: 78rem; margin: 0 auto; padding: 1rem 1rem 0; min-width: 0; }
+@media (min-width: 640px) { .earlyCta { padding-inline: 1.5rem; } }
+@media (min-width: 1024px) { .earlyCta { padding-inline: 2rem; } }
 .heroArt { position: relative; width: 100%; min-height: 230px; border-radius: 1rem; overflow: hidden; border: 1px solid var(--border); }
 .heroArt .cover { padding: 1.5rem; }
 .heroArt .coverTitle { font-size: 1.8rem; }

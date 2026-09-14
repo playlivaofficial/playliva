@@ -11,6 +11,7 @@ import { trackFreePlay } from '@/lib/originals/analytics'
 import type { OriginalGameDefinition } from '@/lib/originals/definition'
 import { LocaleLink } from '@/components/locale-link'
 import { productCopy } from '@/lib/product-discovery'
+import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsored-banner'
 
 function subscribeFullscreen(listener: () => void) {
   document.addEventListener('fullscreenchange', listener)
@@ -98,5 +99,6 @@ export function PlayGameShell({ game, children, controls, roundActive = false, c
           )}</ol>}
       </aside>
     </div>
+    <BetssonSponsoredBanner surface="originals" layout="compact" lazy />
   </section>
 }

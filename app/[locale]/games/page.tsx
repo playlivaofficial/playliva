@@ -5,6 +5,7 @@ import { catalogSummaries } from '@/lib/catalog'
 import { catalogLocale } from '@/lib/catalog/metadata'
 import { catalogCopy } from '@/lib/catalog/copy'
 import { GamesPageHero } from '@/components/games-page-hero'
+import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsored-banner'
 import { pageMetadata } from '@/lib/seo'
 import {
   DEFAULT_LOCALE_SEGMENT,
@@ -36,6 +37,7 @@ export default async function GamesPage({ params }: { params: Promise<{ locale: 
   return (
     <>
       <GamesPageHero />
+      <BetssonSponsoredBanner surface="games" layout="full" />
       <Section className="py-8 sm:py-12">
         <CatalogExplorer entries={catalogSummaries(catalogLocale(locale))} />
       </Section>
