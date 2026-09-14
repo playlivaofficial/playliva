@@ -18,6 +18,7 @@ import { ContentCard } from '@/components/content-card'
 import { discoveryCategory } from '@/lib/product-discovery'
 import styles from '@/components/editorial-design.module.css'
 import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsored-banner'
+import { EditorialByline } from '@/components/editorial-byline'
 
 export function ComparisonView({ comparison }: { comparison: Comparison }) {
   const { countryCode, t, locale } = useCountry()
@@ -57,6 +58,7 @@ export function ComparisonView({ comparison }: { comparison: Comparison }) {
 
       {/* Side-by-side game cards */}
       <Section className="py-10">
+        <EditorialByline path={`/compare/${comparison.slug}`} locale={locale} />
         <div className="grid gap-5 sm:grid-cols-2">
           {[a, b].map((g) => {
             const gc = getGameContent(g, locale)

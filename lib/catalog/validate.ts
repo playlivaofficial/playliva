@@ -7,6 +7,7 @@ import { PROVIDERS } from './providers'
 import { REFERENCE_COMPARISONS, REFERENCE_READING_LISTS } from './editorial'
 import { REFERENCE_PATHS } from './paths'
 import type { ReferenceGame } from './types'
+import { RTP_EVIDENCE, validRtpEvidence } from '@/lib/rtp'
 
 const ARTWORK_HOSTS = new Set(['bsw-dk1.pragmaticplay.net', 'www.pragmaticplay.com', 'static.wixstatic.com', 'games.evolution.com', 'cdn.prod.website-files.com', 'cdn2.softswiss.net'])
 const OFFICIAL_SOURCES = new Set(['pragmatic-play-official', 'playngo-official', 'evolution-official', 'smartsoft-official'])
@@ -28,6 +29,12 @@ export function validateCatalog(games: ReferenceGame[] = REFERENCE_GAMES): strin
   unique(PROVIDERS.map(provider => provider.id), 'provider IDs')
   unique(REFERENCE_PATHS, 'sitemap reference paths')
   const usedArtworkPaths = new Set<string>()
+  for (const [slug, evidence] of Object.entries(RTP_EVIDENCE)) {
+    const legacy = GAMES.find(game => game.slug === slug)
+    const reference = games.find(game => game.slug === slug)
+    const provider = legacy?.provider ?? PROVIDERS.find(item => item.id === reference?.providerId)?.name ?? ''
+    check(Boolean(legacy || reference) && validRtpEvidence(evidence, slug, provider), `${slug}: invalid RTP provenance or edition`)
+  }
   for (const provider of PROVIDERS) for (const locale of locales) check(provider.overview[locale]?.trim(), `${provider.id}: missing ${locale} overview`)
   for (const game of games) {
     const label = game.slug || game.id

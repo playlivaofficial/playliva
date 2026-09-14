@@ -42,6 +42,8 @@ import { ContentCard } from '@/components/content-card'
 import styles from '@/components/editorial-design.module.css'
 import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsored-banner'
 import { ProviderPlayRealCta } from '@/components/affiliates/provider-play-real-cta'
+import { RtpFact } from '@/components/rtp-fact'
+import { EditorialByline } from '@/components/editorial-byline'
 
 export function GameDetailView({ game }: { game: Game }) {
   const { countryCode, country, t, locale } = useCountry()
@@ -160,6 +162,8 @@ export function GameDetailView({ game }: { game: Game }) {
 
       {/* About + How it works */}
       <Section id="overview">
+        <EditorialByline path={`/games/${game.slug}`} locale={locale} />
+        <RtpFact slug={game.slug} provider={game.provider} locale={locale} />
         <div className="grid gap-8 lg:grid-cols-2">
           <ContentCard>
             <div className="flex items-center gap-2 text-primary">

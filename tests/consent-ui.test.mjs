@@ -128,13 +128,14 @@ test('consent UI gates loaders/events, supports revocation/revisit, and preserve
     assert.ok(window.dataLayer.some((item) => Array.isArray(item) && item[0] === 'event' && item[1] === 'affiliate_click'))
     // Vercel's installed callback must also reject events after unmount/revoke.
     const beforeSend = window.vaq.find((item) => item[0] === 'beforeSend')[1]
-    assert.deepEqual(beforeSend({ type: 'pageview' }), { type: 'pageview' })
+    const pageEvent = { type: 'pageview', url: `${location.origin}/en?email=private%40example.invalid#private` }
+    assert.deepEqual(beforeSend(pageEvent), { type: 'pageview', url: `${location.origin}/en` })
 
     await click(button('Cookie preferences'))
     await click(button('Reject optional'))
     assert.equal(window[`ga-disable-${measurement}`], true)
     assert.equal(document.querySelector('#playliva-ga4'), null)
-    assert.equal(beforeSend({ type: 'pageview' }), null)
+    assert.equal(beforeSend(pageEvent), null)
     const length = window.dataLayer.length
     track('affiliate_click', { placement: 'rejected' })
     window.gtag('event', 'should_not_send')
@@ -155,7 +156,7 @@ test('consent UI gates loaders/events, supports revocation/revisit, and preserve
     window.localStorage.setItem(CONSENT_STORAGE_KEY, rejection)
     await act(() => window.dispatchEvent(new StorageEvent('storage', { key: CONSENT_STORAGE_KEY, newValue: rejection })))
     assert.equal(window[`ga-disable-${measurement}`], true)
-    assert.equal(beforeSend({ type: 'pageview' }), null)
+    assert.equal(beforeSend(pageEvent), null)
 
     await click(button('Test MX'))
     assert.equal(document.querySelector('a[href^="/go?"]'), null, 'MX must not inherit BR profile or CTA destinations')
@@ -177,7 +178,7 @@ test('consent UI gates loaders/events, supports revocation/revisit, and preserve
       await act(() => saveConsent({ necessary: true, analytics: false, marketing: false }))
       assert.equal(hasAnalyticsConsent(), false)
       assert.equal(window[`ga-disable-${measurement}`], true)
-      assert.equal(beforeSend({ type: 'pageview' }), null)
+      assert.equal(beforeSend(pageEvent), null)
     } finally {
       Object.defineProperty(window, 'localStorage', storageDescriptor)
       delete document.cookie

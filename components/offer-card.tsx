@@ -4,6 +4,8 @@ import { getOperatorById, getCountry, getCountryName, isOfferEligible } from '@/
 import { getCategoryName } from '@/lib/content'
 import { AffiliateButton } from '@/components/affiliate-button'
 import { useTranslation } from '@/components/country-context'
+import { BrazilAdWarning } from '@/components/affiliates/brazil-ad-warning'
+import { AffiliateDisclosureLine } from '@/components/notices'
 
 export function OfferCard({ offer }: { offer: Offer }) {
   const { t, locale } = useTranslation()
@@ -20,7 +22,8 @@ export function OfferCard({ offer }: { offer: Offer }) {
       : getCategoryName(offer.category, locale)
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:glow-primary">
+    <div className="flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:glow-primary"
+      data-betting-ad={offer.country === 'BR' ? '' : undefined} data-evidence-state="pending">
       <div className="flex items-center justify-between border-b border-border bg-secondary/40 px-5 py-3">
         <span className="flex items-center gap-2 text-sm font-semibold text-foreground">
           <Gift className="size-4 text-primary" />
@@ -56,6 +59,11 @@ export function OfferCard({ offer }: { offer: Offer }) {
         <p className="mt-3 text-center text-xs text-muted-foreground">
           {offer.terms}
         </p>
+        <AffiliateDisclosureLine />
+        {offer.country === 'BR' && <BrazilAdWarning operatorId={offer.operatorId} expiresAt={Math.min(
+          Date.parse(offer.validUntil ?? ''), Date.parse(offer.complianceReview?.reviewBy ?? ''),
+          Date.parse(offer.lastVerifiedAt ?? '') + 30 * 86_400_000,
+        )} />}
       </div>
     </div>
   )

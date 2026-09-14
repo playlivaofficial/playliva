@@ -24,6 +24,7 @@ import type { Game } from '@/lib/types'
 import { discoveryCategory } from '@/lib/product-discovery'
 import { ContentCard } from '@/components/content-card'
 import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsored-banner'
+import { EditorialByline } from '@/components/editorial-byline'
 
 export function GamesLikeView({ game }: { game: Game }) {
   const { countryCode, t, locale } = useCountry()
@@ -72,6 +73,7 @@ export function GamesLikeView({ game }: { game: Game }) {
 
       {/* Why players like X */}
       <Section className="py-10">
+        <EditorialByline path={`/games-like/${game.slug}`} locale={locale} />
         <ContentCard tone="guide">
           <div className="flex items-center gap-2 text-primary">
             <Sparkles className="size-5" />

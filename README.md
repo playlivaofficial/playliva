@@ -2,6 +2,14 @@
 
 Source of truth: https://github.com/playlivaofficial/playliva.
 
+[M12 hardening](docs/m12-final-hardening.md) adds dated BR authorization
+safeguards, centralized ad warnings, sourced optional RTP, privacy-minimal
+measurement and editorial trust checks. Real-money operator banners and Play
+Real affiliate CTAs are omitted from `/play/*` Original gameplay routes;
+commercial discovery surfaces keep existing compliant operator promotion.
+Unresolved counsel items remain catalog-art rights, template legal pages,
+affiliate sub-ID capability and a complete consolidated-law review.
+
 [M11 provider reference catalog](docs/m11-provider-catalog.md) adds 31 sourced,
 localized factual game references with authentic catalog covers, bounded discovery and
 build-time integrity checks. The leftover generic Blackjack Live listing uses

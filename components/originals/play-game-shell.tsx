@@ -4,14 +4,12 @@ import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } fro
 import { Button } from '@/components/ui/button'
 import { useCountry } from '@/components/country-context'
 import { useDemoSession } from './demo-session'
-import { PlayRealCTA } from './play-real-cta'
 import { originalsCopy } from '@/lib/originals/copy'
 import { formatCredits } from '@/lib/originals/credits'
 import { trackFreePlay } from '@/lib/originals/analytics'
 import type { OriginalGameDefinition } from '@/lib/originals/definition'
 import { LocaleLink } from '@/components/locale-link'
 import { productCopy } from '@/lib/product-discovery'
-import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsored-banner'
 
 function subscribeFullscreen(listener: () => void) {
   document.addEventListener('fullscreenchange', listener)
@@ -64,7 +62,6 @@ export function PlayGameShell({ game, children, controls, roundActive = false, c
     <p className={`${compact ? 'text-xs' : 'text-sm'} text-muted-foreground`}>{copy.boundary}</p>
     {storageStatus === 'memory-only' && <p role="status" className="text-sm text-muted-foreground">{copy.memoryOnly}</p>}
     {storageStatus === 'recovered' && <p role="status" className="text-sm text-muted-foreground">{copy.recovered}</p>}
-    <PlayRealCTA game={game} />
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_18rem]">
       <div className="min-w-0 space-y-4" data-game-unit>
         <div aria-label={copy.viewport} data-game-viewport className="min-h-64 overflow-hidden rounded-2xl border border-border bg-card">{children}</div>
@@ -99,6 +96,5 @@ export function PlayGameShell({ game, children, controls, roundActive = false, c
           )}</ol>}
       </aside>
     </div>
-    <BetssonSponsoredBanner surface="originals" layout="compact" lazy />
   </section>
 }

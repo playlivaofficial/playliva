@@ -15,6 +15,7 @@ import { LIVA_ROULETTE } from '@/lib/originals/roulette/config'
 import { rouletteCopy } from '@/lib/originals/roulette/copy'
 import { minesCopy } from '@/lib/originals/mines/copy'
 import { getOperator } from '@/lib/data'
+import { BrazilAdWarning } from '@/components/affiliates/brazil-ad-warning'
 
 function OperatorLink({ option, context, label }: {
   option: OperatorCtaOption
@@ -60,7 +61,8 @@ export function PlayRealCTA({ game }: { game: OriginalGameDefinition }) {
   const heading = generic ? t('affiliate.exploreNamed', { name: options[0].name }) : copy.playReal
   const logo = options[0] ? getOperator(options[0].operatorSlug)?.logo : undefined
   return <aside className="space-y-2 rounded-2xl border border-border bg-card p-3 sm:p-4" aria-label={heading}
-    data-operator-cta="play-real" data-operator-cta-mode={mode}>
+    data-operator-cta="play-real" data-operator-cta-mode={mode}
+    data-betting-ad={options.length && countryCode === 'BR' ? '' : undefined} data-evidence-state="pending">
     <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center">
       {logo ? <div className="relative size-10 shrink-0 overflow-hidden rounded-lg border border-border bg-secondary">
         <Image src={logo} alt="" width={40} height={40} className="size-10 object-cover" />
@@ -79,5 +81,6 @@ export function PlayRealCTA({ game }: { game: OriginalGameDefinition }) {
     {blackjack && options.length > 0 && <p className="text-xs leading-relaxed text-muted-foreground sm:text-sm">{blackjackCopy(locale).verifiedReferral}</p>}
     {options.length === 0 && <p className="text-xs leading-relaxed text-muted-foreground sm:text-sm">{copy.noOperators}</p>}
     {options.length > 0 && <AffiliateDisclosureLine />}
+    {options.length > 0 && countryCode === 'BR' && <BrazilAdWarning operatorId={getOperator(options[0].operatorSlug)?.id ?? ''} />}
   </aside>
 }

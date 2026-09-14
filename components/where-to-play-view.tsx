@@ -21,6 +21,8 @@ import { AffiliateDisclosureLine, ResponsibleNotice } from '@/components/notices
 import { Button } from '@/components/ui/button'
 import { track } from '@/lib/tracking'
 import type { Game } from '@/lib/types'
+import { EditorialByline } from '@/components/editorial-byline'
+import { editorialCopy } from '@/lib/editorial'
 
 export function WhereToPlayView({ game }: { game: Game }) {
   const { countryCode: country, locale } = useCountry()
@@ -91,6 +93,7 @@ export function WhereToPlayView({ game }: { game: Game }) {
       </div>
 
       <Section className="pt-10">
+        <EditorialByline path={`/where-to-play/${game.slug}`} locale={locale} />
         {operators.length > 0 ? (
           <>
             <SectionHeading
@@ -165,25 +168,10 @@ export function WhereToPlayView({ game }: { game: Game }) {
               </h2>
             </div>
             <p className="mt-3 leading-relaxed text-muted-foreground">
-              {t('wtp.methodologyIntro')}
+              {gc.whatIsIt ?? gc.about}
             </p>
-            <ul className="mt-4 space-y-2">
-              {[
-                t('wtp.methodology1'),
-                t('wtp.methodology2'),
-                t('wtp.methodology3'),
-                t('wtp.methodology4'),
-                t('wtp.methodology5'),
-                t('wtp.methodology6'),
-                t('wtp.methodology7'),
-                t('wtp.methodology8'),
-              ].map((item, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
-                  <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary" />
-                  {item}
-                </li>
-              ))}
-            </ul>
+            <p className="mt-4 text-sm text-muted-foreground">{game.provider} · {gc.mechanics.join(' · ')}</p>
+            <LocaleLink href="/editorial-policy" className="mt-4 inline-flex min-h-11 items-center text-sm underline underline-offset-4">{editorialCopy(locale).research}</LocaleLink>
           </div>
 
           <div className="rounded-2xl border border-border bg-card p-6">

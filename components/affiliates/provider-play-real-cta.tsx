@@ -5,6 +5,8 @@ import { useCountry } from '@/components/country-context'
 import { getBetssonGamePlayCta } from '@/lib/affiliates/betsson'
 import type { CategorySlug } from '@/lib/types'
 import styles from './betsson-banner.module.css'
+import { BrazilAdWarning } from './brazil-ad-warning'
+import { AffiliateDisclosureLine } from '@/components/notices'
 
 export function ProviderPlayRealCta({
   gameSlug,
@@ -22,6 +24,7 @@ export function ProviderPlayRealCta({
       data-betsson-game-cta=""
       data-operator-cta-mode={cta.mode}
       data-game-slug={gameSlug}
+      data-betting-ad="" data-evidence-state="pending"
     >
       <Button
         size="lg"
@@ -30,6 +33,8 @@ export function ProviderPlayRealCta({
       >
         {t('affiliate.playRealBetsson')}
       </Button>
+      <AffiliateDisclosureLine />
+      <BrazilAdWarning operatorId="op-betsson" />
     </div>
   )
 }

@@ -23,6 +23,8 @@ import productModule from '../lib/product-discovery.ts'
 import catalogModule from '../lib/catalog/index.ts'
 import catalogCopyModule from '../lib/catalog/copy.ts'
 import catalogQueryModule from '../lib/catalog/query.ts'
+import brazilModule from '../lib/compliance/brazil.ts'
+import rtpModule from '../lib/rtp.ts'
 const { originalsDiscoveryCopy, ISLAND_CRASH_POSTER } = discoveryModule
 const { ANALYTICS_COOKIE } = consentModule
 
@@ -41,6 +43,7 @@ const failures = []
 const publicPaths = sitemap().map((entry) => new URL(entry.url).pathname)
 const paths = new Set(publicPaths)
 const linkedPaths = new Set()
+const titlesByLocale = new Map()
 const chunkRoot = new URL('../.next/static/chunks/', import.meta.url)
 const gameChunks = []
 for (const name of await readdir(chunkRoot)) {
@@ -79,8 +82,8 @@ try {
   }
   const partner = getOperator('betsson-group-affiliates')
   for (const consent of [undefined, 'denied', 'granted']) {
-    for (const category of ['table-games', 'live-casino']) {
-      const query = new URLSearchParams({ operator: partner.slug, country: 'BR', game: 'blackjack-live', category })
+    for (const [game, category] of [['blackjack-live', 'table-games'], ['blackjack-live', 'live-casino'], ['lightning-roulette', 'live-casino']]) {
+      const query = new URLSearchParams({ operator: partner.slug, country: 'BR', game, category })
       const response = await fetch(`${base}/go?${query}`, {
         redirect: 'manual', headers: consent ? { cookie: `${ANALYTICS_COOKIE}=${consent}` } : {},
       })
@@ -114,6 +117,28 @@ try {
     if (canonical !== SITE_URL + path) failures.push(`${path}: canonical ${canonical}`)
     const routePath = path.replace(/^\/(en|pt-br|es-mx)/, '')
     const segment = path.split('/')[1]
+    // Next streaming keeps the pending replacement in a hidden container; it
+    // is not a second visible/accessibility heading alongside the fallback.
+    assert.equal([...doc.querySelectorAll('h1')].filter(node => !node.closest('[hidden]')).length, 1, `${path}: one semantic page heading`)
+    assert.ok(doc.querySelector('meta[name="description"]')?.content.trim().length > 10, `${path}: meaningful description`)
+    if (publicPaths.includes(path)) {
+      const key = `${segment}:${doc.title}`
+      if (titlesByLocale.has(key)) failures.push(`${path}: duplicate title with ${titlesByLocale.get(key)}`)
+      titlesByLocale.set(key, path)
+    }
+    for (const link of doc.querySelectorAll('a[href^="/go?"]')) {
+      const ad = link.closest('[data-betting-ad]')
+      assert.ok(ad, `${path}: every operator action belongs to a warned ad`)
+      assert.equal(ad.querySelectorAll('[data-brazil-ad-warning]').length, 1, `${path}: one central warning per ad`)
+      assert.ok(ad.textContent.includes(brazilModule.BRAZIL_AD_RULES.warnings[0]), `${path}: statutory warning wording`)
+      assert.ok(ad.textContent.includes('18+'), `${path}: age warning`)
+      assert.equal(ad.getAttribute('data-evidence-state'), 'pending', `${path}: cached ad evidence must be rechecked before display`)
+    }
+    if (routePath.startsWith('/games/')) {
+      const slug = routePath.split('/').pop()
+      assert.equal(doc.querySelectorAll('[data-rtp-fact]').length, rtpModule.RTP_EVIDENCE[slug] ? 1 : 0, `${path}: sourced RTP only`)
+      assert.ok(doc.querySelector('[data-editorial-byline]'), `${path}: editorial attribution`)
+    }
     const copy = originalsDiscoveryCopy(localeModule.segmentToLocale(segment))
     const navCopy = i18nModule.createTranslator(localeModule.segmentToLocale(segment))
     assert.equal(doc.querySelector('header nav a[href="/' + segment + '/play"]')?.textContent, navCopy('nav.play'))
@@ -195,10 +220,6 @@ try {
       assert.equal(doc.querySelectorAll('[data-symbol]').length, 20, `${path}: five reels by four rows`)
       assert.ok(doc.querySelector('[data-slot-spin]'))
       assert.equal(doc.querySelector('nav.fixed'), null, `${path}: controls unobstructed by mobile nav`)
-      const real = doc.querySelector('a[href^="/go?"]')
-      assert.equal(new URL(real.href, base).searchParams.get('category'), 'slots')
-      assert.equal(new URL(real.href, base).searchParams.get('language'), localeModule.segmentToLocale(segment))
-      assert.ok(doc.querySelector('[data-operator-cta="play-real"]').compareDocumentPosition(doc.querySelector('[data-game-controls]')) & 4)
     }
     if (['', '/play', '/live-casino'].includes(routePath)) {
       const blackjack = doc.querySelectorAll('[data-original-card="blackjack"]')
@@ -213,14 +234,6 @@ try {
       assert.ok(doc.querySelector('[data-blackjack-game]'), `${path}: real blackjack shell`)
       assert.ok(doc.querySelector('[data-blackjack-deal]'))
       assert.equal(doc.querySelector('nav.fixed'), null)
-      const real = doc.querySelector('a[href^="/go?"]'), target = new URL(real.href, base)
-      assert.equal(target.searchParams.get('category'), 'table-games')
-      assert.equal(target.searchParams.get('game'), 'blackjack-live')
-      assert.equal(target.searchParams.get('language'), localeModule.segmentToLocale(segment))
-      assert.equal(real.getAttribute('target'), '_blank'); assert.ok(real.rel.includes('sponsored'))
-      assert.ok(doc.querySelector('[data-operator-cta="play-real"]').compareDocumentPosition(doc.querySelector('[data-game-controls]')) & 4)
-      const outbound = await fetch(base + target.pathname + target.search, { redirect: 'manual' })
-      assert.equal(outbound.status, 302); assert.equal(outbound.headers.get('location'), partner.categoryAffiliateUrl['live-casino'].BR)
     }
     if (['', '/play', '/table-games', '/live-casino'].includes(routePath)) {
       const roulette = doc.querySelectorAll('[data-original-card="roulette"]')
@@ -234,14 +247,6 @@ try {
       assert.ok(doc.querySelector('[data-roulette-spin]'))
       assert.equal(doc.querySelectorAll('[data-pocket]').length, 37)
       assert.equal(doc.querySelector('nav.fixed'), null)
-      const real = doc.querySelector('a[href^="/go?"]'), target = new URL(real.href, base)
-      assert.equal(target.searchParams.get('category'), 'live-casino')
-      assert.equal(target.searchParams.get('game'), 'lightning-roulette')
-      assert.equal(target.searchParams.get('language'), localeModule.segmentToLocale(segment))
-      assert.equal(real.getAttribute('target'), '_blank'); assert.ok(real.rel.includes('sponsored'))
-      assert.ok(doc.querySelector('[data-operator-cta="play-real"]').compareDocumentPosition(doc.querySelector('[data-game-controls]')) & 4)
-      const outbound = await fetch(base + target.pathname + target.search, { redirect: 'manual' })
-      assert.equal(outbound.status, 302); assert.equal(outbound.headers.get('location'), partner.categoryAffiliateUrl['live-casino'].BR)
     }
     if (['', '/play', '/instant-games'].includes(routePath)) {
       const mines = doc.querySelectorAll('[data-original-card="mines"]')
@@ -258,36 +263,16 @@ try {
       assert.ok(doc.querySelector('[data-mines-start]'))
       assert.equal(doc.querySelectorAll('[data-mine]').length, 0)
       assert.equal(doc.querySelector('nav.fixed'), null)
-      const cta = doc.querySelector('[data-operator-cta="play-real"]')
-      assert.ok(cta, `${path}: generic Betsson CTA`)
-      const real = cta.querySelector('a[href^="/go?"]'), target = new URL(real.href, base)
-      assert.equal(target.searchParams.get('operator'), partner.slug)
-      assert.equal(target.searchParams.get('category'), null)
-      assert.equal(target.searchParams.get('game'), null)
-      assert.equal(target.searchParams.get('placement'), 'originals_generic_operator')
-      assert.equal(target.searchParams.get('language'), localeModule.segmentToLocale(segment))
-      assert.equal(doc.querySelector('[data-operator-cta-mode]')?.getAttribute('data-operator-cta-mode'), 'generic-brand')
-      assert.doesNotMatch(doc.body.textContent, /Play Liva Mines at Betsson|Jogue Liva Mines na Betsson|This game is available at Betsson/i)
-      if (segment === 'en') {
-        assert.doesNotMatch(doc.querySelector('[data-operator-cta="play-real"]')?.textContent ?? '', /Conheça cassino|Visitar Betsson|Patrocinado|não aceita apostas nem depósitos|Divulgação de afiliados/)
-      }
-      if (segment === 'es-mx') {
-        assert.doesNotMatch(doc.querySelector('[data-operator-cta="play-real"]')?.textContent ?? '', /Conheça cassino|Visit Betsson|Sponsored|não aceita apostas nem depósitos|Divulgação de afiliados/)
-      }
-      const outbound = await fetch(base + target.pathname + target.search, { redirect: 'manual' })
-      assert.equal(outbound.status, 302)
-      assert.equal(outbound.headers.get('location'), partner.affiliateUrl.BR)
     }
     if (['/play/crash', '/play/capybara-gold', '/play/blackjack', '/play/roulette', '/play/mines'].includes(routePath)) {
-      const cta = doc.querySelector('[data-operator-cta="play-real"]')
       const viewport = doc.querySelector('[data-game-viewport]')
       const controls = doc.querySelector('[data-game-controls]')
       const unit = doc.querySelector('[data-game-unit]')
-      assert.ok(cta && viewport && controls && unit, `${path}: Originals shell landmarks`)
-      assert.ok(cta.compareDocumentPosition(viewport) & 4, `${path}: Play Real precedes viewport`)
+      assert.ok(viewport && controls && unit, `${path}: Originals shell landmarks`)
       assert.ok(viewport.compareDocumentPosition(controls) & 4, `${path}: viewport precedes controls`)
-      assert.equal(Boolean(viewport.compareDocumentPosition(cta) & 4), false, `${path}: Play Real is not between viewport and controls`)
-      assert.equal(unit.contains(cta), false, `${path}: commercial block stays outside the game unit`)
+      assert.equal(doc.querySelector('[data-operator-cta="play-real"]'), null, `${path}: no Play Real CTA on Original gameplay`)
+      assert.equal(doc.querySelector('[data-betsson-banner]'), null, `${path}: no operator banner on Original gameplay`)
+      assert.equal(doc.querySelector('main a[href^="/go?"]'), null, `${path}: no affiliate CTA on Original gameplay`)
       assert.equal(unit.querySelector('[data-operator-cta], [data-betsson-banner]'), null, `${path}: no commercial inside game unit`)
     }
     if (routePath !== '/play/crash') {
@@ -298,14 +283,6 @@ try {
     } else {
       assert.doesNotMatch(doc.querySelector('main')?.textContent ?? '', /JetX|Aviator|SmartSoft|SPRIBE|Robinson Crusoe|\bFriday\b/i)
       assert.ok(doc.querySelector('[data-phase="ready"]'), `${path}: real game shell`)
-      const real = doc.querySelector('main a[href^="/go?"]'), target = new URL(real.href, base)
-      assert.equal(target.searchParams.get('category'), 'crash')
-      assert.equal(target.searchParams.get('game'), null)
-      assert.equal(target.searchParams.get('language'), localeModule.segmentToLocale(segment))
-      assert.ok(doc.querySelector('[data-operator-cta="play-real"]').compareDocumentPosition(doc.querySelector('[data-game-controls]')) & 4)
-      const outbound = await fetch(base + target.pathname + target.search, { redirect: 'manual' })
-      assert.equal(outbound.status, 302)
-      assert.equal(outbound.headers.get('location'), partner.categoryAffiliateUrl.crash.BR)
     }
     const sportsNav = doc.querySelector('header nav a[href="https://livasports.com"]')
     assert.ok(sportsNav, `${path}: visible desktop Sports network entry`)
@@ -352,12 +329,20 @@ try {
     }
     if (publicPaths.includes(path) ? robots.some((v) => v.includes('noindex')) : !robots.some((v) => v.includes('noindex'))) failures.push(`${path}: robots ${robots}`)
     if ((doc.title.match(/PlayLiva/gi) ?? []).length !== 1) failures.push(`${path}: title ${doc.title}`)
+    const schemaTypes = new Map()
     for (const script of doc.querySelectorAll('script[type="application/ld+json"]')) {
       const data = JSON.parse(script.textContent)
+      assert.equal(data['@context'], 'https://schema.org', `${path}: schema context`)
+      assert.ok(['WebSite', 'Organization', 'BreadcrumbList'].includes(data['@type']), `${path}: schema must have an audited visible use`)
+      assert.ok(!('aggregateRating' in data) && !('review' in data), `${path}: no invented ratings/reviews`)
+      schemaTypes.set(data['@type'], (schemaTypes.get(data['@type']) ?? 0) + 1)
       if (data['@type'] === 'BreadcrumbList') for (const item of data.itemListElement) {
         if (item.item && !item.item.startsWith(`${SITE_URL}/${path.split('/')[1]}`)) failures.push(`${path}: unlocalized breadcrumb ${item.item}`)
       }
     }
+    assert.equal(schemaTypes.get('WebSite'), 1, `${path}: one WebSite entity`)
+    assert.equal(schemaTypes.get('Organization'), 1, `${path}: one Organization entity`)
+    assert.ok((schemaTypes.get('BreadcrumbList') ?? 0) <= 1, `${path}: no duplicate breadcrumbs`)
     if (doc.querySelector('script[src*="googletagmanager"], script[src*="insights/script"]')) failures.push(`${path}: analytics script before consent`)
     if (path.includes('blackjack-live') && doc.querySelector('img[src*="blackjack-live.jpg"]')) failures.push(`${path}: mismatched Speed Blackjack artwork`)
     const metadataText = [...doc.querySelectorAll('meta[name="description"], img[alt]')].map((node) => node.content ?? node.alt).join(' ')

@@ -245,4 +245,12 @@ export interface Offer {
   source?: string
   /** ISO date this offer's terms/link were last checked against the operator. */
   lastVerifiedAt?: string
+  /** A documented, market-specific publication review; absence means do not publish. */
+  complianceReview?: {
+    market: CountryCode
+    status: 'pending' | 'reviewed-permitted' | 'rejected'
+    legalSource: string
+    verifiedAt: string
+    reviewBy: string
+  }
 }

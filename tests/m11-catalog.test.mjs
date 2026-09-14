@@ -169,7 +169,7 @@ test('M11: 189 M10 URLs survive; new routes have unique reciprocal localized met
   const oldPaths = JSON.parse(await readFile(new URL('./fixtures/m10-sitemap-paths.json', import.meta.url)))
   const entries = sitemapModule.default(), urls = entries.map(item => item.url)
   assert.equal(oldPaths.length * 3, 189)
-  assert.equal(entries.length, 318)
+  assert.equal(entries.length, 324) // M12 adds two trust pages in three locales; all 318 prior URLs below remain required.
   assert.equal(new Set(urls).size, urls.length)
   assert.equal(paths.REFERENCE_PATHS.length, 43)
   for (const [, segment] of locales) for (const path of oldPaths) assert.ok(urls.includes(`${seo.SITE_URL}/${segment}${path}`))

@@ -8,6 +8,7 @@ import {
 import { absoluteUrl } from '@/lib/seo'
 import { REFERENCE_PATHS } from '@/lib/catalog/paths'
 import { DEFAULT_LOCALE_SEGMENT, LOCALE_SEGMENTS, type LocaleSegment } from '@/lib/locale'
+import { editorialRecord } from '@/lib/editorial'
 
 /**
  * Only public, indexable URLs belong in the sitemap. Mock / pre-launch
@@ -22,7 +23,6 @@ import { DEFAULT_LOCALE_SEGMENT, LOCALE_SEGMENTS, type LocaleSegment } from '@/l
  */
 function localizedEntry(
   path: string,
-  now: Date,
   changeFrequency: MetadataRoute.Sitemap[number]['changeFrequency'],
   priority: number,
 ): MetadataRoute.Sitemap {
@@ -36,7 +36,7 @@ function localizedEntry(
 
   return LOCALE_SEGMENTS.map((segment) => ({
     url: absoluteUrl(localizedPath(segment)),
-    lastModified: now,
+    ...(editorialRecord(path)?.updatedAt ? { lastModified: editorialRecord(path)!.updatedAt } : {}),
     changeFrequency,
     priority,
     alternates: { languages },
@@ -44,8 +44,6 @@ function localizedEntry(
 }
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date()
-
   const staticPaths: Array<{ path: string; priority: number }> = [
     { path: '/', priority: 1 },
     { path: '/games', priority: 0.9 },
@@ -65,6 +63,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/instant-games', priority: 0.7 },
     // Sports archive URLs remain accessible but noindex and outside the sitemap.
     { path: '/about', priority: 0.4 },
+    { path: '/editorial-policy', priority: 0.4 },
+    { path: '/authors/playliva', priority: 0.3 },
     { path: '/responsible-gaming', priority: 0.5 },
     { path: '/contact', priority: 0.3 },
     // terms / privacy-policy / cookie-policy are noindex template pages and
@@ -73,31 +73,31 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ]
 
   const entries: MetadataRoute.Sitemap = staticPaths.flatMap((p) =>
-    localizedEntry(p.path, now, 'weekly', p.priority),
+    localizedEntry(p.path, 'weekly', p.priority),
   )
 
   for (const game of GAMES) {
-    entries.push(...localizedEntry(`/games/${game.slug}`, now, 'weekly', 0.8))
-    entries.push(...localizedEntry(`/games-like/${game.slug}`, now, 'weekly', 0.6))
-    entries.push(...localizedEntry(`/where-to-play/${game.slug}`, now, 'weekly', 0.6))
+    entries.push(...localizedEntry(`/games/${game.slug}`, 'weekly', 0.8))
+    entries.push(...localizedEntry(`/games-like/${game.slug}`, 'weekly', 0.6))
+    entries.push(...localizedEntry(`/where-to-play/${game.slug}`, 'weekly', 0.6))
   }
 
   for (const comparison of COMPARISONS) {
-    entries.push(...localizedEntry(`/compare/${comparison.slug}`, now, 'weekly', 0.6))
+    entries.push(...localizedEntry(`/compare/${comparison.slug}`, 'weekly', 0.6))
   }
 
   for (const list of GAME_LISTS) {
-    entries.push(...localizedEntry(`/best/${list.slug}`, now, 'weekly', 0.7))
+    entries.push(...localizedEntry(`/best/${list.slug}`, 'weekly', 0.7))
   }
 
   // Only verified (non-mock) operator profiles are indexable.
   for (const operator of getPublicOperators()) {
-    entries.push(...localizedEntry(`/operators/${operator.slug}`, now, 'monthly', 0.5))
+    entries.push(...localizedEntry(`/operators/${operator.slug}`, 'monthly', 0.5))
   }
 
   // M11 neutral reference pages do not extend commercial availability routes.
   for (const path of REFERENCE_PATHS) {
-    entries.push(...localizedEntry(path, now, 'monthly', 0.6))
+    entries.push(...localizedEntry(path, 'monthly', 0.6))
   }
   return entries
 }

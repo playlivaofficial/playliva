@@ -23,6 +23,7 @@ import { Button } from '@/components/ui/button'
 import { track } from '@/lib/tracking'
 import type { GameList } from '@/lib/types'
 import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsored-banner'
+import { EditorialByline } from '@/components/editorial-byline'
 
 export function BestListView({ list }: { list: GameList }) {
   const { locale, countryCode } = useCountry()
@@ -64,6 +65,7 @@ export function BestListView({ list }: { list: GameList }) {
 
       {/* Ranked editorial list */}
       <Section className="py-10">
+        <EditorialByline path={`/best/${list.slug}`} locale={locale} />
         <div className="flex flex-col gap-5">
           {games.map((game, i) => {
             const gc = getGameContent(game, locale)
