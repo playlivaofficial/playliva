@@ -63,18 +63,31 @@ the generic brand treatment.
 ## Surfaces
 
 - **Originals (crash, capybara-gold, blackjack, roulette, mines).** The compact
-  header sponsor stays and now carries the campaign headline and CTA. A
+  header sponsor stays and carries the short campaign headline and CTA. A
   contextual offer (`components/affiliates/betsson-engagement-offer.tsx`)
   mounts in the shared shell *after* the game unit as a fixed overlay: desktop
-  centered card, mobile bottom sheet. It opens only when `roundActive` goes
-  from true to false for the third time, after a 650 ms settle delay, and is
-  cancelled if a new round starts first. It records itself in
-  `sessionStorage` before opening, so it appears at most once per browser
-  session across all Originals; dismiss (X, backdrop, Escape, "keep playing")
-  never reopens. Starting a round while it is open closes it. Focus moves to
-  the close button, Tab is trapped, focus is restored on close. No audio, no
-  countdown, no layout shift. Betsson remains the only commercial partner on
-  gameplay routes; no operator grid was added.
+  centered card, mobile bottom sheet. **Recurring cadence:** it opens after
+  every third completed gameplay cycle (3, 6, 9, 12 …), 650 ms after the
+  cycle settles, and is cancelled if a new cycle starts first. Exactly one
+  offer per milestone; dismiss (X, backdrop, Escape, "keep playing") never
+  resets the counter and never suppresses the next milestone; starting a
+  cycle while it is open closes it. There is no session cap. The popup is the
+  **only** surface that states the verified R$20 selected-games condition
+  (`engagement.copy` per UI language in the config); every compact placement
+  keeps the short headline. Focus moves to the close button, Tab is trapped,
+  focus is restored on close. No audio, no countdown, no layout shift.
+  Betsson remains the only commercial partner on gameplay routes.
+
+  The completed-cycle concept is shared: `lib/engagement/gameplay-cycle.ts`
+  turns the shell's `roundActive` true → false edge into a cycle count, so
+  every engine feeds the same counter without engine changes. Per Original:
+  Island Crash = one fully settled flight (phase back to `ready`); Capybara
+  Gold = one settled spin (a triggered bonus stays one cycle until its
+  summary); Blackjack = one hand after final settlement; Roulette = one spin
+  after the result window; Mines = one cashed-out or lost board. Discovery,
+  catalog, sports-archive and Offers pages have no observable gameplay, so
+  they keep their static compact placements and never fake a counter. No
+  Plinko, provider slot or live-casino demo route exists in this repository.
 - **Discovery / game pages.** In Where to Play (game detail, where-to-play,
   category, games-like, comparison and best-list grids) the Betsson operator
   card is swapped for the campaign card (`betsson-discovery-offer.tsx`) when
@@ -97,9 +110,11 @@ the generic brand treatment.
 New events `offer_impression` and `offer_dismiss` join `affiliate_click`
 through the existing consented, allow-listed `track()` layer. Promo events
 carry `promoId`, `brand`, `placement`, `surface` (originals / discovery /
-offers), route (`url`, query-stripped), `gameSlug` / `originalId`, `language`,
-`country`, device class, `trafficSource` and `utmSource/Medium/Campaign/
-Content/Term`. Values are allow-listed by character class and length; no
+offers), route (`url`, query-stripped), `gameSlug` / `originalId` /
+`category`, `language`, `country`, device class, `trafficSource`,
+`utmSource/Medium/Campaign/Content/Term` and, for the gameplay popup,
+`completedCycleNumber` (3, 6, 9 …), `triggerMultiple` (3) and
+`exposureNumber` (1, 2, 3 …), stringified for the allow-list. Values are allow-listed by character class and length; no
 wallet, identifier, referrer path or free text is collected. The Offers page
 CTA mirrors its affiliate impression as `offer_impression`.
 
@@ -134,3 +149,16 @@ the change is intentional: the Originals header placement is now
 public BR offer list contains the verified campaign, and the protected hashes
 for `lib/data.ts`, `lib/tracking.ts`, `components/affiliate-button.tsx` and
 `components/where-to-play.tsx` were rebased.
+
+## Homepage "In the spotlight" carousel
+
+`lib/home/spotlight.ts` is the canonical spotlight catalog (one entry per
+playable Original, Play-hub order, posters and localized labels from the
+existing discovery copy); `components/home/spotlight-carousel.tsx` renders
+one slide per entry with native horizontal scroll-snap (finger swipe,
+trackpad), mouse drag-to-scroll with an 8 px tap/drag threshold that
+swallows only the click produced by a drag, previous/next controls, arrow
+keys and a live `01 / N` indicator derived from the catalog length. Each
+slide links directly to `/[locale]/play/<slug>`, preserving the locale and
+forwarding inbound `utm_*` parameters. Adding an Original means adding a
+catalog entry; the component never hardcodes a count.

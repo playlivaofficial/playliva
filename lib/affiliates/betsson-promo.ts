@@ -70,6 +70,8 @@ export interface BetssonPromoModel {
   verifiedTerms: readonly string[]
   frequencyCap: BetssonPromoConfig['frequencyCap']
   engagement: BetssonPromoConfig['engagement']
+  /** Localized full-offer wording for the gameplay popup (headline, R$20 condition, CTA). */
+  engagementCopy: BetssonPromoConfig['engagement']['copy'][Locale]
 }
 
 const CTA_BY_LOCALE: Record<Locale, (name: string) => string> = {
@@ -140,6 +142,7 @@ export function getBetssonPromo(
     verifiedTerms: config.verifiedTerms,
     frequencyCap: config.frequencyCap,
     engagement: config.engagement,
+    engagementCopy: config.engagement.copy[locale],
   }
 }
 

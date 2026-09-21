@@ -21,6 +21,10 @@ export interface BetssonPromoEventContext {
   originalId?: string
   /** Localized route, e.g. `/pt-br/play/crash`; query strings are stripped by the tracker. */
   route?: string
+  /** Game category (Originals: definition category). */
+  category?: string
+  /** Recurring gameplay-offer milestone metadata. */
+  milestone?: { completedCycleNumber: number; triggerMultiple: number; exposureNumber: number }
 }
 
 export function betssonPromoPayload(model: BetssonPromoModel, context: BetssonPromoEventContext = {}): TrackPayload {
@@ -34,6 +38,10 @@ export function betssonPromoPayload(model: BetssonPromoModel, context: BetssonPr
     pageSlug: model.pageSlug ?? context.gameSlug,
     gameSlug: context.gameSlug,
     originalId: context.originalId,
+    category: context.category,
+    completedCycleNumber: context.milestone ? String(context.milestone.completedCycleNumber) : undefined,
+    triggerMultiple: context.milestone ? String(context.milestone.triggerMultiple) : undefined,
+    exposureNumber: context.milestone ? String(context.milestone.exposureNumber) : undefined,
     operatorId: model.operatorId,
     operatorSlug: model.operatorSlug,
     offerId: model.offerId,

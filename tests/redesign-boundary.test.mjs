@@ -12,7 +12,8 @@ import { createHash } from 'node:crypto'
 // and sitemap.ts (trust routes and truthful dates). The Betsson BR campaign funnel
 // rebases data.ts (central verified offer), tracking.ts (funnel events/attribution
 // allow-list), affiliate-button.tsx (promo payload) and where-to-play.tsx (campaign
-// card wrapper). All other hashes stay intact;
+// card wrapper); the recurring gameplay-offer milestone rebases tracking.ts again
+// (cycle/exposure allow-list fields). All other hashes stay intact;
 // m12-hardening tests verify the added behavior. No engine snapshot is rebased.
 test('redesign: protected outbound infrastructure remains unchanged except authorized Betsson play-real files', async () => {
   const expected = JSON.parse(await readFile(new URL('./fixtures/redesign-protected.json', import.meta.url), 'utf8'))

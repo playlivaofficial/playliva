@@ -82,6 +82,12 @@ export interface TrackPayload {
   utmCampaign?: string
   utmContent?: string
   utmTerm?: string
+  /** Recurring gameplay offer: cycles completed when it opened (3, 6, 9 …), as a string. */
+  completedCycleNumber?: string
+  /** Configured cadence, e.g. "3". */
+  triggerMultiple?: string
+  /** Ordinal of the exposure in the play session, as a string. */
+  exposureNumber?: string
 }
 
 const EVENTS: readonly TrackEventName[] = ['page_view', 'game_view', 'comparison_view',
@@ -91,7 +97,8 @@ const EVENTS: readonly TrackEventName[] = ['page_view', 'game_view', 'comparison
 const CONTEXT_FIELDS = ['country', 'language', 'pageType', 'pageSlug', 'gameId', 'gameSlug',
   'matchId', 'matchSlug', 'category', 'operatorId', 'operatorSlug', 'offerId', 'ctaLocation',
   'placement', 'destination', 'originalId', 'roundId', 'promoId', 'brand', 'surface',
-  'trafficSource', 'utmSource', 'utmMedium', 'utmCampaign', 'utmContent', 'utmTerm'] as const
+  'trafficSource', 'utmSource', 'utmMedium', 'utmCampaign', 'utmContent', 'utmTerm',
+  'completedCycleNumber', 'triggerMultiple', 'exposureNumber'] as const
 /** Campaign identifiers may contain dots (e.g. "reels.br"); still no spaces, slashes or free text. */
 const ATTRIBUTION_FIELDS: readonly string[] = ['trafficSource', 'utmSource', 'utmMedium', 'utmCampaign', 'utmContent', 'utmTerm']
 
