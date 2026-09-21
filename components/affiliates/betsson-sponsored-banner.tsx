@@ -54,9 +54,9 @@ export function BetssonSponsoredBanner({
   cta?: BetssonBannerCta
   lazy?: boolean
 }) {
-  const { countryCode, locale, t } = useCountry()
+  const { marketCode, locale, t } = useCountry()
   const route = usePathname()
-  const banner = getBetssonSponsoredBanner(countryCode, locale, surface)
+  const banner = marketCode ? getBetssonSponsoredBanner(marketCode, locale, surface) : null
   const root = useRef<HTMLElement>(null)
   const seen = useRef(false)
   const promoId = banner?.promo?.promoId
@@ -125,8 +125,8 @@ export function BetssonSponsoredBanner({
         <div className={styles.copy}>
           <p className={styles.eyebrow}>{t('affiliate.sponsored')}{promo ? ` · ${banner.operatorName}` : ''}</p>
           {promo
-            ? <h2 className={`${styles.title} ${styles.promoTitle}`} lang="pt-BR">{promo.headline}</h2>
-            : <h2 className={styles.title}>{banner.operatorName}</h2>}
+            ? <p className={`${styles.title} ${styles.promoTitle}`} lang="pt-BR">{promo.headline}</p>
+            : <p className={styles.title}>{banner.operatorName}</p>}
           <p className={styles.body}>{t('affiliate.homeBannerBody')}</p>
         </div>
         <Button

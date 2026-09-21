@@ -12,6 +12,8 @@ import {
   isLocaleSegment,
   segmentToLocale,
 } from '@/lib/locale'
+import { createTranslator } from '@/lib/i18n'
+import { getGameOgImage } from '@/lib/game-artwork'
 
 export function generateStaticParams() {
   return [...COMPARISONS, ...REFERENCE_COMPARISONS].map((c) => ({ slug: c.slug }))
@@ -35,11 +37,16 @@ export async function generateMetadata({
     isLocaleSegment(localeSegment) ? localeSegment : DEFAULT_LOCALE_SEGMENT,
   )
   const content = getComparisonContent(comparison, locale)
+  const t = createTranslator(locale)
   return pageMetadata({
-    title: content.seo?.title ?? `${a?.title} vs ${b?.title} — Game Comparison`,
+    title: content.seo?.title ?? t('seo.comparisonTitle', {
+      a: a?.title ?? '',
+      b: b?.title ?? '',
+    }),
     description: content.seo?.description ?? content.intro,
     path: `/compare/${comparison.slug}`,
     localeSegment,
+    images: a ? getGameOgImage(a) : undefined,
   })
 }
 

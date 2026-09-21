@@ -102,7 +102,7 @@ const ptBR: Dict = {
   // Category page
   'category.eyebrow': 'Categoria',
   'category.gamesEyebrow': 'Jogos',
-  'category.popularTitle': 'Jogos de {category} populares no {market}',
+  'category.popularTitle': 'Títulos de {category} em destaque no {market}',
   'category.popularSub':
     'Os títulos de {category} que os jogadores no {market} estão explorando agora. A disponibilidade pode variar por operador.',
   'category.empty': 'Ainda não há jogos listados nesta categoria.',
@@ -113,6 +113,8 @@ const ptBR: Dict = {
   'category.operatorsTitle': 'Operadores de {category} no {market}',
   'category.operatorsSub':
     'Os operadores exibidos correspondem ao país selecionado. Termos e disponibilidade variam.',
+  'seo.comparisonTitle': '{a} vs {b} — Comparação de jogos',
+  'best.methodologyTitle': 'Como fizemos esta seleção',
 
   // Sports — odds discovery & comparison
   'sports.pageTitle': "Arquivo de Esportes",
@@ -646,6 +648,8 @@ const esMX: Dict = {
   'category.operatorsTitle': 'Operadores de {category} en {market}',
   'category.operatorsSub':
     'Los operadores mostrados corresponden al país seleccionado. Los términos y la disponibilidad varían.',
+  'seo.comparisonTitle': '{a} vs {b} — Comparación de juegos',
+  'best.methodologyTitle': 'Cómo hicimos esta selección',
 
   // Sports — odds discovery & comparison
   'sports.pageTitle': "Archivo de Deportes",
@@ -1158,6 +1162,8 @@ const en: Dict = {
   'category.operatorsTitle': '{category} operators in {market}',
   'category.operatorsSub':
     'Operators shown match the selected country. Terms and availability vary.',
+  'seo.comparisonTitle': '{a} vs {b} — Game comparison',
+  'best.methodologyTitle': 'How this selection was made',
 
   // Sports — odds discovery & comparison
   'sports.pageTitle': "Sports Archive",

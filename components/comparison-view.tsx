@@ -21,14 +21,14 @@ import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsore
 import { EditorialByline } from '@/components/editorial-byline'
 
 export function ComparisonView({ comparison }: { comparison: Comparison }) {
-  const { countryCode, t, locale } = useCountry()
+  const { marketCode: countryCode, t, locale } = useCountry()
   const a = getGameById(comparison.gameAId)
   const b = getGameById(comparison.gameBId)
 
   useEffect(() => {
     if (a && b) {
       track('comparison_view', {
-        country: countryCode,
+        country: countryCode ?? undefined,
         pageType: 'comparison',
         gameId: `${a.id}+${b.id}`,
       })
@@ -38,8 +38,9 @@ export function ComparisonView({ comparison }: { comparison: Comparison }) {
   if (!a || !b) return null
 
   const content = getComparisonContent(comparison, locale)
-  const marketName = getCountryName(countryCode, locale)
-  const operators = getOperatorsForGame(a, countryCode)
+  const marketName = countryCode ? getCountryName(countryCode, locale) : t('geo.marketLabel')
+  const operators = countryCode ? getOperatorsForGame(a, countryCode) : []
+  const secondOperators = countryCode ? getOperatorsForGame(b, countryCode) : []
 
   return (
     <div>
@@ -97,6 +98,16 @@ export function ComparisonView({ comparison }: { comparison: Comparison }) {
                   >
                     {t('compare.viewGame', { game: g.title })}
                   </Button>
+                  {g.id === a.id && a.relatedGameIds.length > 0 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      render={<LocaleLink href={`/games-like/${a.slug}`} />}
+                      className="mt-2"
+                    >
+                      {t('best.similarGames')}
+                    </Button>
+                  )}
                 </div>
               </div>
             )
@@ -163,7 +174,7 @@ export function ComparisonView({ comparison }: { comparison: Comparison }) {
           eyebrow={t('geo.whereToPlay')}
           title={t('compare.whereToPlayTitle', { market: marketName })}
           description={t('compare.whereToPlaySub')}
-          action={
+          action={operators.length > 0 ? (
             <Button
               variant="outline"
               size="lg"
@@ -172,9 +183,9 @@ export function ComparisonView({ comparison }: { comparison: Comparison }) {
               {t('compare.whereToPlayCta', { game: a.title })}
               <ArrowRight className="size-4" />
             </Button>
-          }
+          ) : undefined}
         />
-        {operators.length > 0 ? (
+        {operators.length > 0 && countryCode ? (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {operators.map((o) => (
               <WhereToPlayOperatorCard key={o.id} operator={o} country={countryCode}
@@ -186,6 +197,17 @@ export function ComparisonView({ comparison }: { comparison: Comparison }) {
             <p className="text-base font-medium text-foreground">
               {t('geo.reviewingTitle', { market: marketName })}
             </p>
+          </div>
+        )}
+        {secondOperators.length > 0 && (
+          <div className="mt-4">
+            <Button
+              variant="ghost"
+              render={<LocaleLink href={`/where-to-play/${b.slug}`} />}
+            >
+              {t('compare.whereToPlayCta', { game: b.title })}
+              <ArrowRight className="size-4" />
+            </Button>
           </div>
         )}
       </Section>

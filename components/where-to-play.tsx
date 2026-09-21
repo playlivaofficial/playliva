@@ -6,13 +6,13 @@ import { WhereToPlayOperatorCard } from '@/components/where-to-play-operator-car
 import type { CategorySlug } from '@/lib/types'
 
 export function WhereToPlay({ category }: { category?: CategorySlug }) {
-  const { countryCode, t, locale } = useCountry()
-  const marketName = getCountryName(countryCode, locale)
-  const operators = getOperatorsForCountry(countryCode).filter((o) =>
+  const { marketCode: countryCode, t, locale } = useCountry()
+  const marketName = countryCode ? getCountryName(countryCode, locale) : t('geo.marketLabel')
+  const operators = (countryCode ? getOperatorsForCountry(countryCode) : []).filter((o) =>
     category ? o.categories.includes(category) : true,
   )
 
-  if (operators.length === 0) {
+  if (operators.length === 0 || !countryCode) {
     return (
       <div className="rounded-2xl border border-dashed border-border bg-card/40 p-10 text-center">
         <p className="text-base font-medium text-foreground">

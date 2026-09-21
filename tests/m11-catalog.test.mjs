@@ -169,10 +169,21 @@ test('M11: 189 M10 URLs survive; new routes have unique reciprocal localized met
   const oldPaths = JSON.parse(await readFile(new URL('./fixtures/m10-sitemap-paths.json', import.meta.url)))
   const entries = sitemapModule.default(), urls = entries.map(item => item.url)
   assert.equal(oldPaths.length * 3, 189)
-  assert.equal(entries.length, 324) // M12 adds two trust pages in three locales; all 318 prior URLs below remain required.
+  assert.equal(entries.length, 292) // SEO P0 removes 24 empty WTP and 8 wrong-market list variants.
   assert.equal(new Set(urls).size, urls.length)
   assert.equal(paths.REFERENCE_PATHS.length, 43)
-  for (const [, segment] of locales) for (const path of oldPaths) assert.ok(urls.includes(`${seo.SITE_URL}/${segment}${path}`))
+  for (const [, segment] of locales) for (const path of oldPaths) {
+    let expected = true
+    if (path.startsWith('/where-to-play/')) {
+      const game = data.getGame(path.split('/').pop())
+      expected = segment === 'pt-br' && data.getOperatorsForGame(game, 'BR').length > 0
+    }
+    if (path.startsWith('/best/best-')) {
+      const list = data.getGameList(path.split('/').pop())
+      expected = list.country === 'BR' ? segment === 'pt-br' : segment === 'es-mx'
+    }
+    assert.equal(urls.includes(`${seo.SITE_URL}/${segment}${path}`), expected, `${segment}${path}`)
+  }
   for (const path of paths.REFERENCE_PATHS) for (const [, segment] of locales) {
     const entry = entries.find(item => item.url === `${seo.SITE_URL}/${segment}${path}`)
     assert.ok(entry)

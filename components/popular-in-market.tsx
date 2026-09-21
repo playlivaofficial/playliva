@@ -25,22 +25,22 @@ export function PopularInMarket({
   category?: string
   limit?: number
 }) {
-  const { countryCode } = useCountry()
+  const { marketCode: countryCode } = useCountry()
   const { t, locale } = useTranslation()
-  const marketName = getCountryName(countryCode, locale)
+  const marketName = countryCode ? getCountryName(countryCode, locale) : t('geo.marketLabel')
 
-  let games = getPopularGamesForCountry(countryCode, category, limit)
+  let games = countryCode ? getPopularGamesForCountry(countryCode, category, limit) : []
   // Fallback so the section is never empty for lighter markets.
   if (games.length === 0) {
     games = GAMES.filter(
       (g) =>
-        g.countries.includes(countryCode) &&
+        countryCode !== null && g.countries.includes(countryCode) &&
         (category ? g.category === category : g.featured),
     ).slice(0, limit)
   }
 
   const bestList = category
-    ? getGameListByCategoryCountry(category, countryCode)
+    ? countryCode ? getGameListByCategoryCountry(category, countryCode) : undefined
     : undefined
   const bestTitle = bestList
     ? getGameListContent(bestList, locale).title

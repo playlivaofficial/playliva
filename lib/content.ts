@@ -899,14 +899,14 @@ interface ListContent {
 const LIST_CONTENT: Record<Locale, Record<string, ListContent>> = {
   'pt-BR': {
     'best-crash-games-brazil': {
-      title: 'Melhores jogos de crash no Brasil',
+      title: 'Seleção editorial de crash games no Brasil',
       intro:
-        'Os jogos de crash estão entre os mais jogados no Brasil. Esta seleção editorial destaca os títulos de crash que os jogadores brasileiros mais descobrem, com uma breve explicação do que torna cada um distinto.',
+        'Esta seleção reúne Aviator, JetX e Spaceman para comparar mecânicas, apresentação e disponibilidade verificada no mercado brasileiro. A ordem organiza a leitura e não indica desempenho ou chance de resultado.',
       editorialContent:
-        'Os rankings refletem a avaliação editorial da PlayLiva com base em disponibilidade, popularidade e variedade de jogabilidade no mercado brasileiro. Não são previsão de resultados nem garantia de qualquer ganho.',
-      seoTitle: 'Melhores jogos de crash no Brasil | PlayLiva',
+        'A seleção usa critérios editoriais fixos: mecânicas documentadas, disponibilidade no Brasil confirmada nos registros da PlayLiva, diferenças úteis entre os formatos e qualidade das fontes consultadas. A ordem serve apenas para leitura; não é previsão, avaliação de desempenho nem garantia de ganho.',
+      seoTitle: 'Seleção de Crash Games no Brasil | PlayLiva',
       seoDescription:
-        'Descubra os melhores jogos de crash no Brasil, como cada um funciona e onde jogá-los com responsabilidade.',
+        'Compare uma seleção editorial de crash games disponíveis no Brasil e veja os critérios usados pela PlayLiva.',
     },
     'best-crash-games-mexico': {
       title: 'Melhores jogos de crash no México',
@@ -941,14 +941,14 @@ const LIST_CONTENT: Record<Locale, Record<string, ListContent>> = {
   },
   'es-MX': {
     'best-crash-games-brazil': {
-      title: 'Mejores juegos de crash en Brasil',
+      title: 'Selección editorial de juegos crash en Brasil',
       intro:
-        'Los juegos de crash están entre los más jugados en Brasil. Esta selección editorial destaca los títulos de crash que más descubren los jugadores brasileños, con una breve explicación de lo que hace distinto a cada uno.',
+        'Esta selección reúne Aviator, JetX y Spaceman para comparar mecánicas, presentación y disponibilidad verificada en el mercado brasileño. El orden organiza la lectura y no indica rendimiento ni probabilidad de resultado.',
       editorialContent:
-        'Los rankings reflejan el criterio editorial de PlayLiva según disponibilidad, popularidad y variedad de juego en el mercado brasileño. No son una predicción de resultados ni una garantía de ganancia.',
-      seoTitle: 'Mejores juegos de crash en Brasil | PlayLiva',
+        'La selección usa criterios editoriales fijos: mecánicas documentadas, disponibilidad en Brasil confirmada en los registros de PlayLiva, diferencias útiles entre formatos y calidad de las fuentes consultadas. El orden solo guía la lectura; no predice resultados ni rendimiento.',
+      seoTitle: 'Selección de Juegos Crash en Brasil | PlayLiva',
       seoDescription:
-        'Descubre los mejores juegos de crash en Brasil, cómo funciona cada uno y dónde jugarlos con responsabilidad.',
+        'Compara una selección editorial de juegos crash disponibles en Brasil y conoce los criterios usados por PlayLiva.',
     },
     'best-crash-games-mexico': {
       title: 'Mejores juegos de crash en México',
@@ -983,14 +983,14 @@ const LIST_CONTENT: Record<Locale, Record<string, ListContent>> = {
   },
   en: {
     'best-crash-games-brazil': {
-      title: 'Best crash games in Brazil',
+      title: 'Editorial crash game selection for Brazil',
       intro:
-        'Crash games are among the most played in Brazil. This editorial selection highlights the crash titles Brazilian players discover most, with a brief explanation of what makes each one distinct.',
+        'This selection brings together Aviator, JetX and Spaceman to compare mechanics, presentation and verified availability in Brazil. The order structures the guide and does not imply performance or likely outcomes.',
       editorialContent:
-        "Rankings reflect PlayLiva's editorial assessment based on availability, popularity and gameplay variety in the Brazilian market. They are not a prediction of outcomes or a guarantee of any winnings.",
-      seoTitle: 'Best Crash Games in Brazil | PlayLiva',
+        "The selection uses fixed editorial criteria: documented mechanics, Brazil availability confirmed in PlayLiva's records, meaningful format differences and source quality. Order is for reading only; it does not predict results or performance.",
+      seoTitle: 'Editorial Crash Game Selection for Brazil | PlayLiva',
       seoDescription:
-        'Discover the best crash games in Brazil, how each one works, and where to play them responsibly.',
+        'Compare an editorial selection of crash games available in Brazil and see the criteria PlayLiva used.',
     },
     'best-crash-games-mexico': {
       title: 'Best crash games in Mexico',
@@ -1087,13 +1087,13 @@ interface CrashHubContent {
 
 const CRASH_HUB_CONTENT: Record<Locale, CrashHubContent> = {
   'pt-BR': {
-    seoTitle: 'Melhores Crash Games para Conhecer | PlayLiva',
+    seoTitle: 'Guia de Crash Games: Como Comparar Formatos | PlayLiva',
     seoDescription:
       'Conheça crash games como Aviator, JetX e Spaceman, compare estilos de jogo e descubra opções disponíveis no PlayLiva.',
-    h1: 'Melhores crash games para conhecer',
-    breadcrumbLabel: 'Melhores crash games',
+    h1: 'Guia de crash games: como comparar formatos',
+    breadcrumbLabel: 'Guia de crash games',
     intro:
-      'Crash games são jogos de multiplicador: uma curva sobe a partir de 1x enquanto a rodada está em andamento, e cabe ao jogador decidir o momento de sair — o cash out — antes que a rodada termine. É um formato simples de entender e por isso se tornou uma das categorias mais exploradas nos cassinos online. Esta página é uma seleção editorial para ajudar você a conhecer os principais crash games disponíveis, não um ranking com pontuação ou uma promessa de resultado.',
+      'Crash games são jogos de multiplicador: uma curva sobe a partir de 1x enquanto a rodada está em andamento, e cabe ao jogador decidir o momento de sair — o cash out — antes que a rodada termine. Este guia explica como comparar apresentação, ritmo, provedor, mecânicas e disponibilidade. Não é um ranking nem uma promessa de resultado.',
     featuredHeading: 'Crash games em destaque',
     featuredSub:
       'Uma seleção editorial dos crash games mais conhecidos, com uma breve explicação do que torna cada um diferente.',
@@ -1127,13 +1127,13 @@ const CRASH_HUB_CONTENT: Record<Locale, CrashHubContent> = {
       'Operadores verificados e aprovados que oferecem crash games na sua região.',
   },
   'es-MX': {
-    seoTitle: 'Mejores Juegos Crash para Conocer | PlayLiva',
+    seoTitle: 'Guía de Juegos Crash: Cómo Comparar Formatos | PlayLiva',
     seoDescription:
       'Conoce juegos crash como Aviator, JetX y Spaceman, compara sus estilos y descubre opciones disponibles en PlayLiva.',
-    h1: 'Mejores juegos crash para conocer',
-    breadcrumbLabel: 'Mejores juegos crash',
+    h1: 'Guía de juegos crash: cómo comparar formatos',
+    breadcrumbLabel: 'Guía de juegos crash',
     intro:
-      'Los juegos crash son juegos de multiplicador: una curva empieza a subir desde 1x mientras la ronda está activa, y el jugador decide en qué momento retirarse —el llamado cash out— antes de que la ronda termine. Es un formato fácil de entender, por lo que se ha convertido en una de las categorías más exploradas en los casinos en línea. Esta página es una selección editorial para conocer los principales juegos crash disponibles, no una clasificación con puntajes ni una promesa de resultado.',
+      'Los juegos crash usan un multiplicador que sube desde 1x durante la ronda, y el jugador decide cuándo retirarse antes de que termine. Esta guía explica cómo comparar presentación, ritmo, proveedor, mecánicas y disponibilidad. No es una clasificación ni una promesa de resultado.',
     featuredHeading: 'Juegos crash destacados',
     featuredSub:
       'Una selección editorial de los juegos crash más conocidos, con una breve explicación de qué hace diferente a cada uno.',
@@ -1167,13 +1167,13 @@ const CRASH_HUB_CONTENT: Record<Locale, CrashHubContent> = {
       'Operadores verificados y aprobados que ofrecen juegos crash en tu región.',
   },
   en: {
-    seoTitle: 'Best Crash Games to Discover | PlayLiva',
+    seoTitle: 'Crash Game Guide: How to Compare Formats | PlayLiva',
     seoDescription:
       'Discover crash games like Aviator, JetX and Spaceman, compare their styles and find available options on PlayLiva.',
-    h1: 'Best crash games to discover',
-    breadcrumbLabel: 'Best crash games',
+    h1: 'Crash game guide: how to compare formats',
+    breadcrumbLabel: 'Crash game guide',
     intro:
-      'Crash games are multiplier games: a curve rises from 1x while the round is live, and it is up to the player to decide when to cash out before the round ends. It is a simple format to understand, which is part of why it became one of the most-explored categories at online casinos. This page is an editorial selection to help you discover the main crash games available — not a scored ranking or a promise of any outcome.',
+      'Crash games use a multiplier that rises from 1x during a round, and the player decides when to cash out before it ends. This guide explains how to compare presentation, pace, provider, mechanics and availability. It is not a ranking or a promise of any outcome.',
     featuredHeading: 'Featured crash games',
     featuredSub:
       'An editorial selection of the best-known crash games, with a short note on what makes each one different.',

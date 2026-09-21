@@ -13,10 +13,10 @@ import { BETSSON_PROMO, BETSSON_PROMO_PLACEMENTS, getBetssonPromo } from '@/lib/
  * campaign is live, renders the existing generic operator card.
  */
 export function WhereToPlayOperatorCard(props: ComponentProps<typeof OperatorCard>) {
-  const { countryCode, locale } = useCountry()
+  const { marketCode, locale } = useCountry()
   const gameSlug = props.gameSlug ?? (props.pageType === 'game' || props.pageType === 'where_to_play' ? props.pageSlug : undefined)
-  const promo = props.operator.id === BETSSON_PROMO.operatorId && props.country === countryCode
-    ? getBetssonPromo(countryCode, locale, BETSSON_PROMO_PLACEMENTS.discoveryGame, { pageSlug: props.pageSlug })
+  const promo = props.operator.id === BETSSON_PROMO.operatorId && props.country === marketCode
+    ? getBetssonPromo(props.country, locale, BETSSON_PROMO_PLACEMENTS.discoveryGame, { pageSlug: props.pageSlug })
     : null
   if (promo) return <BetssonDiscoveryOffer gameSlug={gameSlug} pageSlug={props.pageSlug} />
   return <OperatorCard {...props} />

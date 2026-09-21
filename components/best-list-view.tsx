@@ -7,6 +7,7 @@ import {
   getCountryName,
   getGamesByIds,
   getOperatorsForCountry,
+  getOperatorsForGame,
 } from '@/lib/data'
 import { useCountry, useTranslation } from '@/components/country-context'
 import {
@@ -26,7 +27,7 @@ import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsore
 import { EditorialByline } from '@/components/editorial-byline'
 
 export function BestListView({ list }: { list: GameList }) {
-  const { locale, countryCode } = useCountry()
+  const { locale, marketCode: countryCode } = useCountry()
   const { t } = useTranslation()
 
   const countryName = getCountryName(list.country, locale)
@@ -34,7 +35,7 @@ export function BestListView({ list }: { list: GameList }) {
   const categoryName = getCategoryName(list.category, locale)
   const games = getGamesByIds(list.gameIds)
   const listContent = getGameListContent(list, locale)
-  const operators = getOperatorsForCountry(countryCode).filter((o) =>
+  const operators = (countryCode ? getOperatorsForCountry(countryCode) : []).filter((o) =>
     countryCode === list.country &&
     o.categories.includes(list.category),
   )
@@ -118,13 +119,15 @@ export function BestListView({ list }: { list: GameList }) {
                     >
                       {t('cta.viewGame')}
                     </Button>
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      render={<LocaleLink href={`/where-to-play/${game.slug}`} />}
-                    >
-                      {t('best.whereToPlayGame', { market: countryName })}
-                    </Button>
+                    {getOperatorsForGame(game, list.country).length > 0 && (
+                      <Button
+                        size="lg"
+                        variant="outline"
+                        render={<LocaleLink href={`/where-to-play/${game.slug}`} />}
+                      >
+                        {t('best.whereToPlayGame', { market: countryName })}
+                      </Button>
+                    )}
                     {game.relatedGameIds.length > 0 && (
                       <Button
                         size="lg"
@@ -141,9 +144,24 @@ export function BestListView({ list }: { list: GameList }) {
             )
           })}
         </div>
-        <p className="mt-6 text-xs leading-relaxed text-muted-foreground">
-          {listContent.editorialContent}
-        </p>
+        <div className="mt-6 rounded-2xl border border-border bg-card p-6">
+          <h2 className="font-display text-xl font-bold text-foreground">
+            {t('best.methodologyTitle')}
+          </h2>
+          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+            {listContent.editorialContent}
+          </p>
+          {list.slug === 'best-crash-games-brazil' && (
+            <div className="mt-4 flex flex-wrap gap-3">
+              <Button variant="outline" render={<LocaleLink href="/best/crash-games" />}>
+                {t('category.viewRanking')}
+              </Button>
+              <Button variant="ghost" render={<LocaleLink href="/crash" />}>
+                {categoryName}
+              </Button>
+            </div>
+          )}
+        </div>
       </Section>
 
       {/* Where to play in GEO */}

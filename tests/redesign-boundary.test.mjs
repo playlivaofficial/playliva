@@ -14,6 +14,8 @@ import { createHash } from 'node:crypto'
 // allow-list), affiliate-button.tsx (promo payload) and where-to-play.tsx (campaign
 // card wrapper); the recurring gameplay-offer milestone rebases tracking.ts again
 // (cycle/exposure allow-list fields). All other hashes stay intact;
+// SEO P0 rebases only the approved market-safe rendering, metadata, sitemap
+// and empty transactional-page gates represented by the updated hashes below.
 // m12-hardening tests verify the added behavior. No engine snapshot is rebased.
 test('redesign: protected outbound infrastructure remains unchanged except authorized Betsson play-real files', async () => {
   const expected = JSON.parse(await readFile(new URL('./fixtures/redesign-protected.json', import.meta.url), 'utf8'))

@@ -58,12 +58,12 @@ export function AffiliateButton({
   /** Central campaign context: adds promo fields + preserved attribution and mirrors the impression as `offer_impression`. */
   promo?: Pick<TrackPayload, 'promoId' | 'brand' | 'surface'>
 } & Omit<ComponentProps<typeof Button>, 'onClick' | 'render'>) {
-  const { countryCode, locale } = useCountry()
-  const country = countryProp ?? countryCode
+  const { marketCode, locale } = useCountry()
+  const country = countryProp ?? marketCode
   const buttonRef = useRef<HTMLAnchorElement>(null)
   const hasFiredImpression = useRef(false)
   const resolvedGame = gameSlug ?? (gameId ? getGameById(gameId)?.slug : undefined)
-  const eligible = country === countryCode && Boolean(resolveDestination({
+  const eligible = country !== null && country === marketCode && Boolean(resolveDestination({
     operatorSlug, offerId, country, category, gameSlug: resolvedGame,
     matchSlug: matchId, pageType, pageSlug, placement: ctaLocation,
   })) && (!gameId || Boolean(resolvedGame))
@@ -71,7 +71,7 @@ export function AffiliateButton({
   const href = buildGoHref({
     operator: operatorSlug,
     offer: offerId,
-    country,
+    country: country ?? 'BR',
     language: locale,
     game: resolvedGame,
     match: matchId,
@@ -91,7 +91,7 @@ export function AffiliateButton({
         if (entries.some((entry) => entry.isIntersecting) && !hasFiredImpression.current) {
           hasFiredImpression.current = true
           const payload: TrackPayload = {
-            country,
+            country: country ?? undefined,
             language: locale,
             pageType,
             pageSlug,
@@ -118,7 +118,7 @@ export function AffiliateButton({
 
   const handleClick = () => {
     track('affiliate_click', {
-      country,
+      country: country ?? undefined,
       language: locale,
       pageType,
       pageSlug,

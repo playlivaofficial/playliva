@@ -30,20 +30,21 @@ import { discoveryCategory, DISCOVERY_ORDER, productCopy } from '@/lib/product-d
 import styles from '@/components/product-design.module.css'
 import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsored-banner'
 import type { BetssonBannerSurface } from '@/lib/affiliates/betsson'
+import { Button } from '@/components/ui/button'
 
 export function CategoryPageView({ slug, referenceCatalog }: { slug: CategorySlug; referenceCatalog?: ReactNode }) {
-  const { countryCode: country, t, locale } = useCountry()
+  const { marketCode: country, t, locale } = useCountry()
   const category = getCategoryContent(slug, locale)
-  const countryName = getCountryName(country, locale)
+  const countryName = country ? getCountryName(country, locale) : t('geo.marketLabel')
   const categoryLower = category.name.toLowerCase()
 
   // Preserve the indexed Table Games archive as a secondary discovery path.
   const allGames = useMemo(() => GAMES.filter((g) => discoveryCategory(g) === slug || slug === 'table-games' && g.category === slug), [slug])
   const popular = useMemo(
-    () => getPopularGamesForCountry(country, undefined, GAMES.length).filter(g => discoveryCategory(g) === slug).slice(0, 8),
+    () => country ? getPopularGamesForCountry(country, undefined, GAMES.length).filter(g => discoveryCategory(g) === slug).slice(0, 8) : [],
     [country, slug],
   )
-  const bestList = getGameListByCategoryCountry(slug, country)
+  const bestList = country ? getGameListByCategoryCountry(slug, country) : undefined
   const bestListContent = bestList
     ? getGameListContent(bestList, locale)
     : undefined
@@ -103,6 +104,12 @@ export function CategoryPageView({ slug, referenceCatalog }: { slug: CategorySlu
             category: categoryLower,
             market: countryName,
           })}
+          action={slug === 'crash' ? (
+            <Button variant="outline" render={<LocaleLink href="/best/crash-games" />}>
+              {t('category.viewRanking')}
+              <ArrowRight className="size-4" />
+            </Button>
+          ) : undefined}
         />
         {leadGames.length > 0 ? (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">

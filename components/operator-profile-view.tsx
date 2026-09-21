@@ -52,21 +52,21 @@ function InfoRow({
 }
 
 export function OperatorProfileView({ operator }: { operator: Operator }) {
-  const { countryCode, locale, t } = useCountry()
+  const { marketCode: countryCode, locale, t } = useCountry()
 
   const activeCountry = countryCode
-  const activeCountryName = getCountryName(activeCountry, locale)
-  const hasAffiliate = isAffiliateEligible(operator, activeCountry)
+  const activeCountryName = activeCountry ? getCountryName(activeCountry, locale) : t('geo.marketLabel')
+  const hasAffiliate = activeCountry ? isAffiliateEligible(operator, activeCountry) : false
 
-  const relatedOffers = getPublicOffers(activeCountry).filter((o) => o.operatorId === operator.id)
+  const relatedOffers = (activeCountry ? getPublicOffers(activeCountry) : []).filter((o) => o.operatorId === operator.id)
 
-  const games = getGamesForOperator(operator, activeCountry).slice(0, 8)
+  const games = (activeCountry ? getGamesForOperator(operator, activeCountry) : []).slice(0, 8)
 
   useEffect(() => {
     track('operator_view', {
       operatorId: operator.id,
       operatorSlug: operator.slug,
-      country: activeCountry,
+      country: activeCountry ?? undefined,
       pageType: 'operator',
     })
   }, [operator.id, operator.slug, activeCountry])
@@ -132,7 +132,7 @@ export function OperatorProfileView({ operator }: { operator: Operator }) {
               <AffiliateButton
                 operatorSlug={operator.slug}
                 operatorId={operator.id}
-                country={activeCountry}
+                country={activeCountry ?? undefined}
                 pageType="operator"
                 ctaLocation="operator_hero"
                 size="lg"
@@ -212,7 +212,7 @@ export function OperatorProfileView({ operator }: { operator: Operator }) {
                 <AffiliateButton
                   operatorSlug={operator.slug}
                   operatorId={operator.id}
-                  country={activeCountry}
+                  country={activeCountry ?? undefined}
                   pageType="operator"
                   ctaLocation="operator_terms"
                   size="lg"

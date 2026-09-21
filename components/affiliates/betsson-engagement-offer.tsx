@@ -25,9 +25,9 @@ const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1
  * Mobile: bottom sheet with the game still visible behind it.
  */
 export function BetssonEngagementOffer({ game, roundActive }: { game: OriginalGameDefinition; roundActive: boolean }) {
-  const { countryCode, locale, t } = useCountry()
+  const { marketCode, locale, t } = useCountry()
   const [milestone, setMilestone] = useState<EngagementMilestone | null>(null)
-  const model = getBetssonPromo(countryCode, locale, BETSSON_PROMO_PLACEMENTS.originalsEngagement, { pageSlug: game.slug })
+  const model = marketCode ? getBetssonPromo(marketCode, locale, BETSSON_PROMO_PLACEMENTS.originalsEngagement, { pageSlug: game.slug }) : null
   const trigger = useRef<ReturnType<typeof createEngagementTrigger> | null>(null)
   const promoId = model?.promoId
   const every = model?.engagement.cycleMultiple
