@@ -11,6 +11,7 @@ import { PathnameContext } from 'next/dist/shared/lib/hooks-client-context.share
 import promoConfig from '../lib/affiliates/betsson-promo-config.ts'
 import promoModule from '../lib/affiliates/betsson-promo.ts'
 import engagement from '../lib/affiliates/betsson-engagement.ts'
+import cycleModule from '../lib/engagement/gameplay-cycle.ts'
 import attribution from '../lib/attribution.ts'
 import tracking from '../lib/tracking.ts'
 import consent from '../lib/consent.ts'
@@ -39,7 +40,8 @@ cssHooks.deregister()
 
 const { BETSSON_PROMO, BETSSON_PROMO_PLACEMENTS, BETSSON_PROMO_OFFER_ID, isBetssonPromoLive } = promoConfig
 const { getBetssonPromo, betssonPromoExpiresAt } = promoModule
-const { createEngagementTrigger, readOfferCount, isOfferCapped, engagementStorageKey } = engagement
+const { createEngagementTrigger } = engagement
+const { createGameplayCycleObserver, isCycleMilestone } = cycleModule
 const { CountryProvider } = countryModule
 const { createTranslator } = i18nModule
 const partner = data.getOperator(BETSSON_PROMO.operatorSlug)
@@ -70,17 +72,28 @@ test('central Betsson BR campaign config: verified wording only, licensed tracke
   assert.match(BETSSON_PROMO.source, /Media Gallery.*Direct Link "Betsson BR \| Ganhe 100 Giros!"/)
   assert.equal(BETSSON_PROMO.creative.kind, 'logo', 'no static official banner file exists; the native card uses the approved logo')
   assert.deepEqual([...BETSSON_PROMO.placements], PLACEMENTS)
-  assert.deepEqual(BETSSON_PROMO.frequencyCap, { scope: 'session', max: 1 })
-  assert.equal(BETSSON_PROMO.engagement.roundsBeforeOffer, 3)
+  assert.deepEqual(BETSSON_PROMO.frequencyCap, { scope: 'milestone', max: 1 })
+  assert.equal(BETSSON_PROMO.engagement.cycleMultiple, 3)
+  assert.deepEqual(BETSSON_PROMO.engagement.copy, {
+    'pt-BR': { headline: 'Ganhe 100 Giros!', condition: 'Aposte R$20 em jogos selecionados e ganhe 100 giros no Tigre Sortudo.', cta: 'Jogar na Betsson' },
+    en: { headline: 'Get 100 Spins!', condition: 'Bet R$20 on selected games and get 100 spins on Tigre Sortudo.', cta: 'Play at Betsson' },
+    'es-MX': { headline: '¡Consigue 100 giros!', condition: 'Apuesta R$20 en juegos seleccionados y consigue 100 giros en Tigre Sortudo.', cta: 'Jugar en Betsson' },
+  })
+  for (const locale of Object.keys(BETSSON_PROMO.engagement.copy)) {
+    const text = Object.values(BETSSON_PROMO.engagement.copy[locale]).join(' ')
+    assert.doesNotMatch(text, /grátis|gratis|free|registr|sem depósito|no deposit|sin depósito|depósito mínimo|rollover|expira|termina|últim|last chance/i, locale)
+  }
   const live = Date.parse('2026-09-22T12:00:00Z')
   assert.equal(isBetssonPromoLive(BETSSON_PROMO, live), true)
   assert.equal(isBetssonPromoLive(BETSSON_PROMO, Date.parse('2026-09-20T23:59:59Z')), false)
   assert.equal(isBetssonPromoLive(BETSSON_PROMO, Date.parse('2026-10-14T00:00:00Z')), false)
   assert.equal(isBetssonPromoLive({ ...BETSSON_PROMO, enabled: false }, live), false)
   assert.ok(betssonPromoExpiresAt() <= Date.parse('2026-10-14T00:00:00Z'))
-  for (const text of JSON.stringify(BETSSON_PROMO).match(/"[^"]*"/g)) {
-    assert.doesNotMatch(text, /depósito|rollover|apost(a|e) mínim|válido até|R\$|bônus|bonus/i, `no invented condition: ${text}`)
+  const compactConfig = Object.fromEntries(Object.entries(BETSSON_PROMO).filter(([key]) => key !== 'engagement'))
+  for (const text of JSON.stringify(compactConfig).match(/"[^"]*"/g)) {
+    assert.doesNotMatch(text, /depósito|rollover|apost(a|e) mínim|válido até|R\$|bônus|bonus/i, `compact placements carry no condition: ${text}`)
   }
+  assert.equal(BETSSON_PROMO.headline, 'Ganhe 100 Giros!', 'compact headline unchanged')
 })
 
 test('the Offers page record is derived from the config and passes every existing publication gate', () => {
@@ -135,57 +148,76 @@ test('promo resolver is GEO-gated, placement-scoped and only ever links through 
   } finally { brazil.BRAZIL_AUTHORIZATIONS[partner.id].status = original }
 })
 
-test('engagement trigger: three completed rounds, natural boundary, settle delay, once per session, dismiss sticks', () => {
-  const store = new Map()
-  const storage = { getItem: key => store.has(key) ? store.get(key) : null, setItem: (key, value) => store.set(key, value) }
+test('shared gameplay-cycle observer counts only settled true→false edges', () => {
+  const seen = []
+  const cycles = createGameplayCycleObserver(cycle => seen.push(cycle))
+  assert.equal(cycles.observe(false), null)
+  assert.equal(cycles.observe(false), null, 'idle re-renders never count')
+  assert.equal(cycles.observe(true), null)
+  assert.equal(cycles.observe(true), null, 'an active round re-rendering is still one round')
+  assert.equal(cycles.observe(false), 1)
+  assert.equal(cycles.observe(true), null)
+  assert.equal(cycles.observe(false), 2)
+  assert.deepEqual(seen, [1, 2])
+  assert.equal(cycles.completed, 2)
+  assert.equal(cycles.active, false)
+  for (const [cycle, every, expected] of [[3, 3, true], [6, 3, true], [9, 3, true], [1, 3, false], [2, 3, false], [4, 3, false], [0, 3, false], [3, 0, false], [2.5, 3, false]]) {
+    assert.equal(isCycleMilestone(cycle, every), expected, `${cycle} % ${every}`)
+  }
+})
+
+test('engagement trigger: every third settled cycle (3, 6, 9 …), one offer per milestone, dismiss never cancels the next', () => {
   let timers = []
   const schedule = (fn, ms) => { timers.push({ fn, ms }); return timers.length }
   const cancel = id => { timers[id - 1] = null }
   const flush = () => { const pending = timers.filter(Boolean); timers = []; for (const timer of pending) timer.fn() }
-  let opened = 0, closed = 0
-  const make = () => createEngagementTrigger({ promoId: 'p', roundsBeforeOffer: 3, delayMs: 650, max: 1, storage,
-    open: () => { opened += 1 }, close: () => { closed += 1 }, schedule, cancel })
-  const trigger = make()
-  // Idle observations before any round never count.
+  const opened = []
+  let closed = 0
+  const trigger = createEngagementTrigger({ cycleMultiple: 3, delayMs: 650,
+    open: milestone => opened.push(milestone), close: () => { closed += 1 }, schedule, cancel })
+  const play = () => { trigger.observe(true); trigger.observe(false) }
   trigger.observe(false); trigger.observe(false)
   assert.equal(trigger.completedRounds, 0)
-  for (let round = 1; round <= 2; round += 1) { trigger.observe(true); trigger.observe(false) }
-  assert.equal(trigger.completedRounds, 2)
-  assert.equal(timers.length, 0, 'nothing scheduled before the third completed round')
-  trigger.observe(true)
-  trigger.observe(false)
+  play(); flush(); play(); flush()
+  assert.deepEqual(opened, [], 'cycles 1 and 2 show nothing')
+  play()
   assert.equal(timers.length, 1)
-  assert.equal(timers[0].ms, 650)
-  assert.equal(opened, 0, 'never opens synchronously at the boundary')
-  // A new round starting during the settle delay cancels the pending offer.
+  assert.equal(timers[0].ms, 650, 'settle delay before opening')
+  assert.deepEqual(opened, [], 'never opens synchronously at the boundary')
+  // A new cycle starting during the settle delay cancels this milestone's offer; it is not re-served.
   trigger.observe(true)
   assert.equal(timers[0], null)
   flush()
-  assert.equal(opened, 0)
-  trigger.observe(false)
+  assert.deepEqual(opened, [])
+  trigger.observe(false) // cycle 4
   flush()
-  assert.equal(opened, 1)
-  assert.equal(readOfferCount(storage, 'p'), 1)
-  assert.equal(isOfferCapped(storage, 'p', 1), true)
-  assert.equal(store.get(engagementStorageKey('p')), '1')
-  // Starting a round while open closes the offer without reopening later.
+  assert.deepEqual(opened, [], 'cycle 4 is not a milestone')
+  play(); flush() // 5
+  play(); flush() // 6
+  assert.deepEqual(opened, [{ completedCycleNumber: 6, triggerMultiple: 3, exposureNumber: 1 }])
+  assert.equal(trigger.isOpen, true)
+  // Dismiss keeps the counter and the cadence.
+  trigger.dismiss()
+  assert.equal(trigger.isOpen, false)
+  flush()
+  assert.equal(opened.length, 1, 'dismissed offer does not reopen')
+  play(); flush(); play(); flush()
+  assert.equal(opened.length, 1, 'cycles 7 and 8 show nothing')
+  play(); flush() // 9
+  assert.deepEqual(opened[1], { completedCycleNumber: 9, triggerMultiple: 3, exposureNumber: 2 })
+  // Starting a cycle while open closes it; the next milestone still fires.
   trigger.observe(true)
   assert.equal(closed, 1)
-  for (let round = 0; round < 5; round += 1) { trigger.observe(false); trigger.observe(true) }
-  trigger.observe(false)
-  flush()
-  assert.equal(opened, 1, 'once per session')
-  // A fresh mount in the same session (reload / another Original) stays capped.
-  const again = make()
-  for (let round = 0; round < 4; round += 1) { again.observe(true); again.observe(false) }
-  flush()
-  assert.equal(opened, 1)
-  again.dismiss()
-  assert.equal(again.isOpen, false)
-  // Storage failures degrade to memory-only behaviour instead of throwing.
-  const broken = { getItem() { throw new Error('blocked') }, setItem() { throw new Error('blocked') } }
-  assert.equal(readOfferCount(broken, 'p'), 0)
-  assert.equal(isOfferCapped(broken, 'p', 1), false)
+  trigger.observe(false) // 10
+  play(); flush() // 11
+  play(); flush() // 12
+  assert.deepEqual(opened[2], { completedCycleNumber: 12, triggerMultiple: 3, exposureNumber: 3 })
+  assert.equal(trigger.completedRounds, 12)
+  assert.equal(trigger.exposures, 3)
+  trigger.dismiss()
+  play(); flush(); play(); flush(); play(); flush() // 15
+  assert.equal(opened[3].completedCycleNumber, 15)
+  assert.equal(opened.length, 4, 'exactly one offer per milestone')
 })
 
 test('attribution: UTMs and known social referrers are preserved per session; free text is rejected', () => {
@@ -210,7 +242,7 @@ test('attribution: UTMs and known social referrers are preserved per session; fr
   assert.equal(consent.parseConsent(null), null)
 })
 
-test('Originals shell mounts the engagement offer outside the game unit and opens it only after three settled rounds', async () => {
+test('Originals shell mounts the engagement offer outside the game unit and opens it after cycles 3, 6 and 9 with milestone analytics', async () => {
   const dom = new JSDOM('<div id="root"></div>', { url: 'https://www.playliva.com/pt-br/play/crash?utm_source=tiktok&utm_campaign=reel.1', virtualConsole: new VirtualConsole() })
   const saved = new Map()
   for (const key of ['window', 'self', 'document', 'location', 'navigator', 'Event', 'KeyboardEvent', 'HTMLElement', 'Node', 'IntersectionObserver']) {
@@ -253,9 +285,11 @@ test('Originals shell mounts the engagement offer outside the game unit and open
     assert.ok(dialog.hasAttribute('data-betting-ad'))
     assert.equal(dialog.querySelectorAll('[data-brazil-ad-warning]').length, 1)
     assert.ok(dialog.textContent.includes('18+'))
-    assert.ok(dialog.querySelector('h2').textContent.includes('Ganhe 100 Giros!'))
-    assert.equal(dialog.querySelector('h2').getAttribute('lang'), 'pt-BR')
-    assert.ok(dialog.textContent.includes('Não se refere a este jogo'))
+    assert.equal(dialog.querySelector('h2').textContent, 'Ganhe 100 Giros!')
+    assert.equal(dialog.querySelector('[data-promo-condition]').textContent, 'Aposte R$20 em jogos selecionados e ganhe 100 giros no Tigre Sortudo.')
+    assert.equal(offer.getAttribute('data-completed-cycle'), '3')
+    assert.equal(offer.getAttribute('data-exposure'), '1')
+    assert.equal(document.querySelector('[data-betsson-banner="originals"]').textContent.includes('R$20'), false, 'compact header stays short-form')
     const cta = dialog.querySelector('a[data-promo-cta]')
     assert.equal(cta.textContent, 'Jogar na Betsson')
     assert.equal(cta.getAttribute('target'), '_blank')
@@ -268,7 +302,6 @@ test('Originals shell mounts the engagement offer outside the game unit and open
     assert.equal(dialog.querySelector('audio, video, [autoplay]'), null, 'no autoplay media')
     assert.doesNotMatch(dialog.textContent, /\d+:\d\d|termina em|expira/i, 'no countdown or fake urgency')
     assert.ok(dialog.querySelector('button[aria-label]'), 'explicit close control')
-    assert.equal(window.sessionStorage.getItem(engagementStorageKey(BETSSON_PROMO.promoId)), '1')
     const impression = events.find(item => item.event === 'offer_impression')
     assert.ok(impression)
     assert.equal(impression.promoId, BETSSON_PROMO.promoId)
@@ -282,19 +315,44 @@ test('Originals shell mounts the engagement offer outside the game unit and open
     assert.equal(impression.url, '/pt-br/play/crash')
     assert.equal(impression.trafficSource, 'tiktok')
     assert.equal(impression.utmCampaign, 'reel.1')
+    assert.equal(impression.category, 'crash')
+    assert.equal(impression.completedCycleNumber, '3')
+    assert.equal(impression.triggerMultiple, '3')
+    assert.equal(impression.exposureNumber, '1')
     assert.ok(['mobile', 'desktop'].includes(impression.device))
     assert.equal(impression.email, undefined)
     await act(() => { cta.dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true })) })
     const click = events.find(item => item.event === 'affiliate_click')
     assert.equal(click?.promoId, BETSSON_PROMO.promoId)
     assert.equal(click?.trafficSource, 'tiktok')
+    assert.equal(click?.completedCycleNumber, '3')
     await act(() => { dialog.querySelector('button[aria-label]').click() })
     assert.equal(document.querySelector('[data-betsson-engagement-offer]'), null)
     assert.equal(events.filter(item => item.event === 'offer_dismiss').length, 1)
-    for (let round = 0; round < 4; round += 1) { await mount(true); await mount(false) }
+    assert.equal(events.find(item => item.event === 'offer_dismiss').exposureNumber, '1')
+    for (let round = 4; round <= 5; round += 1) {
+      await mount(true); await mount(false)
+      await sleep(BETSSON_PROMO.engagement.delayMs + 80)
+      assert.equal(document.querySelector('[data-betsson-engagement-offer]'), null, `cycle ${round} shows nothing`)
+    }
+    await mount(true); await mount(false)
     await sleep(BETSSON_PROMO.engagement.delayMs + 80)
-    assert.equal(document.querySelector('[data-betsson-engagement-offer]'), null, 'dismissed offer never reopens in the session')
-    assert.equal(events.filter(item => item.event === 'offer_impression').length, 1)
+    const second = document.querySelector('[data-betsson-engagement-offer]')
+    assert.ok(second, 'cycle 6 reopens the offer after a dismissal')
+    assert.equal(second.getAttribute('data-completed-cycle'), '6')
+    assert.equal(second.getAttribute('data-exposure'), '2')
+    assert.equal(events.filter(item => item.event === 'offer_impression').length, 2)
+    assert.equal(events.filter(item => item.event === 'offer_impression')[1].completedCycleNumber, '6')
+    assert.equal(events.filter(item => item.event === 'offer_impression')[1].exposureNumber, '2')
+    await act(() => { document.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Escape', bubbles: true })) })
+    assert.equal(document.querySelector('[data-betsson-engagement-offer]'), null, 'Escape dismisses')
+    for (let round = 7; round <= 9; round += 1) { await mount(true); await mount(false) }
+    await sleep(BETSSON_PROMO.engagement.delayMs + 80)
+    const third = document.querySelector('[data-betsson-engagement-offer]')
+    assert.equal(third?.getAttribute('data-completed-cycle'), '9')
+    assert.equal(third?.getAttribute('data-exposure'), '3')
+    assert.equal(events.filter(item => item.event === 'offer_impression').length, 3, 'one impression per milestone')
+    assert.equal(window.sessionStorage.getItem('playliva.betsson.engagement.betsson-br-casino-100-giros'), null, 'no session cap is written')
   } finally {
     await act(() => root.unmount())
     dom.window.close()
@@ -326,7 +384,6 @@ test('non-Brazil markets suppress every campaign surface, including the shell of
     await act(() => new Promise(resolve => setTimeout(resolve, BETSSON_PROMO.engagement.delayMs + 80)))
     assert.equal(document.querySelector('[data-betsson-engagement-offer]'), null)
     assert.equal(document.querySelector('a[href^="/go"]'), null)
-    assert.equal(window.sessionStorage.getItem(engagementStorageKey(BETSSON_PROMO.promoId)), null)
   } finally {
     await act(() => root.unmount())
     dom.window.close()

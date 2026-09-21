@@ -77,13 +77,19 @@ export interface BetssonPromoConfig {
   /** Publication expiry. Also the offer evidence deadline: the campaign must be re-verified before it. */
   validUntil: string
   placements: readonly BetssonPromoPlacement[]
-  /** Engagement offer on Originals: at most `max` displays per browser session. */
-  frequencyCap: { scope: 'session'; max: number }
+  /** Engagement offer on Originals: one offer per milestone cycle, recurring. */
+  frequencyCap: { scope: 'milestone'; max: number }
   engagement: {
-    /** Completed rounds before the offer may appear. */
-    roundsBeforeOffer: number
-    /** Settle time after the round boundary before opening, so the reset animation finishes. */
+    /** Offer after every N-th completed gameplay cycle (3 → cycles 3, 6, 9 …). */
+    cycleMultiple: number
+    /** Settle time after the cycle boundary before opening, so the reset animation finishes. */
     delayMs: number
+    /**
+     * Full offer wording for the gameplay popup only. Compact placements keep
+     * the short `headline`; this is the single place that states the verified
+     * R$20 selected-games condition.
+     */
+    copy: Record<Locale, { headline: string; condition: string; cta: string }>
   }
   /** Only conditions that were read on the official campaign material. */
   verifiedTerms: readonly string[]
@@ -135,8 +141,28 @@ export const BETSSON_PROMO: BetssonPromoConfig = {
     BETSSON_PROMO_PLACEMENTS.discoveryGame,
     BETSSON_PROMO_PLACEMENTS.offersPage,
   ],
-  frequencyCap: { scope: 'session', max: 1 },
-  engagement: { roundsBeforeOffer: 3, delayMs: 650 },
+  frequencyCap: { scope: 'milestone', max: 1 },
+  engagement: {
+    cycleMultiple: 3,
+    delayMs: 650,
+    copy: {
+      'pt-BR': {
+        headline: 'Ganhe 100 Giros!',
+        condition: 'Aposte R$20 em jogos selecionados e ganhe 100 giros no Tigre Sortudo.',
+        cta: 'Jogar na Betsson',
+      },
+      en: {
+        headline: 'Get 100 Spins!',
+        condition: 'Bet R$20 on selected games and get 100 spins on Tigre Sortudo.',
+        cta: 'Play at Betsson',
+      },
+      'es-MX': {
+        headline: '¡Consigue 100 giros!',
+        condition: 'Apuesta R$20 en juegos seleccionados y consigue 100 giros en Tigre Sortudo.',
+        cta: 'Jugar en Betsson',
+      },
+    },
+  },
   // The landing page could not be read from outside Brazil (302 to ge.betsson.com), so no
   // deposit, wagering, spin-value, eligible-game, expiry or registration condition is claimed.
   verifiedTerms: [],

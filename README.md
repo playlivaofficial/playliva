@@ -4,9 +4,10 @@ Source of truth: https://github.com/playlivaofficial/playliva.
 
 [Betsson BR campaign funnel](docs/betsson-br-campaign-funnel.md) centralizes
 the verified "Ganhe 100 Giros!" campaign in `lib/affiliates/betsson-promo-config.ts`:
-Originals header sponsor, a once-per-session engagement offer after three
-completed rounds, the discovery Where-to-Play campaign card, the Offers page
-card, preserved social UTM attribution and `offer_impression` /
+Originals header sponsor, a recurring gameplay offer after every third
+completed cycle (3, 6, 9 …) that alone states the R$20 selected-games
+condition, the discovery Where-to-Play campaign card, the Offers page card,
+a data-driven homepage spotlight carousel (`lib/home/spotlight.ts`), preserved social UTM attribution and `offer_impression` /
 `offer_dismiss` / `affiliate_click` funnel events. Only verified wording and
 the official tracked link are used; campaign conditions could not be read
 from outside Brazil, so none are claimed. Evidence review is due before

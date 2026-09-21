@@ -1,17 +1,16 @@
 'use client'
 
-import Image from 'next/image'
 import { ArrowUpRight, ArrowRight, Play } from 'lucide-react'
 import { LocaleLink } from '@/components/locale-link'
 import { useCountry } from '@/components/country-context'
 import { BetssonHomeBanner } from '@/components/affiliates/betsson-home-banner'
-import { originalsDiscoveryCopy, ISLAND_CRASH_POSTER } from '@/lib/originals/discovery'
 import { productCopy } from '@/lib/product-discovery'
 import styles from '@/components/product-design.module.css'
+import { SpotlightCarousel } from './spotlight-carousel'
 
 export function Hero() {
   const { locale } = useCountry()
-  const copy = productCopy(locale), original = originalsDiscoveryCopy(locale)
+  const copy = productCopy(locale)
   return <section className={styles.hero} data-discovery-hero>
     <div className={styles.heroInner}>
       <div>
@@ -27,11 +26,7 @@ export function Hero() {
           <BetssonHomeBanner />
         </div>
       </div>
-      <LocaleLink href="/play/crash" prefetch={false} className={styles.spotlight} aria-label={original.heroLink}>
-        <Image src={ISLAND_CRASH_POSTER} alt={original.posterAlt} fill priority sizes="(max-width: 639px) 100vw, (max-width: 1023px) 80vw, 540px" />
-        <div className={styles.spotlightTop}><span>{copy.featured}</span><span>01 / 05</span></div>
-        <div className={styles.spotlightBottom}><p>{copy.original} · Crash</p><strong>Island Crash</strong><small>{copy.play}<ArrowUpRight size={20} aria-hidden="true" /></small></div>
-      </LocaleLink>
+      <SpotlightCarousel />
     </div>
   </section>
 }

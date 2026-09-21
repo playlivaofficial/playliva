@@ -28,6 +28,8 @@ const en = {
   artworkPending: 'Artwork pending approval.', skipContent: 'Skip to content',
   onPage: 'In this guide', overview: 'Overview', details: 'Key facts', related: 'Similar games',
   desktop: 'Computer', mobile: 'Phone', tablet: 'Tablet',
+  spotlightLabel: 'Featured Originals', spotlightPrev: 'Previous game', spotlightNext: 'Next game',
+  spotlightSlide: 'Game {index} of {total}',
 }
 type Copy = { [K in keyof typeof en]: string }
 const COPY: Record<Locale, Copy> = {
@@ -54,6 +56,8 @@ const COPY: Record<Locale, Copy> = {
     artworkPending: 'Ilustração aguardando aprovação.', skipContent: 'Pular para o conteúdo',
     onPage: 'Neste guia', overview: 'Visão geral', details: 'Informações principais', related: 'Jogos parecidos',
     desktop: 'Computador', mobile: 'Celular', tablet: 'Tablet',
+    spotlightLabel: 'Originals em destaque', spotlightPrev: 'Jogo anterior', spotlightNext: 'Próximo jogo',
+    spotlightSlide: 'Jogo {index} de {total}',
   },
   'es-MX': {
     eyebrow: 'Tu próximo juego empieza aquí', heroLead: 'Descubre tu', heroAccent: 'próxima aventura.',
@@ -77,6 +81,8 @@ const COPY: Record<Locale, Copy> = {
     artworkPending: 'Ilustración pendiente de aprobación.', skipContent: 'Saltar al contenido',
     onPage: 'En esta guía', overview: 'Resumen', details: 'Datos principales', related: 'Juegos similares',
     desktop: 'Computadora', mobile: 'Celular', tablet: 'Tablet',
+    spotlightLabel: 'Originals destacados', spotlightPrev: 'Juego anterior', spotlightNext: 'Siguiente juego',
+    spotlightSlide: 'Juego {index} de {total}',
   },
 }
 export const productCopy = (locale: Locale): Copy => COPY[locale]

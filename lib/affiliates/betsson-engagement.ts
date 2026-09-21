@@ -1,95 +1,73 @@
 /**
- * Round-boundary trigger and per-session frequency cap for the Originals
- * engagement offer. Pure logic so the rules are unit-testable:
+ * Recurring milestone trigger for the Originals engagement offer.
  *
- *   play → N completed rounds → current round fully settles → offer opens
- *   once per browser session, never over live gameplay, and a dismissed
- *   offer stays dismissed.
+ *   cycles 1, 2 → nothing · cycle 3 settles → offer · cycles 4, 5 → nothing ·
+ *   cycle 6 settles → offer · 9, 12, 15 …
  *
- * A "completed round" is a `roundActive` transition from true to false, which
- * every Original already reports to the shared shell; engines are untouched.
+ * Built on the shared gameplay-cycle observer, so every engine feeds the
+ * same counter through the shell's `roundActive` flag. Rules:
+ *
+ *   - the offer opens only after the milestone cycle has fully settled, plus a
+ *     short settle delay; a new cycle starting during that delay cancels it;
+ *   - exactly one offer per milestone; dismissing never resets the counter and
+ *     never suppresses the next milestone;
+ *   - starting a cycle while the offer is open closes it;
+ *   - no session cap: the cadence is intentionally recurring.
  */
 
-export const ENGAGEMENT_STORAGE_PREFIX = 'playliva.betsson.engagement.'
+import { createGameplayCycleObserver, isCycleMilestone } from '../engagement/gameplay-cycle'
 
-type SessionStore = Pick<Storage, 'getItem' | 'setItem'>
-
-export function engagementStorageKey(promoId: string): string {
-  return `${ENGAGEMENT_STORAGE_PREFIX}${promoId}`
-}
-
-/** Number of times this promo has been offered in the current browser session. */
-export function readOfferCount(storage: SessionStore | null | undefined, promoId: string): number {
-  try {
-    const raw = storage?.getItem(engagementStorageKey(promoId))
-    const value = raw === null || raw === undefined ? 0 : Number(raw)
-    return Number.isSafeInteger(value) && value >= 0 ? value : 0
-  } catch {
-    return 0
-  }
-}
-
-export function recordOffer(storage: SessionStore | null | undefined, promoId: string): number {
-  const next = readOfferCount(storage, promoId) + 1
-  try { storage?.setItem(engagementStorageKey(promoId), String(next)) } catch { /* memory only */ }
-  return next
-}
-
-export function isOfferCapped(storage: SessionStore | null | undefined, promoId: string, max: number): boolean {
-  return readOfferCount(storage, promoId) >= Math.max(0, max)
+export interface EngagementMilestone {
+  /** Completed gameplay cycles at the moment the offer opened (3, 6, 9 …). */
+  completedCycleNumber: number
+  /** The configured cadence (3). */
+  triggerMultiple: number
+  /** Ordinal of this exposure in the current play session (1, 2, 3 …). */
+  exposureNumber: number
 }
 
 export interface EngagementTriggerOptions {
-  promoId: string
-  roundsBeforeOffer: number
+  /** Offer after every `cycleMultiple`-th completed cycle. */
+  cycleMultiple: number
+  /** Settle time after the cycle boundary before opening. */
   delayMs: number
-  max: number
-  storage: SessionStore | null | undefined
-  /** Called when the offer should open. */
-  open: () => void
-  /** Called when a round starts while the offer is open. */
+  open: (milestone: EngagementMilestone) => void
+  /** Called when a new cycle starts while the offer is open. */
   close: () => void
   schedule?: (fn: () => void, ms: number) => number
   cancel?: (id: number) => void
 }
 
-/**
- * Feed `observe(roundActive)` on every render. The offer opens `delayMs` after
- * the N-th completed round only if no new round started in the meantime, is
- * recorded before opening so a reload never repeats it, and never opens
- * twice in one session.
- */
 export function createEngagementTrigger(options: EngagementTriggerOptions) {
   const schedule = options.schedule ?? ((fn, ms) => setTimeout(fn, ms) as unknown as number)
   const cancel = options.cancel ?? ((id) => clearTimeout(id))
-  let previousActive = false
-  let completed = 0
+  const cycles = createGameplayCycleObserver()
   let opened = false
   let pending: number | null = null
-  let active = false
+  let exposures = 0
+  /** Last milestone that produced (or is about to produce) an offer, so it never fires twice. */
+  let servedMilestone = 0
   const clear = () => { if (pending !== null) { cancel(pending); pending = null } }
   return {
-    get completedRounds() { return completed },
+    get completedRounds() { return cycles.completed },
+    get exposures() { return exposures },
     get isOpen() { return opened },
     observe(roundActive: boolean) {
-      active = roundActive
+      const finished = cycles.observe(roundActive)
       if (roundActive) {
         clear()
         if (opened) { opened = false; options.close() }
-      } else if (previousActive) {
-        completed += 1
-        if (completed >= options.roundsBeforeOffer && pending === null && !opened &&
-          !isOfferCapped(options.storage, options.promoId, options.max)) {
-          pending = schedule(() => {
-            pending = null
-            if (active || opened || isOfferCapped(options.storage, options.promoId, options.max)) return
-            recordOffer(options.storage, options.promoId)
-            opened = true
-            options.open()
-          }, options.delayMs)
-        }
+        return
       }
-      previousActive = roundActive
+      if (finished === null || !isCycleMilestone(finished, options.cycleMultiple) || finished <= servedMilestone) return
+      servedMilestone = finished
+      pending = schedule(() => {
+        pending = null
+        if (cycles.active || opened) return
+        opened = true
+        exposures += 1
+        options.open({ completedCycleNumber: finished, triggerMultiple: options.cycleMultiple, exposureNumber: exposures })
+      }, options.delayMs)
     },
     dismiss() { clear(); opened = false },
     dispose() { clear() },
