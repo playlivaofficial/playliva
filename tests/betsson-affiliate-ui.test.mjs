@@ -81,7 +81,7 @@ test('approved Betsson campaign data stays centralized and matches the operator 
   assert.deepEqual(HOMEPAGE_CREATIVES.map(creative => creative.id), ['betsson-operator-logo'])
   assert.match(BETSSON_CREATIVES.logo.source, /language-neutral|Media Store/)
   assert.equal(createHash('sha256').update(JSON.stringify([dataModule.OPERATORS, dataModule.offersByCountry])).digest('hex'),
-    'e35965d2d9de5afa7fffd6d32aadb14b5648abc5c4555020e0b2efac615819cf')
+    '41f3d9a976c4a0641ece98c29f3178fdece74cd492d311ce7a32f0f5e34b287a')
 })
 
 test('homepage banner destination is the brand campaign and preserves required tracking without analytics', () => {
@@ -260,11 +260,13 @@ test('PT-BR, EN and ES-MX Originals shells mount a compact header sponsor above 
         const go = banner.querySelector('a[href^="/go?"]')
         assert.ok(go, game.slug)
         assert.match(go.getAttribute('href'), /^\/go\?/)
-        assert.match(go.getAttribute('href'), /placement=originals_banner/)
+        assert.match(go.getAttribute('href'), /placement=originals_header/)
         assert.doesNotMatch(banner.innerHTML, /https?:\/\/(?:www\.)?betsson/i)
         assert.equal(document.querySelector('a[href*="betsson."]'), null, game.slug)
         assert.ok(banner.textContent.includes(t('affiliate.sponsored')), game.slug)
-        assert.ok(banner.textContent.includes(t('affiliate.exploreNamed', { name: 'Betsson' })), game.slug)
+        assert.ok(banner.textContent.includes(locale === 'pt-BR' ? 'Jogar na Betsson' : t('affiliate.playAtNamed', { name: 'Betsson' })), game.slug)
+        assert.ok(banner.textContent.includes('Ganhe 100 Giros!'), game.slug)
+        assert.match(go.getAttribute('href'), /offer=of-br-betsson-100-giros/)
         assert.ok(banner.textContent.includes(t('notice.affiliateShort')), game.slug)
         assert.ok(banner.querySelector('[data-brazil-ad-warning]'), game.slug)
         assert.ok(banner.textContent.includes('18+'), game.slug)

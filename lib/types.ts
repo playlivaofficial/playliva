@@ -243,6 +243,23 @@ export interface Offer {
   validUntil?: string
   /** Where this offer's data came from, e.g. "Betsson Affiliates portal". */
   source?: string
+  /** Official terms / landing page for the campaign, linked next to the CTA. */
+  termsUrl?: string
+  /** Central promo id when the offer is derived from a campaign config. */
+  promoId?: string
+  /** Partner brand key for analytics, e.g. "betsson". */
+  brand?: string
+  /** Official CTA per UI language; defaults to the generic "View offer" label. */
+  ctaLabel?: Partial<Record<Locale, string>>
+  /** Approved campaign artwork, served from `public/`; locale-gated by `languages`. */
+  creative?: {
+    id: string
+    assetPath: string
+    width: number
+    height: number
+    alt: Record<Locale, string>
+    languages: readonly Locale[]
+  }
   /** ISO date this offer's terms/link were last checked against the operator. */
   lastVerifiedAt?: string
   /** A documented, market-specific publication review; absence means do not publish. */

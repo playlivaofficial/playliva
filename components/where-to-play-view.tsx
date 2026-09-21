@@ -12,7 +12,7 @@ import {
 } from '@/lib/data'
 import { getCategoryName, getGameContent } from '@/lib/content'
 import { Section, SectionHeading } from '@/components/section'
-import { OperatorCard } from '@/components/operator-card'
+import { WhereToPlayOperatorCard } from '@/components/where-to-play-operator-card'
 import { GameCard } from '@/components/game-card'
 import { GameArtwork } from '@/components/game-artwork'
 import { Breadcrumbs } from '@/components/breadcrumbs'
@@ -106,7 +106,7 @@ export function WhereToPlayView({ game }: { game: Game }) {
             />
             <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
               {operators.map((operator) => (
-                <OperatorCard
+                <WhereToPlayOperatorCard
                   key={operator.id}
                   operator={operator}
                   country={country}

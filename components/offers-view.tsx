@@ -29,13 +29,14 @@ export function OffersView() {
   const featured = useMemo(() => offers.filter((o) => o.featured), [offers])
   const casino = useMemo(
     () =>
+      // Featured offers already render in the highlighted grid; never duplicate a card.
       offers.filter((o) =>
-        ['crash', 'slots', 'live-casino', 'table-games', 'instant-games'].includes(o.category as string),
+        !o.featured && ['crash', 'slots', 'live-casino', 'table-games', 'instant-games'].includes(o.category as string),
       ),
     [offers],
   )
   const newPlayer = useMemo(
-    () => offers.filter((o) => o.category === 'welcome'),
+    () => offers.filter((o) => !o.featured && o.category === 'welcome'),
     [offers],
   )
 
@@ -101,7 +102,7 @@ export function OffersView() {
           {featured.length > 0 && (
             <Section>
               <SectionHeading
-                eyebrow={t('offers.highlighted')}
+                eyebrow={t('affiliate.verifiedOffers')}
                 title={t('offers.featured')}
                 description={t('offers.featuredSub', { market: countryName })}
               />

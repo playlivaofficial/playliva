@@ -5,7 +5,8 @@ import { ArrowUpRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { buildGoHref, resolveDestination } from '@/lib/affiliate'
 import { getGameById } from '@/lib/data'
-import { track, type PageType } from '@/lib/tracking'
+import { track, type PageType, type TrackPayload } from '@/lib/tracking'
+import { attributionPayload } from '@/lib/attribution'
 import { useCountry } from '@/components/country-context'
 import type { CountryCode } from '@/lib/types'
 
@@ -35,6 +36,7 @@ export function AffiliateButton({
   country: countryProp,
   children,
   showIcon = true,
+  promo,
   ...props
 }: {
   operatorSlug?: string
@@ -53,6 +55,8 @@ export function AffiliateButton({
   country?: CountryCode
   children: React.ReactNode
   showIcon?: boolean
+  /** Central campaign context: adds promo fields + preserved attribution and mirrors the impression as `offer_impression`. */
+  promo?: Pick<TrackPayload, 'promoId' | 'brand' | 'surface'>
 } & Omit<ComponentProps<typeof Button>, 'onClick' | 'render'>) {
   const { countryCode, locale } = useCountry()
   const country = countryProp ?? countryCode
@@ -86,7 +90,7 @@ export function AffiliateButton({
       (entries) => {
         if (entries.some((entry) => entry.isIntersecting) && !hasFiredImpression.current) {
           hasFiredImpression.current = true
-          track('affiliate_impression', {
+          const payload: TrackPayload = {
             country,
             language: locale,
             pageType,
@@ -98,7 +102,10 @@ export function AffiliateButton({
             operatorSlug,
             offerId,
             placement: ctaLocation,
-          })
+            ...(promo ? { ...promo, ...attributionPayload() } : {}),
+          }
+          track('affiliate_impression', payload)
+          if (promo) track('offer_impression', payload)
           observer.disconnect()
         }
       },
@@ -124,6 +131,7 @@ export function AffiliateButton({
       ctaLocation,
       placement: ctaLocation,
       destination: offerId ?? operatorSlug,
+      ...(promo ? { ...promo, ...attributionPayload() } : {}),
     })
   }
 

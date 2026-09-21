@@ -27,7 +27,7 @@ import { GameCard } from '@/components/game-card'
 import { GameArtwork } from '@/components/game-artwork'
 import { Breadcrumbs } from '@/components/breadcrumbs'
 import { ComparisonCard } from '@/components/comparison-card'
-import { OperatorCard } from '@/components/operator-card'
+import { WhereToPlayOperatorCard } from '@/components/where-to-play-operator-card'
 import {
   ResponsibleNotice,
   ResponsibleGamingNotice,
@@ -349,7 +349,7 @@ export function GameDetailView({ game }: { game: Game }) {
         {operators.length > 0 ? (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {operators.map((operator) => (
-              <OperatorCard
+              <WhereToPlayOperatorCard
                 key={operator.id}
                 operator={operator}
                 country={countryCode}

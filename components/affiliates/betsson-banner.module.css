@@ -88,3 +88,11 @@
   .compactHeader .logo { width: 32px; height: 32px; }
   .compactHeader .title { font-size: .9rem; }
 }
+
+/* Live campaign headline inside the sponsor slot: keep it compact and never wider than the slot. */
+.promoTitle { font-size: 1.15rem; letter-spacing: -.025em; overflow-wrap: anywhere; }
+.compactHeader .promoTitle { font-size: 1.02rem; }
+.originalsHeader .promoTitle { font-size: .98rem; }
+@media (max-width: 359px) {
+  .compactHeader .promoTitle { font-size: .92rem; }
+}

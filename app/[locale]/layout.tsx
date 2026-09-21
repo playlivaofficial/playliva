@@ -6,6 +6,7 @@ import { CookieBanner } from '@/components/cookie-banner'
 import { MobileBottomNav } from '@/components/mobile-bottom-nav'
 import { JsonLd } from '@/components/json-ld'
 import { ConsentedAnalytics } from '@/components/analytics/consented-analytics'
+import { AttributionCapture } from '@/components/analytics/attribution-capture'
 import { getWebsiteJsonLd, getOrganizationJsonLd } from '@/lib/structured-data'
 import { LOCALE_SEGMENTS, isLocaleSegment, segmentToLocale } from '@/lib/locale'
 import { productCopy } from '@/lib/product-discovery'
@@ -36,6 +37,7 @@ export default async function LocaleLayout({
         <SiteFooter />
         <MobileBottomNav />
         <CookieBanner />
+        <AttributionCapture />
       </CountryProvider>
       {process.env.NODE_ENV === 'production' && <ConsentedAnalytics />}
     </>
