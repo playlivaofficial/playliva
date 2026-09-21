@@ -5,12 +5,12 @@ import { getOperatorsForCountry, getCountryName } from '@/lib/data'
 import { OperatorCard } from '@/components/operator-card'
 
 export function FeaturedOperators({ limit }: { limit?: number }) {
-  const { countryCode, locale, t } = useCountry()
-  const operators = getOperatorsForCountry(countryCode)
+  const { marketCode, locale, t } = useCountry()
+  const operators = marketCode ? getOperatorsForCountry(marketCode) : []
   const shown = limit ? operators.slice(0, limit) : operators
-  const countryName = getCountryName(countryCode, locale)
+  const countryName = marketCode ? getCountryName(marketCode, locale) : t('geo.marketLabel')
 
-  if (shown.length === 0) {
+  if (shown.length === 0 || !marketCode) {
     return (
       <div className="rounded-2xl border border-dashed border-border bg-card/40 p-10 text-center">
         <p className="text-base font-medium text-foreground">
@@ -29,7 +29,7 @@ export function FeaturedOperators({ limit }: { limit?: number }) {
         <OperatorCard
           key={operator.id}
           operator={operator}
-          country={countryCode}
+          country={marketCode}
         />
       ))}
     </div>

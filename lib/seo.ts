@@ -6,6 +6,7 @@ import {
   segmentToOgLocale,
   type LocaleSegment,
 } from './locale'
+import { seoImagesForPath } from './seo-images'
 
 /**
  * Central SEO configuration.
@@ -90,6 +91,10 @@ export function pageMetadata(opts: {
   images?: string[]
   /** Set false for template/pre-launch/mock pages that should not be indexed. */
   index?: boolean
+  /** Locale variants that represent the same indexable intent. */
+  alternateLocaleSegments?: readonly LocaleSegment[]
+  /** Include x-default only when the default locale is a valid equivalent. */
+  includeXDefault?: boolean
 }): Metadata {
   const {
     title,
@@ -98,6 +103,8 @@ export function pageMetadata(opts: {
     localeSegment,
     images,
     index = true,
+    alternateLocaleSegments = LOCALE_SEGMENTS,
+    includeXDefault = true,
   } = opts
 
   const segment: LocaleSegment = isLocaleSegment(localeSegment)
@@ -108,13 +115,16 @@ export function pageMetadata(opts: {
     `/${forSegment}${path === '/' ? '' : path}`
 
   const languages = Object.fromEntries([
-    ...LOCALE_SEGMENTS.map((s) => [s, absoluteUrl(localizedPath(s))]),
-    ['x-default', absoluteUrl(localizedPath(DEFAULT_LOCALE_SEGMENT))],
+    ...alternateLocaleSegments.map((s) => [s, absoluteUrl(localizedPath(s))]),
+    ...(includeXDefault && alternateLocaleSegments.includes(DEFAULT_LOCALE_SEGMENT)
+      ? [['x-default', absoluteUrl(localizedPath(DEFAULT_LOCALE_SEGMENT))]]
+      : []),
   ])
 
-  const alternateLocales = LOCALE_SEGMENTS.filter((s) => s !== segment).map(
+  const alternateLocales = alternateLocaleSegments.filter((s) => s !== segment).map(
     segmentToOgLocale,
   )
+  const resolvedImages = images ?? seoImagesForPath(path)
   const cleanTitle = title?.replace(/(?:\s*[|—–-]\s*PlayLiva)+\s*$/i, '').trim()
 
   return {
@@ -122,7 +132,7 @@ export function pageMetadata(opts: {
     description,
     alternates: {
       canonical: absoluteUrl(localizedPath(segment)),
-      languages,
+      ...(Object.keys(languages).length > 0 ? { languages } : {}),
     },
     robots: index
       ? { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large' } }
@@ -135,13 +145,13 @@ export function pageMetadata(opts: {
       url: absoluteUrl(localizedPath(segment)),
       locale: segmentToOgLocale(segment),
       alternateLocale: alternateLocales,
-      ...(images ? { images } : {}),
+      ...(resolvedImages ? { images: resolvedImages } : {}),
     },
     twitter: {
-      card: images ? 'summary_large_image' : 'summary',
+      card: resolvedImages ? 'summary_large_image' : 'summary',
       title: cleanTitle ?? DEFAULT_TITLE,
       description,
-      ...(images ? { images } : {}),
+      ...(resolvedImages ? { images: resolvedImages } : {}),
     },
   }
 }

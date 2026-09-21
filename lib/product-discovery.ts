@@ -6,6 +6,17 @@ export const discoveryCategory = (game: Pick<Game, 'slug' | 'category'>): Catego
 
 export const DISCOVERY_ORDER: CategorySlug[] = ['slots', 'crash', 'live-casino', 'instant-games', 'table-games']
 
+const PROVIDER_SLUGS: Record<string, string> = {
+  Evolution: 'evolution',
+  'Pragmatic Play': 'pragmatic-play',
+  SmartSoft: 'smartsoft',
+  Spribe: 'spribe',
+  SPRIBE: 'spribe',
+}
+
+export const providerSlug = (provider: string): string | undefined =>
+  PROVIDER_SLUGS[provider]
+
 const en = {
   eyebrow: 'A new way to discover', heroLead: 'Find your', heroAccent: 'next obsession.',
   heroDescription: 'Discover games. Play free. Explore what’s next. Original adventures and a separate guide to provider games, all in one place.',

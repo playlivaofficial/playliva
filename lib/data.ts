@@ -606,17 +606,17 @@ export function getAllComparisons(): Comparison[] {
 export const GAME_LISTS: GameList[] = [
   {
     slug: 'best-crash-games-brazil',
-    title: 'Best Crash Games in Brazil',
+    title: 'Editorial Crash Game Selection for Brazil',
     country: 'BR',
     category: 'crash',
     gameIds: ['g1', 'g2', 'g3'],
     intro:
-      'Crash games are among the most-played titles in Brazil. This editorial selection highlights the crash games Brazilian players discover most often, with a short explanation of what makes each one distinct.',
+      'This selection compares Aviator, JetX and Spaceman by documented mechanics, presentation and verified availability in Brazil.',
     editorialContent:
-      'Rankings reflect PlayLiva editorial judgement based on availability, popularity and gameplay variety in the Brazilian market. They are not a prediction of outcomes and do not represent a guarantee of any result.',
-    seoTitle: 'Best Crash Games in Brazil',
+      'The selection uses documented mechanics, verified Brazil availability, meaningful format differences and source quality. Order is for reading only and does not predict results or performance.',
+    seoTitle: 'Editorial Crash Game Selection for Brazil',
     seoDescription:
-      'Discover the best crash games in Brazil, how each one plays and where to play them responsibly.',
+      'Compare an editorial selection of crash games available in Brazil and see the criteria PlayLiva used.',
   },
   {
     slug: 'best-crash-games-mexico',

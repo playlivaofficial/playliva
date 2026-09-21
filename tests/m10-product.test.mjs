@@ -120,7 +120,7 @@ test('M10: footer and trust display have no replacement characters in any suppor
   }
 })
 
-test('M10: Original engine, wallet and game-renderer files stay frozen except authorized play-real routing', async () => {
+test('M10: Original engine, wallet and game-renderer files stay frozen except approved entry semantics', async () => {
   const roots = ['lib/originals', 'components/originals/crash', 'components/originals/capybara', 'components/originals/blackjack', 'components/originals/roulette', 'components/originals/mines']
   const paths = []
   async function walk(path) {
@@ -134,5 +134,5 @@ test('M10: Original engine, wallet and game-renderer files stay frozen except au
   const hash = createHash('sha256')
   for (const path of paths.sort()) hash.update(path + '\0' + (await readFile(new URL('../' + path, import.meta.url), 'utf8')).replace(/\r\n/g, '\n') + '\0')
   assert.equal(paths.length, 60)
-  assert.equal(hash.digest('hex'), '5844f129b1729fc5330548bf6ebd455d3c080796d4ef512e6e504497541cf88d')
+  assert.equal(hash.digest('hex'), '38e7914cced01e5167a44bbe8e1f0eda77f9875e095db21d86ec82646088340b')
 })

@@ -29,6 +29,8 @@ interface CountryContextValue {
   /** GEO/market — drives operators, affiliate links, offers, availability. */
   country: Country
   countryCode: CountryCode
+  /** Crawl-safe market used by commercial/editorial server output. */
+  marketCode: CountryCode | null
   setCountryCode: (code: CountryCode) => void
   /**
    * LANGUAGE — completely independent from GEO. A visitor's GEO never
@@ -64,6 +66,7 @@ function isSupportedLocale(value: string): value is Locale {
 export function CountryProvider({
   children,
   initialLocale,
+  initialCountryCode = DEFAULT_COUNTRY,
 }: {
   children: ReactNode
   /**
@@ -74,11 +77,14 @@ export function CountryProvider({
    * visitor sees in the address bar.
    */
   initialLocale: Locale
+  /** Crawl-safe server baseline; runtime GEO remains independently persisted. */
+  initialCountryCode?: CountryCode | null
 }) {
   const pathname = usePathname()
   const router = useRouter()
   const [countryCode, setCountryCodeState] =
-    useState<CountryCode>(DEFAULT_COUNTRY)
+    useState<CountryCode>(initialCountryCode ?? DEFAULT_COUNTRY)
+  const [marketReady, setMarketReady] = useState(initialCountryCode !== null)
 
   // LANGUAGE is derived from the URL on every render, never from
   // independent client state — this keeps it perfectly in sync with
@@ -97,8 +103,9 @@ export function CountryProvider({
       if (stored && isPublicCountry(stored)) {
         setCountryCodeState(stored)
       }
+      setMarketReady(true)
     } catch {
-      // storage unavailable — fall back to default market
+      setMarketReady(true)
     }
   }, [])
 
@@ -106,6 +113,7 @@ export function CountryProvider({
     // Only allow public launch markets. LANGUAGE is untouched by this call.
     if (!isPublicCountry(code)) return
     setCountryCodeState(code)
+    setMarketReady(true)
     try {
       window.localStorage.setItem(COUNTRY_STORAGE_KEY, code)
     } catch {
@@ -142,6 +150,7 @@ export function CountryProvider({
     return {
       country,
       countryCode,
+      marketCode: marketReady ? countryCode : null,
       setCountryCode,
       locale,
       setLocale,
@@ -150,7 +159,7 @@ export function CountryProvider({
       nameOf: (code: CountryCode) => getCountryName(code, locale),
       countries: PUBLIC_COUNTRIES,
     }
-  }, [countryCode, setCountryCode, locale, setLocale])
+  }, [countryCode, marketReady, setCountryCode, locale, setLocale])
 
   return (
     <CountryContext.Provider value={value}>{children}</CountryContext.Provider>

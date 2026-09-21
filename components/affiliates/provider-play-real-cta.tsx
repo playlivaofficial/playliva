@@ -15,8 +15,8 @@ export function ProviderPlayRealCta({
   gameSlug: string
   category: CategorySlug
 }) {
-  const { countryCode, locale, t } = useCountry()
-  const cta = getBetssonGamePlayCta(countryCode, locale, { gameSlug, category })
+  const { marketCode, locale, t } = useCountry()
+  const cta = marketCode ? getBetssonGamePlayCta(marketCode, locale, { gameSlug, category }) : null
   if (!cta) return null
   return (
     <div

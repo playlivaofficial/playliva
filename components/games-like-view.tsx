@@ -27,14 +27,14 @@ import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsore
 import { EditorialByline } from '@/components/editorial-byline'
 
 export function GamesLikeView({ game }: { game: Game }) {
-  const { countryCode, t, locale } = useCountry()
+  const { marketCode: countryCode, t, locale } = useCountry()
   const categoryName = getCategoryName(discoveryCategory(game), locale)
   const categoryLower = categoryName.toLowerCase()
-  const marketName = getCountryName(countryCode, locale)
+  const marketName = countryCode ? getCountryName(countryCode, locale) : t('geo.marketLabel')
   const content = getGameContent(game, locale)
   const alternatives = getRelatedGames(game, undefined, 8)
   const comparisons = getComparisonsForGame(game.id)
-  const operators = getOperatorsForGame(game, countryCode)
+  const operators = countryCode ? getOperatorsForGame(game, countryCode) : []
   // Individual editorial write-ups per alternative, only where a real note
   // exists (sparse by design — see `getAlternativeNote`).
   const alternativeDetails = alternatives
@@ -51,7 +51,7 @@ export function GamesLikeView({ game }: { game: Game }) {
     track('game_view', {
       gameId: game.id,
       category: game.category,
-      country: countryCode,
+      country: countryCode ?? undefined,
       pageType: 'games_like',
     })
   }, [game.id, game.category, countryCode])
@@ -184,7 +184,7 @@ export function GamesLikeView({ game }: { game: Game }) {
           eyebrow={t('geo.whereToPlay')}
           title={t('compare.whereToPlayTitle', { market: marketName })}
           description={t('game.whereToPlaySub')}
-          action={
+          action={operators.length > 0 ? (
             <Button
               variant="outline"
               size="lg"
@@ -193,9 +193,9 @@ export function GamesLikeView({ game }: { game: Game }) {
               {t('compare.whereToPlayCta', { game: game.title })}
               <ArrowRight className="size-4" />
             </Button>
-          }
+          ) : undefined}
         />
-        {operators.length > 0 ? (
+        {operators.length > 0 && countryCode ? (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {operators.map((o) => (
               <WhereToPlayOperatorCard key={o.id} operator={o} country={countryCode}

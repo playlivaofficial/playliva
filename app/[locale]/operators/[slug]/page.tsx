@@ -36,6 +36,7 @@ export async function generateMetadata({
     description: t('seo.operatorDescription', { operator: operator.name }),
     path: `/operators/${operator.slug}`,
     localeSegment,
+    images: operator.logo ? [operator.logo] : undefined,
     // Only approved, non-mock partners may be indexed — pending onboarding
     // (real or mock) must stay out of search results.
     index: getPublicOperators().some((o) => o.id === operator.id),

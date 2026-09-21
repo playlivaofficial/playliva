@@ -1,17 +1,17 @@
 {
   "lib/affiliate.ts": "4b3f6f5632c0750e3e899f1373ef1879c4176fe02da8e4030291bbdda454bcea",
-  "lib/data.ts": "9b92f9a539daf5d99a7234534accac7a196b1429476436c9fb9f1f83ba88cec2",
+  "lib/data.ts": "8a10530ce2d3b208d6f1068b861af483e9cdf0b29df1ccb0174eb408bf28cbc1",
   "lib/consent.ts": "dda3f5a6e39088bde2ad0bd08093a1c88dbfe2afac39d83fa6927b169340d24f",
   "lib/tracking.ts": "31a40d612890859d009c74cbdf5473579df7bf29ec021b1c0862b431e2a57b8e",
   "lib/originals/play-real.ts": "ef7ed4886a21bb6f7e034e512b1bd68f2b59b132c3f0abd6628b63f9e5a2bbc2",
   "lib/originals/blackjack/play-real.ts": "8e625fcb7021e09658f2a8be51a147b4708e0f6d5869664488caed7e0e25a72a",
   "lib/originals/roulette/play-real.ts": "167cd0f3f71625d3ad9e25a557ba49120f039aacd9da3e8a43453ac747213968",
   "components/originals/play-real-cta.tsx": "29fcfcdfd516c537c7d7d1a79f52212b2b4db0138267cd25ceb570a0516bff2b",
-  "components/affiliate-button.tsx": "1ca03edc6feba036de514ed264e95f306d0d14e8171c8bce0a03f8e01c607c7d",
+  "components/affiliate-button.tsx": "2c9d3adb22137a9d6fa9651921f01fc4c00d7ef0cc862a89ba23a919097cdddb",
   "components/operator-card.tsx": "b327f57ac7afacc37fa736752e03db6ed70ef6736f7aa37e2f6a2a8d6eaae0d0",
-  "components/where-to-play.tsx": "15493f52dde181a4ffd18528012da46b00ad67fb241cf29a1369141c68ecde90",
-  "components/featured-operators.tsx": "21ed749fe665e20c4a0df1d5b973cc5a4d5288746c1313dbfe0b293f8590266e",
+  "components/where-to-play.tsx": "f846c3c00bb1a65c13dd70cc6337a33fd3e6e45f1ad5fee23e086d5b4e3d19d5",
+  "components/featured-operators.tsx": "774de8f813649e8640f8c4fae8d6328955d21e738abd359fcc6e2fb639488175",
   "app/go/route.ts": "4c3d5454c543f68130f197befabee11bdcbe5ea9308987c8ca2ec54d51cc5b2b",
-  "lib/seo.ts": "6a0ac7d695bf9df87b894b86368719b0619f5667dfe91440d7fc825046f7b51b",
-  "app/sitemap.ts": "b6a857f93898efeed9f4394d9525695249266ac278e0ce6bc263ec0657cba1e6"
+  "lib/seo.ts": "17e9fa89127c67cd4293d5094fcb12a817204ee36c83c5a48aca82e9d8fc6cff",
+  "app/sitemap.ts": "4a97e9f784cf80c4bd00168b68173bfea4943ac68cb5461fd9b43c3beaac0097"
 }

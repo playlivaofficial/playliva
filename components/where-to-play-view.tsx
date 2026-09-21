@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 import { LocaleLink } from '@/components/locale-link'
 import { ArrowRight, ArrowLeft, ClipboardCheck, ListChecks, MapPin, ShieldCheck } from 'lucide-react'
-import { useCountry, useTranslation } from '@/components/country-context'
+import { useCountry } from '@/components/country-context'
 import {
   getCountryName,
   getOperatorsForGame,
@@ -25,20 +25,19 @@ import { EditorialByline } from '@/components/editorial-byline'
 import { editorialCopy } from '@/lib/editorial'
 
 export function WhereToPlayView({ game }: { game: Game }) {
-  const { countryCode: country, locale } = useCountry()
-  const { t } = useTranslation()
-  const countryName = getCountryName(country, locale)
+  const { marketCode: country, locale, t } = useCountry()
+  const countryName = country ? getCountryName(country, locale) : t('geo.marketLabel')
   const categoryName = getCategoryName(game.category, locale)
   const gc = getGameContent(game, locale)
-  const operators = getOperatorsForGame(game, country)
+  const operators = country ? getOperatorsForGame(game, country) : []
   const comparisons = getComparisonsForGame(game.id).slice(0, 2)
-  const related = getRelatedGames(game, country, 4)
+  const related = getRelatedGames(game, country ?? undefined, 4)
 
   useEffect(() => {
     track('where_to_play_view', {
       gameId: game.id,
       gameSlug: game.slug,
-      country,
+      country: country ?? undefined,
       locale,
       pageType: 'where_to_play',
     })
@@ -94,7 +93,7 @@ export function WhereToPlayView({ game }: { game: Game }) {
 
       <Section className="pt-10">
         <EditorialByline path={`/where-to-play/${game.slug}`} locale={locale} />
-        {operators.length > 0 ? (
+        {operators.length > 0 && country ? (
           <>
             <SectionHeading
               title={t('category.operatorsTitle', {

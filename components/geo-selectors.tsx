@@ -5,7 +5,7 @@ import { useCountry } from '@/components/country-context'
 import { Dropdown, DropdownItem } from '@/components/ui/dropdown'
 
 export function CountrySelector({ compact = false }: { compact?: boolean }) {
-  const { country, countries, countryCode, setCountryCode, countryName, nameOf, t } =
+  const { country, countries, marketCode, setCountryCode, countryName, nameOf, t } =
     useCountry()
   return (
     <Dropdown
@@ -13,9 +13,9 @@ export function CountrySelector({ compact = false }: { compact?: boolean }) {
       trigger={
         <>
           <span aria-hidden="true" className="text-base leading-none">
-            {country.flag}
+            {marketCode ? country.flag : '🌐'}
           </span>
-          {!compact && <span className="hidden sm:inline">{countryName}</span>}
+          {!compact && <span className="hidden sm:inline">{marketCode ? countryName : t('geo.marketLabel')}</span>}
           <ChevronDown className="size-3.5 text-muted-foreground" />
         </>
       }
@@ -28,7 +28,7 @@ export function CountrySelector({ compact = false }: { compact?: boolean }) {
           {countries.map((c) => (
             <DropdownItem
               key={c.code}
-              active={c.code === countryCode}
+              active={c.code === marketCode}
               onClick={() => {
                 setCountryCode(c.code)
                 close()
@@ -38,7 +38,7 @@ export function CountrySelector({ compact = false }: { compact?: boolean }) {
                 {c.flag}
               </span>
               <span className="flex-1">{nameOf(c.code)}</span>
-              {c.code === countryCode && (
+              {c.code === marketCode && (
                 <Check className="size-4 text-primary" />
               )}
             </DropdownItem>

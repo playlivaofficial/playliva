@@ -15,7 +15,7 @@ const { LOCALE_SEGMENTS } = localeModule
 import seoModule from '../lib/seo.ts'
 const { SITE_URL } = seoModule
 import dataModule from '../lib/data.ts'
-const { getOperator, CATEGORIES, GAMES } = dataModule
+const { getOperator, CATEGORIES, GAMES, GAME_LISTS } = dataModule
 import consentModule from '../lib/consent.ts'
 import discoveryModule from '../lib/originals/discovery.ts'
 import i18nModule from '../lib/i18n.ts'
@@ -45,6 +45,8 @@ const publicPaths = sitemap().map((entry) => new URL(entry.url).pathname)
 const paths = new Set(publicPaths)
 const linkedPaths = new Set()
 const titlesByLocale = new Map()
+let ptPublicCount = 0
+let ptOgImageCount = 0
 const chunkRoot = new URL('../.next/static/chunks/', import.meta.url)
 const gameChunks = []
 for (const name of await readdir(chunkRoot)) {
@@ -59,6 +61,8 @@ for (const locale of LOCALE_SEGMENTS) {
   for (const league of LEAGUES) paths.add(`/${locale}/sports/${league.sport}/${league.slug}`)
   for (const match of MATCHES) paths.add(`/${locale}/sports/${match.sport}/${getLeagueById(match.leagueId).slug}/${match.slug}`)
   for (const legal of ['terms', 'cookie-policy', 'privacy-policy']) paths.add(`/${locale}/${legal}`)
+  for (const game of GAMES) paths.add(`/${locale}/where-to-play/${game.slug}`)
+  for (const list of GAME_LISTS) paths.add(`/${locale}/best/${list.slug}`)
 }
 try {
   let ready = false
@@ -118,14 +122,19 @@ try {
     if (canonical !== SITE_URL + path) failures.push(`${path}: canonical ${canonical}`)
     const routePath = path.replace(/^\/(en|pt-br|es-mx)/, '')
     const segment = path.split('/')[1]
-    // Next streaming keeps the pending replacement in a hidden container; it
-    // is not a second visible/accessibility heading alongside the fallback.
-    assert.equal([...doc.querySelectorAll('h1')].filter(node => !node.closest('[hidden]')).length, 1, `${path}: one semantic page heading`)
+    const commercialBaseline = segment === 'pt-br'
+    // Dynamic Original fallbacks stay non-heading while the streamed shell
+    // owns the route's single semantic H1.
+    assert.equal(doc.querySelectorAll('h1').length, 1, `${path}: one semantic page heading`)
     assert.ok(doc.querySelector('meta[name="description"]')?.content.trim().length > 10, `${path}: meaningful description`)
     if (publicPaths.includes(path)) {
       const key = `${segment}:${doc.title}`
       if (titlesByLocale.has(key)) failures.push(`${path}: duplicate title with ${titlesByLocale.get(key)}`)
       titlesByLocale.set(key, path)
+      if (segment === 'pt-br') {
+        ptPublicCount += 1
+        if (doc.querySelector('meta[property="og:image"]')) ptOgImageCount += 1
+      }
     }
     for (const link of doc.querySelectorAll('a[href^="/go?"]')) {
       const ad = link.closest('[data-betting-ad]')
@@ -157,12 +166,14 @@ try {
         assert.equal(doc.querySelector('meta[name="description"]')?.content, copy.seoDescription)
         assert.ok(doc.querySelector('[data-play-hub]')?.textContent.includes(copy.disclaimer))
         const playBanner = doc.querySelector('[data-betsson-banner="play"]')
-        assert.ok(playBanner, `${path}: play hub Betsson banner`)
-        const playLink = playBanner.querySelector('a[href^="/go?"]')
-        assert.ok(playLink)
-        assert.equal(new URL(playLink.href, base).searchParams.get('placement'), 'play_hub_banner')
-        assert.equal(new URL(playLink.href, base).searchParams.get('page'), 'play')
-        assert.equal(new URL(playLink.href, base).searchParams.get('game'), null)
+        assert.equal(Boolean(playBanner), commercialBaseline, `${path}: crawl-safe play sponsor baseline`)
+        if (playBanner) {
+          const playLink = playBanner.querySelector('a[href^="/go?"]')
+          assert.ok(playLink)
+          assert.equal(new URL(playLink.href, base).searchParams.get('placement'), 'play_hub_banner')
+          assert.equal(new URL(playLink.href, base).searchParams.get('page'), 'play')
+          assert.equal(new URL(playLink.href, base).searchParams.get('game'), null)
+        }
         assert.doesNotMatch(doc.querySelector('[data-play-hub] [data-filter]')?.textContent ?? '', /Aviator|Coming soon/i)
       } else {
         assert.ok(doc.querySelector(`[data-originals-section="${routePath === '' ? 'home' : 'category'}"]`))
@@ -172,7 +183,8 @@ try {
           assert.ok(doc.querySelector('#provider-games [data-provider-card]'))
           assert.ok(doc.querySelector('[data-discovery-explainer]'))
           const banner = doc.querySelector('[data-betsson-banner="homepage"]')
-          assert.ok(banner, `${path}: homepage Betsson banner`)
+          assert.equal(Boolean(banner), commercialBaseline, `${path}: crawl-safe homepage sponsor baseline`)
+          if (banner) {
           const bannerLink = banner.querySelector('a[href^="/go?"]')
           const bannerQuery = new URL(bannerLink.href, base).searchParams
           assert.equal(bannerQuery.get('operator'), partner.slug)
@@ -183,16 +195,6 @@ try {
           assert.equal(bannerQuery.get('category'), null)
           assert.equal(bannerQuery.get('game'), null)
           assert.doesNotMatch(banner.textContent, /bônus|bonus|100%|free spin|gire grátis|Play Liva/i)
-          if (segment === 'en') {
-            assert.doesNotMatch(banner.textContent, /Conheça cassino|Patrocinado|Explorar Betsson|não aceita apostas nem depósitos/)
-            assert.match(banner.textContent, /Sponsored/)
-            assert.match(banner.textContent, /Explore Betsson/)
-          }
-          if (segment === 'es-mx') {
-            assert.doesNotMatch(banner.textContent, /Conheça cassino|Sponsored|Explore Betsson|não aceita apostas nem depósitos/)
-            assert.match(banner.textContent, /Patrocinado/)
-            assert.match(banner.textContent, /Explorar Betsson/)
-          }
           if (segment === 'pt-br') {
             assert.doesNotMatch(banner.textContent, /Sponsored|Explore Betsson|Visit Betsson/)
             assert.match(banner.textContent, /Patrocinado/)
@@ -208,6 +210,7 @@ try {
           assert.equal(bannerGo.headers.get('location'), promoLive ? promoModule.BETSSON_PROMO.affiliateUrl : partner.affiliateUrl.BR)
           assert.ok(brazilModule.isAuthorizedBrazilDestination(partner, bannerGo.headers.get('location')))
           if (promoLive) assert.ok(banner.textContent.includes(promoModule.BETSSON_PROMO.headline))
+          }
         }
         else assert.ok(cards[0].compareDocumentPosition(doc.querySelector('main a[href*="/games/"]')) & 4, 'Original precedes provider grid')
       }
@@ -278,17 +281,19 @@ try {
       assert.ok(viewport && controls && unit, `${path}: Originals shell landmarks`)
       assert.ok(viewport.compareDocumentPosition(controls) & 4, `${path}: viewport precedes controls`)
       assert.equal(doc.querySelector('[data-operator-cta="play-real"]'), null, `${path}: no Play Real CTA on Original gameplay`)
-      assert.ok(banner, `${path}: compact originals header banner`)
-      assert.equal(banner.getAttribute('data-banner-layout'), 'compact-header', path)
-      assert.ok(banner.closest('[data-originals-sponsor], [data-sponsor-slot="originals-header"]'), `${path}: banner attached to header`)
-      assert.ok(banner.compareDocumentPosition(viewport) & 4, `${path}: header banner precedes viewport`)
-      const go = banner.querySelector('a[href^="/go?"]')
-      assert.ok(go, `${path}: /go CTA`)
-      assert.equal(new URL(go.href, base).searchParams.get('placement'), 'originals_header')
-      assert.equal(new URL(go.href, base).searchParams.get('page'), 'play')
-      assert.doesNotMatch(banner.innerHTML, /https?:\/\/(?:www\.)?betsson/i)
-      assert.ok(banner.querySelector('[data-brazil-ad-warning]'))
-      assert.ok(banner.textContent.includes('18+'))
+      assert.equal(Boolean(banner), commercialBaseline, `${path}: crawl-safe Originals sponsor baseline`)
+      if (banner) {
+        assert.equal(banner.getAttribute('data-banner-layout'), 'compact-header', path)
+        assert.ok(banner.closest('[data-originals-sponsor], [data-sponsor-slot="originals-header"]'), `${path}: banner attached to header`)
+        assert.ok(banner.compareDocumentPosition(viewport) & 4, `${path}: header banner precedes viewport`)
+        const go = banner.querySelector('a[href^="/go?"]')
+        assert.ok(go, `${path}: /go CTA`)
+        assert.equal(new URL(go.href, base).searchParams.get('placement'), 'originals_header')
+        assert.equal(new URL(go.href, base).searchParams.get('page'), 'play')
+        assert.doesNotMatch(banner.innerHTML, /https?:\/\/(?:www\.)?betsson/i)
+        assert.ok(banner.querySelector('[data-brazil-ad-warning]'))
+        assert.ok(banner.textContent.includes('18+'))
+      }
       assert.equal(unit.querySelector('[data-operator-cta], [data-betsson-banner], a[href^="/go"]'), null, `${path}: no commercial inside game unit`)
     }
     if (routePath !== '/play/crash') {
@@ -311,10 +316,15 @@ try {
       ], `${path}: homepage category and network destinations`)
       assert.equal(cards[3].getAttribute('target'), null)
     }
-    for (const segment of LOCALE_SEGMENTS) {
-      assert.equal(doc.querySelector(`link[hreflang="${segment}"]`)?.href, `${SITE_URL}/${segment}${routePath}`, `${path}: hreflang ${segment}`)
+    const marketScoped = routePath.startsWith('/where-to-play/') || GAME_LISTS.some((list) => routePath === `/best/${list.slug}`)
+    for (const alternateSegment of LOCALE_SEGMENTS) {
+      const expected = marketScoped ? alternateSegment === segment && publicPaths.includes(path) : true
+      assert.equal(Boolean(doc.querySelector(`link[hreflang="${alternateSegment}"]`)), expected, `${path}: hreflang ${alternateSegment}`)
+      if (expected) assert.equal(doc.querySelector(`link[hreflang="${alternateSegment}"]`)?.href, `${SITE_URL}/${alternateSegment}${routePath}`, `${path}: hreflang URL ${alternateSegment}`)
     }
-    assert.equal(doc.querySelector('link[hreflang="x-default"]')?.href, `${SITE_URL}/pt-br${routePath}`, `${path}: x-default`)
+    const expectDefault = !marketScoped || routePath.startsWith('/where-to-play/') && segment === 'pt-br' && publicPaths.includes(path)
+    assert.equal(Boolean(doc.querySelector('link[hreflang="x-default"]')), expectDefault, `${path}: x-default presence`)
+    if (expectDefault) assert.equal(doc.querySelector('link[hreflang="x-default"]')?.href, `${SITE_URL}/pt-br${routePath}`, `${path}: x-default`)
     for (const link of doc.querySelectorAll('a[href]')) {
       const url = new URL(link.getAttribute('href'), base + path)
       if (url.origin === base && !url.pathname.startsWith('/go')) linkedPaths.add(url.pathname)
@@ -373,11 +383,13 @@ try {
       assert.ok(art.status !== 'fallback' && doc.querySelector(`main img[src="${art.assetPath}"]`))
       assert.equal(doc.querySelector('main iframe, main a[href*="/where-to-play/"]'), null)
       const playReal = doc.querySelector('[data-betsson-game-cta] a[href^="/go"]')
-      assert.ok(playReal, `${path}: early Betsson CTA`)
-      assert.equal(new URL(playReal.href, base).searchParams.get('game'), null)
-      assert.doesNotMatch(playReal.textContent, /Play .+ at Betsson/i)
+      assert.equal(Boolean(playReal), commercialBaseline, `${path}: crawl-safe early Betsson CTA`)
+      if (playReal) {
+        assert.equal(new URL(playReal.href, base).searchParams.get('game'), null)
+        assert.doesNotMatch(playReal.textContent, /Play .+ at Betsson/i)
+      }
       assert.doesNotMatch(doc.body.textContent, /This game may not be available at Betsson/i)
-      assert.ok(doc.querySelector('[data-betsson-banner="game"]'))
+      assert.equal(Boolean(doc.querySelector('[data-betsson-banner="game"]')), commercialBaseline)
       assert.ok(doc.querySelector('main').textContent.includes(c.evidence))
       assert.equal(doc.querySelector('meta[name="description"]').content, game.content[locale].summary)
     }
@@ -386,8 +398,8 @@ try {
       assert.ok(doc.querySelector('[data-provider-hero-art]'), `${path}: provider artwork remains part of identity`)
       for (const anchor of doc.querySelectorAll('nav a[href^="#"]')) assert.ok(doc.querySelector(anchor.getAttribute('href')), `${path}: guide anchor target`)
       const playReal = doc.querySelector('[data-betsson-game-cta] a[href^="/go"]')
-      assert.ok(playReal, `${path}: early Betsson CTA`)
-      assert.ok(doc.querySelector('[data-betsson-banner="game"]'))
+      assert.equal(Boolean(playReal), commercialBaseline, `${path}: crawl-safe early Betsson CTA`)
+      assert.equal(Boolean(doc.querySelector('[data-betsson-banner="game"]')), commercialBaseline)
     }
     const bannerByRoute = {
       '': 'homepage',
@@ -403,25 +415,26 @@ try {
       '/providers': 'providers',
     }
     if (bannerByRoute[routePath]) {
-      assert.ok(doc.querySelector(`[data-betsson-banner="${bannerByRoute[routePath]}"]`), `${path}: Betsson banner`)
+      assert.equal(Boolean(doc.querySelector(`[data-betsson-banner="${bannerByRoute[routePath]}"]`)), commercialBaseline, `${path}: crawl-safe Betsson banner`)
     }
     if (routePath.startsWith('/providers/') && routePath !== '/providers') {
-      assert.ok(doc.querySelector('[data-betsson-banner="provider"]'), `${path}: provider Betsson banner`)
+      assert.equal(Boolean(doc.querySelector('[data-betsson-banner="provider"]')), commercialBaseline, `${path}: provider Betsson banner`)
     }
     if (routePath.startsWith('/games-like/')) {
-      assert.ok(doc.querySelector('[data-betsson-banner="games-like"]'), `${path}: games-like Betsson banner`)
+      assert.equal(Boolean(doc.querySelector('[data-betsson-banner="games-like"]')), commercialBaseline, `${path}: games-like Betsson banner`)
     }
     if (routePath.startsWith('/compare/')) {
-      assert.ok(doc.querySelector('[data-betsson-banner="comparison"]'), `${path}: comparison Betsson banner`)
+      assert.equal(Boolean(doc.querySelector('[data-betsson-banner="comparison"]')), commercialBaseline, `${path}: comparison Betsson banner`)
     }
     if (routePath.startsWith('/best/')) {
-      assert.ok(doc.querySelector('[data-betsson-banner="best-list"]'), `${path}: best-list Betsson banner`)
+      assert.equal(Boolean(doc.querySelector('[data-betsson-banner="best-list"]')), commercialBaseline, `${path}: best-list Betsson banner`)
     }
     if (routePath === '/offers') {
       assert.ok(doc.querySelector('[data-offers-sponsored]'))
       assert.ok(doc.querySelector('[data-offers-verified]'))
       assert.match(doc.querySelector('[data-offers-sponsored]')?.textContent ?? '', /Sponsored Partner|Parceiro patrocinado|Socio patrocinado/)
     }
+    assert.equal(doc.querySelectorAll('[data-betsson-banner] h2').length, 0, `${path}: sponsor copy stays out of heading outline`)
     if (['/terms', '/privacy-policy', '/affiliate-disclosure', '/responsible-gaming', '/cookie-policy'].includes(routePath)) {
       assert.equal(doc.querySelector('[data-betsson-banner], [data-betsson-game-cta]'), null, `${path}: no commercial banner`)
     }
@@ -463,7 +476,7 @@ try {
     assert.equal(response.headers.get('x-robots-tag'), 'noindex, nofollow')
   }
   assert.equal((await fetch(`${base}/dev/operators`)).status, 404)
-  console.log(`Crawled ${paths.size} public/legal/demo URLs plus locale 404 and affiliate fallback probes.`)
+  console.log(`Crawled ${paths.size} public/legal/demo URLs plus locale 404 and affiliate fallback probes. PT-BR OG coverage: ${ptOgImageCount}/${ptPublicCount}.`)
   if (failures.length) console.error(failures.join('\n'))
   assert.equal(failures.length, 0, `${failures.length} content/SEO failures`)
 } finally {

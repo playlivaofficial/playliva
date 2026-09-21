@@ -22,8 +22,8 @@ import { BrazilAdWarning } from './brazil-ad-warning'
  * casino promotion, not an offer tied to the game being viewed.
  */
 export function BetssonDiscoveryOffer({ gameSlug, pageSlug }: { gameSlug?: string; pageSlug?: string }) {
-  const { countryCode, locale, t } = useCountry()
-  const model = getBetssonPromo(countryCode, locale, BETSSON_PROMO_PLACEMENTS.discoveryGame, { pageSlug: pageSlug ?? gameSlug })
+  const { marketCode, locale, t } = useCountry()
+  const model = marketCode ? getBetssonPromo(marketCode, locale, BETSSON_PROMO_PLACEMENTS.discoveryGame, { pageSlug: pageSlug ?? gameSlug }) : null
   const card = useRef<HTMLDivElement>(null)
   const seen = useRef(false)
   const route = usePathname()

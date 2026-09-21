@@ -21,10 +21,13 @@ function OfferGrid({ offers }: { offers: Offer[] }) {
 }
 
 export function OffersView() {
-  const { countryCode, locale, t } = useCountry()
+  const { marketCode, locale, t } = useCountry()
   // Verified-only: empty until real approved offers exist for this market.
-  const offers = getPublicOffers(countryCode)
-  const countryName = getCountryName(countryCode, locale)
+  const offers = useMemo(
+    () => marketCode ? getPublicOffers(marketCode) : [],
+    [marketCode],
+  )
+  const countryName = marketCode ? getCountryName(marketCode, locale) : t('geo.marketLabel')
 
   const featured = useMemo(() => offers.filter((o) => o.featured), [offers])
   const casino = useMemo(

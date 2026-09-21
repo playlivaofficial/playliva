@@ -37,7 +37,7 @@ import { Button } from '@/components/ui/button'
 import { track } from '@/lib/tracking'
 import type { Game } from '@/lib/types'
 
-import { discoveryCategory, productCopy } from '@/lib/product-discovery'
+import { discoveryCategory, productCopy, providerSlug } from '@/lib/product-discovery'
 import { ContentCard } from '@/components/content-card'
 import styles from '@/components/editorial-design.module.css'
 import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsored-banner'
@@ -46,15 +46,16 @@ import { RtpFact } from '@/components/rtp-fact'
 import { EditorialByline } from '@/components/editorial-byline'
 
 export function GameDetailView({ game }: { game: Game }) {
-  const { countryCode, country, t, locale } = useCountry()
+  const { marketCode: countryCode, country, t, locale } = useCountry()
   const visibleCategory = discoveryCategory(game)
   const categoryName = getCategoryName(visibleCategory, locale)
-  const marketName = getCountryName(countryCode, locale)
+  const marketName = countryCode ? getCountryName(countryCode, locale) : t('geo.marketLabel')
   const content = getGameContent(game, locale)
   const copy = productCopy(locale)
   const deviceNames: Record<string, string> = { Desktop: copy.desktop, Mobile: copy.mobile, Tablet: copy.tablet }
 
-  const operators = getOperatorsForGame(game, countryCode)
+  const operators = countryCode ? getOperatorsForGame(game, countryCode) : []
+  const providerPath = providerSlug(game.provider)
   const related = getRelatedGames(game, undefined, 4)
   const comparisons = getComparisonsForGame(game.id)
   // Only surface publicly live launch markets (Brazil + Mexico); future GEOs
@@ -65,7 +66,7 @@ export function GameDetailView({ game }: { game: Game }) {
     track('game_view', {
       gameId: game.id,
       category: game.category,
-      country: countryCode,
+      country: countryCode ?? undefined,
       pageType: 'game',
     })
   }, [game.id, game.category, countryCode])
@@ -117,7 +118,11 @@ export function GameDetailView({ game }: { game: Game }) {
               {content.seo?.game?.h1 ?? game.title}
             </h1>
             <p>
-              {t('game.byProvider', { provider: game.provider })}
+              {providerPath ? (
+                <LocaleLink href={`/providers/${providerPath}`}>
+                  {t('game.byProvider', { provider: game.provider })}
+                </LocaleLink>
+              ) : t('game.byProvider', { provider: game.provider })}
             </p>
           </div>
           <div className={styles.detailSponsor} data-detail-sponsor="" data-sponsor-slot="game-detail">
@@ -137,9 +142,11 @@ export function GameDetailView({ game }: { game: Game }) {
             </p>
             <div className={styles.detailActions}>
               <ProviderPlayRealCta gameSlug={game.slug} category={game.affiliateCategory ?? game.category} />
-              <Button size="lg" variant="outline" render={<a href="#where-to-play" />}>
-                {t('cta.seeWhereToPlay')}
-              </Button>
+              {operators.length > 0 && (
+                <Button size="lg" variant="outline" render={<a href="#where-to-play" />}>
+                  {t('cta.seeWhereToPlay')}
+                </Button>
+              )}
               <Button
                 size="lg"
                 variant="outline"
@@ -335,7 +342,7 @@ export function GameDetailView({ game }: { game: Game }) {
           eyebrow={t('geo.whereToPlay')}
           title={t('game.whereToPlayTitle', { game: game.title, market: marketName })}
           description={t('game.whereToPlaySub')}
-          action={
+          action={operators.length > 0 ? (
             <Button
               variant="outline"
               size="lg"
@@ -344,9 +351,9 @@ export function GameDetailView({ game }: { game: Game }) {
               {t('game.fullGuide')}
               <ArrowRight className="size-4" />
             </Button>
-          }
+          ) : undefined}
         />
-        {operators.length > 0 ? (
+        {operators.length > 0 && countryCode ? (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {operators.map((operator) => (
               <WhereToPlayOperatorCard
@@ -372,7 +379,7 @@ export function GameDetailView({ game }: { game: Game }) {
         )}
         <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
           <Globe className="size-4 text-primary" />
-          {t('geo.viewingFor', { flag: country.flag, market: marketName })}
+          {t('geo.viewingFor', { flag: countryCode ? country.flag : '🌐', market: marketName })}
         </div>
         <AffiliateDisclosureLine className="mt-4" />
       </Section>

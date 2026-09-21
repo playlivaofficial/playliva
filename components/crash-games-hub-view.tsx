@@ -3,7 +3,7 @@
 import { useEffect, useMemo } from 'react'
 import { LocaleLink } from '@/components/locale-link'
 import { ArrowRight } from 'lucide-react'
-import { GAMES, getGamesByIds } from '@/lib/data'
+import { GAMES, getGamesByIds, getOperatorsForGame } from '@/lib/data'
 import { getCategoryName, getCrashHubContent, getGameContent } from '@/lib/content'
 import { useCountry } from '@/components/country-context'
 import { PageHero } from '@/components/page-hero'
@@ -20,7 +20,7 @@ import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsore
 const SPOTLIGHT_SLUGS = ['aviator', 'jetx', 'spaceman']
 
 export function CrashGamesHubView() {
-  const { countryCode, locale, t } = useCountry()
+  const { marketCode: countryCode, locale, t } = useCountry()
   const content = getCrashHubContent(locale)
   const categoryName = getCategoryName('crash', locale)
 
@@ -39,7 +39,7 @@ export function CrashGamesHubView() {
 
   useEffect(() => {
     track('category_view', {
-      country: countryCode,
+      country: countryCode ?? undefined,
       category: 'crash',
       locale,
       pageType: 'best_list',
@@ -67,6 +67,16 @@ export function CrashGamesHubView() {
           title={content.featuredHeading}
           description={content.featuredSub}
         />
+        <div className="mb-6 flex flex-wrap gap-3">
+          <Button variant="outline" render={<LocaleLink href="/crash" />}>
+            {categoryName}
+          </Button>
+          {countryCode === 'BR' && (
+            <Button variant="ghost" render={<LocaleLink href="/best/best-crash-games-brazil" />}>
+              {t('category.viewRanking')}
+            </Button>
+          )}
+        </div>
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {crashGames.map((game) => {
             const gc = getGameContent(game, locale)
@@ -107,6 +117,7 @@ export function CrashGamesHubView() {
       {/* Dedicated sections for Aviator, JetX and Spaceman */}
       {spotlightGames.map((game) => {
         const gc = getGameContent(game, locale)
+        const hasWhereToPlay = countryCode ? getOperatorsForGame(game, countryCode).length > 0 : false
         return (
           <Section key={game.id} className="border-t border-border bg-card/30">
             <SectionHeading
@@ -127,14 +138,16 @@ export function CrashGamesHubView() {
                   {t('best.similarGames')}
                 </Button>
               )}
-              <Button
-                size="lg"
-                variant="ghost"
-                render={<LocaleLink href={`/where-to-play/${game.slug}`} />}
-              >
-                {t('geo.whereToPlay')}
-                <ArrowRight className="size-4" />
-              </Button>
+              {hasWhereToPlay && (
+                <Button
+                  size="lg"
+                  variant="ghost"
+                  render={<LocaleLink href={`/where-to-play/${game.slug}`} />}
+                >
+                  {t('geo.whereToPlay')}
+                  <ArrowRight className="size-4" />
+                </Button>
+              )}
             </div>
           </Section>
         )

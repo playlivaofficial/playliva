@@ -9,6 +9,10 @@ import { absoluteUrl } from '@/lib/seo'
 import { REFERENCE_PATHS } from '@/lib/catalog/paths'
 import { DEFAULT_LOCALE_SEGMENT, LOCALE_SEGMENTS, type LocaleSegment } from '@/lib/locale'
 import { editorialRecord } from '@/lib/editorial'
+import {
+  isGameListIndexableForLocale,
+  whereToPlayLocaleSegments,
+} from '@/lib/seo-market'
 
 /**
  * Only public, indexable URLs belong in the sitemap. Mock / pre-launch
@@ -25,16 +29,19 @@ function localizedEntry(
   path: string,
   changeFrequency: MetadataRoute.Sitemap[number]['changeFrequency'],
   priority: number,
+  segments: readonly LocaleSegment[] = LOCALE_SEGMENTS,
 ): MetadataRoute.Sitemap {
   const localizedPath = (segment: LocaleSegment) =>
     `/${segment}${path === '/' ? '' : path}`
 
   const languages = Object.fromEntries([
-    ...LOCALE_SEGMENTS.map((s) => [s, absoluteUrl(localizedPath(s))]),
-    ['x-default', absoluteUrl(localizedPath(DEFAULT_LOCALE_SEGMENT))],
+    ...segments.map((s) => [s, absoluteUrl(localizedPath(s))]),
+    ...(segments.includes(DEFAULT_LOCALE_SEGMENT)
+      ? [['x-default', absoluteUrl(localizedPath(DEFAULT_LOCALE_SEGMENT))]]
+      : []),
   ])
 
-  return LOCALE_SEGMENTS.map((segment) => ({
+  return segments.map((segment) => ({
     url: absoluteUrl(localizedPath(segment)),
     ...(editorialRecord(path)?.updatedAt ? { lastModified: editorialRecord(path)!.updatedAt } : {}),
     changeFrequency,
@@ -79,7 +86,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
   for (const game of GAMES) {
     entries.push(...localizedEntry(`/games/${game.slug}`, 'weekly', 0.8))
     entries.push(...localizedEntry(`/games-like/${game.slug}`, 'weekly', 0.6))
-    entries.push(...localizedEntry(`/where-to-play/${game.slug}`, 'weekly', 0.6))
+    entries.push(...localizedEntry(
+      `/where-to-play/${game.slug}`,
+      'weekly',
+      0.6,
+      whereToPlayLocaleSegments(game),
+    ))
   }
 
   for (const comparison of COMPARISONS) {
@@ -87,7 +99,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }
 
   for (const list of GAME_LISTS) {
-    entries.push(...localizedEntry(`/best/${list.slug}`, 'weekly', 0.7))
+    const segments = LOCALE_SEGMENTS.filter((segment) =>
+      isGameListIndexableForLocale(list, segment),
+    )
+    entries.push(...localizedEntry(`/best/${list.slug}`, 'weekly', 0.7, segments))
   }
 
   // Only verified (non-mock) operator profiles are indexable.

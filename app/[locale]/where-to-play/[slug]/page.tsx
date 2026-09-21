@@ -11,6 +11,10 @@ import {
   segmentToLocale,
 } from '@/lib/locale'
 import { createTranslator } from '@/lib/i18n'
+import {
+  isWhereToPlayIndexable,
+  whereToPlayLocaleSegments,
+} from '@/lib/seo-market'
 
 export function generateStaticParams() {
   return GAMES.map((g) => ({ slug: g.slug }))
@@ -27,6 +31,11 @@ export async function generateMetadata({
   const locale = segmentToLocale(
     isLocaleSegment(localeSegment) ? localeSegment : DEFAULT_LOCALE_SEGMENT,
   )
+  const segment = isLocaleSegment(localeSegment)
+    ? localeSegment
+    : DEFAULT_LOCALE_SEGMENT
+  const eligibleSegments = whereToPlayLocaleSegments(game)
+  const indexable = isWhereToPlayIndexable(game, segment)
   const t = createTranslator(locale)
   const gc = getGameContent(game, locale)
   // gameType is a localized editorial label (e.g. "crash"), not the GEO.
@@ -43,6 +52,9 @@ export async function generateMetadata({
     path: `/where-to-play/${game.slug}`,
     localeSegment,
     images: getGameOgImage(game),
+    index: indexable,
+    alternateLocaleSegments: indexable ? eligibleSegments : [],
+    includeXDefault: indexable && eligibleSegments.includes(DEFAULT_LOCALE_SEGMENT),
   })
 }
 
