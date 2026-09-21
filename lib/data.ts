@@ -1,5 +1,6 @@
-import { isAuthorizedBrazilDestination } from './compliance/brazil'
+import { BRAZIL_AD_RULES, isAuthorizedBrazilDestination } from './compliance/brazil'
 import { hasCurrentOfferEvidence } from './compliance/offers'
+import { BETSSON_PROMO, BETSSON_PROMO_OFFER_ID } from './affiliates/betsson-promo-config'
 import type {
   Category,
   CategorySlug,
@@ -1144,9 +1145,54 @@ export function isOfferEligible(
 /* Offers                                                              */
 /* ------------------------------------------------------------------ */
 
+/**
+ * The Betsson BR campaign offer is derived from the single central promo
+ * config so the Offers page, `/go?offer=` resolution and every other Betsson
+ * surface share one headline, link, creative and validity window. It still
+ * has to pass every existing publication gate (`isOfferEligible`), including
+ * the dated market-specific compliance record and the licensed BR domain.
+ */
+export const BETSSON_PROMO_OFFER: Offer = {
+  id: BETSSON_PROMO_OFFER_ID,
+  operatorId: BETSSON_PROMO.operatorId,
+  country: BETSSON_PROMO.market,
+  title: BETSSON_PROMO.headline,
+  description: BETSSON_PROMO.subheadline ?? '',
+  category: 'welcome',
+  terms: BETSSON_PROMO.verifiedTerms.join(' • ') || '18+',
+  affiliateUrl: BETSSON_PROMO.affiliateUrl,
+  active: BETSSON_PROMO.enabled,
+  featured: true,
+  status: 'verified',
+  validFrom: BETSSON_PROMO.validFrom,
+  validUntil: BETSSON_PROMO.validUntil,
+  source: BETSSON_PROMO.landingPageUrl,
+  lastVerifiedAt: BETSSON_PROMO.verifiedAt,
+  termsUrl: BETSSON_PROMO.termsUrl,
+  promoId: BETSSON_PROMO.promoId,
+  brand: BETSSON_PROMO.brand,
+  ctaLabel: { 'pt-BR': BETSSON_PROMO.ctaLabel, en: 'Play at Betsson', 'es-MX': 'Jugar en Betsson' },
+  creative: BETSSON_PROMO.creative.kind === 'banner' ? {
+    id: BETSSON_PROMO.creative.id,
+    assetPath: BETSSON_PROMO.creative.assetPath,
+    width: BETSSON_PROMO.creative.width,
+    height: BETSSON_PROMO.creative.height,
+    alt: BETSSON_PROMO.creative.alt,
+    languages: BETSSON_PROMO.creative.languages,
+  } : undefined,
+  complianceReview: {
+    market: BETSSON_PROMO.market,
+    status: 'reviewed-permitted',
+    legalSource: BRAZIL_AD_RULES.guidance,
+    verifiedAt: BETSSON_PROMO.verifiedAt,
+    reviewBy: BETSSON_PROMO.validUntil,
+  },
+}
+
 /** Offers separated by GEO. Chile intentionally has no live offers. */
 export const offersByCountry: Record<CountryCode, Offer[]> = {
   BR: [
+    BETSSON_PROMO_OFFER,
     {
       id: 'of-br-1',
       operatorId: 'op1',

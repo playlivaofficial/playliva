@@ -146,7 +146,7 @@ test('Originals banner surface stays GEO-gated and resolves only through /go', (
   assert.ok(banner)
   assert.equal(banner.surface, 'originals')
   assert.match(banner.href, /^\/go\?/)
-  assert.equal(new URL(banner.href, 'https://www.playliva.com').searchParams.get('placement'), 'originals_banner')
+  assert.equal(new URL(banner.href, 'https://www.playliva.com').searchParams.get('placement'), 'originals_header')
   assert.doesNotMatch(banner.href, /https?:\/\//)
   assert.equal(getBetssonSponsoredBanner('MX', 'en', 'originals'), null)
   assert.equal(getBetssonSponsoredBanner('PT', 'pt-BR', 'originals'), null)

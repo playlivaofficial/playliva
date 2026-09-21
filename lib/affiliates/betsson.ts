@@ -23,6 +23,7 @@ import { buildGoHref, resolveDestination, type ResolvedDestination } from '../af
 import { getGame, getOperator, isCategorySlug, isGameVerifiedAtOperator } from '../data'
 import type { CategorySlug, CountryCode, Locale } from '../types'
 import type { PageType } from '../tracking'
+import { BETSSON_PROMO, BETSSON_PROMO_OFFER_ID, isBetssonPromoLive } from './betsson-promo-config'
 
 export const BETSSON_OPERATOR_SLUG = 'betsson-group-affiliates' as const
 export const BETSSON_OPERATOR_ID = 'op-betsson' as const
@@ -47,7 +48,8 @@ export const PROVIDER_DETAIL_BANNER_PLACEMENT = 'provider_detail_banner' as cons
 export const GAMES_LIKE_BANNER_PLACEMENT = 'games_like_banner' as const
 export const COMPARISON_BANNER_PLACEMENT = 'comparison_banner' as const
 export const BEST_LIST_BANNER_PLACEMENT = 'best_list_banner' as const
-export const ORIGINALS_BANNER_PLACEMENT = 'originals_banner' as const
+/** Compact header sponsor on the five Original gameplay routes (funnel placement name). */
+export const ORIGINALS_BANNER_PLACEMENT = 'originals_header' as const
 
 export type BetssonCtaMode = 'verified-category' | 'verified-game' | 'generic-brand'
 export type CreativeLanguage = Locale | 'neutral'
@@ -266,6 +268,16 @@ export function resolveGenericBrandDestination(params: {
   })
 }
 
+/** Live central campaign attached to a sponsored banner: headline + campaign link. */
+export interface BetssonBannerPromo {
+  promoId: string
+  offerId: string
+  brand: 'betsson'
+  headline: string
+  /** Official Portuguese CTA; other locales use the localized "Play at {name}" key. */
+  ctaLabel: string
+}
+
 export interface BetssonSponsoredBannerModel {
   mode: 'generic-brand'
   operatorId: string
@@ -279,6 +291,37 @@ export interface BetssonSponsoredBannerModel {
   placement: string
   pageType: string
   surface: string
+  /** Present when the central Betsson BR campaign is live and resolvable for this surface. */
+  promo: BetssonBannerPromo | null
+}
+
+/**
+ * Sponsored banners upgrade from a generic brand mark to the current campaign
+ * when the central config is live and its offer resolves for this market and
+ * surface. The banner link then targets the campaign's tracked offer link.
+ */
+function resolveBannerPromo(
+  country: CountryCode,
+  locale: Locale,
+  config: { pageType: PageType; placement: string },
+): BetssonBannerPromo | null {
+  if (!isBetssonPromoLive() || country !== BETSSON_PROMO.market) return null
+  const resolved = resolveDestination({
+    offerId: BETSSON_PROMO_OFFER_ID,
+    operatorSlug: BETSSON_PROMO.operatorSlug,
+    country,
+    language: locale,
+    pageType: config.pageType,
+    placement: config.placement,
+  })
+  if (!resolved || resolved.url !== BETSSON_PROMO.affiliateUrl) return null
+  return {
+    promoId: BETSSON_PROMO.promoId,
+    offerId: BETSSON_PROMO_OFFER_ID,
+    brand: BETSSON_PROMO.brand,
+    headline: BETSSON_PROMO.headline,
+    ctaLabel: BETSSON_PROMO.ctaLabel,
+  }
 }
 
 export function getBetssonSponsoredBanner(
@@ -299,6 +342,7 @@ export function getBetssonSponsoredBanner(
   if (!resolved) return null
   const campaigns = getBetssonCampaigns()
   const creative = selectCreativeForLocale(HOMEPAGE_CREATIVES, locale, config.placement)
+  const promo = resolveBannerPromo(country, locale, config)
   return {
     mode: 'generic-brand',
     operatorId: operator.id,
@@ -309,6 +353,7 @@ export function getBetssonSponsoredBanner(
     creative,
     campaign: campaigns.brand,
     href: buildGoHref({
+      offer: promo?.offerId,
       operator: operator.slug,
       country,
       language: locale,
@@ -319,6 +364,7 @@ export function getBetssonSponsoredBanner(
     placement: config.placement,
     pageType: config.pageType,
     surface: config.surface,
+    promo,
   }
 }
 

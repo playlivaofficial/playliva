@@ -68,16 +68,25 @@ test('M10: existing provider outbound actions keep exact context, new-tab isolat
   for (const [locale, segment] of locales) for (const slug of ['aviator', 'blackjack-live', 'lightning-roulette']) {
     const game = data.getGame(slug)
     const dom = render(locale, segment, React.createElement(GameDetailView, { game })), doc = dom.window.document
+    // The Betsson Where-to-Play card is the central campaign card (CTA + terms link);
+    // the verified exact-game deep link stays on the hero Play Real CTA.
     const links = [...doc.querySelectorAll('#where-to-play a[href^="/go?"]')]
-    assert.equal(links.length, 1)
-    const link = links[0], query = new URL(link.getAttribute('href'), 'https://example.invalid').searchParams
-    assert.equal(query.get('operator'), 'betsson-group-affiliates')
-    assert.equal(query.get('country'), 'BR')
-    assert.equal(query.get('language'), locale)
-    assert.equal(query.get('category'), game.category, 'Never send the presentation override to /go')
-    assert.equal(query.get('page'), 'game')
-    assert.equal(query.get('pageSlug'), game.slug)
-    assert.equal(query.get('placement'), 'game_where_to_play')
+    assert.equal(links.length, 2)
+    for (const item of links) {
+      const query = new URL(item.getAttribute('href'), 'https://example.invalid').searchParams
+      assert.equal(query.get('operator'), 'betsson-group-affiliates')
+      assert.equal(query.get('offer'), 'of-br-betsson-100-giros')
+      assert.equal(query.get('country'), 'BR')
+      assert.equal(query.get('language'), locale)
+      assert.equal(query.get('category'), null, 'the campaign card never claims a game/category deep link')
+      assert.equal(query.get('game'), null)
+      assert.equal(query.get('page'), 'content')
+      assert.equal(query.get('pageSlug'), game.slug)
+      assert.equal(query.get('placement'), 'discovery_game_offer')
+    }
+    const hero = new URL(doc.querySelector('[data-betsson-game-cta] a[href^="/go?"]').getAttribute('href'), 'https://example.invalid').searchParams
+    assert.equal(hero.get('category'), game.affiliateCategory ?? game.category, 'verified deep link stays on the hero CTA')
+    const link = links[0]
     assert.equal(link.getAttribute('target'), '_blank')
     for (const rel of ['sponsored', 'noopener', 'noreferrer']) assert.ok(link.rel.split(' ').includes(rel))
     dom.window.close()

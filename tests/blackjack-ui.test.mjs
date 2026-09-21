@@ -78,7 +78,7 @@ test('Blackjack mounted game: Strict Mode, hidden hole, immediate busy controls,
   assert.ok(banner)
   assert.ok(banner.closest('[data-originals-sponsor]'))
   assert.ok(banner.querySelector('a[href^="/go?"]'))
-  assert.match(banner.querySelector('a[href^="/go?"]').getAttribute('href'), /placement=originals_banner/)
+  assert.match(banner.querySelector('a[href^="/go?"]').getAttribute('href'), /placement=originals_header/)
   assert.equal(document.querySelector('[data-operator-cta="play-real"]'), null)
   assert.equal(document.querySelector('a[href*="betsson."]'), null)
   const unit = document.querySelector('[data-game-unit]')

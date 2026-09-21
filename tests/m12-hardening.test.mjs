@@ -143,7 +143,8 @@ test('M12 offer publication requires source, dated terms, expiry and market-spec
   }
   assert.equal(offerEvidence.hasCurrentOfferEvidence({ ...offer, complianceReview: { ...offer.complianceReview, market: 'MX' } }, checked), false)
   assert.equal(offerEvidence.hasCurrentOfferEvidence(offer, Date.parse('2026-09-21')), false)
-  assert.deepEqual(data.getPublicOffers('BR'), [], 'no offer fabricated by M12')
+  assert.deepEqual(data.getPublicOffers('BR').map(item => item.id), [data.BETSSON_PROMO_OFFER.id], 'only the verified central Betsson campaign is published')
+  assert.equal(offerEvidence.hasCurrentOfferEvidence(data.BETSSON_PROMO_OFFER), true)
 })
 
 test('M12 analytics allowlist strips search, contact details, wallet data and event overrides', () => {

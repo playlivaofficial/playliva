@@ -89,7 +89,7 @@ test('test-only shell: wallet/settings/reset, consent-aware events, header spons
     assert.equal(banner.getAttribute('data-banner-layout'), 'compact-header')
     const go = banner.querySelector('a[href^="/go?"]')
     assert.ok(go, 'Originals header CTA uses the /go resolver')
-    assert.match(go.getAttribute('href'), /placement=originals_banner/)
+    assert.match(go.getAttribute('href'), /placement=originals_header/)
     assert.equal(document.querySelector('a[href*="betsson."]'), null, 'no direct Betsson destination is exposed')
     assert.ok(banner.textContent.includes('18+'))
     const viewport = document.querySelector('[data-game-viewport]')

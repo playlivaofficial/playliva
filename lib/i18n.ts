@@ -69,6 +69,17 @@ const ptBR: Dict = {
   'affiliate.sponsoredPartner': 'Parceiro patrocinado',
   'affiliate.verifiedOffers': 'Ofertas verificadas',
 
+  // Central partner promo (chrome only; the campaign claim comes verbatim from config)
+  'promo.eyebrow': 'Oferta do parceiro',
+  'promo.casinoBoundary':
+    'Promoção de cassino da Betsson para jogadores no Brasil. Não se refere a este jogo. Condições no site oficial.',
+  'promo.offerBoundary':
+    'Promoção de cassino da Betsson para jogadores no Brasil. Condições completas no site oficial.',
+  'promo.terms': 'Termos e condições',
+  'promo.keepPlaying': 'Continuar jogando grátis',
+  'promo.close': 'Fechar oferta',
+  'promo.dialogLabel': 'Oferta da Betsson',
+
   // Selectors
   'selector.country': 'Selecionar país',
   'selector.language': 'Selecionar idioma',
@@ -594,6 +605,17 @@ const esMX: Dict = {
   'affiliate.sponsoredPartner': 'Socio patrocinado',
   'affiliate.verifiedOffers': 'Ofertas verificadas',
 
+  // Central partner promo (chrome only; the campaign claim comes verbatim from config)
+  'promo.eyebrow': 'Oferta del socio',
+  'promo.casinoBoundary':
+    'Promoción de casino de Betsson para jugadores en Brasil. No se refiere a este juego. Condiciones en el sitio oficial.',
+  'promo.offerBoundary':
+    'Promoción de casino de Betsson para jugadores en Brasil. Condiciones completas en el sitio oficial.',
+  'promo.terms': 'Términos y condiciones',
+  'promo.keepPlaying': 'Seguir jugando gratis',
+  'promo.close': 'Cerrar oferta',
+  'promo.dialogLabel': 'Oferta de Betsson',
+
   'selector.country': 'Seleccionar país',
   'selector.language': 'Seleccionar idioma',
   'selector.countryLabel': 'País',
@@ -1094,6 +1116,17 @@ const en: Dict = {
   'affiliate.playRealBetsson': 'PLAY REAL · BETSSON',
   'affiliate.sponsoredPartner': 'Sponsored Partner',
   'affiliate.verifiedOffers': 'Verified Offers',
+
+  // Central partner promo (chrome only; the campaign claim comes verbatim from config)
+  'promo.eyebrow': 'Partner offer',
+  'promo.casinoBoundary':
+    'Betsson casino promotion for players in Brazil. It does not refer to this game. Conditions on the official site.',
+  'promo.offerBoundary':
+    'Betsson casino promotion for players in Brazil. Full conditions on the official site.',
+  'promo.terms': 'Terms and conditions',
+  'promo.keepPlaying': 'Keep playing free',
+  'promo.close': 'Close offer',
+  'promo.dialogLabel': 'Betsson offer',
 
   'selector.country': 'Select country',
   'selector.language': 'Select language',

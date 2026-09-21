@@ -26,6 +26,8 @@ export type TrackEventName =
   | 'demo_balance_reset'
   | 'play_real_view'
   | 'play_real_click'
+  | 'offer_impression'
+  | 'offer_dismiss'
 
 export type PageType =
   | 'home'
@@ -67,15 +69,31 @@ export interface TrackPayload {
   destination?: string
   originalId?: string
   roundId?: string
+  /** Central promo identifier, e.g. the Betsson BR campaign id. */
+  promoId?: string
+  /** Partner brand key, e.g. "betsson". */
+  brand?: string
+  /** Funnel surface family: "originals", "discovery" or "offers". */
+  surface?: string
+  /** Preserved landing attribution (see `lib/attribution.ts`). */
+  trafficSource?: string
+  utmSource?: string
+  utmMedium?: string
+  utmCampaign?: string
+  utmContent?: string
+  utmTerm?: string
 }
 
 const EVENTS: readonly TrackEventName[] = ['page_view', 'game_view', 'comparison_view',
   'category_view', 'where_to_play_view', 'operator_view', 'affiliate_impression',
   'affiliate_click', 'free_play_open', 'demo_round_start', 'demo_round_complete',
-  'demo_balance_reset', 'play_real_view', 'play_real_click']
+  'demo_balance_reset', 'play_real_view', 'play_real_click', 'offer_impression', 'offer_dismiss']
 const CONTEXT_FIELDS = ['country', 'language', 'pageType', 'pageSlug', 'gameId', 'gameSlug',
   'matchId', 'matchSlug', 'category', 'operatorId', 'operatorSlug', 'offerId', 'ctaLocation',
-  'placement', 'destination', 'originalId', 'roundId'] as const
+  'placement', 'destination', 'originalId', 'roundId', 'promoId', 'brand', 'surface',
+  'trafficSource', 'utmSource', 'utmMedium', 'utmCampaign', 'utmContent', 'utmTerm'] as const
+/** Campaign identifiers may contain dots (e.g. "reels.br"); still no spaces, slashes or free text. */
+const ATTRIBUTION_FIELDS: readonly string[] = ['trafficSource', 'utmSource', 'utmMedium', 'utmCampaign', 'utmContent', 'utmTerm']
 
 /** Never collect search terms, query strings, fragments, full URLs or free text. */
 export function analyticsPath(value: unknown): string | undefined {
@@ -88,7 +106,9 @@ export function sanitizeTrackPayload(payload: TrackPayload, currentPath: string)
   const safe: Record<string, string> = {}
   for (const key of CONTEXT_FIELDS) {
     const value = payload[key]
-    const pattern = key === 'gameId' ? /^[a-zA-Z0-9][a-zA-Z0-9_+-]{0,99}$/ : /^[a-zA-Z0-9][a-zA-Z0-9_-]{0,99}$/
+    const pattern = key === 'gameId' ? /^[a-zA-Z0-9][a-zA-Z0-9_+-]{0,99}$/
+      : ATTRIBUTION_FIELDS.includes(key) ? /^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,99}$/
+      : /^[a-zA-Z0-9][a-zA-Z0-9_-]{0,99}$/
     if (typeof value === 'string' && pattern.test(value)) safe[key] = value
   }
   if (!safe.language && typeof payload.locale === 'string' && ['en', 'pt-BR', 'es-MX'].includes(payload.locale)) safe.language = payload.locale
@@ -98,7 +118,7 @@ export function sanitizeTrackPayload(payload: TrackPayload, currentPath: string)
 }
 
 /** Best-effort device class, derived client-side only — never fingerprinting. */
-function getDeviceClass(): 'mobile' | 'desktop' | undefined {
+export function getDeviceClass(): 'mobile' | 'desktop' | undefined {
   if (typeof navigator === 'undefined') return undefined
   return /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)
     ? 'mobile'

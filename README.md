@@ -2,6 +2,16 @@
 
 Source of truth: https://github.com/playlivaofficial/playliva.
 
+[Betsson BR campaign funnel](docs/betsson-br-campaign-funnel.md) centralizes
+the verified "Ganhe 100 Giros!" campaign in `lib/affiliates/betsson-promo-config.ts`:
+Originals header sponsor, a once-per-session engagement offer after three
+completed rounds, the discovery Where-to-Play campaign card, the Offers page
+card, preserved social UTM attribution and `offer_impression` /
+`offer_dismiss` / `affiliate_click` funnel events. Only verified wording and
+the official tracked link are used; campaign conditions could not be read
+from outside Brazil, so none are claimed. Evidence review is due before
+2026-10-14 together with the existing BR authorization deadline.
+
 [M12 hardening](docs/m12-final-hardening.md) adds dated BR authorization
 safeguards, centralized ad warnings, sourced optional RTP, privacy-minimal
 measurement and editorial trust checks. Play Real affiliate CTAs remain omitted
@@ -136,7 +146,8 @@ blocks Vercel installs when its managed Node 24 release differs.
 
 URL locales are `/en`, `/pt-br` and `/es-mx`; selected market is independent.
 Affiliate redirects use `/go`, static operator eligibility and source data.
-Approved Betsson campaign/creative metadata lives in `lib/affiliates/betsson.ts`.
+Approved Betsson campaign/creative metadata lives in `lib/affiliates/betsson.ts`;
+the live BR promotional campaign lives in `lib/affiliates/betsson-promo-config.ts`.
 Homepage banners prefer a locale-matched approved creative, otherwise the
 neutral operator logo plus localized CTA copy; Portuguese promotional artwork
 is not shown on EN or ES-MX pages. GEO still gates eligibility and destinations.

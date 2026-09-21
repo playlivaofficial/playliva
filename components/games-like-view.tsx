@@ -16,7 +16,7 @@ import { Section, SectionHeading } from '@/components/section'
 import { GameCard } from '@/components/game-card'
 import { GameArtwork } from '@/components/game-artwork'
 import { ComparisonCard } from '@/components/comparison-card'
-import { OperatorCard } from '@/components/operator-card'
+import { WhereToPlayOperatorCard } from '@/components/where-to-play-operator-card'
 import { AffiliateDisclosureLine, ResponsibleGamingNotice } from '@/components/notices'
 import { Button } from '@/components/ui/button'
 import { track } from '@/lib/tracking'
@@ -198,7 +198,7 @@ export function GamesLikeView({ game }: { game: Game }) {
         {operators.length > 0 ? (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {operators.map((o) => (
-              <OperatorCard key={o.id} operator={o} country={countryCode}
+              <WhereToPlayOperatorCard key={o.id} operator={o} country={countryCode}
                 category={game.category} gameSlug={game.slug} pageType="games_like" pageSlug={game.slug} />
             ))}
           </div>

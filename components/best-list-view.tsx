@@ -16,7 +16,7 @@ import {
 } from '@/lib/content'
 import { PageHero } from '@/components/page-hero'
 import { Section, SectionHeading } from '@/components/section'
-import { OperatorCard } from '@/components/operator-card'
+import { WhereToPlayOperatorCard } from '@/components/where-to-play-operator-card'
 import { GameArtwork } from '@/components/game-artwork'
 import { AffiliateDisclosureLine, ResponsibleGamingNotice } from '@/components/notices'
 import { Button } from '@/components/ui/button'
@@ -156,7 +156,7 @@ export function BestListView({ list }: { list: GameList }) {
         {operators.length > 0 ? (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {operators.map((o) => (
-              <OperatorCard key={o.id} operator={o} country={list.country}
+              <WhereToPlayOperatorCard key={o.id} operator={o} country={list.country}
                 category={list.category} pageType="best_list" pageSlug={list.slug} />
             ))}
           </div>

@@ -11,6 +11,7 @@ import type { OriginalGameDefinition } from '@/lib/originals/definition'
 import { LocaleLink } from '@/components/locale-link'
 import { productCopy } from '@/lib/product-discovery'
 import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsored-banner'
+import { BetssonEngagementOffer } from '@/components/affiliates/betsson-engagement-offer'
 
 function subscribeFullscreen(listener: () => void) {
   document.addEventListener('fullscreenchange', listener)
@@ -102,5 +103,7 @@ export function PlayGameShell({ game, children, controls, roundActive = false, c
           )}</ol>}
       </aside>
     </div>
+    {/* Contextual partner offer: fixed overlay outside the game unit, opened only at a round boundary. */}
+    <BetssonEngagementOffer game={game} roundActive={roundActive} />
   </section>
 }

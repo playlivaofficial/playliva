@@ -2,7 +2,7 @@
 
 import { useCountry } from '@/components/country-context'
 import { getCountryName, getOperatorsForCountry } from '@/lib/data'
-import { OperatorCard } from '@/components/operator-card'
+import { WhereToPlayOperatorCard } from '@/components/where-to-play-operator-card'
 import type { CategorySlug } from '@/lib/types'
 
 export function WhereToPlay({ category }: { category?: CategorySlug }) {
@@ -28,7 +28,7 @@ export function WhereToPlay({ category }: { category?: CategorySlug }) {
   return (
     <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {operators.map((operator) => (
-        <OperatorCard
+        <WhereToPlayOperatorCard
           key={operator.id}
           operator={operator}
           country={countryCode}

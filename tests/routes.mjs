@@ -25,6 +25,7 @@ import catalogCopyModule from '../lib/catalog/copy.ts'
 import catalogQueryModule from '../lib/catalog/query.ts'
 import brazilModule from '../lib/compliance/brazil.ts'
 import rtpModule from '../lib/rtp.ts'
+import promoModule from '../lib/affiliates/betsson-promo-config.ts'
 const { originalsDiscoveryCopy, ISLAND_CRASH_POSTER } = discoveryModule
 const { ANALYTICS_COOKIE } = consentModule
 
@@ -201,7 +202,12 @@ try {
           if (segment !== 'pt-br') assert.notEqual(banner.getAttribute('data-creative-language'), 'pt-BR')
           const bannerGo = await fetch(base + bannerLink.getAttribute('href'), { redirect: 'manual' })
           assert.equal(bannerGo.status, 302)
-          assert.equal(bannerGo.headers.get('location'), partner.affiliateUrl.BR)
+          // While the central campaign is live the sponsor banner links to its official tracked offer link.
+          const promoLive = promoModule.isBetssonPromoLive()
+          assert.equal(bannerQuery.get('offer'), promoLive ? promoModule.BETSSON_PROMO_OFFER_ID : null)
+          assert.equal(bannerGo.headers.get('location'), promoLive ? promoModule.BETSSON_PROMO.affiliateUrl : partner.affiliateUrl.BR)
+          assert.ok(brazilModule.isAuthorizedBrazilDestination(partner, bannerGo.headers.get('location')))
+          if (promoLive) assert.ok(banner.textContent.includes(promoModule.BETSSON_PROMO.headline))
         }
         else assert.ok(cards[0].compareDocumentPosition(doc.querySelector('main a[href*="/games/"]')) & 4, 'Original precedes provider grid')
       }
@@ -278,7 +284,7 @@ try {
       assert.ok(banner.compareDocumentPosition(viewport) & 4, `${path}: header banner precedes viewport`)
       const go = banner.querySelector('a[href^="/go?"]')
       assert.ok(go, `${path}: /go CTA`)
-      assert.equal(new URL(go.href, base).searchParams.get('placement'), 'originals_banner')
+      assert.equal(new URL(go.href, base).searchParams.get('placement'), 'originals_header')
       assert.equal(new URL(go.href, base).searchParams.get('page'), 'play')
       assert.doesNotMatch(banner.innerHTML, /https?:\/\/(?:www\.)?betsson/i)
       assert.ok(banner.querySelector('[data-brazil-ad-warning]'))
