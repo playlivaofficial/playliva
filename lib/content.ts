@@ -195,26 +195,60 @@ const GAME_CONTENT: Record<Locale, Record<string, GameContent>> = {
       },
     },
     g7: {
-      description: 'Roleta ao vivo com multiplicadores aleatórios eletrizantes a cada rodada.',
-      shortDescription: 'Roleta ao vivo com multiplicadores aleatórios.',
+      description: 'Roleta ao vivo da Evolution com roda de zero único, dealer ao vivo e Números da Sorte selecionados aleatoriamente.',
+      shortDescription: 'Roleta ao vivo com Números da Sorte e multiplicadores aleatórios.',
       gameType: 'Roleta ao vivo',
-      mechanics: ['Dealer ao vivo', 'Multiplicadores aleatórios', 'Apostas diretas'],
+      mechanics: ['Dealer ao vivo', 'Roda de zero único', 'Números da Sorte', 'Apostas diretas'],
+      whatIsIt:
+        'Lightning Roulette é uma roleta ao vivo da Evolution. Ela preserva a roda de zero único, o dealer ao vivo e as apostas conhecidas da roleta, acrescentando uma seleção aleatória de um a cinco Números da Sorte por rodada.',
+      howItWorks: [
+        'As apostas são feitas antes de a roda automática iniciar o giro da bola.',
+        'Depois do encerramento das apostas, o jogo seleciona aleatoriamente de um a cinco Números da Sorte.',
+        'Cada Número da Sorte recebe um Pagamento da Sorte aleatório, exibido na interface.',
+        'O resultado continua sendo definido pelo bolso numerado em que a bola para; o multiplicador se aplica quando o resultado e a aposta direta atendem às regras do recurso.',
+      ],
+      entityDifference:
+        'A estrutura principal continua sendo a roleta europeia ao vivo. O diferencial é a camada de Números da Sorte e multiplicadores aleatórios para apostas diretas; isso não transforma Lightning Roulette em um game show de roda como Crazy Time.',
+      whereToPlayIntro:
+        'A PlayLiva mostra abaixo somente operadoras aprovadas, ativas e verificadas com disponibilidade registrada para Lightning Roulette no Brasil.',
+      availabilityNote:
+        'A disponibilidade é conferida nos registros da PlayLiva por jogo, categoria e mercado. O catálogo da operadora pode mudar; confirme Lightning Roulette e as condições no site da operadora antes de continuar.',
+      seo: {
+        game: {
+          title: 'Lightning Roulette: Como Funciona a Roleta ao Vivo | PlayLiva',
+          description:
+            'Entenda como funciona Lightning Roulette, a roleta ao vivo da Evolution com Números da Sorte e multiplicadores aleatórios.',
+          h1: 'Lightning Roulette: como funciona a roleta ao vivo',
+        },
+        whereToPlay: {
+          title: 'Onde Jogar Lightning Roulette no Brasil | PlayLiva',
+          description:
+            'Veja operadoras verificadas com disponibilidade registrada para Lightning Roulette no Brasil e como a PlayLiva confere essa informação.',
+          h1: 'Onde jogar Lightning Roulette no Brasil',
+        },
+      },
     },
     g8: {
-      description: 'Uma experiência de game-show ao vivo com rodadas de bônus e apresentadores.',
-      shortDescription: 'Game-show ao vivo com rodadas de bônus.',
+      description: 'Game show ao vivo da Evolution com roda de prêmios, Top Slot e quatro rodadas de bônus.',
+      shortDescription: 'Game show ao vivo com roda, Top Slot e quatro bônus.',
       gameType: 'Game show ao vivo',
-      mechanics: ['Apresentador ao vivo', 'Roda da fortuna', 'Rodadas de bônus'],
+      mechanics: ['Apresentador ao vivo', 'Roda de prêmios', 'Top Slot', 'Quatro rodadas de bônus'],
       whatIsIt:
-        'Crazy Time é um jogo de cassino ao vivo da Evolution no formato de game show. Em vez de uma mesa tradicional, o jogo é conduzido por um apresentador ao vivo em um estúdio, com uma roda giratória como elemento central da rodada.',
+        'Crazy Time é um game show de cassino ao vivo da Evolution. Um apresentador conduz a transmissão em estúdio, enquanto uma roda de prêmios com números e quatro áreas de bônus define o formato central de cada rodada.',
       howItWorks: [
-        'O jogador aposta em segmentos da roda antes de cada rodada.',
-        'Um apresentador ao vivo gira a roda ao vivo no estúdio.',
-        'A roda inclui segmentos de números e segmentos de rodadas de bônus.',
-        'Quando a roda para em um segmento de bônus, uma rodada de bônus é ativada com o apresentador.',
+        'Antes do giro, as opções incluem os números 1, 2, 5 e 10 e as áreas Coin Flip, Cash Hunt, Pachinko e Crazy Time.',
+        'O Top Slot gira junto com a roda principal e pode atribuir multiplicadores a áreas selecionadas.',
+        'O apresentador gira a roda; um segmento numérico encerra a rodada principal conforme suas regras.',
+        'Quando a roda para em uma área de bônus, a rodada correspondente é aberta para quem apostou naquela opção.',
       ],
-      whyPopular:
-        'Crazy Time ficou conhecido pela apresentação com host ao vivo, pela identidade visual marcante da roda e pela sensação interativa do formato de game show ao vivo. A associação com a Evolution, uma das provedoras mais reconhecidas de cassino ao vivo, também ajudou o jogo a se tornar uma referência dentro da categoria.',
+      entityDifference:
+        'Crazy Time não usa a grade de um slot nem a mesa e o conjunto de apostas de uma roleta convencional. A rodada parte de uma roda conduzida por apresentador e pode seguir para Coin Flip, Cash Hunt, Pachinko ou a própria rodada Crazy Time.',
+      gamesLikeIntro:
+        'As alternativas abaixo mantêm algum elemento documentado do Crazy Time — transmissão ao vivo, apresentador, roda ou recurso aleatório — e explicam também onde o formato muda. Lightning Roulette continua sendo roleta; Blackjack Live é um jogo de cartas; Dream Catcher e MONOPOLY Live usam suas próprias rodas e recursos.',
+      whereToPlayIntro:
+        'A PlayLiva mostra abaixo somente operadoras aprovadas, ativas e verificadas com disponibilidade registrada para Crazy Time no Brasil.',
+      availabilityNote:
+        'A disponibilidade é conferida nos registros da PlayLiva por jogo, categoria e mercado. O catálogo da operadora pode mudar; confirme Crazy Time e as condições no site da operadora antes de continuar.',
       seo: {
         game: {
           title: 'Crazy Time: Como Funciona o Jogo ao Vivo | PlayLiva',
@@ -223,10 +257,10 @@ const GAME_CONTENT: Record<Locale, Record<string, GameContent>> = {
           h1: 'Crazy Time: como funciona o jogo ao vivo',
         },
         gamesLike: {
-          title: 'Jogos Parecidos com Crazy Time | PlayLiva',
+          title: 'Jogos Como Crazy Time: Alternativas de Game Show | PlayLiva',
           description:
-            'Conheça jogos parecidos com Crazy Time, compare opções de cassino ao vivo e descubra outros jogos no estilo game show.',
-          h1: 'Jogos parecidos com Crazy Time',
+            'Compare jogos como Crazy Time por formato, provedor, roda, apresentação ao vivo e recursos documentados.',
+          h1: 'Jogos como Crazy Time: alternativas e diferenças',
         },
         whereToPlay: {
           title: 'Onde Jogar Crazy Time no Brasil | PlayLiva',
@@ -265,10 +299,38 @@ const GAME_CONTENT: Record<Locale, Record<string, GameContent>> = {
       },
     },
     g12: {
-      description: 'Mesas clássicas de blackjack com dealer ao vivo em vários limites.',
-      shortDescription: 'Mesas clássicas de blackjack ao vivo.',
-      gameType: 'Mesa ao vivo',
+      description: 'Blackjack ao vivo da Evolution com dealer em estúdio, mesas em diferentes limites e apostas laterais opcionais.',
+      shortDescription: 'Blackjack da Evolution com dealer ao vivo.',
+      gameType: 'Blackjack ao vivo',
       mechanics: ['Dealer ao vivo', 'Vários limites', 'Apostas laterais'],
+      whatIsIt:
+        'Blackjack Live representa as mesas clássicas de blackjack ao vivo da Evolution. As cartas são distribuídas por um dealer em estúdio, e a decisão central continua sendo formar uma mão mais próxima de 21 do que a mão do dealer sem ultrapassar esse total.',
+      howItWorks: [
+        'O dealer distribui as cartas da mesa durante uma transmissão ao vivo.',
+        'O jogador toma decisões de blackjack, como pedir carta, parar, dobrar ou dividir quando as regras da mesa permitirem.',
+        'A mão é comparada com a do dealer conforme as regras exibidas na mesa escolhida.',
+        'Limites, lugares e apostas laterais podem variar entre as mesas e devem ser conferidos no produto da operadora.',
+      ],
+      entityDifference:
+        'Blackjack Live é um produto da Evolution com dealer e transmissão de estúdio. Liva Blackjack é um PlayLiva Original separado, gratuito e local, jogado apenas com créditos virtuais; ele não é uma mesa da Evolution e não oferece apostas com dinheiro real.',
+      whereToPlayIntro:
+        'A PlayLiva mostra abaixo somente operadoras aprovadas, ativas e verificadas com disponibilidade registrada para Blackjack Live no Brasil.',
+      availabilityNote:
+        'A disponibilidade é conferida nos registros da PlayLiva por jogo, categoria e mercado. O catálogo e as regras de cada mesa podem mudar; confirme Blackjack Live e as condições no site da operadora antes de continuar.',
+      seo: {
+        game: {
+          title: 'Blackjack Live: Como Funciona o Blackjack ao Vivo | PlayLiva',
+          description:
+            'Entenda o formato de Blackjack Live da Evolution, o papel do dealer ao vivo e a diferença para o Blackjack gratuito da PlayLiva.',
+          h1: 'Blackjack Live: como funciona o blackjack ao vivo',
+        },
+        whereToPlay: {
+          title: 'Onde Jogar Blackjack Live no Brasil | PlayLiva',
+          description:
+            'Veja operadoras verificadas com disponibilidade registrada para Blackjack Live no Brasil e como a PlayLiva confere essa informação.',
+          h1: 'Onde jogar Blackjack Live no Brasil',
+        },
+      },
     },
   },
   'es-MX': {
@@ -569,9 +631,9 @@ const ALTERNATIVE_NOTES: Record<Locale, Record<string, string>> = {
     'g5:g11':
       'Big Bass Bonanza também é da Pragmatic Play e registra rodadas grátis e multiplicadores, mas organiza seu recurso em torno de coleta de prêmios. Gates of Olympus usa pagamento em qualquer posição e cascatas, portanto a estrutura central é diferente.',
     'g8:g7':
-      'O Lightning Roulette, também da Evolution, troca a roda de game show do Crazy Time por uma mesa de roleta ao vivo com multiplicadores aleatórios eletrizantes. É a alternativa mais próxima em termos de ritmo e provedor, mas o formato central é uma roleta, não um game show.',
+      'Lightning Roulette também é da Evolution e combina transmissão ao vivo com uma camada aleatória de multiplicadores. A diferença central é o formato: usa uma roda de roleta de zero único e Números da Sorte, enquanto Crazy Time usa uma roda de game show e quatro rodadas de bônus.',
     'g8:g12':
-      'O Blackjack Live, também da Evolution, oferece mesas clássicas de blackjack com dealer ao vivo em vários limites, sem a roda ou as rodadas de bônus do Crazy Time. É uma opção para quem quer sair do formato game show e voltar a um jogo de mesa tradicional dentro do cassino ao vivo.',
+      'Blackjack Live também é da Evolution e mantém apresentador humano em estúdio, mas o núcleo é um jogo de cartas contra a mão do dealer. Não usa a roda, o Top Slot nem as quatro rodadas de bônus do Crazy Time.',
   },
   'es-MX': {
     'g1:g2':
@@ -647,8 +709,12 @@ const CATEGORY_CONTENT: Record<Locale, Record<CategorySlug | 'sports', CategoryC
     },
     'live-casino': {
       name: 'Cassino ao Vivo',
-      description: 'Explore mesas com dealer ao vivo e experiências de cassino.',
+      description: 'Explore roleta ao vivo, blackjack com dealer e game shows da Evolution, com guias factuais e disponibilidade verificada.',
       cta: 'Explorar ao Vivo',
+      h1: 'Jogos de cassino ao vivo: roleta, blackjack e game shows',
+      seoTitle: 'Cassino ao Vivo: Roleta, Blackjack e Game Shows | PlayLiva',
+      seoDescription:
+        'Explore jogos de cassino ao vivo, Crazy Time, Lightning Roulette, Blackjack Live e títulos da Evolution com guias e disponibilidade verificada.',
     },
     'table-games': { name: 'Jogos de Mesa', description: 'Explore jogos de mesa de cassino e suas regras.', cta: 'Explorar Jogos de Mesa' },
     'instant-games': { name: 'Jogos Instantâneos', description: 'Descubra Mines, Plinko e suas mecânicas de jogos instantâneos.', cta: 'Explorar Jogos Instantâneos' },
@@ -827,20 +893,26 @@ const COMPARISON_CONTENT: Record<Locale, Record<string, ComparisonContent>> = {
     },
     'crazy-time-vs-lightning-roulette': {
       intro:
-        'Crazy Time e Lightning Roulette são dois títulos de cassino ao vivo da Evolution, mas seguem abordagens bem diferentes dentro do formato ao vivo — um construído em torno de uma roda de game show, o outro em torno de uma mesa de roleta com multiplicadores aleatórios.',
+        'Crazy Time e Lightning Roulette são títulos ao vivo da Evolution, mas atendem a intenções diferentes: Crazy Time é um game show de roda com quatro bônus; Lightning Roulette é uma roleta de zero único com Números da Sorte e multiplicadores aleatórios.',
       similarities: [
-        'Ambos são jogos de cassino ao vivo da Evolution',
-        'Ambos têm apresentador/dealer ao vivo',
-        'Ambos incluem um elemento de multiplicador aleatório',
-        'Ambos são pensados para rodadas rápidas e repetíveis',
+        'Ambos são títulos ao vivo da Evolution',
+        'Ambos usam apresentação de estúdio com host ou dealer',
+        'Ambos combinam um resultado físico ao vivo com recursos aleatórios exibidos na interface',
+        'Ambos têm páginas de disponibilidade verificadas separadas na PlayLiva',
       ],
       differences: [
-        'Crazy Time é um formato de game show construído em torno de uma roda e rodadas de bônus; Lightning Roulette é uma mesa de roleta tradicional',
-        'As apostas do Crazy Time são em segmentos da roda e jogos de bônus; as apostas do Lightning Roulette são em números diretos com multiplicadores aleatórios',
-        'Formatos totalmente diferentes — game show versus jogo de mesa',
+        'Crazy Time usa uma roda de game show; Lightning Roulette usa uma roda de roleta europeia com zero único',
+        'Crazy Time aceita opções numéricas e quatro áreas de bônus; Lightning Roulette mantém as apostas da roleta e seleciona de um a cinco Números da Sorte',
+        'O Top Slot pode atribuir multiplicadores no Crazy Time; os Pagamentos da Sorte são ligados aos Números da Sorte na Lightning Roulette',
+        'Crazy Time pode seguir para Coin Flip, Cash Hunt, Pachinko ou Crazy Time; Lightning Roulette não usa essas rodadas de bônus',
       ],
       editorialSummary:
-        'Quem gosta do ritmo interativo e conduzido por apresentador do Crazy Time também pode gostar das rodadas eletrizantes do Lightning Roulette, mas os dois são formatos diferentes — um game show contra uma mesa de roleta. Nenhum é objetivamente melhor — a escolha depende de você preferir um formato de roda com bônus ou uma mesa de roleta clássica com um toque de multiplicador.',
+        'Crazy Time pode interessar a quem procura uma apresentação de game show com caminhos para bônus distintos. Lightning Roulette mantém a leitura e as opções de uma roleta ao vivo, acrescentando Números da Sorte. A escolha depende do formato procurado; esta comparação não define vencedor nem sugere resultado esperado.',
+      seo: {
+        title: 'Crazy Time vs Lightning Roulette: Diferenças | PlayLiva',
+        description:
+          'Compare Crazy Time e Lightning Roulette por formato, mecânica central, apresentação ao vivo, bônus, multiplicadores e disponibilidade verificada.',
+      },
     },
   },
   'es-MX': {

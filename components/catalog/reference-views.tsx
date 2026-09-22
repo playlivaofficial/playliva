@@ -44,6 +44,17 @@ export function ReferenceGameView({ game, locale }: { game: ReferenceGame; local
       {readingList && <div className={styles.links}><LocaleLink href={`/games-like/${game.slug}`}>{c.similar} {game.title} →</LocaleLink></div>}
       {comparisons.length > 0 && <section className={styles.related}><h2>{c.comparisons}</h2><div className={styles.links}>{comparisons.map(item => <LocaleLink key={item.slug} href={`/compare/${item.slug}`}>{getReferenceGame(item.a)!.title} vs {getReferenceGame(item.b)!.title}</LocaleLink>)}</div></section>}
       <section className={styles.related}><h2>{c.related}</h2><div className="grid grid-cols-2 gap-4 sm:grid-cols-3">{game.relatedSlugs.map(slug => <CatalogCard key={slug} game={referenceSummary(getReferenceGame(slug)!, locale)} readLabel={c.read} />)}</div></section>
+      {locale === 'pt-BR' && ['dream-catcher', 'monopoly-live'].includes(game.slug) && <section className={styles.related}>
+        <h2>Continue explorando game shows ao vivo</h2>
+        <p>Compare esta roda com outros formatos da Evolution sem presumir que regras, bônus ou disponibilidade sejam iguais.</p>
+        <div className={styles.links}>
+          <LocaleLink href="/live-casino">Cassino ao vivo</LocaleLink>
+          <LocaleLink href="/games/crazy-time">Como funciona Crazy Time</LocaleLink>
+          <LocaleLink href="/games-like/crazy-time">Alternativas ao Crazy Time</LocaleLink>
+          <LocaleLink href="/compare/crazy-time-vs-lightning-roulette">Crazy Time vs Lightning Roulette</LocaleLink>
+          <LocaleLink href="/providers/evolution">Jogos da Evolution</LocaleLink>
+        </div>
+      </section>}
       <Evidence games={[game]} locale={locale} />
     </article>
   </div>
@@ -77,8 +88,32 @@ export function ProviderView({ providerId, locale }: { providerId: string; local
   const categories = [...new Set(games.map(game => game.category))]
   const title = provider.id === 'pragmatic-play' && locale === 'pt-BR'
     ? 'Jogos da Pragmatic Play: catálogo e mecânicas'
+    : provider.id === 'evolution' && locale === 'pt-BR'
+      ? 'Jogos da Evolution: cassino ao vivo e game shows'
     : provider.name
-  return <div data-reference-provider={provider.id}><PageHero eyebrow={c.providers} title={title} description={provider.overview[locale]} breadcrumbs={[{ label: c.home, href: '/' }, { label: c.providers, href: '/providers' }, { label: provider.name }]} sponsor={<BetssonSponsoredBanner surface="provider" layout="compact-header" />}><div className={styles.links}>{categories.map(category => <LocaleLink key={category} href={`/${category}`}>{getCategoryName(category, locale)}</LocaleLink>)}{provider.id === 'pragmatic-play' && locale === 'pt-BR' && <><LocaleLink href="/games/gates-of-olympus">Gates of Olympus</LocaleLink><LocaleLink href="/games/sweet-bonanza">Sweet Bonanza</LocaleLink><LocaleLink href="/games/big-bass-bonanza">Big Bass Bonanza</LocaleLink></>}</div></PageHero><Section><p className="mb-6 max-w-3xl text-muted-foreground">{c.providerNote}</p><CatalogExplorer entries={games.map(game => referenceSummary(game, locale)).sort((a, b) => a.title.localeCompare(b.title, locale))} compact /></Section></div>
+  return <div data-reference-provider={provider.id}>
+    <PageHero eyebrow={c.providers} title={title} description={provider.overview[locale]} breadcrumbs={[{ label: c.home, href: '/' }, { label: c.providers, href: '/providers' }, { label: provider.name }]} sponsor={<BetssonSponsoredBanner surface="provider" layout="compact-header" />}>
+      <div className={styles.links}>
+        {categories.map(category => <LocaleLink key={category} href={`/${category}`}>{getCategoryName(category, locale)}</LocaleLink>)}
+        {provider.id === 'pragmatic-play' && locale === 'pt-BR' && <><LocaleLink href="/games/gates-of-olympus">Gates of Olympus</LocaleLink><LocaleLink href="/games/sweet-bonanza">Sweet Bonanza</LocaleLink><LocaleLink href="/games/big-bass-bonanza">Big Bass Bonanza</LocaleLink></>}
+        {provider.id === 'evolution' && locale === 'pt-BR' && <><LocaleLink href="/games/crazy-time">Crazy Time</LocaleLink><LocaleLink href="/games/lightning-roulette">Lightning Roulette</LocaleLink><LocaleLink href="/games/blackjack-live">Blackjack Live</LocaleLink></>}
+      </div>
+    </PageHero>
+    {provider.id === 'evolution' && locale === 'pt-BR' && <Section className="border-b border-border">
+      <ContentCard>
+        <h2 className="text-xl font-bold">Formatos ao vivo da Evolution</h2>
+        <p className="mt-3 text-muted-foreground leading-relaxed">O catálogo reúne formatos com regras diferentes: roleta ao vivo, mesas de blackjack e game shows baseados em roda. Consulte cada guia para entender a mecânica documentada antes de comparar jogos.</p>
+        <div className={styles.links}>
+          <LocaleLink href="/live-casino">Cassino ao vivo</LocaleLink>
+          <LocaleLink href="/games/dream-catcher">Dream Catcher</LocaleLink>
+          <LocaleLink href="/games/monopoly-live">MONOPOLY Live</LocaleLink>
+          <LocaleLink href="/games-like/crazy-time">Alternativas ao Crazy Time</LocaleLink>
+          <LocaleLink href="/compare/crazy-time-vs-lightning-roulette">Crazy Time vs Lightning Roulette</LocaleLink>
+        </div>
+      </ContentCard>
+    </Section>}
+    <Section><p className="mb-6 max-w-3xl text-muted-foreground">{c.providerNote}</p><CatalogExplorer entries={games.map(game => referenceSummary(game, locale)).sort((a, b) => a.title.localeCompare(b.title, locale))} compact /></Section>
+  </div>
 }
 
 export function CategoryReferenceSection({ category, locale }: { category: string; locale: Locale }) {

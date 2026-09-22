@@ -233,6 +233,41 @@ export function WhereToPlayView({ game }: { game: Game }) {
                 )}
               </>
             )}
+            {locale === 'pt-BR' && ['crazy-time', 'lightning-roulette', 'blackjack-live'].includes(game.slug) && (
+              <>
+                <Button size="sm" variant="ghost" render={<LocaleLink href="/live-casino" />}>
+                  Explorar cassino ao vivo
+                </Button>
+                <Button size="sm" variant="ghost" render={<LocaleLink href="/providers/evolution" />}>
+                  Jogos da Evolution
+                </Button>
+                {game.slug === 'crazy-time' && (
+                  <>
+                    <Button size="sm" variant="ghost" render={<LocaleLink href="/games-like/crazy-time" />}>
+                      Alternativas ao Crazy Time
+                    </Button>
+                    <Button size="sm" variant="ghost" render={<LocaleLink href="/compare/crazy-time-vs-lightning-roulette" />}>
+                      Comparar com Lightning Roulette
+                    </Button>
+                  </>
+                )}
+                {game.slug === 'lightning-roulette' && (
+                  <Button size="sm" variant="ghost" render={<LocaleLink href="/compare/crazy-time-vs-lightning-roulette" />}>
+                    Comparar com Crazy Time
+                  </Button>
+                )}
+                {game.slug === 'blackjack-live' && (
+                  <>
+                    <Button size="sm" variant="ghost" render={<LocaleLink href="/table-games" />}>
+                      Explorar jogos de mesa
+                    </Button>
+                    <Button size="sm" variant="ghost" render={<LocaleLink href="/play/blackjack" />}>
+                      Jogar Liva Blackjack grátis
+                    </Button>
+                  </>
+                )}
+              </>
+            )}
           </div>
         </div>
       </Section>
