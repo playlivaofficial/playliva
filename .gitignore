@@ -11,6 +11,16 @@ __v0_jsx-dev-runtime.ts
 .env.*
 !.env.example
 
+# Local YouTube OAuth credentials and tokens
+.youtube-oauth/
+client_secret*.json
+youtube-client*.json
+youtube-credentials*.json
+
+# Generated social media renders and capture frames
+social/output/
+social/.tmp/
+
 # Common ignores
 node_modules
 .next/
