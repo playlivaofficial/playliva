@@ -2,6 +2,8 @@
 
 Source of truth: https://github.com/playlivaofficial/playliva.
 
+The PT-BR YouTube Shorts review and least-privilege uploader workflow is documented in [docs/social-youtube.md](docs/social-youtube.md). Generated media, OAuth client credentials and access/refresh tokens stay in ignored local paths and must never be committed.
+
 [Betsson BR campaign funnel](docs/betsson-br-campaign-funnel.md) centralizes
 the verified "Ganhe 100 Giros!" campaign in `lib/affiliates/betsson-promo-config.ts`:
 Originals header sponsor, a recurring gameplay offer after every third

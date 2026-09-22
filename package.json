@@ -14,7 +14,13 @@
     "lint": "eslint . --max-warnings 3",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "node --import tsx --test tests/*.test.mjs",
-    "test:routes": "node --import tsx tests/routes.mjs"
+    "test:routes": "node --import tsx tests/routes.mjs",
+    "social:review": "node --import tsx scripts/social/review.mjs",
+    "social:capture": "node --import tsx scripts/social/capture-shorts.mjs",
+    "social:youtube:auth": "node --import tsx scripts/social/youtube-auth.mjs",
+    "social:youtube:upload": "node --import tsx scripts/social/youtube-upload.mjs",
+    "social:youtube:verify": "node --import tsx scripts/social/youtube-verify.mjs",
+    "social:secrets": "node scripts/social/secret-scan.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
@@ -38,7 +44,9 @@
     "@types/three": "0.186.0",
     "eslint": "9.39.1",
     "eslint-config-next": "16.3.0",
+    "ffmpeg-static": "5.3.0",
     "jsdom": "26.1.0",
+    "playwright-core": "1.63.0",
     "postcss": "^8.5",
     "sharp": "0.35.4",
     "tailwindcss": "^4.3.3",
@@ -48,6 +56,14 @@
   "pnpm": {
     "overrides": {
       "hono": "4.12.25"
-    }
+    },
+    "ignoredBuiltDependencies": [
+      "esbuild",
+      "msw",
+      "unrs-resolver"
+    ],
+    "onlyBuiltDependencies": [
+      "ffmpeg-static"
+    ]
   }
 }
