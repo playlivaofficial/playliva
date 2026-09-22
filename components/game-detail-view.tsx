@@ -110,9 +110,11 @@ export function GameDetailView({ game }: { game: Game }) {
               >
                 {categoryName}
               </LocaleLink>
-              <span>
-                {t(`label.${game.tag.toLowerCase()}`)}
-              </span>
+              {!(locale === 'pt-BR' && game.category === 'slots') && (
+                <span>
+                  {t(`label.${game.tag.toLowerCase()}`)}
+                </span>
+              )}
             </div>
             <h1>
               {content.seo?.game?.h1 ?? game.title}
@@ -234,7 +236,9 @@ export function GameDetailView({ game }: { game: Game }) {
         {content.entityDifference && (
           <ContentCard className="mt-8" tone="guide">
             <h2 className="font-display text-xl font-bold text-foreground">
-              Como o Aviator se diferencia de outros jogos de cassino
+              {game.slug === 'aviator'
+                ? 'Como o Aviator se diferencia de outros jogos de cassino'
+                : `Como ${game.title} se diferencia de slots de linhas fixas`}
             </h2>
             <p className="mt-4 max-w-3xl leading-relaxed text-muted-foreground">
               {content.entityDifference}
@@ -319,6 +323,34 @@ export function GameDetailView({ game }: { game: Game }) {
             <Button variant="outline" render={<LocaleLink href="/compare/aviator-vs-jetx" />}>Comparar Aviator e JetX</Button>
             <Button variant="outline" render={<LocaleLink href="/compare/aviator-vs-spaceman" />}>Comparar Aviator e Spaceman</Button>
             <Button variant="ghost" render={<LocaleLink href="/crash" />}>Explorar jogos crash</Button>
+          </div>
+        </Section>
+      )}
+
+      {game.category === 'slots' && locale === 'pt-BR' && ['gates-of-olympus', 'sweet-bonanza', 'big-bass-bonanza'].includes(game.slug) && (
+        <Section className="pt-0">
+          <SectionHeading
+            title={`Continue explorando ${game.title}`}
+            description="Use os guias relacionados para verificar disponibilidade, comparar mecânicas e navegar pelo catálogo de slots."
+          />
+          <div className="flex flex-wrap gap-3">
+            {operators.length > 0 && (
+              <Button render={<LocaleLink href={`/where-to-play/${game.slug}`} />}>
+                Onde jogar {game.title} no Brasil
+              </Button>
+            )}
+            {game.slug === 'gates-of-olympus' && (
+              <Button variant="outline" render={<LocaleLink href="/games-like/gates-of-olympus" />}>
+                Alternativas a Gates of Olympus
+              </Button>
+            )}
+            {(game.slug === 'gates-of-olympus' || game.slug === 'sweet-bonanza') && (
+              <Button variant="outline" render={<LocaleLink href="/compare/gates-of-olympus-vs-sweet-bonanza" />}>
+                Comparar Gates e Sweet Bonanza
+              </Button>
+            )}
+            <Button variant="ghost" render={<LocaleLink href="/slots" />}>Explorar jogos de slots</Button>
+            <Button variant="ghost" render={<LocaleLink href="/providers/pragmatic-play" />}>Catálogo da Pragmatic Play</Button>
           </div>
         </Section>
       )}

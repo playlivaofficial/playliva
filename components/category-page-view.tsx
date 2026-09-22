@@ -31,6 +31,7 @@ import styles from '@/components/product-design.module.css'
 import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsored-banner'
 import type { BetssonBannerSurface } from '@/lib/affiliates/betsson'
 import { Button } from '@/components/ui/button'
+import { ContentCard } from '@/components/content-card'
 
 export function CategoryPageView({ slug, referenceCatalog }: { slug: CategorySlug; referenceCatalog?: ReactNode }) {
   const { marketCode: country, t, locale } = useCountry()
@@ -98,9 +99,13 @@ export function CategoryPageView({ slug, referenceCatalog }: { slug: CategorySlu
           eyebrow={productCopy(locale).providerLabel}
           title={slug === 'crash' && locale === 'pt-BR'
             ? 'Títulos crash no catálogo'
+            : slug === 'slots' && locale === 'pt-BR'
+              ? 'Títulos de slots no catálogo'
             : t('category.popularTitle', { category: categoryLower, market: countryName })}
           description={slug === 'crash' && locale === 'pt-BR'
             ? 'Compare os títulos catalogados pela PlayLiva por provedor, mecânicas e apresentação.'
+            : slug === 'slots' && locale === 'pt-BR'
+              ? 'Compare os títulos catalogados pela PlayLiva por provedor, formato, mecânicas e apresentação.'
             : t('category.popularSub', { category: categoryLower, market: countryName })}
           action={slug === 'crash' ? (
             <Button variant="outline" render={<LocaleLink href="/best/crash-games" />}>
@@ -135,6 +140,39 @@ export function CategoryPageView({ slug, referenceCatalog }: { slug: CategorySlu
             <Button variant="ghost" render={<LocaleLink href="/best/crash-games" />}>Como escolher crash games</Button>
             <Button variant="ghost" render={<LocaleLink href="/best/best-crash-games-brazil" />}>Seleção para o Brasil</Button>
             <Button variant="ghost" render={<LocaleLink href="/play/crash" />}>Jogar Island Crash grátis</Button>
+          </div>
+        </Section>
+      )}
+
+      {slug === 'slots' && locale === 'pt-BR' && (
+        <Section className="border-t border-border bg-card/30">
+          <SectionHeading
+            eyebrow="Guia da categoria"
+            title="Entenda os formatos antes de escolher um slot"
+            description="Os jogos do catálogo usam estruturas diferentes. Compare a forma de pagamento, as cascatas e os recursos documentados em cada ficha."
+          />
+          <div className="grid gap-5 lg:grid-cols-2">
+            <ContentCard>
+              <h2 className="font-display text-xl font-bold text-foreground">O que são jogos de slots?</h2>
+              <p className="mt-3 leading-relaxed text-muted-foreground">
+                Slots organizam símbolos em rolos ou grades e avaliam combinações conforme as regras de cada título. A PlayLiva separa a identidade do jogo, o provedor e as mecânicas registradas sem transformar essas diferenças em promessa de resultado.
+              </p>
+            </ContentCard>
+            <ContentCard tone="guide">
+              <h2 className="font-display text-xl font-bold text-foreground">Como os formatos modernos diferem</h2>
+              <p className="mt-3 leading-relaxed text-muted-foreground">
+                Alguns títulos usam linhas fixas; outros pagam em qualquer posição ou por grupos conectados. Cascatas removem combinações e deixam novos símbolos ocupar a grade. Multiplicadores, rodadas grátis e recursos de coleta dependem da ficha de cada jogo.
+              </p>
+            </ContentCard>
+          </div>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Button render={<LocaleLink href="/games/gates-of-olympus" />}>Como funciona Gates of Olympus</Button>
+            <Button variant="outline" render={<LocaleLink href="/games/sweet-bonanza" />}>Conhecer Sweet Bonanza</Button>
+            <Button variant="outline" render={<LocaleLink href="/games/big-bass-bonanza" />}>Conhecer Big Bass Bonanza</Button>
+            <Button variant="ghost" render={<LocaleLink href="/games-like/gates-of-olympus" />}>Alternativas a Gates of Olympus</Button>
+            <Button variant="ghost" render={<LocaleLink href="/compare/gates-of-olympus-vs-sweet-bonanza" />}>Gates vs Sweet Bonanza</Button>
+            <Button variant="ghost" render={<LocaleLink href="/providers/pragmatic-play" />}>Catálogo da Pragmatic Play</Button>
+            <Button variant="ghost" render={<LocaleLink href="/best/best-slots-brazil" />}>Seleção editorial para o Brasil</Button>
           </div>
         </Section>
       )}
