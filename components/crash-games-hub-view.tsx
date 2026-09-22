@@ -76,6 +76,11 @@ export function CrashGamesHubView() {
               {t('category.viewRanking')}
             </Button>
           )}
+          {locale === 'pt-BR' && (
+            <Button variant="ghost" render={<LocaleLink href="/play/crash" />}>
+              Jogar Island Crash grátis
+            </Button>
+          )}
         </div>
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {crashGames.map((game) => {
@@ -152,6 +157,23 @@ export function CrashGamesHubView() {
           </Section>
         )
       })}
+
+      {locale === 'pt-BR' && (
+        <Section className="border-t border-border bg-card/30">
+          <SectionHeading
+            title="Compare exemplos antes de escolher"
+            description="Use as comparações para entender diferenças específicas ou veja alternativas quando quiser sair do formato exato do Aviator."
+          />
+          <div className="flex flex-wrap gap-3">
+            <Button variant="outline" render={<LocaleLink href="/games-like/aviator" />}>Jogos como Aviator</Button>
+            <Button variant="outline" render={<LocaleLink href="/compare/aviator-vs-jetx" />}>Aviator vs JetX</Button>
+            <Button variant="outline" render={<LocaleLink href="/compare/aviator-vs-spaceman" />}>Aviator vs Spaceman</Button>
+            {countryCode === 'BR' && (
+              <Button variant="ghost" render={<LocaleLink href="/best/best-crash-games-brazil" />}>Seleção editorial para o Brasil</Button>
+            )}
+          </div>
+        </Section>
+      )}
 
       {/* How to choose */}
       <Section className="border-t border-border bg-card/30">

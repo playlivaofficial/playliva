@@ -57,7 +57,7 @@ export function CategoryPageView({ slug, referenceCatalog }: { slug: CategorySlu
     <div>
       <PageHero
         eyebrow={t('category.eyebrow')}
-        title={category.name}
+        title={category.h1 ?? category.name}
         description={category.description}
         breadcrumbs={[
           { label: t('nav.home'), href: '/' },
@@ -96,14 +96,12 @@ export function CategoryPageView({ slug, referenceCatalog }: { slug: CategorySlu
       <Section>
         <SectionHeading
           eyebrow={productCopy(locale).providerLabel}
-          title={t('category.popularTitle', {
-            category: categoryLower,
-            market: countryName,
-          })}
-          description={t('category.popularSub', {
-            category: categoryLower,
-            market: countryName,
-          })}
+          title={slug === 'crash' && locale === 'pt-BR'
+            ? 'Títulos crash no catálogo'
+            : t('category.popularTitle', { category: categoryLower, market: countryName })}
+          description={slug === 'crash' && locale === 'pt-BR'
+            ? 'Compare os títulos catalogados pela PlayLiva por provedor, mecânicas e apresentação.'
+            : t('category.popularSub', { category: categoryLower, market: countryName })}
           action={slug === 'crash' ? (
             <Button variant="outline" render={<LocaleLink href="/best/crash-games" />}>
               {t('category.viewRanking')}
@@ -121,6 +119,25 @@ export function CategoryPageView({ slug, referenceCatalog }: { slug: CategorySlu
           <p className="text-muted-foreground">{t('category.empty')}</p>
         )}
       </Section>
+
+      {slug === 'crash' && locale === 'pt-BR' && (
+        <Section className="border-t border-border bg-card/30">
+          <SectionHeading
+            eyebrow="Explore por intenção"
+            title="Continue pelo guia certo"
+            description="Use a página de Aviator para entender o jogo, as comparações para avaliar diferenças e os guias editoriais para escolher critérios ou opções verificadas no Brasil."
+          />
+          <div className="flex flex-wrap gap-3">
+            <Button render={<LocaleLink href="/games/aviator" />}>Como funciona o Aviator</Button>
+            <Button variant="outline" render={<LocaleLink href="/games-like/aviator" />}>Jogos como Aviator</Button>
+            <Button variant="outline" render={<LocaleLink href="/compare/aviator-vs-jetx" />}>Aviator vs JetX</Button>
+            <Button variant="outline" render={<LocaleLink href="/compare/aviator-vs-spaceman" />}>Aviator vs Spaceman</Button>
+            <Button variant="ghost" render={<LocaleLink href="/best/crash-games" />}>Como escolher crash games</Button>
+            <Button variant="ghost" render={<LocaleLink href="/best/best-crash-games-brazil" />}>Seleção para o Brasil</Button>
+            <Button variant="ghost" render={<LocaleLink href="/play/crash" />}>Jogar Island Crash grátis</Button>
+          </div>
+        </Section>
+      )}
 
       {referenceCatalog}
 

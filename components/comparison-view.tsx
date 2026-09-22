@@ -166,6 +166,16 @@ export function ComparisonView({ comparison }: { comparison: Comparison }) {
             {t('compare.editorialNote')}
           </p>
         </ContentCard>
+        {a.slug === 'aviator' && locale === 'pt-BR' && (
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Button variant="outline" render={<LocaleLink href="/games-like/aviator" />}>
+              Ver alternativas ao Aviator
+            </Button>
+            <Button variant="ghost" render={<LocaleLink href="/crash" />}>
+              Explorar a categoria Crash
+            </Button>
+          </div>
+        )}
       </Section>
 
       {/* Where to play */}
