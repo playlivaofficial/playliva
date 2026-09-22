@@ -102,6 +102,54 @@ const trafficSprintPages = {
     h1: 'Seleção editorial de slots no Brasil',
     links: ['/pt-br/slots', '/pt-br/games/gates-of-olympus', '/pt-br/games/sweet-bonanza', '/pt-br/games/big-bass-bonanza', '/pt-br/where-to-play/gates-of-olympus', '/pt-br/where-to-play/sweet-bonanza', '/pt-br/where-to-play/big-bass-bonanza', '/pt-br/compare/gates-of-olympus-vs-sweet-bonanza', '/pt-br/providers/pragmatic-play'],
   },
+  '/pt-br/live-casino': {
+    h1: 'Jogos de cassino ao vivo: roleta, blackjack e game shows',
+    links: ['/pt-br/games/crazy-time', '/pt-br/where-to-play/crazy-time', '/pt-br/games/lightning-roulette', '/pt-br/where-to-play/lightning-roulette', '/pt-br/games/blackjack-live', '/pt-br/games/dream-catcher', '/pt-br/games/monopoly-live', '/pt-br/compare/crazy-time-vs-lightning-roulette', '/pt-br/providers/evolution'],
+  },
+  '/pt-br/games/crazy-time': {
+    h1: 'Crazy Time: como funciona o jogo ao vivo',
+    links: ['/pt-br/where-to-play/crazy-time', '/pt-br/games-like/crazy-time', '/pt-br/compare/crazy-time-vs-lightning-roulette', '/pt-br/live-casino', '/pt-br/providers/evolution'],
+  },
+  '/pt-br/where-to-play/crazy-time': {
+    h1: 'Onde jogar Crazy Time no Brasil',
+    links: ['/pt-br/games/crazy-time', '/pt-br/games-like/crazy-time', '/pt-br/compare/crazy-time-vs-lightning-roulette', '/pt-br/live-casino', '/pt-br/providers/evolution'],
+  },
+  '/pt-br/games-like/crazy-time': {
+    h1: 'Jogos como Crazy Time: alternativas e diferenças',
+    links: ['/pt-br/games/crazy-time', '/pt-br/games/lightning-roulette', '/pt-br/games/dream-catcher', '/pt-br/games/monopoly-live', '/pt-br/live-casino', '/pt-br/providers/evolution'],
+  },
+  '/pt-br/compare/crazy-time-vs-lightning-roulette': {
+    h1: 'Crazy Time vs Lightning Roulette',
+    links: ['/pt-br/games/crazy-time', '/pt-br/games/lightning-roulette', '/pt-br/games-like/crazy-time', '/pt-br/live-casino', '/pt-br/providers/evolution'],
+  },
+  '/pt-br/games/lightning-roulette': {
+    h1: 'Lightning Roulette: como funciona a roleta ao vivo',
+    links: ['/pt-br/where-to-play/lightning-roulette', '/pt-br/compare/crazy-time-vs-lightning-roulette', '/pt-br/live-casino', '/pt-br/providers/evolution'],
+  },
+  '/pt-br/where-to-play/lightning-roulette': {
+    h1: 'Onde jogar Lightning Roulette no Brasil',
+    links: ['/pt-br/games/lightning-roulette', '/pt-br/compare/crazy-time-vs-lightning-roulette', '/pt-br/live-casino', '/pt-br/providers/evolution'],
+  },
+  '/pt-br/games/blackjack-live': {
+    h1: 'Blackjack Live: como funciona o blackjack ao vivo',
+    links: ['/pt-br/where-to-play/blackjack-live', '/pt-br/live-casino', '/pt-br/providers/evolution', '/pt-br/table-games', '/pt-br/play/blackjack'],
+  },
+  '/pt-br/where-to-play/blackjack-live': {
+    h1: 'Onde jogar Blackjack Live no Brasil',
+    links: ['/pt-br/games/blackjack-live', '/pt-br/live-casino', '/pt-br/providers/evolution', '/pt-br/table-games', '/pt-br/play/blackjack'],
+  },
+  '/pt-br/games/dream-catcher': {
+    h1: 'Dream Catcher',
+    links: ['/pt-br/live-casino', '/pt-br/games/crazy-time', '/pt-br/games-like/crazy-time', '/pt-br/compare/crazy-time-vs-lightning-roulette', '/pt-br/providers/evolution'],
+  },
+  '/pt-br/games/monopoly-live': {
+    h1: 'MONOPOLY Live',
+    links: ['/pt-br/live-casino', '/pt-br/games/crazy-time', '/pt-br/games-like/crazy-time', '/pt-br/compare/crazy-time-vs-lightning-roulette', '/pt-br/providers/evolution'],
+  },
+  '/pt-br/providers/evolution': {
+    h1: 'Jogos da Evolution: cassino ao vivo e game shows',
+    links: ['/pt-br/live-casino', '/pt-br/games/crazy-time', '/pt-br/games/lightning-roulette', '/pt-br/games/blackjack-live', '/pt-br/games/dream-catcher', '/pt-br/games/monopoly-live', '/pt-br/games-like/crazy-time', '/pt-br/compare/crazy-time-vs-lightning-roulette'],
+  },
 }
 
 const listener = createServer()

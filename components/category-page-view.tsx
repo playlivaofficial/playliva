@@ -177,6 +177,72 @@ export function CategoryPageView({ slug, referenceCatalog }: { slug: CategorySlu
         </Section>
       )}
 
+      {slug === 'live-casino' && locale === 'pt-BR' && (
+        <Section className="border-t border-border bg-card/30">
+          <SectionHeading
+            eyebrow="Guia da categoria"
+            title="Entenda os formatos de cassino ao vivo"
+            description="Transmissão ao vivo é a característica comum; a mecânica muda entre roleta, blackjack e game shows. Use as fichas para entender cada formato e as páginas Onde Jogar para verificar disponibilidade."
+          />
+          <div className="grid gap-5 lg:grid-cols-3">
+            <ContentCard>
+              <h2 className="font-display text-xl font-bold text-foreground">Roleta ao vivo</h2>
+              <p className="mt-3 leading-relaxed text-muted-foreground">
+                A roda e a bola definem o resultado. Lightning Roulette mantém a roleta de zero único e acrescenta Números da Sorte e multiplicadores aleatórios para apostas diretas.
+              </p>
+              <div className="mt-4">
+                <LocaleLink href="/games/lightning-roulette" className="text-sm font-semibold text-primary underline underline-offset-4">
+                  Entender Lightning Roulette
+                </LocaleLink>
+              </div>
+            </ContentCard>
+            <ContentCard>
+              <h2 className="font-display text-xl font-bold text-foreground">Blackjack ao vivo</h2>
+              <p className="mt-3 leading-relaxed text-muted-foreground">
+                Um dealer distribui as cartas em estúdio, e cada mesa informa seus limites e regras. Blackjack Live é separado do Original gratuito da PlayLiva.
+              </p>
+              <div className="mt-4">
+                <LocaleLink href="/games/blackjack-live" className="text-sm font-semibold text-primary underline underline-offset-4">
+                  Conhecer Blackjack Live
+                </LocaleLink>
+              </div>
+            </ContentCard>
+            <ContentCard tone="guide">
+              <h2 className="font-display text-xl font-bold text-foreground">Game shows ao vivo</h2>
+              <p className="mt-3 leading-relaxed text-muted-foreground">
+                Crazy Time, Dream Catcher e MONOPOLY Live usam apresentador e roda, mas têm segmentos, bônus e estruturas diferentes documentadas em cada ficha.
+              </p>
+              <div className="mt-4">
+                <LocaleLink href="/games/crazy-time" className="text-sm font-semibold text-primary underline underline-offset-4">
+                  Como funciona Crazy Time
+                </LocaleLink>
+              </div>
+            </ContentCard>
+          </div>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Button render={<LocaleLink href="/games/crazy-time" />}>Crazy Time</Button>
+            <Button variant="outline" render={<LocaleLink href="/where-to-play/crazy-time" />}>Onde jogar Crazy Time</Button>
+            <Button variant="outline" render={<LocaleLink href="/games/lightning-roulette" />}>Lightning Roulette</Button>
+            <Button variant="outline" render={<LocaleLink href="/where-to-play/lightning-roulette" />}>Onde jogar Lightning Roulette</Button>
+            <Button variant="outline" render={<LocaleLink href="/games/blackjack-live" />}>Blackjack Live</Button>
+            <Button variant="ghost" render={<LocaleLink href="/games/dream-catcher" />}>Dream Catcher</Button>
+            <Button variant="ghost" render={<LocaleLink href="/games/monopoly-live" />}>MONOPOLY Live</Button>
+            <Button variant="ghost" render={<LocaleLink href="/compare/crazy-time-vs-lightning-roulette" />}>Crazy Time vs Lightning Roulette</Button>
+            <Button variant="ghost" render={<LocaleLink href="/providers/evolution" />}>Jogos da Evolution</Button>
+          </div>
+          <div className="mt-6 rounded-2xl border border-border bg-background/60 p-5">
+            <h2 className="font-display text-lg font-bold text-foreground">Jogar grátis na PlayLiva</h2>
+            <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
+              Liva Roulette e Liva Blackjack são PlayLiva Originals com créditos virtuais. São demos próprias e não representam os jogos da Evolution nem disponibilidade em operadoras.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <Button size="sm" variant="outline" render={<LocaleLink href="/play/roulette" />}>Jogar Liva Roulette grátis</Button>
+              <Button size="sm" variant="outline" render={<LocaleLink href="/play/blackjack" />}>Jogar Liva Blackjack grátis</Button>
+            </div>
+          </div>
+        </Section>
+      )}
+
       {referenceCatalog}
 
       {bestList && bestListContent && (

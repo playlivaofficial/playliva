@@ -109,6 +109,16 @@ export function GamesLikeView({ game }: { game: Game }) {
                 Catálogo da Pragmatic Play
               </Button>
             )}
+            {game.slug === 'crazy-time' && locale === 'pt-BR' && (
+              <>
+                <Button variant="ghost" render={<LocaleLink href="/live-casino" />}>
+                  Explorar cassino ao vivo
+                </Button>
+                <Button variant="ghost" render={<LocaleLink href="/providers/evolution" />}>
+                  Jogos da Evolution
+                </Button>
+              </>
+            )}
           </div>
         </ContentCard>
       </Section>
@@ -177,6 +187,37 @@ export function GamesLikeView({ game }: { game: Game }) {
                 </div>
               </ContentCard>
             ))}
+          </div>
+        </Section>
+      )}
+
+      {game.slug === 'crazy-time' && locale === 'pt-BR' && (
+        <Section className="border-t border-border bg-card/30">
+          <SectionHeading
+            title="Outros game shows ao vivo da Evolution"
+            description="Estas fichas têm fontes oficiais próprias e ajudam a comparar rodas ao vivo sem tratar formatos diferentes como equivalentes."
+          />
+          <div className="grid gap-5 md:grid-cols-2">
+            <ContentCard>
+              <h2 className="font-display text-xl font-bold text-foreground">Dream Catcher</h2>
+              <p className="mt-1 text-xs font-medium text-muted-foreground">Evolution · Roda ao vivo</p>
+              <p className="mt-3 leading-relaxed text-muted-foreground">
+                Usa apresentador e uma roda vertical, como Crazy Time, mas concentra a rodada em segmentos numéricos e giros multiplicadores encadeados. Não usa Coin Flip, Cash Hunt, Pachinko ou a rodada Crazy Time.
+              </p>
+              <div className="mt-4">
+                <Button size="sm" render={<LocaleLink href="/games/dream-catcher" />}>Ler ficha do Dream Catcher</Button>
+              </div>
+            </ContentCard>
+            <ContentCard>
+              <h2 className="font-display text-xl font-bold text-foreground">MONOPOLY Live</h2>
+              <p className="mt-1 text-xs font-medium text-muted-foreground">Evolution · Game show ao vivo</p>
+              <p className="mt-3 leading-relaxed text-muted-foreground">
+                Também combina apresentador e roda, mas os segmentos Chance e de rolagem podem levar a um recurso em tabuleiro virtual conduzido por dados. A estrutura de bônus é diferente da usada em Crazy Time.
+              </p>
+              <div className="mt-4">
+                <Button size="sm" render={<LocaleLink href="/games/monopoly-live" />}>Ler ficha do MONOPOLY Live</Button>
+              </div>
+            </ContentCard>
           </div>
         </Section>
       )}

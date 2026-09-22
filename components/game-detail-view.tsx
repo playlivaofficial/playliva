@@ -81,6 +81,11 @@ export function GameDetailView({ game }: { game: Game }) {
       value: t('game.marketsSupported', { count: publicMarkets.length }),
     },
   ]
+  const liveCasinoSource: Record<string, string> = {
+    'crazy-time': 'https://games.evolution.com/live-casino/game-shows/crazy-time/',
+    'lightning-roulette': 'https://games.evolution.com/pt-br/cassino-ao-vivo/roulette-ao-vivo/lightning-roulette/',
+    'blackjack-live': 'https://games.evolution.com/live-casino/live-blackjack/',
+  }
 
   return (
     <div>
@@ -238,7 +243,13 @@ export function GameDetailView({ game }: { game: Game }) {
             <h2 className="font-display text-xl font-bold text-foreground">
               {game.slug === 'aviator'
                 ? 'Como o Aviator se diferencia de outros jogos de cassino'
-                : `Como ${game.title} se diferencia de slots de linhas fixas`}
+                : game.slug === 'crazy-time'
+                  ? 'Como Crazy Time se diferencia de roleta e slots'
+                  : game.slug === 'lightning-roulette'
+                    ? 'Como Lightning Roulette se diferencia de um game show'
+                    : game.slug === 'blackjack-live'
+                      ? 'Blackjack Live e o Original gratuito da PlayLiva'
+                      : `Como ${game.title} se diferencia de slots de linhas fixas`}
             </h2>
             <p className="mt-4 max-w-3xl leading-relaxed text-muted-foreground">
               {content.entityDifference}
@@ -351,6 +362,45 @@ export function GameDetailView({ game }: { game: Game }) {
             )}
             <Button variant="ghost" render={<LocaleLink href="/slots" />}>Explorar jogos de slots</Button>
             <Button variant="ghost" render={<LocaleLink href="/providers/pragmatic-play" />}>Catálogo da Pragmatic Play</Button>
+          </div>
+        </Section>
+      )}
+
+      {locale === 'pt-BR' && ['crazy-time', 'lightning-roulette', 'blackjack-live'].includes(game.slug) && (
+        <Section className="pt-0">
+          <SectionHeading
+            title={`Continue explorando ${game.title}`}
+            description="Use a ficha para entender o formato, a página Onde Jogar para conferir disponibilidade e os guias relacionados para comparar opções sem misturar produtos diferentes."
+          />
+          <div className="flex flex-wrap gap-3">
+            {operators.length > 0 && (
+              <Button render={<LocaleLink href={`/where-to-play/${game.slug}`} />}>
+                Onde jogar {game.title} no Brasil
+              </Button>
+            )}
+            {game.slug === 'crazy-time' && (
+              <>
+                <Button variant="outline" render={<LocaleLink href="/games-like/crazy-time" />}>Alternativas ao Crazy Time</Button>
+                <Button variant="outline" render={<LocaleLink href="/compare/crazy-time-vs-lightning-roulette" />}>Crazy Time vs Lightning Roulette</Button>
+              </>
+            )}
+            {game.slug === 'lightning-roulette' && (
+              <Button variant="outline" render={<LocaleLink href="/compare/crazy-time-vs-lightning-roulette" />}>Comparar com Crazy Time</Button>
+            )}
+            {game.slug === 'blackjack-live' && (
+              <>
+                <Button variant="outline" render={<LocaleLink href="/table-games" />}>Explorar jogos de mesa</Button>
+                <Button variant="ghost" render={<LocaleLink href="/play/blackjack" />}>Jogar Liva Blackjack grátis</Button>
+              </>
+            )}
+            <Button variant="ghost" render={<LocaleLink href="/live-casino" />}>Explorar cassino ao vivo</Button>
+            <Button variant="ghost" render={<LocaleLink href="/providers/evolution" />}>Jogos da Evolution</Button>
+            <Button
+              variant="ghost"
+              render={<a href={liveCasinoSource[game.slug]} target="_blank" rel="noopener noreferrer" />}
+            >
+              Fonte oficial da Evolution
+            </Button>
           </div>
         </Section>
       )}

@@ -13,7 +13,7 @@ export const PROVIDERS: ReferenceProvider[] = [
   } },
   { id: 'evolution', name: 'Evolution', source: 'https://games.evolution.com/live-casino/', overview: {
     en: 'Evolution’s represented formats span live card tables, physical dice, roulette and hosted wheel shows. The pages distinguish studio presentation from additional random features, and separate baccarat cards from Bac Bo’s dice despite their similar side labels.',
-    'pt-BR': 'Os formatos da Evolution representados aqui incluem mesas de cartas ao vivo, dados físicos, roleta e rodas com apresentador. As fichas distinguem apresentação de estúdio e recursos aleatórios adicionais, além de separar as cartas do baccarat dos dados de Bac Bo.',
+    'pt-BR': 'A coleção da Evolution reúne mesas de cartas ao vivo, dados físicos, roleta e game shows com apresentador. As fichas separam o jogo físico transmitido do estúdio, os recursos aleatórios adicionais e as diferenças entre formatos como blackjack, baccarat, roleta e rodas ao vivo.',
     'es-MX': 'Los formatos de Evolution representados aquí incluyen mesas de cartas en vivo, dados físicos, ruleta y ruedas con presentador. Las fichas distinguen presentación de estudio y funciones aleatorias adicionales, y separan las cartas de baccarat de los dados de Bac Bo.',
   } },
   { id: 'smartsoft', name: 'SmartSoft', source: 'https://www.smartsoftgaming.com/', overview: {

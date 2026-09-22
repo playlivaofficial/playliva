@@ -153,6 +153,40 @@ export function ComparisonView({ comparison }: { comparison: Comparison }) {
         </div>
       </Section>
 
+      {comparison.slug === 'crazy-time-vs-lightning-roulette' && locale === 'pt-BR' && (
+        <Section className="pt-0">
+          <ContentCard>
+            <h2 className="font-display text-xl font-bold text-foreground">Comparação rápida dos formatos</h2>
+            <div className="mt-5 overflow-x-auto">
+              <table className="w-full min-w-[640px] border-collapse text-left text-sm">
+                <thead>
+                  <tr className="border-b border-border">
+                    <th className="p-3 font-semibold text-foreground">Critério</th>
+                    <th className="p-3 font-semibold text-foreground">Crazy Time</th>
+                    <th className="p-3 font-semibold text-foreground">Lightning Roulette</th>
+                  </tr>
+                </thead>
+                <tbody className="text-muted-foreground">
+                  {[
+                    ['Provedor', 'Evolution', 'Evolution'],
+                    ['Formato', 'Game show ao vivo com roda', 'Roleta ao vivo de zero único'],
+                    ['Mecânica central', 'Apostas em números ou quatro áreas de bônus', 'Apostas de roleta com resultado da roda e da bola'],
+                    ['Camada aleatória', 'Top Slot atribui multiplicadores a áreas selecionadas', 'Um a cinco Números da Sorte recebem Pagamentos da Sorte'],
+                    ['Recursos', 'Coin Flip, Cash Hunt, Pachinko e Crazy Time', 'Números da Sorte aplicáveis a apostas diretas conforme as regras'],
+                  ].map(([criterion, crazyTime, lightning]) => (
+                    <tr key={criterion} className="border-b border-border/70 align-top last:border-0">
+                      <th className="p-3 font-medium text-foreground">{criterion}</th>
+                      <td className="p-3">{crazyTime}</td>
+                      <td className="p-3">{lightning}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </ContentCard>
+        </Section>
+      )}
+
       {/* Which one may suit you */}
       <Section>
         <ContentCard tone="guide">
@@ -186,6 +220,19 @@ export function ComparisonView({ comparison }: { comparison: Comparison }) {
             </Button>
             <Button variant="ghost" render={<LocaleLink href="/providers/pragmatic-play" />}>
               Catálogo da Pragmatic Play
+            </Button>
+          </div>
+        )}
+        {comparison.slug === 'crazy-time-vs-lightning-roulette' && locale === 'pt-BR' && (
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Button variant="outline" render={<LocaleLink href="/games-like/crazy-time" />}>
+              Ver alternativas ao Crazy Time
+            </Button>
+            <Button variant="ghost" render={<LocaleLink href="/live-casino" />}>
+              Explorar cassino ao vivo
+            </Button>
+            <Button variant="ghost" render={<LocaleLink href="/providers/evolution" />}>
+              Jogos da Evolution
             </Button>
           </div>
         )}

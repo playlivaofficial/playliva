@@ -23,10 +23,13 @@ export async function generateMetadata({
   const t = createTranslator(locale)
   const category = getCategoryContent('live-casino', locale)
   return pageMetadata({
-    title: category.name,
-    description: `${category.description} ${t('seo.categoryAvailabilitySuffix')}`,
+    title: category.seoTitle ?? category.name,
+    description:
+      category.seoDescription ??
+      `${category.description} ${t('seo.categoryAvailabilitySuffix')}`,
     path: '/live-casino',
     localeSegment,
+    images: ['/games/crazy-time.webp'],
   })
 }
 

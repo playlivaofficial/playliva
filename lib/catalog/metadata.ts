@@ -15,7 +15,18 @@ export function referenceMetadata(kind: 'games' | 'games-like' | 'compare' | 'pr
   const locale = catalogLocale(segment), c = catalogCopy(locale)
   if (kind === 'games') {
     const game = getReferenceGame(slug)
-    if (game) return pageMetadata({ title: `${game.title} — ${c.details}`, description: game.content[locale].summary, path: `/games/${slug}`, localeSegment: segment, images: referenceImage(slug) })
+    if (game) {
+      const ptBrSeo: Record<string, { title: string }> = {
+        'dream-catcher': {
+          title: 'Dream Catcher: Como Funciona a Roda ao Vivo | PlayLiva',
+        },
+        'monopoly-live': {
+          title: 'MONOPOLY Live: Como Funciona o Game Show | PlayLiva',
+        },
+      }
+      const override = locale === 'pt-BR' ? ptBrSeo[slug] : undefined
+      return pageMetadata({ title: override?.title ?? `${game.title} — ${c.details}`, description: game.content[locale].summary, path: `/games/${slug}`, localeSegment: segment, images: referenceImage(slug) })
+    }
   }
   if (kind === 'games-like') {
     const list = getReferenceReadingList(slug), game = getReferenceGame(slug)
@@ -29,9 +40,11 @@ export function referenceMetadata(kind: 'games' | 'games-like' | 'compare' | 'pr
     const provider = getReferenceProvider(slug)
     if (provider) {
       const firstGame = REFERENCE_GAMES.find((game) => game.providerId === provider.id && game.artwork.status !== 'fallback')
-      const title = provider.id === 'pragmatic-play' && locale === 'pt-BR'
+      const title = locale === 'pt-BR' && provider.id === 'pragmatic-play'
         ? 'Jogos da Pragmatic Play: Catálogo e Mecânicas | PlayLiva'
-        : `${provider.name} — ${c.collection}`
+        : locale === 'pt-BR' && provider.id === 'evolution'
+          ? 'Jogos da Evolution: Cassino ao Vivo e Game Shows | PlayLiva'
+          : `${provider.name} — ${c.collection}`
       return pageMetadata({ title, description: provider.overview[locale], path: `/providers/${slug}`, localeSegment: segment, images: firstGame ? referenceImage(firstGame.slug) : undefined })
     }
   }
