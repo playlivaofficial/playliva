@@ -1,0 +1,1760 @@
+{
+  "version": 1,
+  "inspectedAt": "2026-09-22T12:49:03.073Z",
+  "total": 50,
+  "passed": 50,
+  "failed": 0,
+  "duplicateVideos": [],
+  "items": [
+    {
+      "contentId": "island-crash-01-decision",
+      "gameSlug": "crash",
+      "inspectedAt": "2026-09-22T12:47:49.682Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 2056,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 174,
+      "integratedLufs": -16.1,
+      "truePeakDbfs": -1.5,
+      "duration": 15,
+      "fileSizeBytes": 4202106,
+      "sha256": "52e86c495f56694dbf1f07ca214b53d35f8175979e609488ce3a02c5e59eaa93",
+      "frameHashes": [
+        "266edaef570c09d40736db1df85e51dfeb1b8577a94973f50c147f7d5ad643d8",
+        "a9d7de867a3381eb7d745008b2515f0fd137bd936e0d489a0f39c3add0b2f943",
+        "dec278730f0e5497545ce04cb11d477334c549566336216858738ec462baff8e"
+      ],
+      "framePerceptualHashes": [
+        "71304b5b433e3fc4",
+        "70304b5b133e3f80",
+        "07070f0f0f2b0720"
+      ],
+      "frameEntropy": [
+        6.281,
+        6.175,
+        5.309
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "island-crash-02-tension",
+      "gameSlug": "crash",
+      "inspectedAt": "2026-09-22T12:47:51.163Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 2020,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 171,
+      "integratedLufs": -16.1,
+      "truePeakDbfs": -1.5,
+      "duration": 16,
+      "fileSizeBytes": 4402753,
+      "sha256": "0219d887258b8527d7452ae616b439a32dc9b710884f5e520db580dc0ee1c745",
+      "frameHashes": [
+        "d1ec8c02aee0f07cffa4498688933535f2a53916b46a4455c8b7d738f20653a1",
+        "c902efd43ee6cfbc8424d9045cd4116e80d0b96262ef9241e511580f3d1951e4",
+        "db9d814525ec9795062543b1c1bdd80827c0e358ac11a7e903bd2893bf16065c"
+      ],
+      "framePerceptualHashes": [
+        "61204b5b433e3f80",
+        "60204b5b133e3f80",
+        "07070f0f0f2b0720"
+      ],
+      "frameEntropy": [
+        6.26,
+        6.164,
+        5.307
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "island-crash-03-challenge",
+      "gameSlug": "crash",
+      "inspectedAt": "2026-09-22T12:47:52.626Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1985,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 175,
+      "integratedLufs": -16.1,
+      "truePeakDbfs": -1.5,
+      "duration": 15,
+      "fileSizeBytes": 4070472,
+      "sha256": "4995a359afdbed53448a77fae892bf5d2e27e5c9b48d3040c27bcfa71a8c26a2",
+      "frameHashes": [
+        "57cae1efff7cd256de27a660ee5e1b36f3fb3f41151f608f0ae7fc6fa5cedf14",
+        "c8c15e1e7dcf6cf4a67123e2daa2bae9347b215cf3841a62f3a9c5835eb47fe2",
+        "5dd1fc7188b5441360d877290ecaae2386d3e3a3557df618bfc678a05087f8fa"
+      ],
+      "framePerceptualHashes": [
+        "70304b5b433f3fc4",
+        "71304b7b43333ec0",
+        "03070f0f0f290700"
+      ],
+      "frameEntropy": [
+        6.287,
+        6.303,
+        5.353
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "island-crash-04-gameplay-first",
+      "gameSlug": "crash",
+      "inspectedAt": "2026-09-22T12:47:54.092Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1948,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 177,
+      "integratedLufs": -16.1,
+      "truePeakDbfs": -1.5,
+      "duration": 14,
+      "fileSizeBytes": 3736847,
+      "sha256": "3154df1155c0f0a315fbb4561f3fc3c8fc4f789745e03c1eb3eb2ddb17fb1153",
+      "frameHashes": [
+        "597b3cd8888e04a944bfa5daedb8c6c49ab08091264fb5e4fcca7da84fed04ac",
+        "cd702bd1e5cc69668edf50ddb56eef57d06c67fcd47fccab81e99c60fa197615",
+        "079b04518bce77ebc14e373e3a2852171fe8499f32719c4fef7248f6711f2649"
+      ],
+      "framePerceptualHashes": [
+        "71304b5b433e3fc4",
+        "71104b5b133e3f88",
+        "03070f0f0f2b0701"
+      ],
+      "frameEntropy": [
+        6.277,
+        6.086,
+        5.356
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "island-crash-05-reaction",
+      "gameSlug": "crash",
+      "inspectedAt": "2026-09-22T12:47:55.651Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 2163,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 172,
+      "integratedLufs": -16.2,
+      "truePeakDbfs": -1.5,
+      "duration": 17,
+      "fileSizeBytes": 4985149,
+      "sha256": "bfbe53eebb11acb25e8c416278bf8e7a14017c81da3e07cb6314ea7740d28863",
+      "frameHashes": [
+        "1efa0e89572e5d7ead70e522ed8677a790359ce020a199ece097d9e8278cccaf",
+        "4f315971a258b1f6bc8d2caf94c3113a16ab0982690038983801a00770fe7959",
+        "b208962eef34ecf1150883c1002895809f99abb98f16eaf3f43f00921a9fa674"
+      ],
+      "framePerceptualHashes": [
+        "79384b5b433f3fc4",
+        "79384b7b433f3f81",
+        "03070f0f0f2b0700"
+      ],
+      "frameEntropy": [
+        6.312,
+        6.376,
+        5.357
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "island-crash-06-close-call",
+      "gameSlug": "crash",
+      "inspectedAt": "2026-09-22T12:47:57.186Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1935,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 171,
+      "integratedLufs": -16.1,
+      "truePeakDbfs": -1.5,
+      "duration": 16,
+      "fileSizeBytes": 4234469,
+      "sha256": "b2ba17d263ff3e1286e2b97170691715822b205f33f6144163b8309e613232f7",
+      "frameHashes": [
+        "e771b29c8d519ea537b8d3e55c6b2ad4b6fb2c7c8093bcdd4e397b532bcafd4c",
+        "7173bf5a9475c7b95e01b0f1dbf6e5c0dac62d2e88cf706347c6a59efb93790a",
+        "828183a49336f190e6176e364d8b9e1b79f3159d85fa29d6609ded0026aa76cb"
+      ],
+      "framePerceptualHashes": [
+        "79384b5b433f3fc4",
+        "68384b5b133e3f80",
+        "07070f0f0f2b0720"
+      ],
+      "frameEntropy": [
+        6.296,
+        6.192,
+        5.324
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "island-crash-07-how-far",
+      "gameSlug": "crash",
+      "inspectedAt": "2026-09-22T12:47:58.631Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1940,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 173,
+      "integratedLufs": -16.2,
+      "truePeakDbfs": -1.5,
+      "duration": 15,
+      "fileSizeBytes": 3982283,
+      "sha256": "65739fe0d986e3ee5d2abc73d7ab26b9c0d69369b33436b8cd9dea6d6a44818a",
+      "frameHashes": [
+        "b65d89ba8535968e1b4b7af9a96c37ef06a3ef5640a76e50c3ea4dfb26856858",
+        "1376e58be8d8c3e803bbbf4db5becb158e218610d88f5ab64383a8fc4d1d8397",
+        "f002cb83d274aeb08157e7fffb89b856ef17145648847a53c568310216ab0df5"
+      ],
+      "framePerceptualHashes": [
+        "69684b5b433f3fc4",
+        "68684b7b43333d80",
+        "03070f0f0f0b0700"
+      ],
+      "frameEntropy": [
+        6.278,
+        6.31,
+        5.342
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "island-crash-08-quick-explanation",
+      "gameSlug": "crash",
+      "inspectedAt": "2026-09-22T12:48:00.153Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1928,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 172,
+      "integratedLufs": -16.1,
+      "truePeakDbfs": -1.5,
+      "duration": 16,
+      "fileSizeBytes": 4221583,
+      "sha256": "63fa9b300a0045b7a33457bdeef90240c5fd336f1b3ff486194e2079c854405f",
+      "frameHashes": [
+        "736ec171e70f1d29c8fed8e658dff459b8277683dd983e53c711f260ca5a2991",
+        "9169a3f798a954f78ade2f9d9c0bf08db223dd8ebfe2ffa4dc4fffb527b4737b",
+        "76ac19159ad232bcf3d11b686ce77da51aef25fa16bdf355b358a79802344c9b"
+      ],
+      "framePerceptualHashes": [
+        "69484b5b433e3780",
+        "68584b5b133e3f80",
+        "0b070f0f0f230701"
+      ],
+      "frameEntropy": [
+        6.265,
+        6.19,
+        5.339
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "island-crash-09-satisfying",
+      "gameSlug": "crash",
+      "inspectedAt": "2026-09-22T12:48:01.719Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 2087,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 173,
+      "integratedLufs": -16.1,
+      "truePeakDbfs": -1.5,
+      "duration": 17,
+      "fileSizeBytes": 4825223,
+      "sha256": "045e6c7f8e4076924942cb5dfc0aac69018b9e881ad30bff114d8d25c5b3d0bf",
+      "frameHashes": [
+        "86129e9b924ba5c5849e72c79da74828673dfd983bc92b4311f06ce06e467184",
+        "3376b0f2afa6ac3c4254b7781ae187e943672395ad15e2013285643caed184c5",
+        "2d2709b2f7e43b7ccc6f8959049bd7ba87ebbee9f79f72780170b828e7a7aab8"
+      ],
+      "framePerceptualHashes": [
+        "79384b5b433f3780",
+        "70384b5b033e3f81",
+        "07070f0f0f230720"
+      ],
+      "frameEntropy": [
+        6.25,
+        6.19,
+        5.314
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "island-crash-10-personal-choice",
+      "gameSlug": "crash",
+      "inspectedAt": "2026-09-22T12:48:03.199Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1941,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 174,
+      "integratedLufs": -16.2,
+      "truePeakDbfs": -1.4,
+      "duration": 15,
+      "fileSizeBytes": 3986725,
+      "sha256": "a81a848b85c0c38892511710936aa532040c200210a99b9444e9e967bbb3ee68",
+      "frameHashes": [
+        "1a4537dfa6b27a3c12d4890ff6cdefcf84cb33d359514f3155141ed4791f6e98",
+        "502e7acd5e4d98fbc421a41f6bf63ebf078fdb99e5a9ec5a8a37ad833b6f5864",
+        "0394e815c65f6eccdc2850209feff7808888e7a2a5b1085816456ce9ca45edd6"
+      ],
+      "framePerceptualHashes": [
+        "70204b5b433e3fc4",
+        "70304b5b133e3780",
+        "07070f0f0f230720"
+      ],
+      "frameEntropy": [
+        6.27,
+        6.145,
+        5.328
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "liva-mines-01-decision",
+      "gameSlug": "mines",
+      "inspectedAt": "2026-09-22T12:48:04.651Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1210,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 151,
+      "integratedLufs": -16.1,
+      "truePeakDbfs": -1.5,
+      "duration": 15,
+      "fileSizeBytes": 2572319,
+      "sha256": "bdbbfbbc0b779cfd65081177c659700102ab7b9c6b06f839ae6eedd69e836430",
+      "frameHashes": [
+        "744a6b3a5de264d135be0c8d990bb4fa110ae9428a9256abc96efbe978428856",
+        "8341f3fe2e86033c8e95209cfd55396174fde08b0ede0644b1ff727c00866f25",
+        "c2b0a86a215713a797d1e5f9704c34cc0c0c1658d8d9995c91195154d269a13e"
+      ],
+      "framePerceptualHashes": [
+        "785883a38f3f3f84",
+        "785883a38f373f89",
+        "03070f0f0f090701"
+      ],
+      "frameEntropy": [
+        5.683,
+        5.819,
+        5.348
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "liva-mines-02-tension",
+      "gameSlug": "mines",
+      "inspectedAt": "2026-09-22T12:48:06.139Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1219,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 154,
+      "integratedLufs": -16.1,
+      "truePeakDbfs": -1.5,
+      "duration": 16,
+      "fileSizeBytes": 2766247,
+      "sha256": "e3f777187969657365f336cd7f7ff6017536e05dc0b89b3136fc55feb9bf3f32",
+      "frameHashes": [
+        "83b7b39c1624ed13d53f0bdc7378ed6aab5fe13a8d89622d28f6565e456aadf0",
+        "4d83fa6a0db21353eaafd145b3fba4b2cb83125809ea69b7aa3f15c4c7cbffae",
+        "1efe36f5ba9708d8cc465092449b673b94fe06a86101dcb4ffbc7660a70b6390"
+      ],
+      "framePerceptualHashes": [
+        "686883a38f373f82",
+        "68688ba783373e81",
+        "03070f0f0f030700"
+      ],
+      "frameEntropy": [
+        5.692,
+        5.873,
+        5.35
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "liva-mines-03-challenge",
+      "gameSlug": "mines",
+      "inspectedAt": "2026-09-22T12:48:07.565Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1315,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 153,
+      "integratedLufs": -16.1,
+      "truePeakDbfs": -1.5,
+      "duration": 15,
+      "fileSizeBytes": 2772957,
+      "sha256": "d5adb63505469d758f2b964a360d06a94cacbc7b6ae13b2ae3ecb1477b302f52",
+      "frameHashes": [
+        "9b0616646fbaf1d407f54c93d0e013d6b70755da1c41a6fef6220f875dfba702",
+        "baea3f2a357fe1fc40ce300bfb075f036454df8ea23f88a7e7bf5532df44aa6a",
+        "e86e8754dfb7aaf4eb0a9e90365b0361295af2e17dc22e9d8167c29991b2469a"
+      ],
+      "framePerceptualHashes": [
+        "785883a38f373f82",
+        "785883a38f373f81",
+        "03070f0f0f090701"
+      ],
+      "frameEntropy": [
+        5.689,
+        5.859,
+        5.339
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "liva-mines-04-gameplay-first",
+      "gameSlug": "mines",
+      "inspectedAt": "2026-09-22T12:48:08.919Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1223,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 149,
+      "integratedLufs": -16.1,
+      "truePeakDbfs": -1.5,
+      "duration": 14,
+      "fileSizeBytes": 2419268,
+      "sha256": "11ec01c447fa41a3c7312ecf8955c974a0c85b6917334521014376a7ec1a372b",
+      "frameHashes": [
+        "bf72f4fa9cc9425935b74f60021ca82de54253e20c9e2460beb970467f0751f6",
+        "d89253274e4a4c95bf2226b06965a1b7b5c2120a4bdc4943ad36fc45b135b691",
+        "05f5872df0f35d36aa39fd7c136015c1cb8181ae3e9c50d38d9b4f792a489e3d"
+      ],
+      "framePerceptualHashes": [
+        "681883a38f373f84",
+        "781883a387373e81",
+        "07070f0f0f230700"
+      ],
+      "frameEntropy": [
+        5.675,
+        5.845,
+        5.377
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "liva-mines-05-reaction",
+      "gameSlug": "mines",
+      "inspectedAt": "2026-09-22T12:48:10.444Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1156,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 151,
+      "integratedLufs": -16.1,
+      "truePeakDbfs": -1.5,
+      "duration": 17,
+      "fileSizeBytes": 2800054,
+      "sha256": "de47d96b8470804d871208c9b7d63571ecab2ba96dcc3d7024c0513a99561b4e",
+      "frameHashes": [
+        "140d89d3cf40d988d3735ae18ad049391e5343915ee56228f85b7529739e775e",
+        "288ed9416bef9794f915b0d7d43108e2c71698ae12eecb1b0a3f78bdf6ac31ac",
+        "883d0a344587bb915eef649beddc8d8b315ba76f25aff14b29fed1d3d94e81f7"
+      ],
+      "framePerceptualHashes": [
+        "70308ba38f373f80",
+        "703083a787373f83",
+        "07070f0f0f230708"
+      ],
+      "frameEntropy": [
+        5.588,
+        5.744,
+        5.39
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "liva-mines-06-close-call",
+      "gameSlug": "mines",
+      "inspectedAt": "2026-09-22T12:48:11.933Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1247,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 153,
+      "integratedLufs": -16.1,
+      "truePeakDbfs": -1.5,
+      "duration": 16,
+      "fileSizeBytes": 2819771,
+      "sha256": "d7b94ffee81c23eff4dbd94579cbba84066d12cd2355a3ad19f5f8eeefd2e00f",
+      "frameHashes": [
+        "d925cfe19fbb0280ed2f4edabf2ae01fedb08dfbed097fbf9ac15848df452278",
+        "b276931fcdb6e514b9c31a5aa69d2417c0f63f792464bc55068c28f37681c09f",
+        "7b1709fab907ffaaf6f2a20c9b9e73a68c2c03ff1bee2595c6960f3330bcba71"
+      ],
+      "framePerceptualHashes": [
+        "785883a38f373f84",
+        "585887a38f373e81",
+        "03070f0f0f030701"
+      ],
+      "frameEntropy": [
+        5.705,
+        5.903,
+        5.356
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "liva-mines-07-how-far",
+      "gameSlug": "mines",
+      "inspectedAt": "2026-09-22T12:48:13.367Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1212,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 153,
+      "integratedLufs": -16.1,
+      "truePeakDbfs": -1.5,
+      "duration": 15,
+      "fileSizeBytes": 2579007,
+      "sha256": "136cd039d1e93c9ebae05608d1eb8cb205d0cf38abbe859453fbab3e2b6122cd",
+      "frameHashes": [
+        "14c386d39083973911d9787606b93a7e9039c478c7eed975f0fe8ae340b40d6f",
+        "dc0ccc8ca62bb2b3cdc2b5a7fc0349bcc6ed755115a13f298d26f2b70f826507",
+        "b015557a1934c4698b996d44abb8ec57e32fff6b84c4f261d2ef7bfd0954d15b"
+      ],
+      "framePerceptualHashes": [
+        "791883a38f373f82",
+        "68188fa78b3f3f80",
+        "03070f0f0f030701"
+      ],
+      "frameEntropy": [
+        5.693,
+        5.784,
+        5.352
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "liva-mines-08-quick-explanation",
+      "gameSlug": "mines",
+      "inspectedAt": "2026-09-22T12:48:14.838Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1231,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 153,
+      "integratedLufs": -16.1,
+      "truePeakDbfs": -1.5,
+      "duration": 16,
+      "fileSizeBytes": 2790836,
+      "sha256": "0e2083ead082ea102f9fd0c6d57144516c13eb6afffce29053b3341c3d417ba8",
+      "frameHashes": [
+        "e039232182d88f79e3ce11653bdbce8a8d4b650d895e673a5eb8ea6a07a3352a",
+        "2d82db63a3204743e36b35c6cab73c6881c9a105cbd8037b4cc397adfcd8cd7a",
+        "d8b8c8e26d2f9a69b39f878720b592ce028ed344f9e82abaffb0992c578b0658"
+      ],
+      "framePerceptualHashes": [
+        "707083a38f373780",
+        "727083a38f373e81",
+        "0f070f0f0f230702"
+      ],
+      "frameEntropy": [
+        5.641,
+        5.863,
+        5.531
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "liva-mines-09-satisfying",
+      "gameSlug": "mines",
+      "inspectedAt": "2026-09-22T12:48:16.367Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1174,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 151,
+      "integratedLufs": -16,
+      "truePeakDbfs": -1.5,
+      "duration": 17,
+      "fileSizeBytes": 2838965,
+      "sha256": "30a47c71d1c002a4386d3ff4968beea2a7abd3fb63a1f3cbe5235f857319eee6",
+      "frameHashes": [
+        "7f852e855230106e9c9de919b9b0b2423d19b29f4f52fdc9c9b852f7fbfef886",
+        "95f96ff4080a1599c9a9f5a8ba20bb8e18c97f7259ef1dfdb8eb95146fe4dc53",
+        "956092f2b4eef5716134e1f7f857f787421a52b76f90e8de8607ca189c42328c"
+      ],
+      "framePerceptualHashes": [
+        "607083a38f373780",
+        "607083a387373f83",
+        "07070f0f0f2b0708"
+      ],
+      "frameEntropy": [
+        5.628,
+        5.771,
+        5.394
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "liva-mines-10-personal-choice",
+      "gameSlug": "mines",
+      "inspectedAt": "2026-09-22T12:48:17.822Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1178,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 152,
+      "integratedLufs": -16.2,
+      "truePeakDbfs": -1.5,
+      "duration": 15,
+      "fileSizeBytes": 2513690,
+      "sha256": "1f54325d07de64fdcc9f4c4f4e2ee2d78ccb81507fbbb2efca2f24a8f4fade5c",
+      "frameHashes": [
+        "620dcc47f5d1a1288ade4d56610abc728ffcd2a97d0fc92fc8f7ed98b805541e",
+        "0d24866085de009a6f08bfff9a95a812d38f68cb5d9be3db07d8c7ca513494a5",
+        "6e79f0e9208c05bac9172854411b45df0bd4969cf3e0e66984346335138cc1a6"
+      ],
+      "framePerceptualHashes": [
+        "705883a38f373f80",
+        "7a5083a387373a84",
+        "03070f0f0f290701"
+      ],
+      "frameEntropy": [
+        5.671,
+        5.821,
+        5.34
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "liva-blackjack-01-decision",
+      "gameSlug": "blackjack",
+      "inspectedAt": "2026-09-22T12:48:19.261Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1254,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 169,
+      "integratedLufs": -16.3,
+      "truePeakDbfs": -1.5,
+      "duration": 15,
+      "fileSizeBytes": 2689221,
+      "sha256": "ed67791cc55dec38ef883aef2c3536bdb025c258101aa70c9e68d472078c7691",
+      "frameHashes": [
+        "cbef910d420b38d75c01dd0da9e8d11f8b8868279ea5d0f70328bfb2af0b5bfd",
+        "88fe4cfc9011ec93372bccc7679d42e47390d6d584e19d119254cf59a6bcebce",
+        "e8333b462b2e5d8f3c3a242cfef2b99e565c477722940b291955e9f73420cb78"
+      ],
+      "framePerceptualHashes": [
+        "78588e8f873f3780",
+        "68788f8f8f1f3781",
+        "07070f0f0f290700"
+      ],
+      "frameEntropy": [
+        5.666,
+        5.953,
+        5.304
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "liva-blackjack-02-tension",
+      "gameSlug": "blackjack",
+      "inspectedAt": "2026-09-22T12:48:20.734Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1316,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 166,
+      "integratedLufs": -16.1,
+      "truePeakDbfs": -1.5,
+      "duration": 16,
+      "fileSizeBytes": 2986249,
+      "sha256": "74dc455a4f79c443cdd3aecdba053405cefac5d09acf8acd3e59a29809032f3c",
+      "frameHashes": [
+        "fc521f346d35e62bf4b772f6694a589fa30125917c1ca0a5f92cc595905ff4c7",
+        "31ed69ca0dfda5f822a134000bbd01a260a44437232294005dfb51d27890bcf7",
+        "ecb8073a57a46c9fa061a52b5a5f08653fd1943fb684b7025e7ea8ba03fdd3b8"
+      ],
+      "framePerceptualHashes": [
+        "68488e8f873f3680",
+        "68788f8f8f1f3f81",
+        "03070f0f0f290702"
+      ],
+      "frameEntropy": [
+        5.615,
+        5.987,
+        5.357
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "liva-blackjack-03-challenge",
+      "gameSlug": "blackjack",
+      "inspectedAt": "2026-09-22T12:48:22.144Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1253,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 167,
+      "integratedLufs": -16.1,
+      "truePeakDbfs": -1.5,
+      "duration": 15,
+      "fileSizeBytes": 2684344,
+      "sha256": "d539aa226b0b5ea69a290b5db76da5ea0e395f05f7bad7a5bb2c32baf386e8f8",
+      "frameHashes": [
+        "c1dc539672c811fb7b065f29ea933ffe9f70188772af9e16ce218644602a1c39",
+        "a89fd4b0bc89d355e8918b01b75e00d3e07721d7395be142bc90f2e3262d8b37",
+        "9952e8886fe0156261588d4cffca2c510b27a1c83ab918abff1ff61e91293e4a"
+      ],
+      "framePerceptualHashes": [
+        "68388e8f873f3f81",
+        "68308a8f8f1f3781",
+        "07070f0f0f290700"
+      ],
+      "frameEntropy": [
+        5.653,
+        5.9,
+        5.305
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "liva-blackjack-04-gameplay-first",
+      "gameSlug": "blackjack",
+      "inspectedAt": "2026-09-22T12:48:23.482Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1261,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 168,
+      "integratedLufs": -16.2,
+      "truePeakDbfs": -1.5,
+      "duration": 14,
+      "fileSizeBytes": 2520706,
+      "sha256": "7f1a971d7ae4647e09d494e88a69f898a87c55dfb31567c60f4b7b7c06e9a8ad",
+      "frameHashes": [
+        "beb6d6181059659c44a8cb849f26c2b16182e80aa06122487083d3a661e9e6eb",
+        "cd0e02cb25a1ebd54c4d545675bb69644f7962c4f40d1425033ce7ea256ad0ca",
+        "438ade23207eabc8350c1b8d146e357a358e30b66275a9eadea8be5f64562d81"
+      ],
+      "framePerceptualHashes": [
+        "78388e8f873f3f80",
+        "68388e8f8f1f3781",
+        "07070f0f0f290f04"
+      ],
+      "frameEntropy": [
+        5.564,
+        5.89,
+        5.519
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "liva-blackjack-05-reaction",
+      "gameSlug": "blackjack",
+      "inspectedAt": "2026-09-22T12:48:25.015Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1280,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 168,
+      "integratedLufs": -16.2,
+      "truePeakDbfs": -1.5,
+      "duration": 17,
+      "fileSizeBytes": 3100589,
+      "sha256": "3f31f034f1b683dc48295c5a07799271e93f20c2b790a2dd26a47216cd73841d",
+      "frameHashes": [
+        "58e88acb9a7873f4626080f532c4398b82d401a06e7292b0b6bb81e32f3e7f87",
+        "267234e04b09fb335cfaa8ab9bcea9c7b132e6f3949504ecea7ac6f811f6b9d0",
+        "9fba93de47ae6e4a0335b623b578b0e89c7b1816ceb761044224854fdbed5064"
+      ],
+      "framePerceptualHashes": [
+        "72308e8f873f3680",
+        "68308f8f8f1f3783",
+        "07070f0f0f230700"
+      ],
+      "frameEntropy": [
+        5.609,
+        5.915,
+        5.302
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "liva-blackjack-06-close-call",
+      "gameSlug": "blackjack",
+      "inspectedAt": "2026-09-22T12:48:26.482Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1283,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 166,
+      "integratedLufs": -16.2,
+      "truePeakDbfs": -1.5,
+      "duration": 16,
+      "fileSizeBytes": 2919717,
+      "sha256": "23ab23960a8513da649e24e421dad0f07354b0014ca7f879495a255b9634b5d6",
+      "frameHashes": [
+        "48f2d829bed1fad84955f9e2039952602783114624b2397049e3c2b574c01931",
+        "d5fdabee301336703c2795788fe33cc11540e20d528d03a51a9efa81bbe011a6",
+        "5f640bed264ca8507cea2ca908e9287397bfd9d313057480bd4c4254598d63b5"
+      ],
+      "framePerceptualHashes": [
+        "78188e8f873f3780",
+        "78388f8f8f1f3f81",
+        "0b070f0f0f210701"
+      ],
+      "frameEntropy": [
+        5.593,
+        5.9,
+        5.328
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "liva-blackjack-07-how-far",
+      "gameSlug": "blackjack",
+      "inspectedAt": "2026-09-22T12:48:27.883Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1257,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 171,
+      "integratedLufs": -16.3,
+      "truePeakDbfs": -1.4,
+      "duration": 15,
+      "fileSizeBytes": 2698900,
+      "sha256": "89bd78b200c32d9d294a019ac0274d67e222e06dab5c250b3f03535ba257f87e",
+      "frameHashes": [
+        "1be49587efd56c363b0a1eb2112e8a8a8e197991cf70dda590aad0d8dfadb751",
+        "ef996a5368d21788b552ee11789ed44b57e4cd96bc1961f86e7c2a0a569da946",
+        "a7651885f4b761b742f387bef9cd3dfcd627d58fbd83136f489a655948e55e56"
+      ],
+      "framePerceptualHashes": [
+        "78508e8f873f3f80",
+        "78708f8f8f1f3781",
+        "07070f0f0f290700"
+      ],
+      "frameEntropy": [
+        5.703,
+        5.982,
+        5.306
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "liva-blackjack-08-quick-explanation",
+      "gameSlug": "blackjack",
+      "inspectedAt": "2026-09-22T12:48:29.343Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1370,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 165,
+      "integratedLufs": -16.1,
+      "truePeakDbfs": -1.5,
+      "duration": 16,
+      "fileSizeBytes": 3091427,
+      "sha256": "4da8e897f75ea3895b4d1a98e84b8e717933cc7d2e59c540da3f39921a8c0db4",
+      "frameHashes": [
+        "085577778078d847531cb974f06a66a16ba4af0bb4cae8e853a1f5a1635ff9f7",
+        "162324df7ef25815372e22453d4830dfc7062dbcf1ebffa0dc1de7207cbc9814",
+        "314c46d476b897bc35792a9e0966d39fe070b94a32cef2c727702246522dea68"
+      ],
+      "framePerceptualHashes": [
+        "68588e8f873f3f80",
+        "68708e8f8f1f3781",
+        "0f070f0f0f0b0704"
+      ],
+      "frameEntropy": [
+        5.657,
+        5.964,
+        5.467
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "liva-blackjack-09-satisfying",
+      "gameSlug": "blackjack",
+      "inspectedAt": "2026-09-22T12:48:30.877Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1263,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 168,
+      "integratedLufs": -16.1,
+      "truePeakDbfs": -1.5,
+      "duration": 17,
+      "fileSizeBytes": 3062301,
+      "sha256": "8fbe5f56adfc35a964e929f20282475583c79484979b05ae1fe67e60575eb656",
+      "frameHashes": [
+        "1491dfef64c34d9c317f1f8fa2a6f7c9084123cc6ae1eba972e6c8db6b4cf4ef",
+        "d11e0d557680c2716e64672fc7d581edb14c5aa7d597d61bde6e22d2105f831e",
+        "298cd8c12d362f4dca175464786ebe3ab8f4e57ffb130498d398792f944f4a3a"
+      ],
+      "framePerceptualHashes": [
+        "78388e8f873f3780",
+        "68308b8f8f1f3f83",
+        "07070f0f0f2b0700"
+      ],
+      "frameEntropy": [
+        5.613,
+        5.832,
+        5.3
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "liva-blackjack-10-personal-choice",
+      "gameSlug": "blackjack",
+      "inspectedAt": "2026-09-22T12:48:32.278Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1194,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 166,
+      "integratedLufs": -16.2,
+      "truePeakDbfs": -1.5,
+      "duration": 15,
+      "fileSizeBytes": 2570928,
+      "sha256": "3585a57813d5c026138fc5a2863c51ec6428aafee46ff2938b2f517edb66fae3",
+      "frameHashes": [
+        "02f53abe16bcb247766b42c33093546d64c4eb1e7f096962e316fe2291854939",
+        "fa37c734b9ca7c8ea95283d21a8af5e7f7e264762d4c11d54297115ab36e04fa",
+        "cd171c1b55382e3e53214cc37d173b1e2b8a5144e7134b4b23f7cbc698816a7d"
+      ],
+      "framePerceptualHashes": [
+        "72508e8f873f3f80",
+        "7a708e8f8f1f3781",
+        "07070f0f0f290700"
+      ],
+      "frameEntropy": [
+        5.66,
+        5.945,
+        5.305
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "liva-roulette-01-decision",
+      "gameSlug": "roulette",
+      "inspectedAt": "2026-09-22T12:48:33.717Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1776,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 174,
+      "integratedLufs": -16.2,
+      "truePeakDbfs": -1.5,
+      "duration": 15,
+      "fileSizeBytes": 3677137,
+      "sha256": "81782edb4f68a481d3064c92d0aa320b1b1cc03a6b4f9744b43fec6acea92ef8",
+      "frameHashes": [
+        "e2f4a036aba773604d070e31d5d628fde478d67748d369c34feb143d43b374e7",
+        "ee4253f4da849f6c81919551123de89bd0912111c069f90f3f1e9e00c7cfd793",
+        "ec6fb7e12a8e91a4acb5700acc991176570c4540173d196490974cddbe512a6b"
+      ],
+      "framePerceptualHashes": [
+        "6060a06f891f3780",
+        "6060a8afa91f3f81",
+        "0b070f0f0f210701"
+      ],
+      "frameEntropy": [
+        5.562,
+        5.654,
+        5.356
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "liva-roulette-02-tension",
+      "gameSlug": "roulette",
+      "inspectedAt": "2026-09-22T12:48:35.210Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1902,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 172,
+      "integratedLufs": -16.2,
+      "truePeakDbfs": -1.5,
+      "duration": 16,
+      "fileSizeBytes": 4170939,
+      "sha256": "895280f50b6c9a2dd6cfc4e74767f053aad4887eca4b5b93fd1dd6a44bb9702b",
+      "frameHashes": [
+        "fa656dc39133184a1e20d44d1490e62027770b5bf1249ae0f7ea993a8dfc3a93",
+        "8aa0d5d82d7b576c4b1709b41d73751a34c2e7278c0ff289e4c2bc25194c4d20",
+        "813afadbd85f09b90fb28632dc433a40f0fed1a35b7c184da5ca1f9c58ba54f5"
+      ],
+      "framePerceptualHashes": [
+        "7150a02b891f3780",
+        "7950a8aba11f3781",
+        "07070f0f0f230740"
+      ],
+      "frameEntropy": [
+        5.578,
+        5.674,
+        5.323
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "liva-roulette-03-challenge",
+      "gameSlug": "roulette",
+      "inspectedAt": "2026-09-22T12:48:36.703Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1792,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 175,
+      "integratedLufs": -16.1,
+      "truePeakDbfs": -1.5,
+      "duration": 15,
+      "fileSizeBytes": 3708005,
+      "sha256": "05a3d88a73eb2441bee55c55d60777cf7978d5bc85dcd5b87e1ac6678da254c5",
+      "frameHashes": [
+        "81abdd27a70181cd88e1ff3cdd7d03916f0a8b0c58d6a6bb5aa890f1280444ab",
+        "c4b1d679fb149bbccd70c70b2f7fbbab914f30dd436a358cec02bd965d243921",
+        "d8c9ef92ccd82e9cc87cb95449400c11c1a29dce6e2cf534a03da6a47792301c"
+      ],
+      "framePerceptualHashes": [
+        "6070b02f891f3780",
+        "7070b0af891f3f81",
+        "0b070f0f0f230701"
+      ],
+      "frameEntropy": [
+        5.563,
+        5.66,
+        5.362
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "liva-roulette-04-gameplay-first",
+      "gameSlug": "roulette",
+      "inspectedAt": "2026-09-22T12:48:38.137Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1898,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 174,
+      "integratedLufs": -16.1,
+      "truePeakDbfs": -1.5,
+      "duration": 14,
+      "fileSizeBytes": 3644970,
+      "sha256": "2ecacca35d35bde8cb1423d91baf69e64cd6debc16dff83e516541dc3f614d88",
+      "frameHashes": [
+        "e775e03e072a3b87cb971d7d6119c1a68f5b4d42efd625f897fdce38405d6054",
+        "24d72aeb9e851fe948422d05fd879aa87ce5be518cea96db1f5b35d3ec38148a",
+        "3f5ce97bfecce878ac87bc7292d98f6731cc4c876f46402126c648943287a243"
+      ],
+      "framePerceptualHashes": [
+        "7818a02b891f3782",
+        "7818a0af811f3783",
+        "0b070f0f0f210701"
+      ],
+      "frameEntropy": [
+        5.588,
+        5.675,
+        5.353
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "liva-roulette-05-reaction",
+      "gameSlug": "roulette",
+      "inspectedAt": "2026-09-22T12:48:39.701Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1932,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 173,
+      "integratedLufs": -16.1,
+      "truePeakDbfs": -1.5,
+      "duration": 17,
+      "fileSizeBytes": 4497587,
+      "sha256": "3644ab347a874c935b8bfcf98b0c52579537d8557d84ee909f3bbf629ccee6eb",
+      "frameHashes": [
+        "30363a73904b364c527dc17ae259d0869dcfbe340062366fe0075acdfb0650b3",
+        "db04143b83fe84e7278806bc86996b120a19fbc55df74d2ed468c3f1d5798292",
+        "3827d933ee63f66aff9caa6f4f852baca3f7253354cffe76852494d55848dae6"
+      ],
+      "framePerceptualHashes": [
+        "7838a06f891f3782",
+        "7838a0af891f3781",
+        "07070f0f0f230640"
+      ],
+      "frameEntropy": [
+        5.591,
+        5.69,
+        5.332
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "liva-roulette-06-close-call",
+      "gameSlug": "roulette",
+      "inspectedAt": "2026-09-22T12:48:41.207Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1882,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 171,
+      "integratedLufs": -16.1,
+      "truePeakDbfs": -1.5,
+      "duration": 16,
+      "fileSizeBytes": 4127740,
+      "sha256": "2dfa50bca5d4cd5d84404be95be1c6292a93558fbcd12d98f8862d0ba398a018",
+      "frameHashes": [
+        "36bde96410ae5a096b0827d5ca8ba6fb735315394b8b86f257cf0317cc6b504a",
+        "c187b0f5a00beb130cb15215bcfa11199eb156708f50fabea5c70a861afcf80c",
+        "71a5ada650de0f69b22ec833f087b3870c924542d15dc98aff125a68f99e69d8"
+      ],
+      "framePerceptualHashes": [
+        "7818b02f891f3780",
+        "7818a0af891f3781",
+        "07070f0f0f230640"
+      ],
+      "frameEntropy": [
+        5.564,
+        5.667,
+        5.327
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "liva-roulette-07-how-far",
+      "gameSlug": "roulette",
+      "inspectedAt": "2026-09-22T12:48:42.668Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1818,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 174,
+      "integratedLufs": -16.2,
+      "truePeakDbfs": -1.5,
+      "duration": 15,
+      "fileSizeBytes": 3756040,
+      "sha256": "fc12793b71d3b8893e3348fcb449f2b39d74c81f0512a1359d365fd1013576bb",
+      "frameHashes": [
+        "915f868f97cc41bc5f9d9595dc8d3331d6d7a6fc3bafa014232ddff67f0408fc",
+        "934f2216bdda2624304282c2295812f41a84eee6f7195f1064ba6a0ac6c29cfd",
+        "88ac259537f7df08d58b6c82bc2cce9c1cd8240b3f8d352bde09fddbf2b39435"
+      ],
+      "framePerceptualHashes": [
+        "7878a06f891f3782",
+        "7878a0af891f3f81",
+        "07070f0f0f2b0740"
+      ],
+      "frameEntropy": [
+        5.607,
+        5.66,
+        5.354
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "liva-roulette-08-quick-explanation",
+      "gameSlug": "roulette",
+      "inspectedAt": "2026-09-22T12:48:44.167Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1890,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 172,
+      "integratedLufs": -16.1,
+      "truePeakDbfs": -1.5,
+      "duration": 16,
+      "fileSizeBytes": 4147079,
+      "sha256": "0ef34776c64ec25413ce6fdff3b277934c730e86eb587d0ff82064b34c36ff68",
+      "frameHashes": [
+        "9b2f6861e8adebf9cfd47d71fc3a80ebee949f4dbeab688ad4191c5cdd94e2e7",
+        "ace7a7c7a0db615cb36b8a63d321be9b5a6fffcfbaeb172c8e1b5724c190db90",
+        "5f78f483d2daa65b9efcc966ea1519a53e692e2c7945c5941f3891dd9e355c0d"
+      ],
+      "framePerceptualHashes": [
+        "6808b02f891f3780",
+        "6808b0af891f3781",
+        "07070f0f0f2b0740"
+      ],
+      "frameEntropy": [
+        5.559,
+        5.671,
+        5.326
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "liva-roulette-09-satisfying",
+      "gameSlug": "roulette",
+      "inspectedAt": "2026-09-22T12:48:45.724Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1911,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 173,
+      "integratedLufs": -16.1,
+      "truePeakDbfs": -1.5,
+      "duration": 17,
+      "fileSizeBytes": 4452885,
+      "sha256": "8d4d8ee0efcce90fc039916a6aa7d80f581ba5567f6ada48048a7bb51cab45d9",
+      "frameHashes": [
+        "e4a939e140b1ce4b6910a9cdc1b9360ec94afce0098de1a76d64af3a3796bbbf",
+        "0b172636854e92e1105e0e5f4365905a6f7d7016f37e2a1cbffff7d19860cdc4",
+        "f2171cd6995f075aa9371da0d55b4ae90481d7760297a23b44000902686212ba"
+      ],
+      "framePerceptualHashes": [
+        "7818b06b891f3788",
+        "6818b0afa91f3f81",
+        "07070f0f0f230740"
+      ],
+      "frameEntropy": [
+        5.619,
+        5.683,
+        5.347
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "liva-roulette-10-personal-choice",
+      "gameSlug": "roulette",
+      "inspectedAt": "2026-09-22T12:48:47.239Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 1813,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 174,
+      "integratedLufs": -16.2,
+      "truePeakDbfs": -1.5,
+      "duration": 15,
+      "fileSizeBytes": 3744825,
+      "sha256": "87c8df819d512ddfa4919c154cf75b4c16f4d8087dddf5c926a34a1b706c6889",
+      "frameHashes": [
+        "337d29ed7d8db4fb575792468036739b9e493ca27e5bcd7862bcbb73deed6d52",
+        "d29d2809bf837408cd6c4a2d52679c9365ac3c7e10ee7ae1f31a6a9722767626",
+        "10151632a6048a8666b25e14ebd8e5d8ba1f38221b21990d70b06a147cc2f919"
+      ],
+      "framePerceptualHashes": [
+        "7030a82b891f3782",
+        "7070a0af891f3781",
+        "0b070f0f0f230f00"
+      ],
+      "frameEntropy": [
+        5.582,
+        5.655,
+        5.367
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "capybara-gold-01-decision",
+      "gameSlug": "capybara-gold",
+      "inspectedAt": "2026-09-22T12:48:48.734Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 2651,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 166,
+      "integratedLufs": -16.2,
+      "truePeakDbfs": -1.5,
+      "duration": 15,
+      "fileSizeBytes": 5303058,
+      "sha256": "d837b833f7a7c15802583aacadd31eb4b091c17d628b03c09c65f5e4295ee106",
+      "frameHashes": [
+        "474082ffb4eb1c3e05c1b59fed229989a7a4909528d0c6f2955948dd9d8fda62",
+        "03ca6b9031f963b8e3726815c6d315ab04cc11898da38b11c047d9080b74deee",
+        "5efb5364b8ec8bbd478cc1b232d141f799ed7e425b34c28c113429c29f2f1ceb"
+      ],
+      "framePerceptualHashes": [
+        "683836b7871f3784",
+        "68383fb78b1f3781",
+        "03070f0f0f210701"
+      ],
+      "frameEntropy": [
+        5.848,
+        5.826,
+        5.34
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "capybara-gold-02-tension",
+      "gameSlug": "capybara-gold",
+      "inspectedAt": "2026-09-22T12:48:50.253Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 2451,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 165,
+      "integratedLufs": -16.1,
+      "truePeakDbfs": -1.5,
+      "duration": 16,
+      "fileSizeBytes": 5253233,
+      "sha256": "dbfb0853d98bdac2e85811dfa006c984f1d2858beb5514e68184bf7fda63747e",
+      "frameHashes": [
+        "a639643632cae66a4eca9c0d4cdc1d338ec70ff444f6764b9bce62ada4622264",
+        "5f009f9bc26b254b3c145af1bfb29df5fcdc40e53e6d679446d014c01a0a2c7e",
+        "ffb5a8e12f31f87143e8b6e523a77cad49eec24eab5982d8774f4c07802f38a2"
+      ],
+      "framePerceptualHashes": [
+        "78302eb7871f3785",
+        "68303fa78b1f3781",
+        "03070f0f0f230701"
+      ],
+      "frameEntropy": [
+        5.83,
+        5.861,
+        5.345
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "capybara-gold-03-challenge",
+      "gameSlug": "capybara-gold",
+      "inspectedAt": "2026-09-22T12:48:51.727Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 2717,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 168,
+      "integratedLufs": -16.1,
+      "truePeakDbfs": -1.5,
+      "duration": 15,
+      "fileSizeBytes": 5428869,
+      "sha256": "d9fad52d261189623d217b525c5b23635fc8d2e344cfcc2ba4d45780fea8aad6",
+      "frameHashes": [
+        "e1010c7ac831e7c7430069b11301167892a6e52c8dfa6a13d24e62fc2633d78d",
+        "0f2768192d192ac954699ab43ab13abf6d18d81c091c9de8a6c2b89573ba0875",
+        "5541ef9820b078c990b817d82a64e94e10733a41ac74ebb918b3329da3b5ac2b"
+      ],
+      "framePerceptualHashes": [
+        "686c3fb7871f3782",
+        "696c37b78f1f3781",
+        "03070f0f0f2b0701"
+      ],
+      "frameEntropy": [
+        5.899,
+        5.871,
+        5.352
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "capybara-gold-04-gameplay-first",
+      "gameSlug": "capybara-gold",
+      "inspectedAt": "2026-09-22T12:48:53.140Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 2566,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 170,
+      "integratedLufs": -16.1,
+      "truePeakDbfs": -1.5,
+      "duration": 14,
+      "fileSizeBytes": 4805365,
+      "sha256": "7616c4e6930ab6f418488caf5a58c7dbaa12f2ea28cbd4907783fc7a0e149274",
+      "frameHashes": [
+        "04df4683bcabb0128c0e849485148b55d58c38e8d55aba57102151ca9cf3a3a4",
+        "7df96ccac1a363be5bf126862c2f7fb121042637dd2a1c718ac2347d31847298",
+        "4505423f0df6dcb0c5e7a8b9ce9e69945bc82658457b77506101d1dc6ff27137"
+      ],
+      "framePerceptualHashes": [
+        "78182fb7871f3785",
+        "78583fbf871f3781",
+        "03070f0f0f030f01"
+      ],
+      "frameEntropy": [
+        5.835,
+        5.84,
+        5.329
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "capybara-gold-05-reaction",
+      "gameSlug": "capybara-gold",
+      "inspectedAt": "2026-09-22T12:48:54.732Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 2504,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 166,
+      "integratedLufs": -16.1,
+      "truePeakDbfs": -1.5,
+      "duration": 17,
+      "fileSizeBytes": 5695885,
+      "sha256": "346b8031c4b6ee36b605fecec133c37f196cb904d5013cd2a885deeb3e42b944",
+      "frameHashes": [
+        "9ff31add78f69e8abb9da64dc3554fba1ccd568edd8ef3e3db35918025dd485a",
+        "957fc14dfc0338088c7c8e03b84d0cd24396569b2ed2d59d5b8658657bfc9535",
+        "63d8bd6ee3370e6c17fad6badfa830a879c0159fe34416bb08689b3ad4b5f411"
+      ],
+      "framePerceptualHashes": [
+        "79103fb7871f3784",
+        "781837a78f1f3e81",
+        "03070f0f0f230701"
+      ],
+      "frameEntropy": [
+        5.843,
+        5.862,
+        5.349
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "capybara-gold-06-close-call",
+      "gameSlug": "capybara-gold",
+      "inspectedAt": "2026-09-22T12:48:56.249Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 2640,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 164,
+      "integratedLufs": -16,
+      "truePeakDbfs": -1.5,
+      "duration": 16,
+      "fileSizeBytes": 5630924,
+      "sha256": "ad4f2dc0ee561e7f99d832840d749a264ef4f1148c57d59a2c9c9c15f8b5aefb",
+      "frameHashes": [
+        "3abee515260ce7b59c7617b703bbdbba98127e62306cd81fd6d8ddf1a5251478",
+        "6dff93b6a10a959fe79c69d0b590a6c1c744aa003fd670c04fd3426088675e24",
+        "1f884bfe7326b91e5cacefe57231e6ab13520c404d3726f6c705f274d158dea8"
+      ],
+      "framePerceptualHashes": [
+        "79383ebf8b1f3780",
+        "685837bf8f1f36c1",
+        "03070f0f0f2b0701"
+      ],
+      "frameEntropy": [
+        5.795,
+        5.873,
+        5.348
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "capybara-gold-07-how-far",
+      "gameSlug": "capybara-gold",
+      "inspectedAt": "2026-09-22T12:48:57.746Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 2709,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 165,
+      "integratedLufs": -16.1,
+      "truePeakDbfs": -1.5,
+      "duration": 15,
+      "fileSizeBytes": 5410666,
+      "sha256": "d9a1d0722a8ca6d3c3342b632060a99d44ac52836197a5ac20c7b71c6c850adc",
+      "frameHashes": [
+        "892fe365022a519de24f01aab27976463738e63b7adc21d4daad848fd3890fa6",
+        "125ca910d7029d52de432eb34a39b039677892027187b3a0f0f56e62cd295ce6",
+        "6e055ce8d9b2af4e889608d2f1eb133e70ddd4884e6f902d6c1db22b1f489d2a"
+      ],
+      "framePerceptualHashes": [
+        "71302fb7871f3781",
+        "70302faf871f3781",
+        "03070f0f0f2b0700"
+      ],
+      "frameEntropy": [
+        5.812,
+        5.773,
+        5.361
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "capybara-gold-08-quick-explanation",
+      "gameSlug": "capybara-gold",
+      "inspectedAt": "2026-09-22T12:48:59.268Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 2551,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 164,
+      "integratedLufs": -16.1,
+      "truePeakDbfs": -1.5,
+      "duration": 16,
+      "fileSizeBytes": 5451646,
+      "sha256": "314e4d144b853d80e768b8d5ba5cc0f92bff55ec80cb3daaf18d684bc17680e2",
+      "frameHashes": [
+        "65169f4bfb67f09a3225d2a0b9b8c708120bed7826db763b9696e98e80236dd1",
+        "1b51dbbf96c2a205d4baa5d0595348f88f3d0f76c4619a2886946746b1f971b3",
+        "3fe930440658acfd728cbdcf8f6cff97a0ed6ab1ed9c1e04c7051d80a245e711"
+      ],
+      "framePerceptualHashes": [
+        "687836b7831f3785",
+        "686837af8f1f37c1",
+        "03070f0f0f230701"
+      ],
+      "frameEntropy": [
+        5.834,
+        5.93,
+        5.348
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "capybara-gold-09-satisfying",
+      "gameSlug": "capybara-gold",
+      "inspectedAt": "2026-09-22T12:49:00.878Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 2499,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 165,
+      "integratedLufs": -16.1,
+      "truePeakDbfs": -1.5,
+      "duration": 17,
+      "fileSizeBytes": 5683915,
+      "sha256": "b448b3dcca97071b4dfab7905a1d24ae2aa91b1f9bf3e609b022af23e991c064",
+      "frameHashes": [
+        "6b63de549e83487114a08d4a78746df7533e90b56020b58cf727c71b5168ed9b",
+        "8869dcadb4a74ba4d8cec6d367bf39b54625af438e23ec588bcdc42d661e7a01",
+        "5c4eaef09080ca56fbafd8ce1383970fea5c5ac0d3d134038ca2cb4c6ab22bcb"
+      ],
+      "framePerceptualHashes": [
+        "713036b7871f3785",
+        "70302fb78f1f3781",
+        "03070f0f0f2b0701"
+      ],
+      "frameEntropy": [
+        5.834,
+        5.848,
+        5.353
+      ],
+      "passed": true,
+      "notes": []
+    },
+    {
+      "contentId": "capybara-gold-10-personal-choice",
+      "gameSlug": "capybara-gold",
+      "inspectedAt": "2026-09-22T12:49:02.398Z",
+      "videoCodec": "h264",
+      "videoProfile": "High",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "videoBitrateKbps": 2643,
+      "audioCodec": "aac (LC) (mp4a / 0x6134706D)",
+      "audioBitrateKbps": 167,
+      "integratedLufs": -16.1,
+      "truePeakDbfs": -1.5,
+      "duration": 15,
+      "fileSizeBytes": 5288294,
+      "sha256": "903f4d3e4fd38208907c74a87c547e871c0202fd071a39eeda11b99945cd922e",
+      "frameHashes": [
+        "e5f1a0b3774ad4c2692a01faa68cf2bdc60355ff757414ba0214f87230a369ff",
+        "fde61420d3a835a014b473d215d0f5d8ccb00e8a4a66fbe600efe9ec709b698c",
+        "e051227ab60189c23885ce0e96e4e63418a19e0286092d82e7a912b7a142aeb5"
+      ],
+      "framePerceptualHashes": [
+        "783836b7831f3685",
+        "783827af8b1f3f81",
+        "03070f0f0f2b0700"
+      ],
+      "frameEntropy": [
+        5.868,
+        5.844,
+        5.362
+      ],
+      "passed": true,
+      "notes": []
+    }
+  ]
+}
