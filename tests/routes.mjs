@@ -62,6 +62,46 @@ const trafficSprintPages = {
     h1: 'Seleção editorial de crash games no Brasil',
     links: ['/pt-br/crash', '/pt-br/best/crash-games', '/pt-br/games/aviator', '/pt-br/games/jetx', '/pt-br/games/spaceman', '/pt-br/where-to-play/aviator'],
   },
+  '/pt-br/slots': {
+    h1: 'Jogos de slots: explore formatos e mecânicas',
+    links: ['/pt-br/games/gates-of-olympus', '/pt-br/games/sweet-bonanza', '/pt-br/games/big-bass-bonanza', '/pt-br/games-like/gates-of-olympus', '/pt-br/compare/gates-of-olympus-vs-sweet-bonanza', '/pt-br/providers/pragmatic-play', '/pt-br/best/best-slots-brazil'],
+  },
+  '/pt-br/games/gates-of-olympus': {
+    h1: 'Gates of Olympus: como funciona o jogo',
+    links: ['/pt-br/where-to-play/gates-of-olympus', '/pt-br/games-like/gates-of-olympus', '/pt-br/compare/gates-of-olympus-vs-sweet-bonanza', '/pt-br/slots', '/pt-br/providers/pragmatic-play'],
+  },
+  '/pt-br/where-to-play/gates-of-olympus': {
+    h1: 'Onde jogar Gates of Olympus no Brasil',
+    links: ['/pt-br/games/gates-of-olympus', '/pt-br/games-like/gates-of-olympus', '/pt-br/compare/gates-of-olympus-vs-sweet-bonanza', '/pt-br/slots', '/pt-br/providers/pragmatic-play'],
+  },
+  '/pt-br/games-like/gates-of-olympus': {
+    h1: 'Jogos como Gates of Olympus: alternativas e diferenças',
+    links: ['/pt-br/games/gates-of-olympus', '/pt-br/games/sweet-bonanza', '/pt-br/games/big-bass-bonanza', '/pt-br/where-to-play/gates-of-olympus', '/pt-br/compare/gates-of-olympus-vs-sweet-bonanza', '/pt-br/slots', '/pt-br/providers/pragmatic-play'],
+  },
+  '/pt-br/compare/gates-of-olympus-vs-sweet-bonanza': {
+    h1: 'Gates of Olympus vs Sweet Bonanza',
+    links: ['/pt-br/games/gates-of-olympus', '/pt-br/games/sweet-bonanza', '/pt-br/where-to-play/gates-of-olympus', '/pt-br/where-to-play/sweet-bonanza', '/pt-br/games-like/gates-of-olympus', '/pt-br/slots', '/pt-br/providers/pragmatic-play'],
+  },
+  '/pt-br/games/sweet-bonanza': {
+    h1: 'Sweet Bonanza: como funciona o jogo',
+    links: ['/pt-br/where-to-play/sweet-bonanza', '/pt-br/compare/gates-of-olympus-vs-sweet-bonanza', '/pt-br/slots', '/pt-br/providers/pragmatic-play'],
+  },
+  '/pt-br/where-to-play/sweet-bonanza': {
+    h1: 'Onde jogar Sweet Bonanza no Brasil',
+    links: ['/pt-br/games/sweet-bonanza', '/pt-br/compare/gates-of-olympus-vs-sweet-bonanza', '/pt-br/slots', '/pt-br/providers/pragmatic-play'],
+  },
+  '/pt-br/games/big-bass-bonanza': {
+    h1: 'Big Bass Bonanza: como funciona o jogo',
+    links: ['/pt-br/where-to-play/big-bass-bonanza', '/pt-br/slots', '/pt-br/providers/pragmatic-play'],
+  },
+  '/pt-br/providers/pragmatic-play': {
+    h1: 'Jogos da Pragmatic Play: catálogo e mecânicas',
+    links: ['/pt-br/slots', '/pt-br/games/gates-of-olympus', '/pt-br/games/sweet-bonanza', '/pt-br/games/big-bass-bonanza', '/pt-br/games/sugar-rush'],
+  },
+  '/pt-br/best/best-slots-brazil': {
+    h1: 'Seleção editorial de slots no Brasil',
+    links: ['/pt-br/slots', '/pt-br/games/gates-of-olympus', '/pt-br/games/sweet-bonanza', '/pt-br/games/big-bass-bonanza', '/pt-br/where-to-play/gates-of-olympus', '/pt-br/where-to-play/sweet-bonanza', '/pt-br/where-to-play/big-bass-bonanza', '/pt-br/compare/gates-of-olympus-vs-sweet-bonanza', '/pt-br/providers/pragmatic-play'],
+  },
 }
 
 const listener = createServer()

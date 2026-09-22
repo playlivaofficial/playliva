@@ -104,6 +104,11 @@ export function GamesLikeView({ game }: { game: Game }) {
                 Como comparar crash games
               </Button>
             )}
+            {game.slug === 'gates-of-olympus' && locale === 'pt-BR' && (
+              <Button variant="ghost" render={<LocaleLink href="/providers/pragmatic-play" />}>
+                Catálogo da Pragmatic Play
+              </Button>
+            )}
           </div>
         </ContentCard>
       </Section>
@@ -157,6 +162,15 @@ export function GamesLikeView({ game }: { game: Game }) {
                       >
                         {t('cta.compare')}
                         <ArrowRight className="size-4" />
+                      </Button>
+                    )}
+                    {countryCode && getOperatorsForGame(alt, countryCode).length > 0 && (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        render={<LocaleLink href={`/where-to-play/${alt.slug}`} />}
+                      >
+                        {t('compare.whereToPlayCta', { game: alt.title })}
                       </Button>
                     )}
                   </div>

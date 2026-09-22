@@ -218,6 +218,21 @@ export function WhereToPlayView({ game }: { game: Game }) {
             >
               {t('wtp.viewGamesLikeCta')}
             </Button>
+            {locale === 'pt-BR' && game.category === 'slots' && (
+              <>
+                <Button size="sm" variant="ghost" render={<LocaleLink href="/slots" />}>
+                  Explorar jogos de slots
+                </Button>
+                <Button size="sm" variant="ghost" render={<LocaleLink href="/providers/pragmatic-play" />}>
+                  Catálogo da Pragmatic Play
+                </Button>
+                {(game.slug === 'gates-of-olympus' || game.slug === 'sweet-bonanza') && (
+                  <Button size="sm" variant="ghost" render={<LocaleLink href="/compare/gates-of-olympus-vs-sweet-bonanza" />}>
+                    Comparar Gates e Sweet Bonanza
+                  </Button>
+                )}
+              </>
+            )}
           </div>
         </div>
       </Section>

@@ -23,8 +23,10 @@ export async function generateMetadata({
   const t = createTranslator(locale)
   const category = getCategoryContent('slots', locale)
   return pageMetadata({
-    title: category.name,
-    description: `${category.description} ${t('seo.categoryAvailabilitySuffix')}`,
+    title: category.seoTitle ?? category.name,
+    description:
+      category.seoDescription ??
+      `${category.description} ${t('seo.categoryAvailabilitySuffix')}`,
     path: '/slots',
     localeSegment,
   })

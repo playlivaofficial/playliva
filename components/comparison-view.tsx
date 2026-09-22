@@ -176,6 +176,19 @@ export function ComparisonView({ comparison }: { comparison: Comparison }) {
             </Button>
           </div>
         )}
+        {comparison.slug === 'gates-of-olympus-vs-sweet-bonanza' && locale === 'pt-BR' && (
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Button variant="outline" render={<LocaleLink href="/games-like/gates-of-olympus" />}>
+              Ver alternativas a Gates of Olympus
+            </Button>
+            <Button variant="ghost" render={<LocaleLink href="/slots" />}>
+              Explorar jogos de slots
+            </Button>
+            <Button variant="ghost" render={<LocaleLink href="/providers/pragmatic-play" />}>
+              Catálogo da Pragmatic Play
+            </Button>
+          </div>
+        )}
       </Section>
 
       {/* Where to play */}

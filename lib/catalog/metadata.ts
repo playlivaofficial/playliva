@@ -29,7 +29,10 @@ export function referenceMetadata(kind: 'games' | 'games-like' | 'compare' | 'pr
     const provider = getReferenceProvider(slug)
     if (provider) {
       const firstGame = REFERENCE_GAMES.find((game) => game.providerId === provider.id && game.artwork.status !== 'fallback')
-      return pageMetadata({ title: `${provider.name} — ${c.collection}`, description: provider.overview[locale], path: `/providers/${slug}`, localeSegment: segment, images: firstGame ? referenceImage(firstGame.slug) : undefined })
+      const title = provider.id === 'pragmatic-play' && locale === 'pt-BR'
+        ? 'Jogos da Pragmatic Play: Catálogo e Mecânicas | PlayLiva'
+        : `${provider.name} — ${c.collection}`
+      return pageMetadata({ title, description: provider.overview[locale], path: `/providers/${slug}`, localeSegment: segment, images: firstGame ? referenceImage(firstGame.slug) : undefined })
     }
   }
   return undefined

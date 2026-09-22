@@ -119,8 +119,8 @@ const GAME_CONTENT: Record<Locale, Record<string, GameContent>> = {
       mechanics: ['Revelar grade', 'Seleção de risco', 'Cash-out manual'],
     },
     g5: {
-      description: 'Um slot de alta volatilidade com tema do deus do trovão.',
-      shortDescription: 'Slot de alta volatilidade com pagamento em qualquer posição.',
+      description: 'Um slot da Pragmatic Play com tema mitológico, pagamento em qualquer posição, multiplicadores e cascatas.',
+      shortDescription: 'Slot mitológico com pagamento em qualquer posição e cascatas.',
       gameType: 'Video slot',
       mechanics: ['Pagamento em qualquer posição', 'Multiplicadores', 'Rodadas grátis', 'Tumble'],
       whatIsIt:
@@ -131,8 +131,14 @@ const GAME_CONTENT: Record<Locale, Record<string, GameContent>> = {
         'Existe uma mecânica de tumble: símbolos que formam combinação saem e novos símbolos caem no lugar, podendo gerar novas combinações na mesma rodada.',
         'O jogo conta com um modo de rodadas grátis.',
       ],
-      whyPopular:
-        'Gates of Olympus ficou conhecido por combinar um tema mitológico com forte identidade visual e uma apresentação chamativa dos multiplicadores durante o jogo. Essa combinação, somada à associação com a Pragmatic Play — um dos provedores mais reconhecidos no mercado de slots online —, ajudou o jogo a se tornar uma referência dentro da categoria.',
+      entityDifference:
+        'Gates of Olympus não usa linhas de pagamento fixas. As combinações podem pagar em qualquer posição da grade, e a cascata remove símbolos vencedores para que novos símbolos ocupem o espaço na mesma rodada. Essa estrutura o diferencia dos slots tradicionais baseados em linhas.',
+      gamesLikeIntro:
+        'As alternativas abaixo compartilham elementos documentados com Gates of Olympus, como cascatas, multiplicadores, rodadas grátis ou o mesmo provedor. Cada opção também explica a diferença de estrutura e tema.',
+      whereToPlayIntro:
+        'A PlayLiva mostra abaixo somente operadoras aprovadas, ativas e verificadas com disponibilidade registrada para Gates of Olympus no Brasil.',
+      availabilityNote:
+        'A disponibilidade é conferida nos registros da PlayLiva por jogo, categoria e mercado. O catálogo da operadora pode mudar; confirme Gates of Olympus e as condições no site da operadora antes de continuar.',
       seo: {
         game: {
           title: 'Gates of Olympus: Como Funciona o Jogo | PlayLiva',
@@ -141,10 +147,10 @@ const GAME_CONTENT: Record<Locale, Record<string, GameContent>> = {
           h1: 'Gates of Olympus: como funciona o jogo',
         },
         gamesLike: {
-          title: 'Jogos Parecidos com Gates of Olympus | PlayLiva',
+          title: 'Jogos Como Gates of Olympus: Alternativas de Slots | PlayLiva',
           description:
-            'Conheça jogos parecidos com Gates of Olympus, compare slots semelhantes e descubra outras opções da categoria.',
-          h1: 'Jogos parecidos com Gates of Olympus',
+            'Compare jogos como Gates of Olympus por provedor, cascatas, multiplicadores, rodadas grátis e estrutura de pagamento.',
+          h1: 'Jogos como Gates of Olympus: alternativas e diferenças',
         },
         whereToPlay: {
           title: 'Onde Jogar Gates of Olympus no Brasil | PlayLiva',
@@ -155,10 +161,38 @@ const GAME_CONTENT: Record<Locale, Record<string, GameContent>> = {
       },
     },
     g6: {
-      description: 'Um slot colorido de cluster pays com tema de doces.',
-      shortDescription: 'Slot de cluster pays com tema de doces.',
+      description: 'Um slot da Pragmatic Play com tema de doces, pagamento em qualquer posição, multiplicadores, rodadas grátis e cascatas.',
+      shortDescription: 'Slot de doces com pagamento em qualquer posição e cascatas.',
       gameType: 'Video slot',
-      mechanics: ['Cluster pays', 'Multiplicadores', 'Rodadas grátis', 'Tumble'],
+      mechanics: ['Pagamento em qualquer posição', 'Multiplicadores', 'Rodadas grátis', 'Tumble'],
+      whatIsIt:
+        'Sweet Bonanza é um slot da Pragmatic Play com tema de doces. O jogo usa seis rolos em uma grade e paga quando oito ou mais símbolos iguais aparecem em qualquer posição, além de cascatas, rodadas grátis e multiplicadores.',
+      howItWorks: [
+        'Oito ou mais símbolos iguais em qualquer posição da grade formam uma combinação, sem linhas fixas.',
+        'Quando uma combinação é formada, os símbolos saem e novos símbolos caem na grade.',
+        'As cascatas podem criar novas combinações dentro da mesma rodada.',
+        'Quatro ou mais símbolos scatter ativam o modo de rodadas grátis, no qual podem aparecer multiplicadores.',
+      ],
+      entityDifference:
+        'Sweet Bonanza paga por símbolos iguais em qualquer posição e usa cascatas, enquanto um slot tradicional de linhas fixas avalia combinações em trajetos predefinidos. Em relação a Gates of Olympus, os dois compartilham essa base, mas diferem no tema e na aplicação documentada dos multiplicadores.',
+      whereToPlayIntro:
+        'A PlayLiva mostra abaixo somente operadoras aprovadas, ativas e verificadas com disponibilidade registrada para Sweet Bonanza no Brasil.',
+      availabilityNote:
+        'A disponibilidade é conferida nos registros da PlayLiva por jogo, categoria e mercado. O catálogo da operadora pode mudar; confirme Sweet Bonanza e as condições no site da operadora antes de continuar.',
+      seo: {
+        game: {
+          title: 'Sweet Bonanza: Como Funciona o Jogo | PlayLiva',
+          description:
+            'Entenda como funciona Sweet Bonanza, seus pagamentos por grupos, cascatas, multiplicadores e rodadas grátis.',
+          h1: 'Sweet Bonanza: como funciona o jogo',
+        },
+        whereToPlay: {
+          title: 'Onde Jogar Sweet Bonanza no Brasil | PlayLiva',
+          description:
+            'Veja operadoras verificadas com disponibilidade registrada para Sweet Bonanza no Brasil e como a PlayLiva confere essa informação.',
+          h1: 'Onde jogar Sweet Bonanza no Brasil',
+        },
+      },
     },
     g7: {
       description: 'Roleta ao vivo com multiplicadores aleatórios eletrizantes a cada rodada.',
@@ -209,10 +243,26 @@ const GAME_CONTENT: Record<Locale, Record<string, GameContent>> = {
       mechanics: ['Queda da bolinha', 'Seleção de risco', 'Seleção de linhas'],
     },
     g11: {
-      description: 'Um slot com tema de pescaria e mecânica de coleta em rodadas grátis.',
-      shortDescription: 'Slot de pescaria com rodadas grátis.',
+      description: 'Um slot da Pragmatic Play com tema de pescaria, rodadas grátis, coleta de prêmios e multiplicadores.',
+      shortDescription: 'Slot de pescaria com rodadas grátis e coleta de prêmios.',
       gameType: 'Video slot',
       mechanics: ['Rodadas grátis', 'Coleta de prêmios', 'Multiplicadores'],
+      whatIsIt:
+        'Big Bass Bonanza é um slot da Pragmatic Play com tema de pescaria. A ficha editorial da PlayLiva documenta rodadas grátis, coleta de prêmios e multiplicadores como suas mecânicas centrais.',
+      howItWorks: [
+        'O jogo usa uma estrutura de video slot com tema de pescaria.',
+        'Um modo de rodadas grátis faz parte dos recursos documentados.',
+        'A coleta de prêmios organiza a progressão do recurso de rodadas grátis.',
+        'Multiplicadores também aparecem entre as mecânicas registradas para o título.',
+      ],
+      seo: {
+        game: {
+          title: 'Big Bass Bonanza: Como Funciona o Jogo | PlayLiva',
+          description:
+            'Conheça Big Bass Bonanza, da Pragmatic Play, e entenda suas rodadas grátis, coleta de prêmios e multiplicadores.',
+          h1: 'Big Bass Bonanza: como funciona o jogo',
+        },
+      },
     },
     g12: {
       description: 'Mesas clássicas de blackjack com dealer ao vivo em vários limites.',
@@ -515,9 +565,9 @@ const ALTERNATIVE_NOTES: Record<Locale, Record<string, string>> = {
     'g1:g10':
       'O Plinko é um jogo instantâneo em que uma bolinha é solta e desce por uma grade de pinos até parar em uma casa com um multiplicador. Sua mecânica é estruturalmente diferente do crash: não existe uma curva crescente acompanhada durante a rodada.',
     'g5:g6':
-      'O Sweet Bonanza também é da Pragmatic Play e compartilha a mecânica de tumble e os símbolos multiplicadores do Gates of Olympus, mas paga por cluster em vez de pagar em qualquer posição da grade, e troca o tema mitológico por um universo de doces. É a alternativa mais próxima para quem gosta da sensação de jogo do Gates of Olympus.',
+      'Sweet Bonanza também é da Pragmatic Play e compartilha pagamento em qualquer posição, cascatas, multiplicadores e rodadas grátis com Gates of Olympus. Sweet Bonanza usa tema de doces e concentra os multiplicadores no recurso de rodadas grátis; Gates of Olympus usa tema mitológico e pode apresentar multiplicadores no jogo base e nas rodadas grátis.',
     'g5:g11':
-      'O Big Bass Bonanza, também da Pragmatic Play, usa um formato de rodadas grátis com coleta de prêmios em vez do pagamento em qualquer posição do Gates of Olympus. O público que curte slots de alta ação da Pragmatic Play costuma explorar os dois, mas a mecânica central é diferente.',
+      'Big Bass Bonanza também é da Pragmatic Play e registra rodadas grátis e multiplicadores, mas organiza seu recurso em torno de coleta de prêmios. Gates of Olympus usa pagamento em qualquer posição e cascatas, portanto a estrutura central é diferente.',
     'g8:g7':
       'O Lightning Roulette, também da Evolution, troca a roda de game show do Crazy Time por uma mesa de roleta ao vivo com multiplicadores aleatórios eletrizantes. É a alternativa mais próxima em termos de ritmo e provedor, mas o formato central é uma roleta, não um game show.',
     'g8:g12':
@@ -588,8 +638,12 @@ const CATEGORY_CONTENT: Record<Locale, Record<CategorySlug | 'sports', CategoryC
     },
     slots: {
       name: 'Slots',
-      description: 'Descubra slots populares e novos lançamentos.',
+      description: 'Explore slots por formato, mecânicas documentadas, provedor e guias editoriais da PlayLiva.',
       cta: 'Explorar Slots',
+      h1: 'Jogos de slots: explore formatos e mecânicas',
+      seoTitle: 'Jogos de Slots: Catálogo, Mecânicas e Guias | PlayLiva',
+      seoDescription:
+        'Explore jogos de slots por formato, mecânicas e provedor. Acesse Gates of Olympus, Sweet Bonanza, Big Bass Bonanza e guias para o Brasil.',
     },
     'live-casino': {
       name: 'Cassino ao Vivo',
@@ -749,20 +803,27 @@ const COMPARISON_CONTENT: Record<Locale, Record<string, ComparisonContent>> = {
     },
     'gates-of-olympus-vs-sweet-bonanza': {
       intro:
-        'Gates of Olympus e Sweet Bonanza são dois slots da Pragmatic Play que compartilham várias mecânicas, o que os torna uma comparação natural para quem já joga um deles e quer conhecer o outro.',
+        'Gates of Olympus e Sweet Bonanza são slots da Pragmatic Play com pagamento em qualquer posição, cascatas, multiplicadores e rodadas grátis. As diferenças documentadas estão no tema, na quantidade de símbolos exigida e em como os multiplicadores aparecem.',
       similarities: [
         'Ambos são video slots da Pragmatic Play',
+        'Ambos pagam por símbolos iguais em qualquer posição da grade',
         'Ambos usam mecânica de tumble',
         'Ambos têm símbolos multiplicadores',
         'Ambos têm modo de rodadas grátis',
       ],
       differences: [
-        'Gates of Olympus paga em qualquer posição da grade; Sweet Bonanza paga por cluster',
+        'Gates of Olympus exige de 8 a 30 símbolos iguais; Sweet Bonanza exige 8 a 12 ou mais símbolos iguais',
+        'Gates of Olympus pode apresentar multiplicadores no jogo base e nas rodadas grátis; Sweet Bonanza apresenta multiplicadores no recurso de rodadas grátis',
+        'Gates of Olympus inicia o recurso com 15 rodadas grátis; Sweet Bonanza inicia com 10',
         'Gates of Olympus tem tema mitológico; Sweet Bonanza tem tema de doces',
-        'Identidade visual e desenho de símbolos diferentes',
       ],
       editorialSummary:
-        'Quem gosta da sensação de tumble com multiplicadores do Gates of Olympus, mas quer um tema e uma estrutura de pagamento diferentes, costuma experimentar o Sweet Bonanza a seguir. Nenhum é objetivamente melhor — a escolha depende da preferência de tema e de você preferir pagamento em qualquer posição ou por cluster.',
+        'Os dois usam pagamento em qualquer posição e cascatas. Gates of Olympus combina tema mitológico com multiplicadores no jogo base e nas rodadas grátis; Sweet Bonanza usa tema de doces e reserva os multiplicadores para o recurso de rodadas grátis. A escolha depende da apresentação e da estrutura de recursos procuradas, sem um vencedor geral.',
+      seo: {
+        title: 'Gates of Olympus vs Sweet Bonanza: Diferenças | PlayLiva',
+        description:
+          'Compare Gates of Olympus e Sweet Bonanza por provedor, pagamento em qualquer posição, cascatas, multiplicadores, rodadas grátis e tema.',
+      },
     },
     'crazy-time-vs-lightning-roulette': {
       intro:
@@ -990,14 +1051,26 @@ const LIST_CONTENT: Record<Locale, Record<string, ListContent>> = {
         'Descubra os melhores jogos de crash no México, como cada um funciona e onde jogá-los com responsabilidade.',
     },
     'best-slots-brazil': {
-      title: 'Melhores slots no Brasil',
+      title: 'Seleção editorial de slots no Brasil',
       intro:
-        'Os slots continuam sendo uma categoria central para os jogadores brasileiros. Estes são os slots mais descobertos pela PlayLiva no Brasil.',
+        'Esta seleção reúne Gates of Olympus, Sweet Bonanza e Big Bass Bonanza para comparar mecânicas documentadas e disponibilidade verificada no Brasil. A ordem organiza a leitura e não indica desempenho ou chance de resultado.',
       editorialContent:
-        'Os rankings refletem a avaliação editorial da PlayLiva com base em disponibilidade e popularidade no Brasil. A volatilidade e os recursos variam por título; jogue com responsabilidade.',
-      seoTitle: 'Melhores slots no Brasil | PlayLiva',
+        'A seleção usa critérios editoriais fixos: identidade do provedor, mecânicas registradas, diferenças úteis entre formatos, suporte a dispositivos e disponibilidade no Brasil confirmada nos registros da PlayLiva. A ordem serve apenas para leitura; não é previsão, avaliação de desempenho nem garantia de ganho.',
+      seoTitle: 'Seleção de Slots no Brasil: Critérios Editoriais | PlayLiva',
       seoDescription:
-        'Descubra slots populares no Brasil, seus principais recursos e onde jogá-los com responsabilidade.',
+        'Compare uma seleção editorial de slots no Brasil, entenda os critérios de inclusão e veja opções com disponibilidade verificada.',
+      methodologyCriteria: [
+        'Mecânicas e recursos documentados no catálogo editorial',
+        'Diferenças de formato que ajudam a comparar os títulos',
+        'Compatibilidade registrada com computador, celular e tablet',
+        'Disponibilidade em operadora aprovada e verificada para o Brasil',
+        'Identificação clara do provedor e da categoria',
+      ],
+      selectionReasons: {
+        g5: 'Incluído para representar pagamento em qualquer posição, cascatas, multiplicadores e rodadas grátis em um título da Pragmatic Play.',
+        g6: 'Incluído para comparar outra aplicação de pagamento em qualquer posição e cascatas, com tema de doces e multiplicadores no recurso de rodadas grátis.',
+        g11: 'Incluído por usar rodadas grátis, coleta de prêmios e multiplicadores em uma estrutura diferente dos outros dois títulos.',
+      },
     },
     'best-slots-mexico': {
       title: 'Melhores slots no México',

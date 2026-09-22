@@ -94,7 +94,7 @@ export function BestListView({ list }: { list: GameList }) {
               >
                 <div className="flex items-start gap-4 sm:w-64 sm:shrink-0">
                   <span className="font-display text-3xl font-bold text-primary/40">
-                    {list.slug === 'best-crash-games-brazil' ? '•' : String(i + 1).padStart(2, '0')}
+                    {['best-crash-games-brazil', 'best-slots-brazil'].includes(list.slug) ? '•' : String(i + 1).padStart(2, '0')}
                   </span>
                   <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-border">
                     <GameArtwork game={game} sizes="(max-width: 640px) 60vw, 240px" />
@@ -184,6 +184,13 @@ export function BestListView({ list }: { list: GameList }) {
           <div className="mt-6 flex flex-wrap gap-3">
             <Button variant="outline" render={<LocaleLink href="/best/crash-games" />}>Como avaliar crash games</Button>
             <Button variant="ghost" render={<LocaleLink href="/crash" />}>Explorar a categoria Crash</Button>
+          </div>
+        )}
+        {list.slug === 'best-slots-brazil' && (
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Button variant="outline" render={<LocaleLink href="/slots" />}>Explorar a categoria Slots</Button>
+            <Button variant="ghost" render={<LocaleLink href="/compare/gates-of-olympus-vs-sweet-bonanza" />}>Comparar Gates e Sweet Bonanza</Button>
+            <Button variant="ghost" render={<LocaleLink href="/providers/pragmatic-play" />}>Catálogo da Pragmatic Play</Button>
           </div>
         )}
       </Section>
