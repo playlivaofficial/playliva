@@ -33,6 +33,14 @@ interface GameContent {
   howItWorks?: string[]
   /** "Why did {game} become well known?" editorial paragraph. Only rendered when present. */
   whyPopular?: string
+  /** Factual distinction from adjacent game formats, used on entity pages. */
+  entityDifference?: string
+  /** Intent-specific opening for the alternatives page. */
+  gamesLikeIntro?: string
+  /** Intent-specific opening for the availability page. */
+  whereToPlayIntro?: string
+  /** How commercial availability is checked, without implying permanence. */
+  availabilityNote?: string
   /**
    * Optional literal SEO title/description/H1 overrides per target page,
    * used for high-intent game clusters that need exact hand-written copy
@@ -56,18 +64,44 @@ const GAME_CONTENT: Record<Locale, Record<string, GameContent>> = {
       gameType: 'Crash / multiplicador',
       mechanics: ['Multiplicador crescente', 'Cash-out manual', 'Cash-out automático', 'Apostas duplas'],
       whatIsIt:
-        'O Aviator é um jogo de crash desenvolvido pela SPRIBE, um dos provedores que ajudou a popularizar esse formato na América Latina. A mecânica é direta: a cada rodada, um multiplicador começa a subir a partir de 1x, e cabe ao jogador escolher o momento de sair — o chamado cash out — antes que a rodada termine. As rodadas são curtas e se repetem em sequência rápida, o que dá ao jogo um ritmo bem dinâmico.',
+        'O Aviator é um jogo de crash desenvolvido pela SPRIBE. A mecânica é direta: a cada rodada, um multiplicador começa a subir a partir de 1x, e cabe ao jogador escolher o momento de sair — o chamado cash out — antes que a rodada termine. As rodadas são curtas e se repetem em sequência.',
       howItWorks: [
         'A rodada começa e o multiplicador parte de 1x.',
         'O multiplicador sobe continuamente enquanto a rodada estiver em andamento.',
         'O jogador pode fazer o cash out em qualquer momento antes do fim da rodada.',
         'Se a rodada terminar antes do cash out, a aposta feita nela é perdida.',
       ],
-      whyPopular:
-        'O Aviator ficou conhecido por combinar uma mecânica simples com rodadas rápidas e uma apresentação fácil de entender à primeira vista. Essa combinação — simplicidade, ritmo e clareza visual — ajudou o jogo a se tornar uma referência dentro da categoria de jogos crash, servindo como porta de entrada para quem quer conhecer esse formato de jogo.',
+      entityDifference:
+        'Ao contrário de um slot, o Aviator não usa rolos, linhas de pagamento ou rodadas de símbolos. A interação central acontece durante uma curva de multiplicador: o jogador decide se faz o cash out antes de a rodada terminar. Também não é um jogo de mesa tradicional, porque não há cartas, roleta ou dealer.',
+      gamesLikeIntro:
+        'As alternativas mais próximas do Aviator mantêm o multiplicador crescente e a decisão de cash out. Outras opções, como Mines e Plinko, usam multiplicadores em formatos instantâneos diferentes. A comparação abaixo separa essas semelhanças e diferenças.',
+      whereToPlayIntro:
+        'A PlayLiva mostra abaixo somente operadoras aprovadas, ativas e verificadas com disponibilidade registrada para Aviator no Brasil.',
+      availabilityNote:
+        'A disponibilidade é conferida nos registros da PlayLiva por jogo, categoria e mercado. O catálogo da operadora pode mudar; confirme o título e as condições no site da operadora antes de continuar.',
+      seo: {
+        game: {
+          title: 'Aviator: Como Funciona e Como Jogar | PlayLiva',
+          description:
+            'Entenda o que é Aviator, como funciona uma rodada, o multiplicador e o cash out. Compare jogos semelhantes e opções disponíveis no Brasil.',
+          h1: 'Aviator: como funciona o jogo',
+        },
+        gamesLike: {
+          title: 'Jogos Como Aviator: Alternativas de Crash | PlayLiva',
+          description:
+            'Compare jogos parecidos com Aviator, como JetX e Spaceman, e entenda o que muda nas mecânicas e na experiência de cada alternativa.',
+          h1: 'Jogos como Aviator: alternativas e diferenças',
+        },
+        whereToPlay: {
+          title: 'Onde Jogar Aviator no Brasil | PlayLiva',
+          description:
+            'Veja onde Aviator está disponível no Brasil com operadoras verificadas pela PlayLiva e confira como a disponibilidade é validada.',
+          h1: 'Onde jogar Aviator no Brasil',
+        },
+      },
     },
     g2: {
-      description: 'Um jogo de multiplicador com tema de jato de combate e uma base fiel de jogadores.',
+      description: 'Um jogo de multiplicador crescente da SmartSoft com tema de jato de combate.',
       shortDescription: 'Multiplicador com tema de jato de combate.',
       gameType: 'Crash / multiplicador',
       mechanics: ['Multiplicador crescente', 'Cash-out manual', 'Apostas duplas'],
@@ -451,6 +485,10 @@ export function getGameContent(game: Game, locale: Locale) {
     whatIsIt: c?.whatIsIt,
     howItWorks: c?.howItWorks,
     whyPopular: c?.whyPopular,
+    entityDifference: c?.entityDifference,
+    gamesLikeIntro: c?.gamesLikeIntro,
+    whereToPlayIntro: c?.whereToPlayIntro,
+    availabilityNote: c?.availabilityNote,
     seo: c?.seo,
   }
 }
@@ -473,9 +511,9 @@ const ALTERNATIVE_NOTES: Record<Locale, Record<string, string>> = {
     'g1:g3':
       'O Spaceman, da Pragmatic Play, também usa a mecânica de multiplicador crescente, mas adiciona a opção de cash-out parcial durante a rodada. É uma alternativa próxima ao Aviator, com uma camada extra de controle sobre a saída.',
     'g1:g4':
-      'O Mines segue um formato diferente do crash: em vez de acompanhar um multiplicador subir sozinho, o jogador revela quadrados em uma grade e evita minas escondidas para aumentar o multiplicador. O público que gosta do Aviator costuma também explorar o Mines, mas a mecânica não é um clone direto do formato crash.',
+      'O Mines segue um formato diferente do crash: em vez de acompanhar um multiplicador subir sozinho, o jogador revela quadrados em uma grade e evita minas escondidas para aumentar o multiplicador. É uma alternativa baseada em decisões por casa, não um clone do formato crash.',
     'g1:g10':
-      'O Plinko é um jogo instantâneo em que uma bolinha é solta e desce por uma grade de pinos até parar em uma casa com um multiplicador. Assim como o Mines, ele atrai um público parecido com o do Aviator, porém sua mecânica é estruturalmente diferente do crash — é baseado em probabilidade, sem uma rodada que "sobe" continuamente.',
+      'O Plinko é um jogo instantâneo em que uma bolinha é solta e desce por uma grade de pinos até parar em uma casa com um multiplicador. Sua mecânica é estruturalmente diferente do crash: não existe uma curva crescente acompanhada durante a rodada.',
     'g5:g6':
       'O Sweet Bonanza também é da Pragmatic Play e compartilha a mecânica de tumble e os símbolos multiplicadores do Gates of Olympus, mas paga por cluster em vez de pagar em qualquer posição da grade, e troca o tema mitológico por um universo de doces. É a alternativa mais próxima para quem gosta da sensação de jogo do Gates of Olympus.',
     'g5:g11':
@@ -531,14 +569,22 @@ interface CategoryContent {
   name: string
   description: string
   cta: string
+  h1?: string
+  seoTitle?: string
+  seoDescription?: string
 }
 
 const CATEGORY_CONTENT: Record<Locale, Record<CategorySlug | 'sports', CategoryContent>> = {
   'pt-BR': {
     crash: {
       name: 'Crash',
-      description: 'Jogos de multiplicador rápidos e títulos populares de crash.',
+      description:
+        'Entenda como funcionam os jogos crash e explore títulos, comparações e guias para escolher o formato que combina com a experiência que você procura.',
       cta: 'Explorar Crash',
+      h1: 'Jogos crash: conheça a categoria e seus formatos',
+      seoTitle: 'Jogos Crash: Guia da Categoria e Principais Títulos | PlayLiva',
+      seoDescription:
+        'Conheça a categoria de jogos crash, explore Aviator, JetX e Spaceman e acesse comparações, alternativas e guias editoriais da PlayLiva.',
     },
     slots: {
       name: 'Slots',
@@ -643,24 +689,29 @@ const COMPARISON_CONTENT: Record<Locale, Record<string, ComparisonContent>> = {
   'pt-BR': {
     'aviator-vs-jetx': {
       intro:
-        'Aviator e JetX são dois dos jogos de crash mais conhecidos na América Latina. Ambos compartilham o mesmo núcleo — um multiplicador que sobe até quebrar — mas diferem no ritmo, na apresentação e na sensação.',
+        'Aviator e JetX usam a estrutura central dos jogos crash: o multiplicador sobe durante a rodada e o jogador decide quando fazer o cash out. A diferença mais clara está no provedor, na identidade visual e nos recursos documentados de cada título.',
       similarities: [
         'Formato crash de multiplicador crescente',
-        'Opções de aposta manual e dupla',
-        'Rodadas simples e rápidas',
-        'Ampla disponibilidade nos mercados de lançamento',
+        'Decisão de cash out antes do fim da rodada',
+        'Suporte a duas apostas simultâneas',
+        'Fluxo de rodada centrado em acompanhar o multiplicador',
       ],
       differences: [
-        'Aviator usa tema de avião; JetX usa tema de jato de combate',
-        'As rodadas do JetX podem parecer um pouco mais lentas entre decolagens',
-        'Provedores diferentes (Spribe vs SmartSoft) significam lobbies diferentes',
+        'Aviator é desenvolvido pela SPRIBE; JetX é desenvolvido pela SmartSoft',
+        'Aviator usa um avião estilizado; JetX usa um jato como elemento visual central',
+        'Aviator registra cash out automático entre suas mecânicas; o cadastro editorial do JetX documenta cash out manual',
       ],
       editorialSummary:
-        'Quem procura o jogo de crash mais disponível costuma começar pelo Aviator. Quem gosta de um ritmo e estilo visual um pouco diferentes pode preferir o JetX. Nenhum é objetivamente "melhor" — o ideal depende do ritmo e visual que você curte.',
+        'Aviator atende quem procura a apresentação da SPRIBE e a opção documentada de cash out automático. JetX oferece a mesma decisão central de sair antes do crash, com a identidade visual e a implementação da SmartSoft. A escolha depende do formato e dos recursos preferidos; esta comparação não indica vencedor.',
+      seo: {
+        title: 'Aviator vs JetX: Diferenças dos Jogos Crash | PlayLiva',
+        description:
+          'Compare Aviator e JetX por provedor, mecânica de cash out, recursos e apresentação. Veja as diferenças factuais entre os dois jogos crash.',
+      },
     },
     'aviator-vs-spaceman': {
       intro:
-        'Aviator e Spaceman oferecem uma experiência de multiplicador crescente, mas o Spaceman adiciona um cash-out parcial que muda a forma de gerenciar a rodada.',
+        'Aviator e Spaceman usam multiplicador crescente e decisão de cash out, mas o Spaceman registra cash out parcial entre suas mecânicas. Provedor, apresentação e opções de saída diferenciam os dois formatos.',
       similarities: [
         'Formato crash de multiplicador crescente',
         'Suporte a cash-out automático',
@@ -668,11 +719,17 @@ const COMPARISON_CONTENT: Record<Locale, Record<string, ComparisonContent>> = {
       ],
       differences: [
         'Spaceman permite cash-out parcial no meio da rodada',
-        'Aviator tem comunidade maior e feed social em muitos lobbies',
-        'Provedores diferentes (Spribe vs Pragmatic Play)',
+        'Aviator registra suporte a duas apostas; Spaceman não traz esse recurso no cadastro editorial',
+        'Aviator é da SPRIBE; Spaceman é da Pragmatic Play',
+        'Aviator usa tema de avião; Spaceman usa uma apresentação espacial',
       ],
       editorialSummary:
-        'Se você gosta de controle fino sobre o cash-out, o Spaceman pode combinar com você. Se prefere a comunidade de crash mais estabelecida, o Aviator é o ponto de partida comum.',
+        'Spaceman oferece uma opção documentada de saída parcial, útil para quem quer comparar formas de encerrar a participação na rodada. Aviator combina cash out manual e automático com suporte a duas apostas. A escolha depende do recurso e da apresentação procurados; a comparação não atribui superioridade a nenhum dos títulos.',
+      seo: {
+        title: 'Aviator vs Spaceman: Mecânicas e Diferenças | PlayLiva',
+        description:
+          'Compare Aviator e Spaceman por cash out, recursos, provedor e apresentação. Entenda as diferenças factuais entre os dois jogos crash.',
+      },
     },
     'jetx-vs-spaceman': {
       intro:
@@ -894,6 +951,8 @@ interface ListContent {
   editorialContent: string
   seoTitle: string
   seoDescription: string
+  methodologyCriteria?: string[]
+  selectionReasons?: Record<string, string>
 }
 
 const LIST_CONTENT: Record<Locale, Record<string, ListContent>> = {
@@ -904,9 +963,21 @@ const LIST_CONTENT: Record<Locale, Record<string, ListContent>> = {
         'Esta seleção reúne Aviator, JetX e Spaceman para comparar mecânicas, apresentação e disponibilidade verificada no mercado brasileiro. A ordem organiza a leitura e não indica desempenho ou chance de resultado.',
       editorialContent:
         'A seleção usa critérios editoriais fixos: mecânicas documentadas, disponibilidade no Brasil confirmada nos registros da PlayLiva, diferenças úteis entre os formatos e qualidade das fontes consultadas. A ordem serve apenas para leitura; não é previsão, avaliação de desempenho nem garantia de ganho.',
-      seoTitle: 'Seleção de Crash Games no Brasil | PlayLiva',
+      seoTitle: 'Melhores Jogos Crash no Brasil: Seleção Editorial | PlayLiva',
       seoDescription:
-        'Compare uma seleção editorial de crash games disponíveis no Brasil e veja os critérios usados pela PlayLiva.',
+        'Compare uma seleção editorial de jogos crash no Brasil, entenda por que cada título foi incluído e veja os critérios verificáveis da PlayLiva.',
+      methodologyCriteria: [
+        'Mecânicas e recursos documentados no catálogo editorial',
+        'Diferenças de formato que ajudam a comparar a experiência',
+        'Compatibilidade com celular registrada para o título',
+        'Disponibilidade em operadora aprovada e verificada para o Brasil',
+        'Clareza das regras e identificação do provedor',
+      ],
+      selectionReasons: {
+        g1: 'Incluído como referência do formato crash da SPRIBE, com cash out manual e automático, duas apostas e disponibilidade verificada no Brasil.',
+        g2: 'Incluído para representar uma implementação da SmartSoft com duas apostas e identidade visual própria, permitindo uma comparação direta com Aviator.',
+        g3: 'Incluído pela mecânica documentada de cash out parcial e pela apresentação da Pragmatic Play, que acrescentam um ponto de comparação distinto.',
+      },
     },
     'best-crash-games-mexico': {
       title: 'Melhores jogos de crash no México',
@@ -1033,6 +1104,8 @@ export function getListContent(list: GameList, locale: Locale) {
     editorialContent: c?.editorialContent ?? list.editorialContent,
     seoTitle: c?.seoTitle ?? list.seoTitle,
     seoDescription: c?.seoDescription ?? list.seoDescription,
+    methodologyCriteria: c?.methodologyCriteria,
+    selectionReasons: c?.selectionReasons,
   }
 }
 
@@ -1087,16 +1160,16 @@ interface CrashHubContent {
 
 const CRASH_HUB_CONTENT: Record<Locale, CrashHubContent> = {
   'pt-BR': {
-    seoTitle: 'Guia de Crash Games: Como Comparar Formatos | PlayLiva',
+    seoTitle: 'Como Escolher Crash Games: Guia de Comparação | PlayLiva',
     seoDescription:
-      'Conheça crash games como Aviator, JetX e Spaceman, compare estilos de jogo e descubra opções disponíveis no PlayLiva.',
-    h1: 'Guia de crash games: como comparar formatos',
+      'Aprenda a comparar jogos crash por mecânicas, cash out, interface, celular, provedor, modo gratuito e disponibilidade verificada.',
+    h1: 'Como avaliar e escolher crash games',
     breadcrumbLabel: 'Guia de crash games',
     intro:
       'Crash games são jogos de multiplicador: uma curva sobe a partir de 1x enquanto a rodada está em andamento, e cabe ao jogador decidir o momento de sair — o cash out — antes que a rodada termine. Este guia explica como comparar apresentação, ritmo, provedor, mecânicas e disponibilidade. Não é um ranking nem uma promessa de resultado.',
     featuredHeading: 'Crash games em destaque',
     featuredSub:
-      'Uma seleção editorial dos crash games mais conhecidos, com uma breve explicação do que torna cada um diferente.',
+      'Exemplos do catálogo para comparar mecânicas, provedores e apresentações sem transformar o guia em um ranking.',
     howToChooseHeading: 'Como escolher um crash game?',
     howToChooseIntro:
       'Não existe uma fórmula que garanta resultado em um crash game — cada rodada é independente. O que pode ajudar é entender o que diferencia um título do outro:',
@@ -1120,6 +1193,18 @@ const CRASH_HUB_CONTENT: Record<Locale, CrashHubContent> = {
       {
         label: 'Disponibilidade',
         text: 'Nem todo crash game está disponível em todos os operadores ou mercados — vale confirmar antes de escolher onde jogar.',
+      },
+      {
+        label: 'Experiência no celular',
+        text: 'Confira se a interface mantém controles legíveis, cash out acessível e acompanhamento claro da rodada em telas menores.',
+      },
+      {
+        label: 'Modo gratuito',
+        text: 'Um modo gratuito pode ajudar a entender regras e controles sem apostar dinheiro. A presença desse modo deve ser confirmada em cada produto.',
+      },
+      {
+        label: 'Clareza das regras',
+        text: 'Prefira páginas e produtos que identifiquem o provedor, expliquem a rodada e apresentem os recursos sem prometer resultados.',
       },
     ],
     whereToPlayHeading: 'Onde jogar crash games?',

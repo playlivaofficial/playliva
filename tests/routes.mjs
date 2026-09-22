@@ -29,6 +29,41 @@ import promoModule from '../lib/affiliates/betsson-promo-config.ts'
 const { originalsDiscoveryCopy, ISLAND_CRASH_POSTER } = discoveryModule
 const { ANALYTICS_COOKIE } = consentModule
 
+const trafficSprintPages = {
+  '/pt-br/games/aviator': {
+    h1: 'Aviator: como funciona o jogo',
+    links: ['/pt-br/where-to-play/aviator', '/pt-br/games-like/aviator', '/pt-br/compare/aviator-vs-jetx', '/pt-br/compare/aviator-vs-spaceman', '/pt-br/crash'],
+  },
+  '/pt-br/where-to-play/aviator': {
+    h1: 'Onde jogar Aviator no Brasil',
+    links: ['/pt-br/games/aviator', '/pt-br/games-like/aviator', '/pt-br/compare/aviator-vs-jetx', '/pt-br/compare/aviator-vs-spaceman'],
+  },
+  '/pt-br/games-like/aviator': {
+    h1: 'Jogos como Aviator: alternativas e diferenças',
+    links: ['/pt-br/games/aviator', '/pt-br/compare/aviator-vs-jetx', '/pt-br/compare/aviator-vs-spaceman', '/pt-br/where-to-play/aviator', '/pt-br/crash'],
+  },
+  '/pt-br/compare/aviator-vs-jetx': {
+    h1: 'Aviator vs JetX',
+    links: ['/pt-br/games/aviator', '/pt-br/games/jetx', '/pt-br/games-like/aviator', '/pt-br/where-to-play/aviator', '/pt-br/crash'],
+  },
+  '/pt-br/compare/aviator-vs-spaceman': {
+    h1: 'Aviator vs Spaceman',
+    links: ['/pt-br/games/aviator', '/pt-br/games/spaceman', '/pt-br/games-like/aviator', '/pt-br/where-to-play/aviator', '/pt-br/crash'],
+  },
+  '/pt-br/crash': {
+    h1: 'Jogos crash: conheça a categoria e seus formatos',
+    links: ['/pt-br/games/aviator', '/pt-br/games/jetx', '/pt-br/games/spaceman', '/pt-br/games-like/aviator', '/pt-br/compare/aviator-vs-jetx', '/pt-br/compare/aviator-vs-spaceman', '/pt-br/best/crash-games', '/pt-br/best/best-crash-games-brazil', '/pt-br/play/crash'],
+  },
+  '/pt-br/best/crash-games': {
+    h1: 'Como avaliar e escolher crash games',
+    links: ['/pt-br/crash', '/pt-br/games/aviator', '/pt-br/games/jetx', '/pt-br/games/spaceman', '/pt-br/games-like/aviator', '/pt-br/compare/aviator-vs-jetx', '/pt-br/compare/aviator-vs-spaceman', '/pt-br/best/best-crash-games-brazil', '/pt-br/play/crash'],
+  },
+  '/pt-br/best/best-crash-games-brazil': {
+    h1: 'Seleção editorial de crash games no Brasil',
+    links: ['/pt-br/crash', '/pt-br/best/crash-games', '/pt-br/games/aviator', '/pt-br/games/jetx', '/pt-br/games/spaceman', '/pt-br/where-to-play/aviator'],
+  },
+}
+
 const listener = createServer()
 listener.listen(0, '127.0.0.1')
 await once(listener, 'listening')
@@ -127,6 +162,16 @@ try {
     // owns the route's single semantic H1.
     assert.equal(doc.querySelectorAll('h1').length, 1, `${path}: one semantic page heading`)
     assert.ok(doc.querySelector('meta[name="description"]')?.content.trim().length > 10, `${path}: meaningful description`)
+    const trafficPage = trafficSprintPages[path]
+    if (trafficPage) {
+      assert.equal(doc.querySelector('h1')?.textContent.trim(), trafficPage.h1, `${path}: intent-specific H1`)
+      assert.ok(doc.querySelector('meta[property="og:image"]'), `${path}: relevant social image`)
+      const trafficRobots = [...doc.querySelectorAll('meta[name="robots"], meta[name="googlebot"]')].map((meta) => meta.content)
+      assert.ok(trafficRobots.length && trafficRobots.every((value) => !value.includes('noindex') && value.includes('follow')), `${path}: index, follow`)
+      for (const href of trafficPage.links) {
+        assert.ok(doc.querySelector(`main a[href="${href}"]`), `${path}: internal link ${href}`)
+      }
+    }
     if (publicPaths.includes(path)) {
       const key = `${segment}:${doc.title}`
       if (titlesByLocale.has(key)) failures.push(`${path}: duplicate title with ${titlesByLocale.get(key)}`)

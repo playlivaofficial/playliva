@@ -61,7 +61,7 @@ export function GamesLikeView({ game }: { game: Game }) {
       <PageHero
         eyebrow={t('like.eyebrow')}
         title={content.seo?.gamesLike?.h1 ?? t('game.gamesLike', { game: game.title })}
-        description={t('like.heroSub', { game: game.title, category: categoryLower })}
+        description={content.gamesLikeIntro ?? t('like.heroSub', { game: game.title, category: categoryLower })}
         breadcrumbs={[
           { label: t('nav.home'), href: '/' },
           { label: game.title, href: `/games/${game.slug}` },
@@ -99,6 +99,11 @@ export function GamesLikeView({ game }: { game: Game }) {
             >
               {t('like.allCategory', { category: categoryName })}
             </Button>
+            {game.slug === 'aviator' && locale === 'pt-BR' && (
+              <Button variant="ghost" render={<LocaleLink href="/best/crash-games" />}>
+                Como comparar crash games
+              </Button>
+            )}
           </div>
         </ContentCard>
       </Section>

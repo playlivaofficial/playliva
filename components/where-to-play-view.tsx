@@ -80,11 +80,9 @@ export function WhereToPlayView({ game }: { game: Game }) {
                   })}
               </h1>
               <p className="mt-3 max-w-xl text-pretty leading-relaxed text-muted-foreground">
-                {gc.shortDescription}{' '}
-                {t('wtp.intro', {
-                  country: countryName,
-                  game: game.title,
-                })}
+                {operators.length > 0 && gc.whereToPlayIntro
+                  ? gc.whereToPlayIntro
+                  : <>{gc.shortDescription}{' '}{t('wtp.intro', { country: countryName, game: game.title })}</>}
               </p>
             </div>
           </div>
@@ -167,7 +165,7 @@ export function WhereToPlayView({ game }: { game: Game }) {
               </h2>
             </div>
             <p className="mt-3 leading-relaxed text-muted-foreground">
-              {gc.whatIsIt ?? gc.about}
+              {gc.availabilityNote ?? gc.whatIsIt ?? gc.about}
             </p>
             <p className="mt-4 text-sm text-muted-foreground">{game.provider} · {gc.mechanics.join(' · ')}</p>
             <LocaleLink href="/editorial-policy" className="mt-4 inline-flex min-h-11 items-center text-sm underline underline-offset-4">{editorialCopy(locale).research}</LocaleLink>

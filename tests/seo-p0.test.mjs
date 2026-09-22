@@ -56,7 +56,7 @@ test('sitemap excludes empty and wrong-market SEO routes', () => {
 test('Crash guide and Brazil selection have distinct, supportable intent', () => {
   const guide = getCrashHubContent('pt-BR')
   const selection = getGameListContent(getGameList('best-crash-games-brazil'), 'pt-BR')
-  assert.match(guide.h1, /^Guia de crash games/i)
+  assert.match(guide.h1, /^Como avaliar e escolher crash games/i)
   assert.match(selection.title, /^Seleção editorial/i)
   assert.notEqual(guide.h1, selection.title)
   assert.doesNotMatch(selection.intro, /mais jogad|popularidade/i)

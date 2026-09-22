@@ -66,6 +66,24 @@ export function BestListView({ list }: { list: GameList }) {
       {/* Ranked editorial list */}
       <Section className="py-10">
         <EditorialByline path={`/best/${list.slug}`} locale={locale} />
+        {listContent.methodologyCriteria && (
+          <div className="mb-8 rounded-2xl border border-border bg-card p-6">
+            <h2 className="font-display text-xl font-bold text-foreground">
+              Como selecionamos
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+              {listContent.editorialContent}
+            </p>
+            <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+              {listContent.methodologyCriteria.map((criterion) => (
+                <li key={criterion} className="flex items-start gap-2 text-sm text-foreground">
+                  <span className="mt-2 size-1.5 shrink-0 rounded-full bg-primary" />
+                  {criterion}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
         <div className="flex flex-col gap-5">
           {games.map((game, i) => {
             const gc = getGameContent(game, locale)
@@ -76,7 +94,7 @@ export function BestListView({ list }: { list: GameList }) {
               >
                 <div className="flex items-start gap-4 sm:w-64 sm:shrink-0">
                   <span className="font-display text-3xl font-bold text-primary/40">
-                    {String(i + 1).padStart(2, '0')}
+                    {list.slug === 'best-crash-games-brazil' ? '•' : String(i + 1).padStart(2, '0')}
                   </span>
                   <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-border">
                     <GameArtwork game={game} sizes="(max-width: 640px) 60vw, 240px" />
@@ -100,7 +118,7 @@ export function BestListView({ list }: { list: GameList }) {
                         {t('best.whyIncluded')}
                       </dt>
                       <dd className="mt-1 text-sm text-foreground">
-                        {gc.shortDescription}
+                        {listContent.selectionReasons?.[game.id] ?? gc.shortDescription}
                       </dd>
                     </div>
                     <div>
@@ -144,7 +162,7 @@ export function BestListView({ list }: { list: GameList }) {
             )
           })}
         </div>
-        <div className="mt-6 rounded-2xl border border-border bg-card p-6">
+        {!listContent.methodologyCriteria && <div className="mt-6 rounded-2xl border border-border bg-card p-6">
           <h2 className="font-display text-xl font-bold text-foreground">
             {t('best.methodologyTitle')}
           </h2>
@@ -161,7 +179,13 @@ export function BestListView({ list }: { list: GameList }) {
               </Button>
             </div>
           )}
-        </div>
+        </div>}
+        {list.slug === 'best-crash-games-brazil' && (
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Button variant="outline" render={<LocaleLink href="/best/crash-games" />}>Como avaliar crash games</Button>
+            <Button variant="ghost" render={<LocaleLink href="/crash" />}>Explorar a categoria Crash</Button>
+          </div>
+        )}
       </Section>
 
       {/* Where to play in GEO */}

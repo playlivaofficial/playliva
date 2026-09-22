@@ -230,6 +230,17 @@ export function GameDetailView({ game }: { game: Game }) {
             </p>
           </ContentCard>
         )}
+
+        {content.entityDifference && (
+          <ContentCard className="mt-8" tone="guide">
+            <h2 className="font-display text-xl font-bold text-foreground">
+              Como o Aviator se diferencia de outros jogos de cassino
+            </h2>
+            <p className="mt-4 max-w-3xl leading-relaxed text-muted-foreground">
+              {content.entityDifference}
+            </p>
+          </ContentCard>
+        )}
       </Section>
 
       {/* Key game information */}
@@ -291,6 +302,24 @@ export function GameDetailView({ game }: { game: Game }) {
               <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
             </span>
           </LocaleLink>
+        </Section>
+      )}
+
+      {game.slug === 'aviator' && locale === 'pt-BR' && (
+        <Section className="pt-0">
+          <SectionHeading
+            title="Explore o universo do Aviator"
+            description="Cada guia abaixo responde a uma dúvida diferente sobre disponibilidade, alternativas e comparações."
+          />
+          <div className="flex flex-wrap gap-3">
+            {operators.length > 0 && (
+              <Button render={<LocaleLink href="/where-to-play/aviator" />}>Onde jogar Aviator no Brasil</Button>
+            )}
+            <Button variant="outline" render={<LocaleLink href="/games-like/aviator" />}>Alternativas ao Aviator</Button>
+            <Button variant="outline" render={<LocaleLink href="/compare/aviator-vs-jetx" />}>Comparar Aviator e JetX</Button>
+            <Button variant="outline" render={<LocaleLink href="/compare/aviator-vs-spaceman" />}>Comparar Aviator e Spaceman</Button>
+            <Button variant="ghost" render={<LocaleLink href="/crash" />}>Explorar jogos crash</Button>
+          </div>
         </Section>
       )}
 
