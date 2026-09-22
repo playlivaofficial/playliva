@@ -119,7 +119,7 @@ async function latestRawPath(item) {
   return candidates.sort((a, b) => b.modified - a.modified)[0].path
 }
 
-async function installStage(page, item) {
+export async function installStage(page, item) {
   await page.evaluate(({ item, playlivaLogo, livaSportsLogo }) => {
     const unit = document.querySelector('[data-game-unit]')
     if (!(unit instanceof HTMLElement)) throw new Error('Game unit not found')
@@ -146,8 +146,8 @@ async function installStage(page, item) {
       #playliva-short-stage{position:relative;width:1440px;height:2560px;overflow:hidden;color:#fff;font-family:Inter,Arial,sans-serif;background:radial-gradient(circle at 50% 43%,#123f35 0,#082a25 34%,#031713 77%)}
       .ambient{position:absolute;border-radius:999px;filter:blur(120px);opacity:.42}.ambient-a{width:780px;height:780px;left:-260px;top:720px;background:#27d99d}.ambient-b{width:760px;height:760px;right:-330px;top:110px;background:#ffbf38;opacity:.22}
       .grain{position:absolute;inset:0;opacity:.08;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E")}
-      .brand-row{position:absolute;z-index:3;top:96px;left:120px;right:210px;height:112px;display:flex;align-items:center;gap:38px}.playliva-brand svg{width:345px;height:auto}.livasports-brand svg{width:236px;height:auto}.network-label{margin-left:auto;font-size:22px;font-weight:800;letter-spacing:.24em;color:#9ac8ba}
-      .copy{position:absolute;z-index:3;left:120px;right:220px;top:260px}.eyebrow{color:#61edb8;font-size:28px;font-weight:850;letter-spacing:.13em}.copy h1{max-width:1100px;margin:28px 0 12px;font-size:88px;line-height:.96;letter-spacing:-.045em;text-wrap:balance;text-shadow:0 10px 36px #0008}.copy p{margin:0;color:#d9eee7;font-size:36px;font-weight:600;line-height:1.2}
+      .brand-row{position:absolute;z-index:3;top:530px;left:120px;right:210px;height:90px;display:flex;align-items:center;gap:38px}.playliva-brand svg{width:345px;height:auto}.livasports-brand svg{width:236px;height:auto}.network-label{margin-left:auto;font-size:22px;font-weight:800;letter-spacing:.24em;color:#9ac8ba}
+      .copy{position:absolute;z-index:3;left:120px;right:220px;top:165px}.eyebrow{color:#61edb8;font-size:28px;font-weight:850;letter-spacing:.13em}.copy h1{max-width:1100px;margin:28px 0 12px;font-size:88px;line-height:.96;letter-spacing:-.045em;text-wrap:balance;text-shadow:0 10px 36px #0008}.copy p{margin:0;color:#d9eee7;font-size:36px;font-weight:600;line-height:1.2}
       .game-frame{position:absolute;z-index:2;left:76px;right:164px;top:650px;height:1080px;display:flex;align-items:center;justify-content:center}.game-glow{position:absolute;inset:60px 20px;border-radius:80px;background:#38efab22;filter:blur(70px)}
       [data-game-unit]{position:relative!important;width:1200px!important;max-width:none!important;margin:0!important;z-index:2;transform:translateZ(0)}
       [data-game-viewport]{border-radius:34px!important;border:2px solid #8ff5ce66!important;box-shadow:0 34px 100px #000a,0 0 0 12px #ffffff0a!important;overflow:hidden!important;background:#061b18!important}
@@ -227,6 +227,11 @@ async function recordItem(browser, item) {
   return rawPath
 }
 
+if (resolve(process.argv[1] ?? "") === import.meta.filename) {
+  throw new Error("Bulk rendering paused pending creative approval. Use capture-crash-validation.mjs for the single validation Short.")
+}
+
+export async function legacyCaptureLibrary() {
 console.log(`Renderer: ${CAPTURE_WIDTH}x${CAPTURE_HEIGHT} native ${RECORDING_FPS}fps capture -> 1080x1920 30fps master`)
 console.log(`Source: ${BASE_URL}; items: ${items.length}`)
 const browser = reuseRaw ? null : await chromium.launch({ executablePath, headless: true, args: ['--use-angle=swiftshader-webgl', '--enable-webgl', '--disable-background-timer-throttling'] })
@@ -246,3 +251,5 @@ try {
 }
 
 await writeFile(MANIFEST_PATH, `${JSON.stringify(manifest, null, 2)}\n`)
+
+}
