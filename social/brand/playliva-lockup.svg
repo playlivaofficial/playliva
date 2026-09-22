@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 96" role="img" aria-label="PlayLiva">
+  <defs>
+    <linearGradient id="playlivaSocialMark" x1="15" y1="6" x2="80" y2="92" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#59A6FF"/>
+      <stop offset=".55" stop-color="#2A7DFF"/>
+      <stop offset="1" stop-color="#0E5BF0"/>
+    </linearGradient>
+  </defs>
+  <rect x="18" y="18" width="18" height="70" rx="9" fill="url(#playlivaSocialMark)"/>
+  <path fill-rule="evenodd" clip-rule="evenodd" fill="url(#playlivaSocialMark)" d="M42 10a27 27 0 1 0 0 54 27 27 0 0 0 0-54Zm0 14a13 13 0 1 1 0 26 13 13 0 0 1 0-26Z"/>
+  <path d="M35 29v17l17-8.5Z" fill="#fff" stroke="#fff" stroke-width="3" stroke-linejoin="round"/>
+  <text x="96" y="62" fill="#fff" font-family="Arial, sans-serif" font-size="48" font-weight="800" letter-spacing="-1">PLAY<tspan fill="#4B9CFF">LIVA</tspan></text>
+</svg>

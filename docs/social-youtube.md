@@ -1,6 +1,6 @@
 # PlayLiva YouTube Shorts publisher
 
-This system creates reviewable PT-BR Shorts from PlayLiva-owned Originals, preserves the existing consented UTM attribution path, and uploads only through the official YouTube Data API. It does not publish to TikTok or Instagram and does not add public application routes.
+This system creates reviewable PT-BR Shorts from PlayLiva-owned Originals, preserves the existing consented UTM attribution path, and uploads only through the official YouTube Data API. It does not publish to TikTok or Instagram and does not add public application routes. The current 50-video production workflow is documented in [`social-shorts-library.md`](social-shorts-library.md).
 
 ## Current channel and platform baseline
 
@@ -17,24 +17,27 @@ The uploader uses the isolated Google Cloud project **PlayLiva YouTube Automatio
 
 ## Content and review workflow
 
-The source manifest is `social/content/youtube-shorts-br.json`. Every item has a unique `contentId`, an exact Original route, a unique `utm_content`, review state, YouTube ID, timestamps, and a performance state.
+The source manifest is `social/content/youtube-shorts-br.json`. Every item has a unique `contentId`, an exact Original route, a unique `utm_content`, review state, YouTube ID, timestamps, and a performance state. The prior five-item validation manifest is archived at `social/content/youtube-shorts-br-v1-archive.json`.
 
 ```text
-content manifest -> browser capture -> 1080x1920 renderer -> review queue -> YouTube adapter
+content manifest -> PT-BR narration -> live browser capture -> 1080x1920 master -> QC -> human review -> YouTube adapter
 ```
 
 Commands:
 
 ```bash
 pnpm social:capture
+pnpm social:voice:setup
+pnpm social:voice
+pnpm social:inspect
 pnpm social:review
 pnpm social:review -- --json
 pnpm social:review -- --approve=yt-br-island-crash-01
 ```
 
-Capture uses public/local PlayLiva gameplay, screenshots only the game unit, and encodes silent H.264 MP4 through the pinned FFmpeg binary. The first batch is 1080×1920, 15 seconds, 30 fps, with no copyrighted music. Browser chrome, account data, developer controls, affiliate URLs and third-party footage are excluded. Generated frames and MP4s are ignored by Git.
+Capture uses local PlayLiva gameplay, moves only the live game unit into a vertical safe-zone stage, and records native browser motion before one final H.264 encode through the pinned FFmpeg binary. Masters are 1080×1920 at 30 fps with PT-BR narration, generated music, game-specific synthesized cues, and AAC audio. Browser chrome, account data, developer controls, affiliate URLs and third-party footage are excluded. Generated model files, raw captures, MP4s and thumbnails are ignored by Git.
 
-Approval changes an item from `needs_review` to `approved`; it does not upload or publish anything.
+Automated QC never approves content. Approval requires both a passed QC record and an explicit human review; it does not upload or publish anything.
 
 ## Attribution and analytics
 
@@ -43,7 +46,7 @@ The tracked target scheme is:
 ```text
 utm_source=youtube
 utm_medium=organic_social
-utm_campaign=playliva_shorts
+utm_campaign=playliva_originals_shorts
 utm_content=<contentId>
 ```
 

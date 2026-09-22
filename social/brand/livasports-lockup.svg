@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 96" role="img" aria-label="LivaSports">
+  <rect x="8" y="8" width="80" height="80" rx="21" ry="8" fill="#2FDAA2"/>
+  <path d="M31 25v46h33V58H44V25Z" fill="#06231C"/>
+  <path d="m57 25 14 13-14 13" fill="none" stroke="#06231C" stroke-width="8" stroke-linejoin="round"/>
+  <text x="106" y="62" fill="#fff" font-family="Arial, sans-serif" font-size="48" font-weight="800" letter-spacing="-1">Liva<tspan fill="#43E3AD">Sports</tspan></text>
+</svg>

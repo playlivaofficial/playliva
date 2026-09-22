@@ -20,6 +20,7 @@ export default defineConfig([
     '.vercel/**',
     'out/**',
     'build/**',
+    'social/output/**',
     'next-env.d.ts',
   ]),
 ])

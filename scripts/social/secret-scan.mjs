@@ -9,7 +9,7 @@ const secretPatterns = [
   /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/,
   /"(?:client_secret|refresh_token|access_token)"\s*:\s*"(?!<|\$\{|YOUR_|REDACTED)[^"\s]{8,}"/i,
 ]
-const files = execFileSync('git', ['ls-files'], { encoding: 'utf8' }).split(/\r?\n/).filter(Boolean)
+const files = execFileSync('git', ['ls-files', '--cached', '--others', '--exclude-standard'], { encoding: 'utf8' }).split(/\r?\n/).filter(Boolean)
 const failures = []
 for (const file of files) {
   const normalized = file.replaceAll('\\', '/')
@@ -23,4 +23,4 @@ if (process.argv.includes('--history')) {
   for (const pattern of secretPatterns) if (pattern.test(history)) failures.push(`git history: matches secret pattern ${pattern}`)
 }
 if (failures.length) { console.error(failures.join('\n')); process.exit(1) }
-console.log(`Secret scan passed (${files.length} tracked files${process.argv.includes('--history') ? ' plus git history' : ''}).`)
+console.log(`Secret scan passed (${files.length} tracked and untracked repository files${process.argv.includes('--history') ? ' plus git history' : ''}).`)
