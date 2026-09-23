@@ -58,10 +58,10 @@
       },
       "qualityStatus": "needs_review",
       "reviewStatus": "needs_review",
-      "publishStatus": "needs_review",
-      "youtubeVideoId": null,
+      "publishStatus": "uploaded_private",
+      "youtubeVideoId": "jzgJYnb7IaI",
       "scheduledAt": null,
-      "uploadedAt": null,
+      "uploadedAt": "2026-09-22T14:04:28.435Z",
       "publishedAt": null,
       "performanceStatus": "not_available",
       "qc": {
@@ -96,7 +96,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "island-crash-02-tension",
@@ -151,10 +152,10 @@
       },
       "qualityStatus": "needs_review",
       "reviewStatus": "needs_review",
-      "publishStatus": "needs_review",
-      "youtubeVideoId": null,
+      "publishStatus": "uploaded_private",
+      "youtubeVideoId": "EA7aKIo2ioU",
       "scheduledAt": null,
-      "uploadedAt": null,
+      "uploadedAt": "2026-09-22T14:04:34.012Z",
       "publishedAt": null,
       "performanceStatus": "not_available",
       "qc": {
@@ -189,7 +190,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "island-crash-03-challenge",
@@ -244,10 +246,10 @@
       },
       "qualityStatus": "needs_review",
       "reviewStatus": "needs_review",
-      "publishStatus": "needs_review",
-      "youtubeVideoId": null,
+      "publishStatus": "uploaded_private",
+      "youtubeVideoId": "FUObZjZfc1M",
       "scheduledAt": null,
-      "uploadedAt": null,
+      "uploadedAt": "2026-09-22T14:04:38.881Z",
       "publishedAt": null,
       "performanceStatus": "not_available",
       "qc": {
@@ -282,7 +284,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "island-crash-04-gameplay-first",
@@ -337,10 +340,10 @@
       },
       "qualityStatus": "needs_review",
       "reviewStatus": "needs_review",
-      "publishStatus": "needs_review",
-      "youtubeVideoId": null,
+      "publishStatus": "uploaded_private",
+      "youtubeVideoId": "dZsp0FsFiMk",
       "scheduledAt": null,
-      "uploadedAt": null,
+      "uploadedAt": "2026-09-22T14:05:27.146Z",
       "publishedAt": null,
       "performanceStatus": "not_available",
       "qc": {
@@ -375,7 +378,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "island-crash-05-reaction",
@@ -430,10 +434,10 @@
       },
       "qualityStatus": "needs_review",
       "reviewStatus": "needs_review",
-      "publishStatus": "needs_review",
-      "youtubeVideoId": null,
+      "publishStatus": "uploaded_private",
+      "youtubeVideoId": "a-ra4_vC2RA",
       "scheduledAt": null,
-      "uploadedAt": null,
+      "uploadedAt": "2026-09-22T14:06:03.450Z",
       "publishedAt": null,
       "performanceStatus": "not_available",
       "qc": {
@@ -468,7 +472,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "island-crash-06-close-call",
@@ -523,10 +528,10 @@
       },
       "qualityStatus": "needs_review",
       "reviewStatus": "needs_review",
-      "publishStatus": "needs_review",
-      "youtubeVideoId": null,
+      "publishStatus": "uploaded_private",
+      "youtubeVideoId": "ToqN0AQIF30",
       "scheduledAt": null,
-      "uploadedAt": null,
+      "uploadedAt": "2026-09-22T14:06:39.528Z",
       "publishedAt": null,
       "performanceStatus": "not_available",
       "qc": {
@@ -561,7 +566,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "island-crash-07-how-far",
@@ -616,10 +622,10 @@
       },
       "qualityStatus": "needs_review",
       "reviewStatus": "needs_review",
-      "publishStatus": "needs_review",
-      "youtubeVideoId": null,
+      "publishStatus": "uploaded_private",
+      "youtubeVideoId": "6yCRvlFAgo0",
       "scheduledAt": null,
-      "uploadedAt": null,
+      "uploadedAt": "2026-09-22T14:07:24.365Z",
       "publishedAt": null,
       "performanceStatus": "not_available",
       "qc": {
@@ -654,7 +660,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "island-crash-08-quick-explanation",
@@ -709,10 +716,10 @@
       },
       "qualityStatus": "needs_review",
       "reviewStatus": "needs_review",
-      "publishStatus": "needs_review",
-      "youtubeVideoId": null,
+      "publishStatus": "uploaded_private",
+      "youtubeVideoId": "dQyL8Z-7x0w",
       "scheduledAt": null,
-      "uploadedAt": null,
+      "uploadedAt": "2026-09-22T14:07:29.103Z",
       "publishedAt": null,
       "performanceStatus": "not_available",
       "qc": {
@@ -747,7 +754,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "island-crash-09-satisfying",
@@ -802,10 +810,10 @@
       },
       "qualityStatus": "needs_review",
       "reviewStatus": "needs_review",
-      "publishStatus": "needs_review",
-      "youtubeVideoId": null,
+      "publishStatus": "uploaded_private",
+      "youtubeVideoId": "eYswSGUo_iE",
       "scheduledAt": null,
-      "uploadedAt": null,
+      "uploadedAt": "2026-09-22T14:07:34.602Z",
       "publishedAt": null,
       "performanceStatus": "not_available",
       "qc": {
@@ -840,7 +848,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "island-crash-10-personal-choice",
@@ -895,10 +904,10 @@
       },
       "qualityStatus": "needs_review",
       "reviewStatus": "needs_review",
-      "publishStatus": "needs_review",
-      "youtubeVideoId": null,
+      "publishStatus": "uploaded_private",
+      "youtubeVideoId": "l1x4jFmamyw",
       "scheduledAt": null,
-      "uploadedAt": null,
+      "uploadedAt": "2026-09-22T14:07:40.610Z",
       "publishedAt": null,
       "performanceStatus": "not_available",
       "qc": {
@@ -933,7 +942,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "liva-mines-01-decision",
@@ -988,7 +998,7 @@
       },
       "qualityStatus": "needs_review",
       "reviewStatus": "needs_review",
-      "publishStatus": "needs_review",
+      "publishStatus": "failed",
       "youtubeVideoId": null,
       "scheduledAt": null,
       "uploadedAt": null,
@@ -1026,7 +1036,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "liva-mines-02-tension",
@@ -1119,7 +1130,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "liva-mines-03-challenge",
@@ -1212,7 +1224,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "liva-mines-04-gameplay-first",
@@ -1305,7 +1318,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "liva-mines-05-reaction",
@@ -1398,7 +1412,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "liva-mines-06-close-call",
@@ -1491,7 +1506,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "liva-mines-07-how-far",
@@ -1584,7 +1600,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "liva-mines-08-quick-explanation",
@@ -1677,7 +1694,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "liva-mines-09-satisfying",
@@ -1770,7 +1788,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "liva-mines-10-personal-choice",
@@ -1863,7 +1882,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "liva-blackjack-01-decision",
@@ -1956,7 +1976,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "liva-blackjack-02-tension",
@@ -2049,7 +2070,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "liva-blackjack-03-challenge",
@@ -2142,7 +2164,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "liva-blackjack-04-gameplay-first",
@@ -2235,7 +2258,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "liva-blackjack-05-reaction",
@@ -2328,7 +2352,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "liva-blackjack-06-close-call",
@@ -2421,7 +2446,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "liva-blackjack-07-how-far",
@@ -2514,7 +2540,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "liva-blackjack-08-quick-explanation",
@@ -2607,7 +2634,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "liva-blackjack-09-satisfying",
@@ -2700,7 +2728,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "liva-blackjack-10-personal-choice",
@@ -2793,7 +2822,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "liva-roulette-01-decision",
@@ -2886,7 +2916,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "liva-roulette-02-tension",
@@ -2979,7 +3010,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "liva-roulette-03-challenge",
@@ -3072,7 +3104,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "liva-roulette-04-gameplay-first",
@@ -3165,7 +3198,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "liva-roulette-05-reaction",
@@ -3258,7 +3292,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "liva-roulette-06-close-call",
@@ -3351,7 +3386,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "liva-roulette-07-how-far",
@@ -3444,7 +3480,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "liva-roulette-08-quick-explanation",
@@ -3537,7 +3574,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "liva-roulette-09-satisfying",
@@ -3630,7 +3668,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "liva-roulette-10-personal-choice",
@@ -3723,7 +3762,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "capybara-gold-01-decision",
@@ -3816,7 +3856,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "capybara-gold-02-tension",
@@ -3909,7 +3950,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "capybara-gold-03-challenge",
@@ -4002,7 +4044,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "capybara-gold-04-gameplay-first",
@@ -4095,7 +4138,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "capybara-gold-05-reaction",
@@ -4188,7 +4232,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "capybara-gold-06-close-call",
@@ -4281,7 +4326,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "capybara-gold-07-how-far",
@@ -4374,7 +4420,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "capybara-gold-08-quick-explanation",
@@ -4467,7 +4514,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "capybara-gold-09-satisfying",
@@ -4560,7 +4608,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     },
     {
       "contentId": "capybara-gold-10-personal-choice",
@@ -4653,7 +4702,8 @@
         ],
         "passed": true,
         "notes": []
-      }
+      },
+      "privateUploadApprovedAt": "2026-09-22T14:04:24.468Z"
     }
   ]
 }

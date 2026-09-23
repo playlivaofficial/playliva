@@ -15,8 +15,8 @@ test('manifest defines exactly ten unique premium Shorts per owned Original', ()
   for (const field of ['contentId', 'title', 'description', 'voiceLine', 'videoFile', 'thumbnailFile']) {
     assert.equal(new Set(manifest.items.map(item => item[field].toLocaleLowerCase('pt-BR'))).size, 50, `${field} must be unique`)
   }
-  assert.ok(manifest.items.every(item => item.reviewStatus === 'needs_review' && item.publishStatus === 'needs_review'))
-  assert.ok(manifest.items.every(item => !item.youtubeVideoId && !item.uploadedAt && !item.scheduledAt))
+  assert.ok(manifest.items.every(item => item.reviewStatus === 'needs_review'))
+  assert.ok(manifest.items.every(item => !item.publishedAt && !item.scheduledAt))
 })
 
 test('UTM builder targets exact PlayLiva Original routes with unique content IDs', () => {
@@ -82,12 +82,31 @@ test('upload request uses videos.insert and channel verification permits only Pl
 })
 
 test('human approval and retry policy guard uploads', () => {
-  const item = content.validateManifest(fixture).items[0]
+  const item = { ...content.validateManifest(fixture).items[0], privateUploadApprovedAt: undefined, youtubeVideoId: null, uploadedAt: null, publishStatus: 'needs_review' }
   assert.equal(content.canUpload(item), false)
   assert.equal(content.canUpload({ ...item, reviewStatus: 'approved', publishStatus: 'approved' }), true)
   assert.equal(content.canUpload({ ...item, reviewStatus: 'approved', publishStatus: 'approved', youtubeVideoId: 'abc' }), false)
   for (const status of [408, 429, 500, 503]) assert.equal(youtube.isRetryableStatus(status), true)
   for (const status of [400, 401, 403, 404]) assert.equal(youtube.isRetryableStatus(status), false)
+})
+
+test('private upload approval never authorizes unlisted/public or scheduled uploads', () => {
+  const item = { ...fixture.items[0], privateUploadApprovedAt: new Date().toISOString(), youtubeVideoId: null, uploadedAt: null, publishStatus: 'needs_review', qc: { ...fixture.items[0].qc, passed: true } }
+  assert.equal(content.canUpload(item, 'private'), true)
+  assert.equal(content.canUpload(item, 'public'), false)
+  assert.equal(content.canUpload(item, 'unlisted'), false)
+  assert.equal(content.canUpload({ ...item, scheduledAt: '2099-01-01T00:00:00Z' }, 'private'), false)
+  assert.equal(content.canUpload({ ...item, youtubeVideoId: '12345678901' }, 'private'), false)
+})
+
+test('manifest supports recorded private uploads but rejects inconsistent IDs and scheduling', () => {
+  const manifest = structuredClone(fixture)
+  Object.assign(manifest.items[0], { privateUploadApprovedAt: new Date().toISOString(), youtubeVideoId: '12345678901', uploadedAt: new Date().toISOString(), publishStatus: 'uploaded_private' })
+  assert.doesNotThrow(() => content.validateManifest(manifest))
+  manifest.items[0].uploadedAt = null
+  assert.throws(() => content.validateManifest(manifest), /inconsistent private upload/)
+  manifest.items[0].scheduledAt = '2099-01-01T00:00:00Z'
+  assert.throws(() => content.validateManifest(manifest), /public or schedule/)
 })
 
 test('credential, model and render paths are ignored', async () => {

@@ -5,6 +5,10 @@ import content from '../../lib/social/content.ts'
 import youtube from '../../lib/social/youtube.ts'
 
 const root = resolve(import.meta.dirname, '../..')
+if (process.argv.includes('--all-private')) {
+  await import('./youtube-private-batch.mjs')
+  process.exit(0)
+}
 const manifestPath = resolve(root, 'social/content/youtube-shorts-br.json')
 const contentId = process.argv.find(value => value.startsWith('--id='))?.slice(5)
 const privacy = process.argv.find(value => value.startsWith('--privacy='))?.slice(10) ?? 'private'
@@ -15,7 +19,7 @@ if (privacy === 'public' && !process.argv.includes('--confirm-public')) throw ne
 const manifest = content.validateManifest(JSON.parse(await readFile(manifestPath, 'utf8')))
 const item = manifest.items.find(entry => entry.contentId === contentId)
 if (!item) throw new Error(`Unknown content id: ${contentId}`)
-if (!content.canUpload(item)) throw new Error(`${contentId}: item must be approved and not previously uploaded`)
+if (!content.canUpload(item, privacy)) throw new Error(`${contentId}: item must be approved and not previously uploaded`)
 const file = resolve(root, item.videoFile), size = (await stat(file)).size
 const tokenPath = resolve(root, process.env.YOUTUBE_OAUTH_TOKEN_FILE ?? '.youtube-oauth/token.json')
 const token = JSON.parse(await readFile(tokenPath, 'utf8'))

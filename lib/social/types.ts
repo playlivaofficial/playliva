@@ -87,6 +87,7 @@ export interface SocialContentItem {
   encoding: SocialEncodingConfig
   qualityStatus: 'generated' | 'needs_review' | 'rejected'
   reviewStatus: 'needs_review' | 'approved' | 'rejected'
+  privateUploadApprovedAt?: string
   publishStatus: SocialStatus
   youtubeVideoId: string | null
   scheduledAt: string | null

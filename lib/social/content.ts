@@ -27,7 +27,7 @@ export function trackedTargetUrl(item: Pick<SocialContentItem, 'targetUrl' | 'ut
 }
 
 export function youtubeMetadata(item: SocialContentItem, privacyStatus: YouTubeMetadata['privacyStatus'] = 'private'): YouTubeMetadata {
-  const title = `${item.title} #Shorts`
+  const title = `${item.gameName} ${String(item.captureVariant).padStart(2, '0')} — ${item.title} #Shorts`
   if (title.length > 100) throw new Error(`${item.contentId}: YouTube title exceeds 100 characters`)
   const hashtags = item.hashtags.join(' ')
   return {
@@ -101,10 +101,16 @@ export function validateManifest(input: unknown): SocialContentManifest {
       !['needs_review', 'approved', 'rejected'].includes(item.reviewStatus) || !SOCIAL_STATUSES.includes(item.publishStatus)) {
       throw new Error(`${item.contentId}: invalid review or publishing state`)
     }
-    if (item.publishStatus !== 'generated' && item.publishStatus !== 'needs_review' && item.reviewStatus !== 'approved') {
+    const privateApproved = Boolean(item.privateUploadApprovedAt && Number.isFinite(Date.parse(item.privateUploadApprovedAt)) && item.qc?.passed)
+    if (item.privateUploadApprovedAt && !privateApproved) throw new Error(`${item.contentId}: invalid private upload approval`)
+    if (item.publishStatus !== 'generated' && item.publishStatus !== 'needs_review' && item.reviewStatus !== 'approved' &&
+      !(privateApproved && ['uploaded_private', 'failed'].includes(item.publishStatus))) {
       throw new Error(`${item.contentId}: upload-capable state requires human approval`)
     }
-    if (item.youtubeVideoId || item.uploadedAt || item.publishedAt || item.scheduledAt) throw new Error(`${item.contentId}: review library must not contain upload or schedule state`)
+    if (item.publishedAt || item.scheduledAt || ['published', 'scheduled', 'uploaded_unlisted'].includes(item.publishStatus)) throw new Error(`${item.contentId}: private review library must not contain public or schedule state`)
+    if (Boolean(item.youtubeVideoId) !== Boolean(item.uploadedAt) ||
+      (item.youtubeVideoId && (!/^[A-Za-z0-9_-]{11}$/.test(item.youtubeVideoId) || !Number.isFinite(Date.parse(item.uploadedAt!)) || item.publishStatus !== 'uploaded_private')) ||
+      (item.publishStatus === 'uploaded_private' && !item.youtubeVideoId)) throw new Error(`${item.contentId}: inconsistent private upload record`)
     if (/betsson|bookmaker|sportsbook|afiliad/i.test(`${item.title} ${item.description} ${item.targetUrl}`)) {
       throw new Error(`${item.contentId}: affiliate or sportsbook reference is forbidden`)
     }
@@ -116,8 +122,10 @@ export function validateManifest(input: unknown): SocialContentManifest {
   return manifest
 }
 
-export function canUpload(item: SocialContentItem): boolean {
-  return item.reviewStatus === 'approved' && item.publishStatus === 'approved' && !item.youtubeVideoId && !item.uploadedAt
+export function canUpload(item: SocialContentItem, privacy: YouTubeMetadata['privacyStatus'] = 'private'): boolean {
+  const approval = item.reviewStatus === 'approved' && item.publishStatus === 'approved'
+  const privateApproval = privacy === 'private' && Boolean(item.privateUploadApprovedAt && item.qc?.passed) && item.reviewStatus !== 'rejected' && ['needs_review', 'failed'].includes(item.publishStatus)
+  return (approval || privateApproval) && !item.youtubeVideoId && !item.uploadedAt && !item.scheduledAt && !item.publishedAt
 }
 
 export function nextUploadStatus(privacy: YouTubeMetadata['privacyStatus'], scheduledAt?: string): SocialContentItem['publishStatus'] {
