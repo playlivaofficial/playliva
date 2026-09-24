@@ -16,6 +16,8 @@ export function MobileBottomNav() {
   // fixed navigation layer here obscures Start/Cash Out on 320px screens.
   if (activePath === '/play/crash') return null
   if (activePath === '/play/capybara-gold') return null
+  if (activePath === '/play/embaixadinha') return null
+  if (activePath === '/play/golaco') return null
   if (activePath === '/play/blackjack') return null
   if (activePath === '/play/roulette') return null
   if (activePath === '/play/mines') return null

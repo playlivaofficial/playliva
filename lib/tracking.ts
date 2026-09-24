@@ -28,6 +28,14 @@ export type TrackEventName =
   | 'play_real_click'
   | 'offer_impression'
   | 'offer_dismiss'
+  | 'demo_cashout'
+  | 'demo_crash'
+  | 'demo_slot_win'
+  | 'demo_bonus_trigger'
+  | 'demo_free_spin_start'
+  | 'demo_bonus_complete'
+  | 'demo_streak_increase'
+  | 'demo_sound_toggle'
 
 export type PageType =
   | 'home'
@@ -88,17 +96,26 @@ export interface TrackPayload {
   triggerMultiple?: string
   /** Ordinal of the exposure in the play session, as a string. */
   exposureNumber?: string
+  /** Free-play gameplay context: coarse labels only (e.g. "2-5x", "big", "8", "on"). */
+  multiplierBucket?: string
+  winTier?: string
+  spinsAwarded?: string
+  streakLevel?: string
+  soundState?: string
 }
 
 const EVENTS: readonly TrackEventName[] = ['page_view', 'game_view', 'comparison_view',
   'category_view', 'where_to_play_view', 'operator_view', 'affiliate_impression',
   'affiliate_click', 'free_play_open', 'demo_round_start', 'demo_round_complete',
-  'demo_balance_reset', 'play_real_view', 'play_real_click', 'offer_impression', 'offer_dismiss']
+  'demo_balance_reset', 'play_real_view', 'play_real_click', 'offer_impression', 'offer_dismiss',
+  'demo_cashout', 'demo_crash', 'demo_slot_win', 'demo_bonus_trigger', 'demo_free_spin_start',
+  'demo_bonus_complete', 'demo_streak_increase', 'demo_sound_toggle']
 const CONTEXT_FIELDS = ['country', 'language', 'pageType', 'pageSlug', 'gameId', 'gameSlug',
   'matchId', 'matchSlug', 'category', 'operatorId', 'operatorSlug', 'offerId', 'ctaLocation',
   'placement', 'destination', 'originalId', 'roundId', 'promoId', 'brand', 'surface',
   'trafficSource', 'utmSource', 'utmMedium', 'utmCampaign', 'utmContent', 'utmTerm',
-  'completedCycleNumber', 'triggerMultiple', 'exposureNumber'] as const
+  'completedCycleNumber', 'triggerMultiple', 'exposureNumber',
+  'multiplierBucket', 'winTier', 'spinsAwarded', 'streakLevel', 'soundState'] as const
 /** Campaign identifiers may contain dots (e.g. "reels.br"); still no spaces, slashes or free text. */
 const ATTRIBUTION_FIELDS: readonly string[] = ['trafficSource', 'utmSource', 'utmMedium', 'utmCampaign', 'utmContent', 'utmTerm']
 

@@ -11,7 +11,7 @@ type DiscoveryCopy = {
   disclaimer: string; homeTitle: string; homeDescription: string; heroLink: string
   hubLink: string; hubTitle: string; hubDescription: string; available: string
   categoryTitle: string; categoryDescription: string; discoverTitle: string
-  discoverDescription: string; discoverLink: string; seoTitle: string; seoDescription: string
+  discoverDescription: string; discoverLink: string; seoTitle: string; seoDescription: string; newBadge: string
 }
 
 const COPY: Record<Locale, DiscoveryCopy> = {
@@ -24,16 +24,17 @@ const COPY: Record<Locale, DiscoveryCopy> = {
     noWithdrawals: 'No withdrawals', noValue: 'No monetary value',
     disclaimer: 'Demo games use virtual Liva Credits only. No deposits, no withdrawals, and no monetary value.',
     homeTitle: 'Play free on PlayLiva',
-    homeDescription: 'Our original games. Your next adventure. Discover Island Crash, Liva Capybara Gold, Liva Blackjack, Liva Roulette and Liva Mines with virtual credits.',
+    homeDescription: 'Our original games. Your next adventure. Discover Island Crash, Liva Embaixadinha, Liva Capybara Gold, Liva Golaço, Liva Blackjack, Liva Roulette and Liva Mines with virtual credits.',
     heroLink: 'Play Island Crash for free', hubLink: 'Explore the Play hub',
     hubTitle: 'Original games. Free to play.',
-    hubDescription: 'Meet PlayLiva Originals: Island Crash, Liva Capybara Gold, Liva Blackjack, Liva Roulette: Golden Orbit and Liva Mines: Jungle Gold. Five free-play adventures, right in your browser.',
+    hubDescription: 'Meet PlayLiva Originals: Island Crash, Liva Embaixadinha, Liva Capybara Gold, Liva Golaço, Liva Blackjack, Liva Roulette: Golden Orbit and Liva Mines: Jungle Gold. Seven free-play adventures, right in your browser.',
     available: 'Ready to play', categoryTitle: 'Our island. Your free flight.',
     categoryDescription: 'Try our own crash-style demo before exploring the provider games below. Island Crash is a PlayLiva Original, not a provider or operator game.',
     discoverTitle: 'Keep discovering',
     discoverDescription: 'Looking for provider games? Explore the separate discovery catalog, comparisons and operator information for your market.',
     discoverLink: 'Explore provider games', seoTitle: 'PlayLiva Originals — Free Demo Games',
-    seoDescription: 'Play Island Crash, Liva Capybara Gold, Liva Blackjack, Liva Roulette and Liva Mines free. Virtual Liva Credits only. No deposits, withdrawals or monetary value.',
+    seoDescription: 'Play Island Crash, Liva Embaixadinha, Liva Capybara Gold, Liva Golaço and more PlayLiva Originals free. Virtual Liva Credits only. No deposits or monetary value.',
+    newBadge: 'NEW',
   },
   'pt-BR': {
     originals: 'PlayLiva Originals', freePlay: 'JOGUE GRÁTIS', playFree: 'Jogar grátis',
@@ -44,16 +45,17 @@ const COPY: Record<Locale, DiscoveryCopy> = {
     noWithdrawals: 'Sem saques', noValue: 'Sem valor monetário',
     disclaimer: 'Os jogos demo usam apenas Liva Credits virtuais. Sem depósitos, sem saques e sem valor monetário.',
     homeTitle: 'Jogue grátis no PlayLiva',
-    homeDescription: 'Nossos jogos originais. Sua próxima aventura. Descubra Island Crash, Liva Capybara Gold, Liva Blackjack, Liva Roulette e Liva Mines com créditos virtuais.',
+    homeDescription: 'Nossos jogos originais. Sua próxima aventura. Descubra Island Crash, Liva Embaixadinha, Liva Capybara Gold, Liva Golaço, Liva Blackjack, Liva Roulette e Liva Mines com créditos virtuais.',
     heroLink: 'Jogue Island Crash grátis', hubLink: 'Ver a área de jogos grátis',
     hubTitle: 'Jogos originais. Diversão gratuita.',
-    hubDescription: 'Conheça o PlayLiva Originals: Island Crash, Liva Capybara Gold, Liva Blackjack, Liva Roulette: Golden Orbit e Liva Mines: Jungle Gold. Cinco aventuras grátis, direto no navegador.',
+    hubDescription: 'Conheça o PlayLiva Originals: Island Crash, Liva Embaixadinha, Liva Capybara Gold, Liva Golaço, Liva Blackjack, Liva Roulette: Golden Orbit e Liva Mines: Jungle Gold. Sete aventuras grátis, direto no navegador.',
     available: 'Pronto para jogar', categoryTitle: 'Nossa ilha. Seu voo grátis.',
     categoryDescription: 'Experimente nosso demo no estilo crash antes de explorar os jogos de provedores abaixo. Island Crash é um PlayLiva Original, não um jogo de provedor ou operador.',
     discoverTitle: 'Continue explorando',
     discoverDescription: 'Procura jogos de provedores? Explore o catálogo separado de jogos, comparações e informações de operadores para o seu mercado.',
     discoverLink: 'Explorar jogos de provedores', seoTitle: 'PlayLiva Originals — Jogos Demo Grátis',
-    seoDescription: 'Jogue Island Crash, Liva Capybara Gold, Liva Blackjack, Liva Roulette e Liva Mines grátis. Apenas Liva Credits virtuais. Sem depósitos, saques ou valor monetário.',
+    seoDescription: 'Jogue Island Crash, Liva Embaixadinha, Liva Capybara Gold, Liva Golaço e outros PlayLiva Originals grátis. Só Liva Credits virtuais, sem depósitos.',
+    newBadge: 'NOVO',
   },
   'es-MX': {
     originals: 'PlayLiva Originals', freePlay: 'JUEGA GRATIS', playFree: 'Jugar gratis',
@@ -64,17 +66,37 @@ const COPY: Record<Locale, DiscoveryCopy> = {
     noWithdrawals: 'Sin retiros', noValue: 'Sin valor monetario',
     disclaimer: 'Los juegos demo usan solo Liva Credits virtuales. Sin depósitos, sin retiros y sin valor monetario.',
     homeTitle: 'Juega gratis en PlayLiva',
-    homeDescription: 'Nuestros juegos originales. Tu próxima aventura. Descubre Island Crash, Liva Capybara Gold, Liva Blackjack, Liva Roulette y Liva Mines con créditos virtuales.',
+    homeDescription: 'Nuestros juegos originales. Tu próxima aventura. Descubre Island Crash, Liva Embaixadinha, Liva Capybara Gold, Liva Golaço, Liva Blackjack, Liva Roulette y Liva Mines con créditos virtuales.',
     heroLink: 'Juega Island Crash gratis', hubLink: 'Ver la sección de juegos gratis',
     hubTitle: 'Juegos originales. Diversión gratis.',
-    hubDescription: 'Conoce PlayLiva Originals: Island Crash, Liva Capybara Gold, Liva Blackjack, Liva Roulette: Golden Orbit y Liva Mines: Jungle Gold. Cinco aventuras gratis, directo en tu navegador.',
+    hubDescription: 'Conoce PlayLiva Originals: Island Crash, Liva Embaixadinha, Liva Capybara Gold, Liva Golaço, Liva Blackjack, Liva Roulette: Golden Orbit y Liva Mines: Jungle Gold. Siete aventuras gratis, directo en tu navegador.',
     available: 'Listo para jugar', categoryTitle: 'Nuestra isla. Tu vuelo gratis.',
     categoryDescription: 'Prueba nuestro demo estilo crash antes de explorar los juegos de proveedores de abajo. Island Crash es un PlayLiva Original, no un juego de proveedor u operador.',
     discoverTitle: 'Sigue descubriendo',
     discoverDescription: '¿Buscas juegos de proveedores? Explora el catálogo independiente de juegos, comparaciones e información de operadores para tu mercado.',
     discoverLink: 'Explorar juegos de proveedores', seoTitle: 'PlayLiva Originals — Juegos Demo Gratis',
-    seoDescription: 'Juega Island Crash, Liva Capybara Gold, Liva Blackjack, Liva Roulette y Liva Mines gratis. Solo Liva Credits virtuales. Sin depósitos, retiros ni valor monetario.',
+    seoDescription: 'Juega Island Crash, Liva Embaixadinha, Liva Capybara Gold, Liva Golaço y más PlayLiva Originals gratis. Solo Liva Credits virtuales, sin depósitos.',
+    newBadge: 'NUEVO',
   },
 }
 
 export const originalsDiscoveryCopy = (locale: Locale): DiscoveryCopy => COPY[locale]
+
+const LINK_LABELS: Record<Locale, { hub: string; crash: string; slots: string }> = {
+  en: { hub: 'All PlayLiva Originals', crash: 'Crash games', slots: 'Slot games' },
+  'pt-BR': { hub: 'Todos os PlayLiva Originals', crash: 'Jogos crash', slots: 'Jogos de slot' },
+  'es-MX': { hub: 'Todos los PlayLiva Originals', crash: 'Juegos crash', slots: 'Juegos de slots' },
+}
+/** Internal links shown under an Original's play page (never the current page). */
+export function originalsLinks(locale: Locale, currentSlug: string): { href: string; label: string }[] {
+  const labels = LINK_LABELS[locale]
+  return [
+    { href: '/play', label: labels.hub },
+    { href: '/play/embaixadinha', label: 'Liva Embaixadinha' },
+    { href: '/play/golaco', label: 'Liva Golaço' },
+    { href: ISLAND_CRASH_PLAY_PATH, label: 'Island Crash' },
+    { href: '/play/capybara-gold', label: 'Liva Capybara Gold' },
+    { href: '/crash', label: labels.crash },
+    { href: '/slots', label: labels.slots },
+  ].filter(link => link.href !== `/play/${currentSlug}`)
+}

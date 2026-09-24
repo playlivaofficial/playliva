@@ -129,6 +129,11 @@ test('M10: footer and trust display have no replacement characters in any suppor
 // rebalanced free-spin reels, per-reel stop disclosure, procedural slot audio
 // (`audio.ts`, `slot-sound.ts`) and bonus presentation. Paid reels, paytable,
 // wallet accounting and every other Original are untouched.
+// The football Originals rebase it once more by ADDING files only: Liva
+// Embaixadinha (`lib/originals/embaixadinha/`), Liva Golaço (`lib/originals/golaco/`),
+// the shared procedural synth kit (`synth.ts`) and light discovery-card strings
+// (`football-cards.ts`), plus additive analytics events/fields and discovery copy
+// naming seven Originals. No existing engine, wallet, renderer or outcome changes.
 test('M10: Original engine, wallet and game-renderer files stay frozen except approved entry semantics', async () => {
   const roots = ['lib/originals', 'components/originals/crash', 'components/originals/capybara', 'components/originals/blackjack', 'components/originals/roulette', 'components/originals/mines']
   const paths = []
@@ -142,6 +147,6 @@ test('M10: Original engine, wallet and game-renderer files stay frozen except ap
   for (const path of roots) await walk(path)
   const hash = createHash('sha256')
   for (const path of paths.sort()) hash.update(path + '\0' + (await readFile(new URL('../' + path, import.meta.url), 'utf8')).replace(/\r\n/g, '\n') + '\0')
-  assert.equal(paths.length, 63)
-  assert.equal(hash.digest('hex'), '46674db00d9171ac35b29897ceb4814afeaeb57aa5a5379782411bc5f3fd880a')
+  assert.equal(paths.length, 77)
+  assert.equal(hash.digest('hex'), '508237e9ccbff9becc6f9763b4c4f066e84b92f9e5a04f48c5762f88f15703e2')
 })

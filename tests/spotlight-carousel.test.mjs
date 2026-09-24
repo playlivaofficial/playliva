@@ -45,7 +45,7 @@ test('spotlight catalog is data-driven: every playable Original, canonical order
   const routes = (await readdir(new URL('../app/[locale]/play', import.meta.url), { withFileTypes: true }))
     .filter(entry => entry.isDirectory()).map(entry => entry.name).sort()
   assert.deepEqual(SPOTLIGHT_GAMES.map(game => game.slug).slice().sort(), routes, 'one slide per playable route')
-  assert.deepEqual(SPOTLIGHT_GAMES.map(game => game.id), ['island-crash', 'liva-capybara-gold', 'liva-blackjack', 'liva-roulette', 'liva-mines'])
+  assert.deepEqual(SPOTLIGHT_GAMES.map(game => game.id), ['island-crash', 'liva-embaixadinha', 'liva-capybara-gold', 'liva-golaco', 'liva-blackjack', 'liva-roulette', 'liva-mines'])
   for (const game of SPOTLIGHT_GAMES) {
     assert.equal(game.playPath, `/play/${game.slug}`)
     assert.match(game.poster, /^\/originals\//)

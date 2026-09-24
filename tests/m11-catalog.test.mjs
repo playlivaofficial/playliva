@@ -169,7 +169,7 @@ test('M11: 189 M10 URLs survive; new routes have unique reciprocal localized met
   const oldPaths = JSON.parse(await readFile(new URL('./fixtures/m10-sitemap-paths.json', import.meta.url)))
   const entries = sitemapModule.default(), urls = entries.map(item => item.url)
   assert.equal(oldPaths.length * 3, 189)
-  assert.equal(entries.length, 292) // SEO P0 removes 24 empty WTP and 8 wrong-market list variants.
+  assert.equal(entries.length, 298) // SEO P0 removes 24 empty WTP and 8 wrong-market list variants; +6 football Originals URLs.
   assert.equal(new Set(urls).size, urls.length)
   assert.equal(paths.REFERENCE_PATHS.length, 43)
   for (const [, segment] of locales) for (const path of oldPaths) {

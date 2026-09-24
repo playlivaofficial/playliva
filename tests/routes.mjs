@@ -370,7 +370,29 @@ try {
       if (routePath === '/live-casino') {
         assert.ok(doc.querySelector('[data-originals-section="live-casino"]'))
         assert.ok(blackjack[0].compareDocumentPosition(doc.querySelector('main a[href*="/games/"]')) & 4)
-      } else assert.deepEqual([...doc.querySelectorAll('[data-original-card]')].map(e => e.getAttribute('data-original-card')), ['island-crash', 'capybara-gold', 'blackjack', 'roulette', 'mines'])
+      } else assert.deepEqual([...doc.querySelectorAll('[data-original-card]')].map(e => e.getAttribute('data-original-card')), ['island-crash', 'embaixadinha', 'capybara-gold', 'golaco', 'blackjack', 'roulette', 'mines'])
+    }
+    for (const [slug, surfaces] of [['embaixadinha', ['', '/play', '/crash']], ['golaco', ['', '/play', '/slots']]]) {
+      if (!surfaces.includes(routePath)) continue
+      const football = doc.querySelectorAll(`[data-original-card="${slug}"]`)
+      assert.equal(football.length, 1, `${path}: one ${slug} card`)
+      for (const link of football[0].querySelectorAll('a')) assert.equal(link.getAttribute('href'), `/${segment}/play/${slug}`)
+      assert.ok(football[0].textContent.includes(copy.newBadge) && football[0].textContent.includes(copy.virtualCredits))
+    }
+    if (routePath === '/play/embaixadinha' || routePath === '/play/golaco') {
+      assert.ok(doc.querySelector(routePath === '/play/golaco' ? '[data-golaco-game]' : '[data-embaixadinha-game]'), `${path}: real game shell`)
+      if (routePath === '/play/golaco') {
+        assert.equal(doc.querySelectorAll('[data-symbol]').length, 15, `${path}: five reels by three rows`)
+        assert.ok(doc.querySelector('[data-slot-spin]'))
+      } else assert.ok(doc.querySelector('[data-phase="ready"]'))
+      assert.equal(doc.querySelectorAll('h1').length, 1, `${path}: one H1`)
+      const article = doc.querySelector('[data-original-article]')
+      assert.ok(article?.querySelector('ol, ul') && article.textContent.length > 600, `${path}: visible rules and description`)
+      const crumbs = [...doc.querySelectorAll('script[type="application/ld+json"]')].map(e => e.textContent).find(t => t.includes('BreadcrumbList'))
+      assert.ok(crumbs?.includes(`/${segment}/play"`) && crumbs.includes(routePath === '/play/golaco' ? 'Liva Golaço' : 'Liva Embaixadinha'), `${path}: breadcrumb structured data`)
+      assert.ok(doc.querySelector(`link[rel="alternate"][hreflang="x-default"]`), `${path}: hreflang`)
+      assert.equal(doc.querySelector('nav.fixed'), null, `${path}: controls unobstructed by mobile nav`)
+      assert.doesNotMatch(doc.querySelector('main')?.textContent ?? '', /Nike|Adidas|CBF|FIFA|Neymar|Pel[ée]\b/, `${path}: no protected marks`)
     }
     if (routePath === '/play/blackjack') {
       assert.ok(doc.querySelector('[data-blackjack-game]'), `${path}: real blackjack shell`)
@@ -406,7 +428,7 @@ try {
       assert.equal(doc.querySelectorAll('[data-mine]').length, 0)
       assert.equal(doc.querySelector('nav.fixed'), null)
     }
-    if (['/play/crash', '/play/capybara-gold', '/play/blackjack', '/play/roulette', '/play/mines'].includes(routePath)) {
+    if (['/play/crash', '/play/embaixadinha', '/play/capybara-gold', '/play/golaco', '/play/blackjack', '/play/roulette', '/play/mines'].includes(routePath)) {
       const viewport = doc.querySelector('[data-game-viewport]')
       const controls = doc.querySelector('[data-game-controls]')
       const unit = doc.querySelector('[data-game-unit]')

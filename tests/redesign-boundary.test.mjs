@@ -13,7 +13,9 @@ import { createHash } from 'node:crypto'
 // rebases data.ts (central verified offer), tracking.ts (funnel events/attribution
 // allow-list), affiliate-button.tsx (promo payload) and where-to-play.tsx (campaign
 // card wrapper); the recurring gameplay-offer milestone rebases tracking.ts again
-// (cycle/exposure allow-list fields). All other hashes stay intact;
+// (cycle/exposure allow-list fields); the football Originals rebase it once more
+// (free-play gameplay events and coarse label fields only) and add their two
+// /play routes to app/sitemap.ts. All other hashes stay intact;
 // SEO P0 rebases only the approved market-safe rendering, metadata, sitemap
 // and empty transactional-page gates represented by the updated hashes below.
 // m12-hardening tests verify the added behavior. No engine snapshot is rebased.

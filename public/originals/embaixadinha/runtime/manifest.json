@@ -1,0 +1,28 @@
+{
+  "source": {
+    "path": "public/originals/crash/runtime/castaway.glb",
+    "sha256": "ba0d3dd0d6187025267b6a84f6227c31e7e0a5c57666a10b8bd7f7063afe3f90",
+    "bytes": 2188480
+  },
+  "runtime": {
+    "path": "craque.glb",
+    "bytes": 1720656,
+    "sha256": "e89d6b090e1938e7e0c4925816673d6c206cacfd81f84d532106bb7f7c9544d6",
+    "vertices": 25604,
+    "hairVertices": 9576,
+    "joints": 28,
+    "clips": 0
+  },
+  "skull": {
+    "center": [
+      0.002,
+      1.458,
+      0.01
+    ],
+    "radii": [
+      0.112,
+      0.152,
+      0.133
+    ]
+  }
+}
