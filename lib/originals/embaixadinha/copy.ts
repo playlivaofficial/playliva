@@ -2,13 +2,13 @@ import type { Locale } from '@/lib/types'
 import { FOOTBALL_CARDS } from '../football-cards'
 
 const ptBR = {
-  seoTitle: 'Liva Embaixadinha: jogo crash de futebol grátis',
-  description: 'Jogo crash de futebol grátis do PlayLiva: faça embaixadinhas, veja o multiplicador subir e retire antes de a bola cair. Só créditos virtuais, sem depósitos.',
+  seoTitle: 'Liva Ginga: jogo crash de futebol grátis',
+  description: 'Jogo crash de futebol grátis do PlayLiva: faça toques na bola, veja o multiplicador subir e retire antes de a bola cair. Só créditos virtuais, sem depósitos.',
   ...FOOTBALL_CARDS.embaixadinha['pt-BR'],
   stake: 'Créditos por rodada', start: 'COMEÇAR', cashOut: 'RETIRAR', again: 'JOGAR DE NOVO', auto: 'Retirada automática', autoTarget: 'Retirar em',
-  ready: 'BOLA NO PÉ', preparing: 'PREPARANDO O TOQUE', juggling: 'EMBAIXADINHA!', dropped: 'CAIU A BOLA!',
+  ready: 'BOLA NO PÉ', preparing: 'PREPARANDO O TOQUE', juggling: 'NA GINGA!', dropped: 'CAIU A BOLA!',
   cashed_out: 'RETIRADA FEITA', crashed: 'CAIU', youCashedOut: 'Você retirou em', lost: 'Créditos usados',
-  touch: 'toque', touches: 'toques', loading: 'Preparando a quadra…', loadingHint: 'Aquecendo o craque para as embaixadinhas',
+  touch: 'toque', touches: 'toques', loading: 'Preparando a quadra…', loadingHint: 'Aquecendo o craque para as toques na bola',
   loadError: 'Não foi possível carregar a quadra. Confira sua conexão e tente de novo.', retry: 'Tentar de novo',
   unsupported: 'Não foi possível iniciar a quadra 3D neste navegador. Tente um navegador com WebGL ativado.',
   history: 'Suas rodadas', noHistory: 'Sua primeira sequência começa com um toque.',
@@ -20,9 +20,9 @@ const ptBR = {
   soundHint: 'O som começa desligado. Ative em Som nas configurações do jogo.',
   notice: 'Jogo gratuito · Sem depósitos ou saques · Créditos sem valor monetário. Não é um jogo de dinheiro real.',
   articleTitle: 'Jogo crash de futebol grátis, feito pelo PlayLiva',
-  articleIntro: 'Liva Embaixadinha é um PlayLiva Original: um jogo de futebol online grátis em que cada embaixadinha faz o multiplicador subir. Nosso craque em 3D mantém a bola no ar numa quadra de comunidade cheia de cor, sol e muita bola no pé — e a rodada acaba no instante em que ele perde o controle da bola.',
+  articleIntro: 'Liva Ginga é um PlayLiva Original: um jogo de futebol online grátis em que cada toque faz o multiplicador subir. Nosso craque em 3D mantém a bola no ar numa quadra de comunidade cheia de cor, sol e muita bola no pé — e a rodada acaba no instante em que ele perde o controle da bola.',
   articleCrash: 'É a mecânica de um jogo crash, com cara de futebol de rua: quanto mais tempo a sequência dura, maior o multiplicador, e você decide a hora de retirar. Não há apostas em dinheiro no PlayLiva: tudo usa Liva Credits virtuais, sem depósitos, sem saques e sem valor monetário.',
-  rulesTitle: 'Regras do Liva Embaixadinha',
+  rulesTitle: 'Regras do Liva Ginga',
   rules: [
     'Os créditos usados em cada rodada são virtuais (Liva Credits) e não têm valor monetário.',
     'O multiplicador começa em 1,00× no primeiro toque e sobe enquanto a bola continua sob controle.',
@@ -49,7 +49,7 @@ const ptBR = {
 type EmbaixadinhaCopy = typeof ptBR
 
 const en: EmbaixadinhaCopy = {
-  seoTitle: 'Liva Embaixadinha: free football crash game',
+  seoTitle: 'Liva Ginga: free football crash game',
   description: 'A free football crash game from PlayLiva: keep the ball up, watch the multiplier climb and cash out before it drops. Virtual credits only, no deposits.',
   ...FOOTBALL_CARDS.embaixadinha['en'],
   stake: 'Stake', start: 'START', cashOut: 'CASH OUT', again: 'PLAY AGAIN', auto: 'Auto cashout', autoTarget: 'Cash out at',
@@ -67,9 +67,9 @@ const en: EmbaixadinhaCopy = {
   soundHint: 'Sound starts off. Turn it on with Sound in the game settings.',
   notice: 'Free play · No deposits or withdrawals · Credits have no monetary value. Not a real-money game.',
   articleTitle: 'A free football crash game, made by PlayLiva',
-  articleIntro: 'Liva Embaixadinha is a PlayLiva Original: a free online football game where every keepie-uppy lifts the multiplier. Our stylized 3D player keeps the ball up on a sunny, colourful community court — and the round ends the instant he loses control of the ball.',
+  articleIntro: 'Liva Ginga is a PlayLiva Original: a free online football game where every keepie-uppy lifts the multiplier. Our stylized 3D player keeps the ball up on a sunny, colourful community court — and the round ends the instant he loses control of the ball.',
   articleCrash: 'It plays like a crash game with a street-football soul: the longer the streak, the higher the multiplier, and you choose when to cash out. There is no real-money betting on PlayLiva: everything uses virtual Liva Credits, with no deposits, no withdrawals and no monetary value.',
-  rulesTitle: 'Liva Embaixadinha rules',
+  rulesTitle: 'Liva Ginga rules',
   rules: [
     'Stakes use virtual Liva Credits, which have no monetary value.',
     'The multiplier starts at 1.00× on the first touch and rises while the ball stays under control.',
@@ -95,7 +95,7 @@ const en: EmbaixadinhaCopy = {
 }
 
 const esMX: EmbaixadinhaCopy = {
-  seoTitle: 'Liva Embaixadinha: juego crash de futbol gratis',
+  seoTitle: 'Liva Ginga: juego crash de futbol gratis',
   description: 'Juego crash de futbol gratis de PlayLiva: haz dominadas, mira subir el multiplicador y retira antes de que caiga el balón. Solo créditos virtuales.',
   ...FOOTBALL_CARDS.embaixadinha['es-MX'],
   stake: 'Créditos por ronda', start: 'EMPEZAR', cashOut: 'RETIRAR', again: 'JUGAR DE NUEVO', auto: 'Retiro automático', autoTarget: 'Retirar en',
@@ -113,9 +113,9 @@ const esMX: EmbaixadinhaCopy = {
   soundHint: 'El sonido empieza apagado. Actívalo en Sonido, en la configuración del juego.',
   notice: 'Juego gratis · Sin depósitos ni retiros · Créditos sin valor monetario. No es un juego de dinero real.',
   articleTitle: 'Un juego crash de futbol gratis, hecho por PlayLiva',
-  articleIntro: 'Liva Embaixadinha es un PlayLiva Original: un juego de futbol en línea gratis en el que cada dominada sube el multiplicador. Nuestro jugador 3D mantiene el balón en el aire en una cancha de barrio llena de color y sol, y la ronda termina en el instante en que pierde el control del balón.',
+  articleIntro: 'Liva Ginga es un PlayLiva Original: un juego de futbol en línea gratis en el que cada dominada sube el multiplicador. Nuestro jugador 3D mantiene el balón en el aire en una cancha de barrio llena de color y sol, y la ronda termina en el instante en que pierde el control del balón.',
   articleCrash: 'Se juega como un juego crash con alma de futbol callejero: cuanto más dura la racha, más alto el multiplicador, y tú decides cuándo retirar. En PlayLiva no se apuesta dinero real: todo usa Liva Credits virtuales, sin depósitos, sin retiros y sin valor monetario.',
-  rulesTitle: 'Reglas de Liva Embaixadinha',
+  rulesTitle: 'Reglas de Liva Ginga',
   rules: [
     'Los créditos de cada ronda son virtuales (Liva Credits) y no tienen valor monetario.',
     'El multiplicador empieza en 1.00× en el primer toque y sube mientras el balón sigue bajo control.',

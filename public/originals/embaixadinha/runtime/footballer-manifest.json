@@ -1,0 +1,34 @@
+{
+  "sources": [
+    {
+      "file": "Meshy_AI_Character_output.glb",
+      "bytes": 8928192,
+      "sha256": "b0042bcedf9c9b32528257c30207199ebfd4d1c7f543e8ca704a69aa43603469"
+    },
+    {
+      "file": "Meshy_AI_Animation_Idle_9_withSkin.glb",
+      "bytes": 8951872,
+      "sha256": "2daf4e537ead491b74805efbea4842a60ce0bb055feadf8e9d8c180d00adf354"
+    },
+    {
+      "file": "Meshy_AI_Animation_Kick_a_Soccer_Ball_withSkin.glb",
+      "bytes": 8948664,
+      "sha256": "17e51788aa58e8377635b8ee7ea7198abed6f02a566293f72c6d86cc39355093"
+    },
+    {
+      "file": "Meshy_AI_Animation_Stumble_Walk_withSkin.glb",
+      "bytes": 8971688,
+      "sha256": "2f422f0a29eaf7197f3606a0bdbcce466976ffa84f610242a5d1f7ea3040ea71"
+    }
+  ],
+  "runtime": {
+    "file": "footballer.glb",
+    "bytes": 9058984,
+    "sha256": "6cc5baf76aad019a52a7893d7491e3ca08cf9f57588fbaaaf0553a886ba668f3",
+    "clips": [
+      "Idle",
+      "Kick",
+      "Stumble"
+    ]
+  }
+}

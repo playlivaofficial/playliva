@@ -13,6 +13,15 @@ export function middleware(request: NextRequest) {
   const segments = pathname.split('/')
   const firstSegment = segments[1] ?? ''
 
+  // Liva Ginga migration: exact legacy game path only, preserving locale and
+  // the original query (including social UTMs), without a duplicate index page.
+  const legacyFootball = pathname.match(/^\/(?:(en|pt-br|es-mx)\/)?play\/embaixadinha\/?$/)
+  if (legacyFootball) {
+    const url = request.nextUrl.clone()
+    url.pathname = `/${legacyFootball[1] ?? DEFAULT_LOCALE_SEGMENT}/play/liva-ginga`
+    return NextResponse.redirect(url, 301)
+  }
+
   // Already locale-prefixed: pass through, but forward the segment as a
   // request header so `app/[locale]/layout.tsx` can set `<html lang>`
   // server-side without re-deriving it from params in every consumer.

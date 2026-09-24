@@ -12,6 +12,7 @@
 .multiplier[data-cashed] { color: var(--liva-yellow); }
 .result { position: absolute; z-index: 1; bottom: 14px; inset-inline-start: 14px; display: grid; max-width: 46%; border: 1px solid #ffe7864d; border-radius: 12px; background: #0b3b2ae6; backdrop-filter: blur(8px); padding: 8px 12px; color: #fff; font-size: 14px; font-weight: 700; box-shadow: 0 8px 24px #03261733; pointer-events: none; overflow-wrap: anywhere; }
 .result[data-won=true] { border-color: #ffd21f99; }
+.viewport:not([data-phase=dropped]) .result[data-won=false] { visibility: hidden; }
 .result span { font-weight: 400; font-size: 11px; }
 .result strong { font-variant-numeric: tabular-nums; font-size: 18px; }
 .loader { position: absolute; inset: 0; z-index: 2; isolation: isolate; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 8px; padding: 24px; text-align: center; background: #0f3d2b; color: #f4fff8; }

@@ -95,7 +95,8 @@ test('Embaixadinha audio: groove starts on the flick once, crash stops it, mute 
     const before = stub.starts
     audio.roundStart(); audio.touch('flick', 0, 0); audio.touch('right-foot', 2, 4); audio.crash('overhit'); audio.bounce(1); audio.cashout(900)
     assert.equal(stub.starts, before, 'Sound OFF: nothing plays'); assert.equal(stub.live, 0)
-    audio.setEnabled(true); audio.touch('flick', 0, 0); assert.equal(stub.live, 1, 'Sound ON: groove restarts on the next flick')
+    audio.setEnabled(true); audio.touch('left-foot', 0, 5); assert.equal(stub.live, 1, 'Sound ON mid-round: groove resumes on the next contact')
+    audio.touch('right-foot', 0, 6); assert.equal(stub.live, 1, 'resuming never stacks music')
     audio.dispose()
     assert.equal(stub.live, 0); assert.equal(stub.contexts.length, 1); assert.equal(stub.contexts[0].closed, true)
   } finally { stub.restore() }

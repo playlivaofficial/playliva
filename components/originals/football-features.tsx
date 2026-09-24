@@ -36,7 +36,7 @@ function FootballCard({ game, poster, posterAlt, category, description, cardId, 
 export function EmbaixadinhaFeature({ surface }: { surface: Surface }) {
   const { locale } = useCountry(), copy = FOOTBALL_CARDS.embaixadinha[locale]
   return <FootballCard game={EMBAIXADINHA} poster={EMBAIXADINHA_POSTER} posterAlt={copy.posterAlt} category={copy.category}
-    description={copy.discovery} cardId="embaixadinha" surface={surface} />
+    description={copy.discovery} cardId="liva-ginga" surface={surface} />
 }
 
 export function GolacoFeature({ surface }: { surface: Surface }) {

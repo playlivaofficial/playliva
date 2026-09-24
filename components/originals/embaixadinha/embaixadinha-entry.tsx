@@ -8,7 +8,7 @@ function Poster() {
   const { locale } = useCountry()
   return <div role="status" className="relative mx-auto grid min-h-96 max-w-7xl place-items-end overflow-hidden rounded-2xl bg-emerald-950 p-6 text-emerald-50">
     <Image src={EMBAIXADINHA_POSTER} alt="" fill sizes="(max-width: 767px) 100vw, 1280px" priority className="object-cover opacity-80" />
-    <div className="relative"><p className="text-2xl font-bold">Liva Embaixadinha</p><p>{embaixadinhaCopy(locale).loading}</p></div>
+    <div className="relative"><p className="text-2xl font-bold">Liva Ginga</p><p>{embaixadinhaCopy(locale).loading}</p></div>
   </div>
 }
 const Game = dynamic(() => import('./embaixadinha-game'), { loading: Poster })

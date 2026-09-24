@@ -353,7 +353,7 @@ test('homepage client keeps M10 discovery and exposes one Betsson banner /go lin
     assert.equal(doc.querySelector('[data-hero-play-free]').getAttribute('href'), `/${segment}/play`)
     assert.equal(doc.querySelectorAll('#game-types a').length, 4)
     assert.deepEqual([...doc.querySelectorAll('[data-original-card]')].map(node => node.getAttribute('data-original-card')),
-      ['island-crash', 'embaixadinha', 'capybara-gold', 'golaco', 'blackjack', 'roulette', 'mines'])
+      ['island-crash', 'liva-ginga', 'capybara-gold', 'golaco', 'blackjack', 'roulette', 'mines'])
     const banner = doc.querySelector('[data-betsson-banner="homepage"]')
     const bannerLink = banner.querySelector('a[href^="/go?"]')
     assert.ok(bannerLink)

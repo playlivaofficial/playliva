@@ -67,8 +67,8 @@ test('redesign: all seven implemented Originals remain localized, distinct and t
   for (const [locale, segment] of locales) {
     const dom = new JSDOM(renderToStaticMarkup(wrap(locale, `/${segment}/play`, React.createElement(PlayView))))
     const doc = dom.window.document
-    assert.deepEqual([...doc.querySelectorAll('[data-original-card]')].map(e => e.dataset.originalCard), ['island-crash', 'embaixadinha', 'capybara-gold', 'golaco', 'blackjack', 'roulette', 'mines'])
-    for (const slug of ['crash', 'embaixadinha', 'capybara-gold', 'golaco', 'blackjack', 'roulette', 'mines']) assert.ok(doc.querySelector(`a[data-play-free][href="/${segment}/play/${slug}"]`))
+    assert.deepEqual([...doc.querySelectorAll('[data-original-card]')].map(e => e.dataset.originalCard), ['island-crash', 'liva-ginga', 'capybara-gold', 'golaco', 'blackjack', 'roulette', 'mines'])
+    for (const slug of ['crash', 'liva-ginga', 'capybara-gold', 'golaco', 'blackjack', 'roulette', 'mines']) assert.ok(doc.querySelector(`a[data-play-free][href="/${segment}/play/${slug}"]`))
     assert.ok(doc.querySelector('[data-original-card="blackjack"]').textContent.includes(productCopy(locale).noLiveDealer))
     assert.equal(doc.querySelector('[data-provider-card]'), null)
     assert.equal(doc.querySelector('[data-original-card] a[href^="/go"]'), null)
@@ -108,7 +108,7 @@ test('redesign: lobby filters expose the right games, announce counts, and resto
     assert.deepEqual(visible(), ['blackjack', 'roulette'])
     assert.ok(document.querySelector('[role="status"]').textContent.includes('2'))
     await click('Jogos instantâneos'); assert.deepEqual(visible(), ['mines'])
-    await click(productCopy('pt-BR').crash); assert.deepEqual(visible(), ['island-crash', 'embaixadinha'])
+    await click(productCopy('pt-BR').crash); assert.deepEqual(visible(), ['island-crash', 'liva-ginga'])
     await click(productCopy('pt-BR').slots); assert.deepEqual(visible(), ['capybara-gold', 'golaco'])
     await click('Todos os Originals'); assert.equal(visible().length, 7)
   })

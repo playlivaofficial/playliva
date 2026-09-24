@@ -19,6 +19,7 @@ import { createHash } from 'node:crypto'
 // SEO P0 rebases only the approved market-safe rendering, metadata, sitemap
 // and empty transactional-page gates represented by the updated hashes below.
 // m12-hardening tests verify the added behavior. No engine snapshot is rebased.
+// Approved Liva Ginga migration rebases only the sitemap slug in this fixture.
 test('redesign: protected outbound infrastructure remains unchanged except authorized Betsson play-real files', async () => {
   const expected = JSON.parse(await readFile(new URL('./fixtures/redesign-protected.json', import.meta.url), 'utf8'))
   for (const [path, hash] of Object.entries(expected)) {

@@ -134,6 +134,10 @@ test('M10: footer and trust display have no replacement characters in any suppor
 // the shared procedural synth kit (`synth.ts`) and light discovery-card strings
 // (`football-cards.ts`), plus additive analytics events/fields and discovery copy
 // naming seven Originals. No existing engine, wallet, renderer or outcome changes.
+// Meshy integration changes only Embaixadinha's definition asset URL in these
+// frozen roots. The approved Liva Ginga migration also updates public name/copy,
+// slug/discovery and music resume after unmute. Engine math, wallet, other-game
+// renderers and outcomes remain unchanged.
 test('M10: Original engine, wallet and game-renderer files stay frozen except approved entry semantics', async () => {
   const roots = ['lib/originals', 'components/originals/crash', 'components/originals/capybara', 'components/originals/blackjack', 'components/originals/roulette', 'components/originals/mines']
   const paths = []
@@ -148,5 +152,5 @@ test('M10: Original engine, wallet and game-renderer files stay frozen except ap
   const hash = createHash('sha256')
   for (const path of paths.sort()) hash.update(path + '\0' + (await readFile(new URL('../' + path, import.meta.url), 'utf8')).replace(/\r\n/g, '\n') + '\0')
   assert.equal(paths.length, 77)
-  assert.equal(hash.digest('hex'), '508237e9ccbff9becc6f9763b4c4f066e84b92f9e5a04f48c5762f88f15703e2')
+  assert.equal(hash.digest('hex'), '22d49403051f2e88c625d80fa6c8c329c1c5a7d63bb1b8a7c4a6ba23699fad73')
 })

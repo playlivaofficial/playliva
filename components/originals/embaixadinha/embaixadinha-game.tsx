@@ -53,7 +53,7 @@ export function EmbaixadinhaPlay() {
   const [error, setError] = useState<EmbaixadinhaErrors | null>(null)
   const [load, setLoad] = useState<'loading' | 'ready' | 'error' | 'unsupported'>('loading')
   const [attempt, setAttempt] = useState(0)
-  const host = useRef<HTMLDivElement>(null), hudValue = useRef<HTMLParagraphElement>(null)
+  const host = useRef<HTMLDivElement>(null), hudValue = useRef<HTMLParagraphElement>(null), hudPhase = useRef<HTMLParagraphElement>(null), viewport = useRef<HTMLDivElement>(null)
   const sound = session.settings.sound, haptics = session.settings.haptics
   const cues = useRef<JuggleCueSink | null>(null), soundWas = useRef(sound)
   const settled = useRef<string | null>(null), cashedFor = useRef<string | null>(null)
@@ -79,17 +79,20 @@ export function EmbaixadinhaPlay() {
       cleanup = mountJuggleScene(host.current, engine, {
         ready: () => setLoad('ready'), error: unsupported => setLoad(unsupported ? 'unsupported' : 'error'),
         cues: () => cues.current,
-        frame: ({ multiplier, crashed }) => {
+        frame: ({ multiplier, crashed, phase }) => {
           const node = hudValue.current
           if (!node) return
           const text = formatMultiplier(multiplier, locale)
           if (node.textContent !== text) node.textContent = text
+          node.setAttribute('aria-label', text)
+          if (hudPhase.current) hudPhase.current.textContent = copy[phase]
+          viewport.current?.setAttribute('data-phase', phase)
           if (crashed) node.setAttribute('data-crashed', ''); else node.removeAttribute('data-crashed')
         },
       })
     }).catch(() => { if (!disposed) setLoad('error') })
     return () => { disposed = true; cleanup?.() }
-  }, [engine, attempt, locale])
+  }, [engine, attempt, locale, copy])
   useEffect(() => {
     // Settlement never depends on rendering: a hidden or failed canvas still settles.
     const timer = window.setInterval(() => engine.tick(), 40)
@@ -150,16 +153,16 @@ export function EmbaixadinhaPlay() {
     {error && <p role="alert" className={styles.error}>{copy.errors[error]}</p>}
   </div>
   const touches = round.phase === 'dropped' && round.failTouch !== null ? round.failTouch : null
-  return <div className={styles.game} data-embaixadinha-game data-ready={load === 'ready'} onPointerDown={() => { if (sound) audio.unlock() }}>
+  return <div className={styles.game} data-liva-ginga-game data-ready={load === 'ready'} onPointerDown={() => { if (sound) audio.unlock() }}>
     <PlayGameShell game={EMBAIXADINHA} roundActive={active} controls={controls} compact>
-      <div className={styles.viewport} data-phase={round.phase} data-wager={round.wager}>
+      <div ref={viewport} className={styles.viewport} data-phase="ready" data-wager={round.wager}>
         <div className={styles.scene} ref={host} />
         <div className={styles.vignette} />
-        <div className={styles.sceneBrand}>PLAYLIVA ORIGINALS <span>EMBAIXADINHA</span></div>
+        <div className={styles.sceneBrand}>PLAYLIVA ORIGINALS <span>LIVA GINGA</span></div>
         <div className={styles.hud}>
-          <p className={styles.phase} aria-live="polite">{copy[round.phase]}</p>
+          <p ref={hudPhase} className={styles.phase} aria-live="polite">{copy.ready}</p>
           <p ref={hudValue} className={styles.multiplier} data-multiplier data-cashed={round.wager === 'cashed_out' || undefined}
-            aria-label={formatMultiplier(round.multiplier, locale)}>{formatMultiplier(round.multiplier, locale)}</p>
+            aria-label={formatMultiplier(100, locale)}>{formatMultiplier(100, locale)}</p>
         </div>
         {round.result && round.phase !== 'ready' && <p className={styles.result} role="status" data-won={round.result.won}>
           {round.result.won ? <><span>{copy.youCashedOut} <b>{formatMultiplier(round.result.multiplier, locale)}</b></span><strong>{formatCredits(round.result.payout, locale)}</strong></> :

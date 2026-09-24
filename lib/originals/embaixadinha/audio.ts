@@ -100,11 +100,13 @@ export function createJuggleAudio(): JuggleAudio {
     touch(kind, tier, index) {
       const at = s.ready()
       if (at === null) return
+      // Also resume after sound is enabled mid-round or the opening flick was
+      // skipped by a throttled tab. One guarded scheduler, never stacked loops.
+      if (!playing) { playing = true; s.startLoop(STEP, groove); s.musicLevel(1, .25) }
       if (kind === 'flick') {
         // Flick: scoop + the groove kicks in.
         s.tone(at, { frequency: 240, bend: 420, bendSeconds: .08, decay: .1, gain: .28 })
         s.noise(at, { duration: .05, gain: .12, type: 'bandpass', frequency: 1500 })
-        if (!playing) { playing = true; s.startLoop(STEP, groove); s.musicLevel(1, .25) }
         return
       }
       if (tier !== energy) energy = tier
