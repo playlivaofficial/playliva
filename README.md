@@ -327,3 +327,35 @@ See [the math, architecture, payload and QA report](docs/mines.md).
 Reloading an active round keeps the stake spent, drops the unfinished board and
 starts ready without refund/resume/payout. No new dependencies or runtime pin
 changes were needed. Plinko/M10 is not included.
+
+## Football Originals: Liva Embaixadinha and Liva Golaço
+
+Two further free-play Originals join the Play hub, homepage and spotlight, and
+the Crash and Slots category blocks, in hub order: Island Crash,
+Embaixadinha, Capybara Gold, Golaço, Blackjack, Roulette, Mines. Each has a
+visible rules/description article with BreadcrumbList data, and uses the shared
+compact sponsor header, disclosures and engagement cycle (never mid-round).
+
+- `/[locale]/play/embaixadinha` is a crash game.
+  - A stylized 3D player juggles on a street court and the round crashes when
+    he loses the ball.
+  - The crash is one touch-quantized engine event, rendered in the same frame
+    as the multiplier freeze and the crash cue.
+  - The character is derived from PlayLiva's own castaway rig.
+  - See [the contract, sync measurements and assets](docs/embaixadinha.md).
+- `/[locale]/play/golaco` is a 5×3, 243-ways football slot.
+  - 3 / 4 / 5+ Trophies award 8 / 12 / 20 Final de Ouro free spins.
+  - Golden Balls raise a ×1–×5 Goal Streak.
+  - Retriggers add +1, capped at 40 spins.
+  - The math is simulated over 1M paid spins; see
+    [the simulated math, audio and assets](docs/golaco.md).
+
+Both games use original procedural Web Audio from the shared
+`lib/originals/synth.ts` kit. Offline tools:
+
+- `node --import tsx scripts/golaco-simulate.mjs 1000000 20260924`
+- `node scripts/golaco-assets.mjs` and `node scripts/embaixadinha-assets.mjs`
+  regenerate the owned art and the character GLB.
+- `node scripts/golaco-visual-qa.mjs` (:3114) and
+  `node scripts/embaixadinha-visual-qa.mjs` (:3113, `--poster` re-renders the
+  poster) serve local-only deterministic scenarios. No public overrides exist.

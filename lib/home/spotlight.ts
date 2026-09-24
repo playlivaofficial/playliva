@@ -4,6 +4,9 @@ import { CAPYBARA_GOLD } from '@/lib/originals/capybara/definition'
 import { LIVA_BLACKJACK } from '@/lib/originals/blackjack/definition'
 import { LIVA_ROULETTE } from '@/lib/originals/roulette/config'
 import { LIVA_MINES } from '@/lib/originals/mines/config'
+import { EMBAIXADINHA, EMBAIXADINHA_POSTER } from '@/lib/originals/embaixadinha/definition'
+import { GOLACO, GOLACO_POSTER } from '@/lib/originals/golaco/definition'
+import { FOOTBALL_CARDS } from '@/lib/originals/football-cards'
 import { ISLAND_CRASH_PLAY_PATH, ISLAND_CRASH_POSTER, originalsDiscoveryCopy } from '@/lib/originals/discovery'
 import { capybaraCopy } from '@/lib/originals/capybara/copy'
 import { blackjackCopy } from '@/lib/originals/blackjack/copy'
@@ -47,11 +50,26 @@ export const SPOTLIGHT_GAMES: readonly SpotlightGame[] = [
     posterAlt: byLocale((locale) => originalsDiscoveryCopy(locale).posterAlt),
   },
   {
+    id: EMBAIXADINHA.id, slug: EMBAIXADINHA.slug, playPath: `/play/${EMBAIXADINHA.slug}`,
+    title: byLocale((locale) => EMBAIXADINHA.title[locale]),
+    category: byLocale((locale) => FOOTBALL_CARDS.embaixadinha[locale].category),
+    poster: EMBAIXADINHA_POSTER,
+    posterAlt: byLocale((locale) => FOOTBALL_CARDS.embaixadinha[locale].posterAlt),
+  },
+  {
     id: CAPYBARA_GOLD.id, slug: CAPYBARA_GOLD.slug, playPath: `/play/${CAPYBARA_GOLD.slug}`,
     title: byLocale((locale) => CAPYBARA_GOLD.title[locale]),
     category: byLocale((locale) => capybaraCopy(locale).category),
     poster: '/originals/capybara-gold/river.webp',
     posterAlt: byLocale((locale) => capybaraCopy(locale).posterAlt),
+  },
+  {
+    id: GOLACO.id, slug: GOLACO.slug, playPath: `/play/${GOLACO.slug}`,
+    title: byLocale((locale) => GOLACO.title[locale]),
+    category: byLocale((locale) => FOOTBALL_CARDS.golaco[locale].category),
+    poster: GOLACO_POSTER,
+    posterAlt: byLocale((locale) => FOOTBALL_CARDS.golaco[locale].posterAlt),
+    posterHasTitle: true,
   },
   {
     id: LIVA_BLACKJACK.id, slug: LIVA_BLACKJACK.slug, playPath: `/play/${LIVA_BLACKJACK.slug}`,

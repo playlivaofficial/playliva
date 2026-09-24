@@ -6,6 +6,7 @@ import { LocaleLink } from '@/components/locale-link'
 import { originalsDiscoveryCopy } from '@/lib/originals/discovery'
 import { capybaraCopy } from '@/lib/originals/capybara/copy'
 import styles from './originals-discovery.module.css'
+import { GolacoFeature } from './football-features'
 
 /** Discovery art only: no slot engine/wallet/animation imports or prefetch. */
 export function CapybaraFeature({ surface }: { surface: 'home' | 'hub' | 'category' }) {
@@ -34,5 +35,6 @@ export function CapybaraDiscoverySection() {
     <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>{shared.originals}</p><h2 id="originals-slots-title">{copy.categoryTitle}</h2><p className={styles.sectionDescription}>{copy.categoryDescription}</p></div>
       <LocaleLink href="/play" className={styles.hubLink}>{shared.hubLink}<ArrowRight size={17} aria-hidden="true" /></LocaleLink></div>
     <CapybaraFeature surface="category" />
+    <GolacoFeature surface="category" />
   </section>
 }

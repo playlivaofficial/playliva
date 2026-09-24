@@ -9,6 +9,7 @@ import { CapybaraFeature } from '@/components/originals/capybara-feature'
 import { BlackjackFeature } from '@/components/originals/blackjack-feature'
 import { RouletteFeature } from '@/components/originals/roulette-feature'
 import { MinesFeature } from '@/components/originals/mines-feature'
+import { EmbaixadinhaFeature, GolacoFeature } from '@/components/originals/football-features'
 import { originalsDiscoveryCopy } from '@/lib/originals/discovery'
 import styles from '@/components/originals/originals-discovery.module.css'
 import { productCopy } from '@/lib/product-discovery'
@@ -20,8 +21,8 @@ export function PlayView() {
   const product = productCopy(locale)
   const [filter, setFilter] = useState('all')
   const groups = [
-    { id: 'all', label: product.all, count: 5 }, { id: 'crash', label: product.crash, count: 1 },
-    { id: 'slots', label: product.slots, count: 1 }, { id: 'cards', label: product.cards, count: 2 },
+    { id: 'all', label: product.all, count: 7 }, { id: 'crash', label: product.crash, count: 2 },
+    { id: 'slots', label: product.slots, count: 2 }, { id: 'cards', label: product.cards, count: 2 },
     { id: 'instant', label: product.instant, count: 1 },
   ]
   return (
@@ -46,10 +47,12 @@ export function PlayView() {
       <div className={styles.filters} role="group" aria-label={product.all}>
         {groups.map(group => <button type="button" key={group.id} aria-pressed={filter === group.id} onClick={() => setFilter(group.id)}>{group.label}</button>)}
       </div>
-      <p className={styles.available} role="status">{product.resultCount.replace('{count}', String(groups.find(group => group.id === filter)?.count ?? 5))}</p>
+      <p className={styles.available} role="status">{product.resultCount.replace('{count}', String(groups.find(group => group.id === filter)?.count ?? 7))}</p>
       <div className={styles.hubGrid} data-filter={filter}>
         <div hidden={filter !== 'all' && filter !== 'crash'}><IslandCrashFeature surface="hub" /></div>
+        <div hidden={filter !== 'all' && filter !== 'crash'}><EmbaixadinhaFeature surface="hub" /></div>
         <div hidden={filter !== 'all' && filter !== 'slots'}><CapybaraFeature surface="hub" /></div>
+        <div hidden={filter !== 'all' && filter !== 'slots'}><GolacoFeature surface="hub" /></div>
         <div hidden={filter !== 'all' && filter !== 'cards'}><BlackjackFeature surface="hub" /></div>
         <div hidden={filter !== 'all' && filter !== 'cards'}><RouletteFeature surface="hub" /></div>
         <div hidden={filter !== 'all' && filter !== 'instant'}><MinesFeature surface="hub" /></div>

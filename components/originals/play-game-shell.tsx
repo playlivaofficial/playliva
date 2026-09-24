@@ -77,7 +77,10 @@ export function PlayGameShell({ game, children, controls, roundActive = false, c
       <aside data-session-panel aria-label={productCopy(locale).settings} className="space-y-4 rounded-2xl border border-border bg-card p-4">
         <div className="flex flex-wrap gap-3">
           <Button variant="outline" disabled={!ready} aria-pressed={session.settings.sound}
-            onClick={() => wallet.setSettings({ ...session.settings, sound: !session.settings.sound })}>{copy.sound}</Button>
+            onClick={() => {
+              const sound = !session.settings.sound
+              if (wallet.setSettings({ ...session.settings, sound })) trackFreePlay('demo_sound_toggle', { originalId: id, originalSlug: slug, category, country: countryCode, locale, soundState: sound ? 'on' : 'off' })
+            }}>{copy.sound}</Button>
           {capabilities[1] === 'true' && <Button variant="outline" disabled={!ready} aria-pressed={session.settings.haptics}
             onClick={() => wallet.setSettings({ ...session.settings, haptics: !session.settings.haptics })}>{copy.haptics}</Button>}
           {capabilities[0] === 'true' && <Button variant="outline" onClick={toggleFullscreen}>{capabilities[2] === 'true' ? copy.exitFullscreen : copy.fullscreen}</Button>}

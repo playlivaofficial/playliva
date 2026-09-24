@@ -10,6 +10,7 @@ import { CapybaraFeature } from './capybara-feature'
 import { BlackjackFeature } from './blackjack-feature'
 import { RouletteFeature } from './roulette-feature'
 import { MinesFeature } from './mines-feature'
+import { EmbaixadinhaFeature, GolacoFeature } from './football-features'
 import { productCopy } from '@/lib/product-discovery'
 
 /** A poster and ordinary links only; the game runtime stays on /play/crash. */
@@ -56,7 +57,9 @@ export function OriginalsDiscoverySection({ surface }: { surface: 'home' | 'cate
       </div>
       <div className={surface === 'home' ? styles.homeGrid : undefined}>
       <IslandCrashFeature surface={surface} />
+      <EmbaixadinhaFeature surface={surface} />
       {surface === 'home' && <CapybaraFeature surface="home" />}
+      {surface === 'home' && <GolacoFeature surface="home" />}
       {surface === 'home' && <BlackjackFeature surface="home" />}
       {surface === 'home' && <RouletteFeature surface="home" />}
       {surface === 'home' && <MinesFeature surface="home" />}
