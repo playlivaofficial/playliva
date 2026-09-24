@@ -210,6 +210,15 @@ The same milestone synchronizes contact and launch, strengthens upward flight
 and follows the castaway into the sky without changing RNG, multiplier math or
 wallet settlement. See [the M5.2 implementation and QA report](docs/m5.2-discovery-and-flight.md).
 
+## Island Crash kick, launch sync and audio
+
+The kick now lands on the castaway's rear (55.6% body height, nearest joint
+Hips) instead of the shoulder blades, the launch starts on the same engine
+deadline as the contact frame and the impact audio, the white sky streaks are
+removed, and the round has original procedural music and comedy SFX with no
+audio files and no third-party licence. The existing Sound toggle controls all
+of it. See [the kick and audio report](docs/island-crash-kick-and-audio.md).
+
 ## M5.3 final Island Crash polish
 
 M5.3 refines the actual foot-contact marker, immediate upward blast, continuous

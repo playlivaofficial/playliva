@@ -120,6 +120,10 @@ test('M10: footer and trust display have no replacement characters in any suppor
   }
 })
 
+// The Island Crash presentation polish deliberately rebases this snapshot: the
+// contact marker and kicker staging (butt contact instead of upper back), the
+// removed sky streaks, the authorized procedural audio module and its wiring.
+// Engine math, wallet accounting, outcomes and every other Original are untouched.
 test('M10: Original engine, wallet and game-renderer files stay frozen except approved entry semantics', async () => {
   const roots = ['lib/originals', 'components/originals/crash', 'components/originals/capybara', 'components/originals/blackjack', 'components/originals/roulette', 'components/originals/mines']
   const paths = []
@@ -133,6 +137,6 @@ test('M10: Original engine, wallet and game-renderer files stay frozen except ap
   for (const path of roots) await walk(path)
   const hash = createHash('sha256')
   for (const path of paths.sort()) hash.update(path + '\0' + (await readFile(new URL('../' + path, import.meta.url), 'utf8')).replace(/\r\n/g, '\n') + '\0')
-  assert.equal(paths.length, 60)
-  assert.equal(hash.digest('hex'), '38e7914cced01e5167a44bbe8e1f0eda77f9875e095db21d86ec82646088340b')
+  assert.equal(paths.length, 61)
+  assert.equal(hash.digest('hex'), '0e0315f6c07356311084b9b52e63fe5aa1c48f4961d23aaa874808850ad28d9f')
 })
