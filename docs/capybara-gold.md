@@ -19,11 +19,16 @@ The number of distinct Wild cells participating in any paying combination
 selects a single multiplier on the entire spin: 0 → ×1, 1 → ×2, 2 → ×3,
 3 → ×5, 4+ → ×10. Wilds and Scatters do not pay independently.
 
-At least three Scatters anywhere on a paid spin award eight free spins at the
-triggering stake. There is no retrigger. Each visible Wild in a free spin adds
-one to the persistent bonus multiplier (starts ×1, caps ×20), including
-non-winning Wilds. The updated multiplier applies to that spin and subsequent
-free spins, replacing—not stacking with—the base Wild ladder.
+**Jungle Gold Bonus.** Golden Sun Scatters count anywhere on a paid spin,
+with no adjacency: exactly 3 award 8 free spins, exactly 4 award 12, and 5 or
+more award 20, all at the triggering stake. Each visible Capybara Wild in a
+free spin adds one to the persistent Gold Multiplier (starts ×1, caps ×5),
+including non-winning Wilds. The updated multiplier applies to that spin and
+the rest of the bonus, replacing—not stacking with—the base Wild ladder. Each
+Sun in a free spin adds one free spin (retrigger), with a hard ceiling of 50
+free spins per bonus including the initial award, so a retrigger chain is
+always finite. Free-spin reels use their own Wild weight (22) and Sun weight
+(8); every other weight and the paid reels are unchanged.
 
 `config.ts` centralizes symbol weights, paytable, Wild ladder, bonus probability
 inputs and limits. `math.ts` owns unbiased crypto generation and evaluation.
@@ -39,17 +44,42 @@ No backend or cross-tab transactional guarantee is added.
 
 ## Offline simulation
 
-Run `node --import tsx scripts/capybara-simulate.mjs 1000000 6242026` with the
-pinned runtime. Seeded xorshift is test-only; production uses crypto entropy.
-The one-million-paid-spin sample (stake 1.00) returned:
+Run `node --import tsx scripts/capybara-simulate.mjs 1000000 6242026 100000`
+with the pinned runtime. Seeded xorshift is test-only; production uses crypto
+entropy. The optional third argument adds a lower-variance decomposition:
+exact paid-spin Sun odds (every cell is an independent weighted draw) × the
+simulated mean value of 100,000 bonus sessions per award size, plus the
+simulated base game.
 
-- Estimated RTP: 91.798993% (sample estimate, not theoretical/certified RTP).
-- Paid-series hit rate: 60.6173% (any return, including returns below stake).
-- Bonus frequency: 0.9222%, 9,222 bonuses / 73,776 free spins.
-- Average total return per paid series: 0.91798993 credits.
-- Average return among hit series: 1.51440254 credits.
-- Maximum observed paid-series return: 644.35× stake; capped spins: 0.
+Exact trigger odds (unchanged, because the paid reels are unchanged):
+3 Suns 0.836039%, 4 Suns 0.080093%, 5+ Suns 0.006118%; any bonus 0.922250%
+(1 in 108.43 paid spins).
 
+Before/after (stake 1.00; estimates, never certified RTP):
+
+| Measure | Before (8 spins, ×20 cap, no retrigger) | After (8/12/20, ×5 cap, +1/Sun ≤50) |
+| --- | --- | --- |
+| Base-game RTP | ≈72.0% | ≈72.0% (identical reels and paytable) |
+| Bonus contribution | ≈20.43% | ≈20.50% |
+| Mean bonus value, 3 Suns | 22.15× stake | 20.60× stake |
+| Mean bonus value, 4 / 5+ Suns | 22.15× stake | 35.67× / 68.52× stake |
+| Mean spins played (8 / 12 / 20 award) | 8 | 9.53 / 14.29 / 23.83 |
+| Mean final multiplier (8 / 12 / 20 award) | ×4.78 (8) | ×3.88 / ×4.56 / ×4.95 |
+| Total, decomposition | ≈92.46% | 92.32% |
+| Total, 1M paid-spin sample | 91.80% | 92.34% |
+
+The narrower ×5 cap alone would have cut the bonus value; the retrigger and
+larger 4/5-Sun awards would have raised it (with unchanged free-spin reels the
+bonus contribution measured ≈41.8%, total ≈114%). Lowering the free-spin Wild
+weight from 30 to 22 and giving free spins their own Sun weight of 8 (was the
+paid weight, 22) brings the bonus contribution back to its previous share.
+The "before" decomposition used the same method on the previous rules
+(1M base spins, 40,000 eight-spin sessions).
+
+The one-million-paid-spin sample now reports: estimated RTP 92.342872%,
+paid-series hit rate 60.6174%, 9,221 bonuses (8,365 / 797 / 59 by 3 / 4 / 5+
+Suns), 92,492 free spins of which 14,828 came from retriggers, 4,236 bonuses
+ending at ×5, maximum observed paid-series return 350.4× stake, 0 capped spins.
 A paid series includes its awarded bonus. These estimates are not public
 marketing promises. Tune only centrally and rerun deterministic tests and
 simulation after any math change.
@@ -68,13 +98,55 @@ cabinet at all target widths; do not infer quality from source resolution.
 
 The actual slot is lazy-loaded only on the three localized Capybara routes.
 The shared shell owns wallet, settings, fullscreen, history and the truthful
-Slots Play Real CTA. Original short synthesized cues are opt-in; sound defaults
-off, haptics are optional and capability-gated. Reduced-motion preferences
+Slots Play Real CTA. Sound defaults off; haptics are optional and
+capability-gated.
+
+## Audio
+
+`lib/originals/capybara/audio.ts` synthesizes every cue and the bonus music
+with the Web Audio API at runtime. It is original PlayLiva work: no sample,
+recording, download or third-party asset, so there is no licence or
+attribution and zero audio bytes ship. Cues fire in the same render as the
+engine state they describe (`components/originals/capybara/slot-sound.ts`).
+
+- Spin start: button click, reel-release clunk, rising swoosh and a ratcheting
+  reel-roll loop that thins as reels land and ends on the last stop.
+- Reel stop: low "chunk" + click + wooden tick, with a fixed per-reel pitch and
+  a small random drift so five stops never sound identical.
+- Golden Sun: an inharmonic bell pair plus shimmer that climbs a major third
+  with each Sun in the spin.
+- Anticipation: a filtered riser with accelerating tremolo and heartbeat taps
+  until the engine's already-scheduled final stop.
+- Wins by tier: small two-note marimba; medium arpeggio + sparkle; big brass
+  stabs, bells and coin shimmer; super/mega a longer three-chord lift.
+- Bonus trigger: timpani, rising brass arpeggio (one more step for 4 and 5
+  Suns), cymbal swell and sun bells.
+- Gold Multiplier step: a two-squeak Capybara chirp and a bell step that rises
+  with the multiplier. Retrigger: bell run + upward glide.
+- Bonus music: 128 BPM G-major steel-pan, marimba, conga and shaker loop,
+  distinct from Island Crash (112 BPM, C major) and absent from the base game.
+- Bonus end: final brass chord and bell cascade while the music fades.
+
+One AudioContext per mounted game is created only inside a gesture (Spin,
+bonus Start, or turning Sound on), guarded by a limiter with SFX above a
+low-gain music bus that ducks under cues. Sound OFF ramps the master to zero,
+stops every voice, loop and the music scheduler, and suspends the clock. The
+clock suspends while the tab is hidden; unmount closes the context. Reduced-motion preferences
 disable decorative animations. Symbols remain the same deterministic outcome.
 
-Spin presentation is 1,400ms, with a 160ms stagger across the five stop reveals;
-the next paid spin unlocks at 1,800ms. Bonus spins automatically advance after
-a 700ms result beat. A compact count-up lasts 280ms. Celebrations use actual
+Reels stop left to right at 800 + 150ms × reel, so an ordinary spin still
+settles at 1,400ms and the next paid spin unlocks at 1,800ms. The engine
+discloses each reel's already-fixed symbols at its own stop and books the
+payout once, on the last stop. When two Suns are already visible on a paid
+spin, each remaining reel stops 560ms apart instead (anticipation). That
+timing reacts to landed symbols; the outcome was drawn before the first reel
+moved and is never altered. Free spins never anticipate. The Gold Multiplier
+and +1 retriggers step up as the reel carrying the Capybara/Sun lands.
+A triggering spin highlights its Suns, then shows the Jungle Gold Bonus intro
+(award, rules line, Start button) and starts free spins on its own 2.2s after
+settlement. Bonus spins advance after a 700ms result beat (1,200ms after a
+win). The summary shows total, spins played and final multiplier; Spin
+dismisses it directly. A compact count-up lasts 280ms. Celebrations use actual
 return/stake thresholds: medium ≥2×, big ≥10×, super ≥25×, mega ≥50×. Smaller
 returns use only a compact highlight and amount, never a big-win label.
 
@@ -88,7 +160,8 @@ partner links, GEO rules, lockfile, runtime pins or Crash gameplay changed.
 ## Local verification
 
 Pinned Node 24.20.0 / pnpm 10.30.3. Frozen install, lint (the existing three
-warnings), types, **105 tests**, production build and **249-route** crawl pass.
+warnings), types, the full test suite, production build and route crawl pass
+(see the release report for exact counts).
 Baseline ignored dependency build-script and middleware-deprecation notices
 remain; no warning budget, suppressions or TypeScript validation were weakened.
 
@@ -100,6 +173,17 @@ Both controlled stepping and an uninterrupted automatic eight-spin sequence
 finish with one paid debit, eight correctly booked returns and multiplier ×9.
 No separate UI win generator exists. A mounted-cabinet test verifies hidden
 outcomes, exact highlights, localized states and restrained win tiers.
+
+The Jungle Gold Bonus polish added `bonus-12`, `bonus-20` and `bonus-rich`
+scenarios to `scripts/capybara-visual-qa.mjs`. `bonus-rich` scripts free spins
+with a Capybara, a retrigger Sun, a blank, a double Capybara and a capped
+1,000× win. At 1440, 430, 390 and 320px widths it plays 10 free spins
+(8 + 2 retriggers), reaches ×5, books one debit and one credit per winning
+spin. There is no horizontal overflow, the HUD sits above (never over) the
+reels and Spin stays visible. An instrumented Chromium run confirmed no
+AudioContext before a gesture, one while playing, and a closed context after
+unmount. `tests/capybara-audio.test.mjs` drives a full engine bonus through the
+cue mapper and asserts each cue plays exactly once.
 
 320×720, 360×800, 390×844 and desktop are the release viewport matrix. Desktop
 cells are height-aware with contained, centered artwork so Spin stays visible;

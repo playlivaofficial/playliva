@@ -8,9 +8,11 @@ import { CAPYBARA_GOLD } from '@/lib/originals/capybara/definition'
 import { SLOT_CONFIG, PAYING_SYMBOLS, STAKES, SYMBOLS, type SlotSymbol } from '@/lib/originals/capybara/config'
 import { capybaraCopy } from '@/lib/originals/capybara/copy'
 import { createSlotEngine, type SlotEngine } from '@/lib/originals/capybara/engine'
+import { createSlotAudio } from '@/lib/originals/capybara/audio'
 import { formatCredits } from '@/lib/originals/credits'
 import { trackFreePlay } from '@/lib/originals/analytics'
 import { CapybaraCabinet } from './capybara-cabinet'
+import { useSlotSound } from './slot-sound'
 import styles from './capybara.module.css'
 
 export default function CapybaraGoldGame() { return <DemoSessionProvider><CapybaraGame /></DemoSessionProvider> }
@@ -22,19 +24,37 @@ export function CapybaraGame({ suppliedEngine }: { suppliedEngine?: SlotEngine }
   const round = useSyncExternalStore(engine.subscribe, engine.getSnapshot, engine.getServerSnapshot)
   const [stake, setStake] = useState(100), [error, setError] = useState<string | null>(null)
   const [loaded, setLoaded] = useState(false), [loadError, setLoadError] = useState(false), [attempt, setAttempt] = useState(0)
-  const assets = useRef(new Set<SlotSymbol>()), sound = useRef<AudioContext | null>(null)
-  const lastStarted = useRef<string | null>(null), lastCompleted = useRef<string | null>(null), lastCue = useRef<string | null>(null)
-  const copy = capybaraCopy(locale), ready = round.phase === 'ready'
+  // One lazily-built audio graph per mounted game (no AudioContext until a gesture).
+  const assets = useRef(new Set<SlotSymbol>()), [audio] = useState(createSlotAudio)
+  const lastStarted = useRef<string | null>(null), lastCompleted = useRef<string | null>(null), soundWas = useRef(session.settings.sound)
+  const copy = capybaraCopy(locale), ready = round.phase === 'ready' || round.phase === 'bonus-summary'
+  const sound = session.settings.sound
   const context = { originalId: CAPYBARA_GOLD.id, originalSlug: CAPYBARA_GOLD.slug, category: CAPYBARA_GOLD.category, locale, country: countryCode }
   useEffect(() => {
-    const timer = window.setInterval(() => engine.tick(), 40)
+    // 16ms keeps each reel stop (and its cue) within one frame of its schedule.
+    const timer = window.setInterval(() => engine.tick(), 16)
     const visible = () => engine.tick()
     document.addEventListener('visibilitychange', visible)
     return () => { clearInterval(timer); document.removeEventListener('visibilitychange', visible) }
   }, [engine])
+  // The AudioContext is closed on unmount/navigation and paused while the tab is hidden.
+  useEffect(() => {
+    const visibility = () => audio.setVisible(document.visibilityState !== 'hidden')
+    document.addEventListener('visibilitychange', visibility)
+    return () => { document.removeEventListener('visibilitychange', visibility); audio.dispose() }
+  }, [audio])
+  useEffect(() => {
+    audio.setEnabled(sound)
+    // Turning Sound on is itself a gesture; never create audio on mount.
+    if (sound && !soundWas.current) audio.unlock()
+    soundWas.current = sound
+  }, [audio, sound])
+  const bonusMusic = sound && round.free && round.phase !== 'bonus-summary' && round.phase !== 'error'
+  useEffect(() => { audio.bonusMusic(bonusMusic) }, [audio, bonusMusic])
+  useSlotSound(round, sound ? audio : null, session.settings.haptics)
   useEffect(() => {
     // Tracking failures/consent never control functional accounting.
-    const id = round.phase === 'spinning' ? `${round.seriesId}:${round.free ? round.bonusRemaining : 'paid'}` : null
+    const id = round.phase === 'spinning' ? `${round.seriesId}:${round.spinAt}` : null
     if (id && lastStarted.current !== id) {
       lastStarted.current = id
       trackFreePlay('demo_round_start', { originalId: CAPYBARA_GOLD.id, originalSlug: CAPYBARA_GOLD.slug, category: 'slots', locale, country: countryCode, roundId: round.seriesId ?? undefined })
@@ -43,24 +63,8 @@ export function CapybaraGame({ suppliedEngine }: { suppliedEngine?: SlotEngine }
       lastCompleted.current = round.result.id
       trackFreePlay('demo_round_complete', { originalId: CAPYBARA_GOLD.id, originalSlug: CAPYBARA_GOLD.slug, category: 'slots', locale, country: countryCode, roundId: round.result.id })
     }
-  }, [round.phase, round.seriesId, round.free, round.bonusRemaining, round.result, locale, countryCode])
-  useEffect(() => {
-    const cue = `${round.spinAt}:${round.phase}`
-    if (lastCue.current === cue || !['spinning', 'result', 'bonus-intro', 'bonus-summary'].includes(round.phase)) return
-    lastCue.current = cue
-    if (session.settings.haptics && typeof navigator.vibrate === 'function') navigator.vibrate(round.phase === 'bonus-intro' ? [15, 30, 15] : 10)
-    const audio = sound.current
-    if (!session.settings.sound || !audio || audio.state !== 'running') return
-    const oscillator = audio.createOscillator(), gain = audio.createGain()
-    const frequency = round.phase === 'spinning' ? 160 : round.phase === 'bonus-intro' ? 880 : round.result?.evaluation.payout ? 550 : 220
-    oscillator.type = 'sine'; oscillator.frequency.setValueAtTime(frequency, audio.currentTime)
-    oscillator.frequency.exponentialRampToValueAtTime(frequency * 1.5, audio.currentTime + .1)
-    gain.gain.setValueAtTime(.045, audio.currentTime); gain.gain.exponentialRampToValueAtTime(.001, audio.currentTime + .16)
-    oscillator.connect(gain); gain.connect(audio.destination); oscillator.start(); oscillator.stop(audio.currentTime + .17)
-    oscillator.onended = () => { oscillator.disconnect(); gain.disconnect() }
-  }, [round.spinAt, round.phase, round.result, session.settings.sound, session.settings.haptics])
-  useEffect(() => () => { void sound.current?.close(); sound.current = null }, [])
-  function unlockSound() { if (session.settings.sound) { try { sound.current ??= new AudioContext(); void sound.current.resume().catch(() => {}) } catch { /* Optional original synth cues. */ } } }
+  }, [round.phase, round.seriesId, round.spinAt, round.result, locale, countryCode])
+  function unlockSound() { if (sound) audio.unlock() }
   function start() {
     if (!loaded) return
     unlockSound()
@@ -73,11 +77,11 @@ export function CapybaraGame({ suppliedEngine }: { suppliedEngine?: SlotEngine }
       {STAKES.map(value => <option key={value} value={value}>{format(value)}</option>)}
     </select></label>
     <button className={styles.spin} type="button" onClick={start} disabled={!ready || !loaded} data-slot-spin>
-      <span aria-hidden="true">↻</span>{round.phase === 'spinning' ? copy.spinning : copy.spin}
+      <span aria-hidden="true">↻</span>{(round.free || round.phase === 'bonus-intro') && round.phase !== 'bonus-summary' ? copy.freeSpins : round.phase === 'spinning' ? copy.spinning : copy.spin}
     </button>
     {error && <p role="alert" className={styles.error}>{error === 'insufficient-credits' ? copy.insufficient : copy.unavailable}</p>}
   </div>
-  return <div className={styles.game} data-capybara-game data-ready={loaded} data-original-id={context.originalId}>
+  return <div className={styles.game} data-capybara-game data-ready={loaded} data-original-id={context.originalId} onPointerDown={unlockSound}>
     <PlayGameShell game={CAPYBARA_GOLD} compact controls={controls} roundActive={!['ready', 'bonus-summary'].includes(round.phase) && round.error !== 'settlement-failed'}>
       <CapybaraCabinet key={attempt} round={round} locale={locale} loaded={loaded} loadError={loadError}
         onAsset={symbol => { assets.current.add(symbol); if (assets.current.size === SYMBOLS.length) setLoaded(true) }}

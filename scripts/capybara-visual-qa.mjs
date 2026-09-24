@@ -19,11 +19,23 @@ const bundle = await build({
     function grid(kind) {
       const g=loss()
       if(kind==='loss'||kind==='insufficient') return g
-      if(kind==='near-miss'||kind==='bonus') { for(let i=0;i<(kind==='bonus'?3:2);i++)g[i][0]='scatter'; return g }
+      if(kind==='near-miss'||kind.startsWith('bonus')) { const n=kind==='near-miss'?2:kind==='bonus-12'?4:kind==='bonus-20'?5:3; for(let i=0;i<n;i++)g[i][i%4]='scatter'; return g }
       if(kind==='mega')return Array.from({length:5},(_,i)=>Array(4).fill(i?'wild':'coconut'))
       for(let i=0;i<3;i++)g[i][0]='leaf'
       if(kind==='wild'||kind==='multi-wild')g[1][0]='wild'
       if(kind==='multi-wild')g[2][0]='wild'
+      return g
+    }
+    // Free-spin script for the rich bonus: Capybara, retrigger Sun, blank, double Capybara, big win.
+    function freeGrid(kind, index) {
+      if(kind!=='bonus-rich') return grid('wild')
+      const g=loss(), step=index%5
+      if(step===3) return g
+      for(let i=0;i<3;i++)g[i][0]='leaf'
+      if(step===0||step===1)g[1][1]='wild'
+      if(step===1)g[4][2]='scatter'
+      if(step===2){g[2][1]='wild';g[3][0]='wild';g[3][1]='leaf';g[4][0]='leaf'}
+      if(step===4)return Array.from({length:5},(_,i)=>Array(4).fill(i?'coconut':'coconut'))
       return g
     }
     let wallet, engine, last='', frameTime=0, paused=false
@@ -32,7 +44,8 @@ const bundle = await build({
       wallet=createDemoSessionStore(()=>null)
       if(kind==='insufficient')wallet.debit(999950)
       frameTime=0; paused=false
-      engine=createSlotEngine(wallet,{now:()=>paused?frameTime:performance.now(),draw:(_r,free)=>grid(free?'wild':kind)})
+      let freeIndex=0
+      engine=createSlotEngine(wallet,{now:()=>paused?frameTime:performance.now(),draw:(_r,free)=>free?freeGrid(kind,freeIndex++):grid(kind)})
       const locale=document.getElementById('locale').value
       root.render(<CountryProvider key={kind+locale+performance.now()} initialLocale={locale}><DemoSessionProvider store={wallet}><CapybaraGame suppliedEngine={engine}/></DemoSessionProvider></CountryProvider>)
       document.getElementById('scenario-name').textContent='Scenario: '+kind
@@ -42,7 +55,7 @@ const bundle = await build({
     document.getElementById('locale').onchange=()=>open(last)
     document.getElementById('settle').onclick=()=>{paused=true;frameTime=engine.getSnapshot().revealAt;engine.tick()}
     document.getElementById('next').onclick=()=>{paused=true;frameTime+=2200;engine.tick()}
-    setInterval(()=>{ const s=engine.getSnapshot(); const w=wallet.getSnapshot().session; document.getElementById('state').textContent=JSON.stringify({phase:s.phase,free:s.free,remaining:s.bonusRemaining,multiplier:s.bonusMultiplier,total:s.bonusTotal,completed:s.completed,balance:w.balance,transactions:w.transactions.length,result:s.result?.evaluation},null,2)},100)
+    setInterval(()=>{ const s=engine.getSnapshot(); const w=wallet.getSnapshot().session; document.getElementById('state').textContent=JSON.stringify({phase:s.phase,free:s.free,stopped:s.stopped,anticipation:s.anticipation,remaining:s.bonusRemaining,awarded:s.bonusAwarded,multiplier:s.bonusMultiplier,total:s.bonusTotal,completed:s.completed,balance:w.balance,transactions:w.transactions.length,result:s.result?.evaluation},null,2)},100)
     open()
   `, resolveDir: process.cwd(), loader: 'tsx' },
   bundle: true, write: false, outdir: 'qa-output', platform: 'browser', format: 'esm', target: 'es2022',
@@ -59,7 +72,7 @@ const bundle = await build({
 const files = Object.fromEntries(bundle.outputFiles.map(f => [f.path.endsWith('.css') ? '/bundle.css' : '/bundle.js', f.contents]))
 const chunks = new URL('../.next/static/chunks/', import.meta.url)
 const styles = (await readdir(chunks)).filter(n => n.endsWith('.css')).map(n => `<link rel="stylesheet" href="/_next/static/chunks/${n}">`).join('')
-const html = `<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Capybara local scenario QA</title>${styles}<link rel="stylesheet" href="/bundle.css"><style>body{margin:0;background:#071322;color:white;font-family:Arial,sans-serif}#tools{padding:16px}#tools button{padding:8px;min-height:44px;margin:4px;background:#173e38;color:white;border:1px solid #9bad67;border-radius:6px}#tools select{color:black}pre{white-space:pre-wrap;font-size:11px}#game{padding-top:64px}</style><div id="game"></div><section id="tools"><h1>Local-only production component QA</h1><p id="scenario-name"></p><label>Language <select id="locale"><option value="pt-BR">PT-BR</option><option value="en">EN</option><option value="es-MX">ES-MX</option></select></label><nav>${['loss','small','wild','multi-wild','near-miss','bonus','mega','insufficient'].map(s=>`<button data-scenario="${s}">${s}</button>`).join('')}<button id="settle">Freeze settled frame</button><button id="next">Advance 2200ms</button></nav><pre id="state"></pre></section><script type="module" src="/bundle.js"></script></html>`
+const html = `<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Capybara local scenario QA</title>${styles}<link rel="stylesheet" href="/bundle.css"><style>body{margin:0;background:#071322;color:white;font-family:Arial,sans-serif}#tools{padding:16px}#tools button{padding:8px;min-height:44px;margin:4px;background:#173e38;color:white;border:1px solid #9bad67;border-radius:6px}#tools select{color:black}pre{white-space:pre-wrap;font-size:11px}#game{padding-top:64px}</style><div id="game"></div><section id="tools"><h1>Local-only production component QA</h1><p id="scenario-name"></p><label>Language <select id="locale"><option value="pt-BR">PT-BR</option><option value="en">EN</option><option value="es-MX">ES-MX</option></select></label><nav>${['loss','small','wild','multi-wild','near-miss','bonus','bonus-12','bonus-20','bonus-rich','mega','insufficient'].map(s=>`<button data-scenario="${s}">${s}</button>`).join('')}<button id="settle">Freeze settled frame</button><button id="next">Advance 2200ms</button></nav><pre id="state"></pre></section><script type="module" src="/bundle.js"></script></html>`
 createServer(async (request, response) => {
   try {
     const path = new URL(request.url, 'http://127.0.0.1').pathname
