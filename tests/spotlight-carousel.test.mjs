@@ -43,7 +43,7 @@ const render = (locale, path, child) => new JSDOM(renderToStaticMarkup(wrap(loca
 
 test('spotlight catalog is data-driven: every playable Original, canonical order, live poster paths, no engine imports', async () => {
   const routes = (await readdir(new URL('../app/[locale]/play', import.meta.url), { withFileTypes: true }))
-    .filter(entry => entry.isDirectory()).map(entry => entry.name).sort()
+    .filter(entry => entry.isDirectory() && entry.name !== 'embaixadinha').map(entry => entry.name).sort()
   assert.deepEqual(SPOTLIGHT_GAMES.map(game => game.slug).slice().sort(), routes, 'one slide per playable route')
   assert.deepEqual(SPOTLIGHT_GAMES.map(game => game.id), ['island-crash', 'liva-embaixadinha', 'liva-capybara-gold', 'liva-golaco', 'liva-blackjack', 'liva-roulette', 'liva-mines'])
   for (const game of SPOTLIGHT_GAMES) {

@@ -56,7 +56,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/games', priority: 0.9 },
     { path: '/play', priority: 0.8 },
     { path: '/play/crash', priority: 0.8 },
-    { path: '/play/embaixadinha', priority: 0.8 },
+    { path: '/play/liva-ginga', priority: 0.8 },
     { path: '/play/capybara-gold', priority: 0.8 },
     { path: '/play/golaco', priority: 0.8 },
     { path: '/play/blackjack', priority: 0.8 },

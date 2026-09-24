@@ -10,8 +10,8 @@ export const FOOTBALL_CARDS: Record<'embaixadinha' | 'golaco', Record<Locale, Ca
   embaixadinha: {
     'pt-BR': {
       category: 'Crash',
-      posterAlt: 'Craque em 3D com camisa amarela 10 fazendo embaixadinha em uma quadra colorida de comunidade, com casas no morro ao fundo.',
-      discovery: 'Embaixadinhas numa quadra ensolarada. Cada toque sobe o multiplicador — retire antes de a bola cair.',
+      posterAlt: 'Craque em 3D com camisa amarela 10 controlando a bola em uma quadra colorida de comunidade, com casas no morro ao fundo.',
+      discovery: 'Entre na ginga numa quadra ensolarada. Cada toque sobe o multiplicador — retire antes de a bola cair.',
     },
     en: {
       category: 'Crash',

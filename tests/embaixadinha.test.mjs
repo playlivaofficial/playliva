@@ -195,7 +195,7 @@ test('embaixadinha: presentation branches only after the published failing touch
 })
 
 test('embaixadinha: definition, localized copy and runtime asset are consistent', async () => {
-  assert.equal(EMBAIXADINHA.slug, 'embaixadinha'); assert.equal(EMBAIXADINHA.category, 'crash')
+  assert.equal(EMBAIXADINHA.slug, 'liva-ginga'); assert.equal(EMBAIXADINHA.category, 'crash')
   const keys = Object.keys(embaixadinhaCopy('pt-BR'))
   for (const locale of ['en', 'pt-BR', 'es-MX']) {
     const copy = embaixadinhaCopy(locale)
@@ -208,11 +208,13 @@ test('embaixadinha: definition, localized copy and runtime asset are consistent'
   const strings = value => typeof value === 'string' ? [value] : Object.values(value).flatMap(strings)
   assert.doesNotMatch(strings(embaixadinhaCopy('pt-BR')).join(' '), /\b(cash out|stake|keepie|round|touches)\b/i, 'no English leaks in PT-BR')
   assert.equal(parseAutoInput('2,50'), 250); assert.ok(Number.isNaN(parseAutoInput('abc')))
-  const manifest = JSON.parse(await readFile(new URL('../public/originals/embaixadinha/runtime/manifest.json', import.meta.url), 'utf8'))
+  const manifest = JSON.parse(await readFile(new URL('../public/originals/embaixadinha/runtime/footballer-manifest.json', import.meta.url), 'utf8'))
   const glb = await readFile(new URL('../public' + EMBAIXADINHA_ASSETS.craque.split('?')[0], import.meta.url))
   assert.equal(createHash('sha256').update(glb).digest('hex'), manifest.runtime.sha256)
   assert.ok(EMBAIXADINHA_ASSETS.craque.endsWith(`?v=${manifest.runtime.sha256.slice(0, 12)}`), 'cache-busted by content hash')
-  assert.ok(glb.length < 1_800_000); assert.equal(manifest.runtime.clips, 0)
-  const source = await readFile(new URL('../public/originals/crash/runtime/castaway.glb', import.meta.url))
-  assert.equal(createHash('sha256').update(source).digest('hex'), manifest.source.sha256, 'derived only from the PlayLiva-owned castaway rig')
+  assert.ok(glb.length < 9_100_000); assert.deepEqual(manifest.runtime.clips, ['Idle', 'Kick', 'Stumble'])
+  for (const entry of manifest.sources) {
+    const source = await readFile(new URL('../assets-source/originals/embaixadinha/meshy/' + entry.file, import.meta.url))
+    assert.equal(createHash('sha256').update(source).digest('hex'), entry.sha256, 'supplied Meshy source is unchanged')
+  }
 })

@@ -7,7 +7,7 @@
  * per Original (all defined by the game itself, never inferred here):
  *
  *   Island Crash      one fully settled flight: phase back to `ready` after fall/impact/reset
- *   Liva Embaixadinha  one juggle: phase back to `ready` after the dropped-ball beat
+ *   Liva Ginga  one juggle: phase back to `ready` after the dropped-ball beat
  *   Liva Capybara Gold one settled spin (a triggered bonus stays one cycle until it summarises)
  *   Liva Golaço        one settled spin (a Final de Ouro bonus stays one cycle until it summarises)
  *   Liva Blackjack    one hand after final settlement: phase back to `ready`
