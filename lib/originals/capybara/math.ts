@@ -26,7 +26,9 @@ export function generateGrid(random: SlotRandom = slotSecureRandom, bonus = fals
   return Object.freeze(Array.from({ length: REELS }, (_, reel) => {
     // Wild substitutes on reels 2–5. A normal first reel anchors every way,
     // avoiding ambiguous/double-paid all-Wild combinations.
-    const weights = SYMBOLS.map(symbol => symbol === 'wild' ? reel === 0 ? 0 : bonus ? config.bonusWildWeight : config.weights.wild : config.weights[symbol])
+    // Free-spin reels swap in their own Wild/Sun densities; every other weight is shared.
+    const weights = SYMBOLS.map(symbol => symbol === 'wild' ? reel === 0 ? 0 : bonus ? config.bonusWildWeight : config.weights.wild
+      : symbol === 'scatter' && bonus ? config.bonusScatterWeight : config.weights[symbol])
     const total = weights.reduce((sum, weight) => sum + weight, 0)
     return Object.freeze(Array.from({ length: ROWS }, () => {
       let value = randomBelow(total, random)
@@ -70,6 +72,11 @@ export function settleAmount(stake: number, wins: readonly WaysWin[], multiplier
   return { payout: Number(uncapped > cap ? cap : uncapped), capped: uncapped > cap }
 }
 
+/** Paid-spin award: 3 / 4 / 5+ Suns anywhere (adjacency irrelevant) → 8 / 12 / 20. */
+export function scatterAward(scatters: number, config: SlotConfig = SLOT_CONFIG) {
+  return scatters < config.scatterTrigger ? 0 : config.scatterAwards[Math.min(scatters - config.scatterTrigger, 2)]
+}
+
 export function evaluateSpin(grid: SlotGrid, stake: number, bonusMultiplier: number | null = null, config: SlotConfig = SLOT_CONFIG): SlotEvaluation {
   if (bonusMultiplier !== null && (!Number.isInteger(bonusMultiplier) || bonusMultiplier < 1 || bonusMultiplier > config.maxBonusMultiplier)) throw new Error('Invalid bonus multiplier')
   const wins = evaluateWays(grid, config)
@@ -78,10 +85,13 @@ export function evaluateSpin(grid: SlotGrid, stake: number, bonusMultiplier: num
   const winningWilds = winningCells.filter(index => all[index] === 'wild').length
   const scatters = all.filter(symbol => symbol === 'scatter').length
   const nextBonusMultiplier = bonusMultiplier === null ? 1 : Math.min(config.maxBonusMultiplier, bonusMultiplier + wilds * config.bonusStep)
-  // Bonus multiplier replaces (does not multiply by) the base Wild ladder.
+  // Gold Multiplier replaces (does not multiply by) the base Wild ladder and
+  // already includes the Wilds of this spin: they land before it pays.
   const multiplier = bonusMultiplier === null ? config.wildMultipliers[Math.min(winningWilds, config.wildMultipliers.length - 1)] : nextBonusMultiplier
   return Object.freeze({ wins, winningCells: Object.freeze(winningCells), scatters, wilds, winningWilds, multiplier,
-    bonusMultiplier: nextBonusMultiplier, awardedSpins: bonusMultiplier === null && scatters >= config.scatterTrigger ? config.freeSpins : 0,
+    // Paid spins: the trigger award. Free spins: the uncapped retrigger request;
+    // the engine alone clamps it to the per-bonus maxFreeSpins ceiling.
+    bonusMultiplier: nextBonusMultiplier, awardedSpins: bonusMultiplier === null ? scatterAward(scatters, config) : scatters * config.retriggerSpins,
     ...settleAmount(stake, wins, multiplier, config) })
 }
 

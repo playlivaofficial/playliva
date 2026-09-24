@@ -242,12 +242,15 @@ no floating-point balance accounting is introduced. See the
 The second playable Original lives at `/[locale]/play/capybara-gold` and joins
 Island Crash in the Play hub and homepage. The Slots category has a separate
 Originals block; no provider data or partner approvals are changed. Its 5×4
-grid uses 1,024 adjacent ways, deterministic Wild multipliers and eight Jungle
-Bonus free spins with a persistent multiplier. It reuses the local fixed-point
+grid uses 1,024 adjacent ways, deterministic Wild multipliers and the Jungle
+Gold Bonus: 3 / 4 / 5+ Golden Suns award 8 / 12 / 20 free spins with a
+persistent Capybara Gold Multiplier (×1 to ×5) and capped +1-spin Sun
+retriggers, presented with original procedural audio. It reuses the local fixed-point
 wallet and truthful Slots Play Real boundary. See [the math, artwork and QA
 report](docs/capybara-gold.md). Offline tools:
 
-- `node --import tsx scripts/capybara-simulate.mjs 1000000 6242026`
+- `node --import tsx scripts/capybara-simulate.mjs 1000000 6242026 100000`
+  (the optional third argument adds the base/bonus RTP decomposition)
 - `node scripts/capybara-assets.mjs` regenerates small WebP derivatives.
 - `node scripts/capybara-visual-qa.mjs` serves isolated deterministic scenarios
   on localhost:3103, using the real game component with test-only outcomes.
