@@ -7,7 +7,9 @@ import { DemoSessionProvider, useDemoSession } from '../demo-session'
 import { PlayGameShell } from '../play-game-shell'
 import { ISLAND_CRASH } from '@/lib/originals/crash/definition'
 import { crashCopy, parseAutoInput } from '@/lib/originals/crash/copy'
-import { createCrashEngine, isRoundActive } from '@/lib/originals/crash/engine'
+import { createCrashEngine, isRoundActive, timeToMultiplier } from '@/lib/originals/crash/engine'
+import { createCrashAudio } from '@/lib/originals/crash/audio'
+import { fallDurationMs } from '@/lib/originals/crash/timing'
 import { formatCredits, parseCreditInput, CREDIT_SCALE } from '@/lib/originals/credits'
 import { CrashAction } from './crash-action'
 import { trackFreePlay } from '@/lib/originals/analytics'
@@ -30,7 +32,9 @@ export function CrashGame() {
   const [load, setLoad] = useState<'loading' | 'ready' | 'error' | 'unsupported'>('loading')
   const [attempt, setAttempt] = useState(0)
   const host = useRef<HTMLDivElement>(null)
-  const sound = useRef<AudioContext | null>(null)
+  const [audio] = useState(createCrashAudio)
+  const launched = useRef<string | null>(null)
+  const landed = useRef<string | null>(null)
   const completed = useRef<string | null>(null)
   const copy = crashCopy(locale)
   const active = isRoundActive(round.phase)
@@ -60,30 +64,34 @@ export function CrashGame() {
     trackFreePlay('demo_round_complete', { originalId: ISLAND_CRASH.id, originalSlug: ISLAND_CRASH.slug,
       category: 'crash', country: countryCode, locale, roundId: round.result.roundId })
   }, [round.result, countryCode, locale])
+  useEffect(() => { audio.setEnabled(session.settings.sound) }, [audio, session.settings.sound])
+  useEffect(() => () => audio.dispose(), [audio])
+  // One authoritative deadline per event: the same engine timestamps the
+  // renderer seeks the kick clip with also schedule the impact audio, so the
+  // thump lands on the contact frame rather than on a later React render.
   useEffect(() => {
-    const frequency = round.phase === 'falling' ? 90 : round.phase === 'flying' ? round.wager === 'cashed_out' ? 660 : 180 : 0
-    if (!frequency) return
-    if (session.settings.haptics && typeof navigator.vibrate === 'function') navigator.vibrate(round.phase === 'falling' ? [20, 30, 20] : 15)
-    const context = sound.current
-    if (!session.settings.sound || !context || context.state !== 'running') return
-    // Short original synthesized cues; no downloaded or competitor audio.
-    const oscillator = context.createOscillator(), gain = context.createGain()
-    oscillator.type = round.phase === 'falling' ? 'triangle' : 'sine'
-    oscillator.frequency.setValueAtTime(frequency, context.currentTime)
-    oscillator.frequency.exponentialRampToValueAtTime(frequency === 660 ? 990 : frequency / 2, context.currentTime + .22)
-    gain.gain.setValueAtTime(.075, context.currentTime)
-    gain.gain.exponentialRampToValueAtTime(.001, context.currentTime + .3)
-    oscillator.connect(gain); gain.connect(context.destination)
-    oscillator.start(); oscillator.stop(context.currentTime + .31)
-    oscillator.onended = () => { oscillator.disconnect(); gain.disconnect() }
-  }, [round.phase, round.wager, session.settings.sound, session.settings.haptics])
-  useEffect(() => () => { void sound.current?.close(); sound.current = null }, [])
+    if (round.roundId && round.flightAt && launched.current !== round.roundId) {
+      launched.current = round.roundId
+      audio.scheduleLaunch(round.flightAt)
+      if (session.settings.haptics && typeof navigator.vibrate === 'function') {
+        window.setTimeout(() => navigator.vibrate(18), Math.max(0, round.flightAt - performance.now()))
+      }
+    }
+    if (round.finishedAt && round.roundId && landed.current !== round.roundId) {
+      landed.current = round.roundId
+      const impactAt = round.finishedAt + fallDurationMs(timeToMultiplier(round.multiplier))
+      audio.scheduleLanding(impactAt)
+      if (session.settings.haptics && typeof navigator.vibrate === 'function') {
+        window.setTimeout(() => navigator.vibrate([20, 30, 20]), Math.max(0, impactAt - performance.now()))
+      }
+    }
+    if (round.phase === 'ready') audio.endRound()
+  }, [audio, round.roundId, round.flightAt, round.finishedAt, round.multiplier, round.phase, session.settings.haptics])
 
   function start() {
     if (load !== 'ready') return
-    if (session.settings.sound) {
-      try { sound.current ??= new AudioContext(); void sound.current.resume().catch(() => {}) } catch { /* Sound is optional. */ }
-    }
+    // Mobile browsers only allow audio to start inside a real gesture.
+    audio.unlock()
     const amount = parseCreditInput(stake)
     const result = engine.start(amount, auto ? parseAutoInput(target) : null)
     setError(result.ok ? null : result.reason)

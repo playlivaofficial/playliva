@@ -128,12 +128,8 @@ export function mountIslandScene(host: HTMLDivElement, engine: CrashEngine, call
     return particle
   })
   particles.visible = false
-  const wind = new THREE.Group(); scene.add(wind)
-  for (let i = 0; i < 7; i++) {
-    const line = mesh(new THREE.CylinderGeometry(.012, .012, .6 + (i % 2) * .5, 3), foamMat, wind)
-    line.rotation.z = Math.PI / 2; line.position.set(-1 - i % 2 * .7, .2 + i * .25, -.25)
-  }
-  wind.visible = false
+  // No speed lines in the sky: the white streaks read as rain and cheapened the
+  // flight. Altitude is carried by the parallax clouds and the camera instead.
   const ringMaterial = new THREE.MeshBasicMaterial({ color: '#fff6c4', transparent: true, opacity: .75, depthWrite: false })
   const ring = mesh(new THREE.RingGeometry(.35, .58, 32), ringMaterial)
   ring.rotation.x = -Math.PI / 2
@@ -272,16 +268,6 @@ export function mountIslandScene(host: HTMLDivElement, engine: CrashEngine, call
           -12 - depth * 6,
         )
       })
-      wind.visible = (flying || falling) && !reduced.matches
-      if (wind.visible) {
-        wind.position.copy(castaway.root.position)
-        wind.children.forEach((line, i) => {
-          const pass = (flightAge * (2.5 + air.speed) + i * .37) % 1
-          line.position.set(4 - pass * 9, 3.8 - pass * 3.6 + (i % 3 - 1) * 1.1, -.8 - i % 2)
-          line.rotation.z = -1.12
-          line.scale.y = 1 + air.speed * .55
-        })
-      }
       palms.forEach((p, i) => { p.rotation.z = reduced.matches ? 0 : Math.sin(time / 1600 + i) * .015 })
       const burst = landed ? impactAge : (flying || falling) && flightAge < .25 ? flightAge : -1
       particles.visible = burst >= 0 && burst < 1.2 && !reduced.matches

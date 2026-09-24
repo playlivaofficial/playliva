@@ -1,7 +1,9 @@
 import { Vector3 } from 'three'
 import { untexturedModel, stageRig } from './crash-rig.mjs'
-const male = stageRig(await untexturedModel('castaway'), [.35, -.1, .15], 1.45, 'idle')
-const female = stageRig(await untexturedModel('island-kicker'), [-1.05, -.1, -.55], 1.45, 'kick')
+import presentation from '../lib/originals/crash/presentation.ts'
+const { CASTAWAY_START, KICKER_START, CHARACTER_SCALE } = presentation
+const male = stageRig(await untexturedModel('castaway'), CASTAWAY_START, CHARACTER_SCALE, 'idle')
+const female = stageRig(await untexturedModel('island-kicker'), KICKER_START, CHARACTER_SCALE, 'kick')
 male.at(.2)
 const hip = male.scene.getObjectByName('Hips').getWorldPosition(new Vector3())
 const body = male.scene.getObjectByProperty('type', 'SkinnedMesh')

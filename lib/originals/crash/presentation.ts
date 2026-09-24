@@ -3,7 +3,10 @@ export const CHARACTER_SCALE = 1.45
 export { KICK_SPEED } from './timing'
 import { fallDurationMs } from './timing'
 export const CASTAWAY_START = [.35, -.1, .15] as const
-export const KICKER_START = [-1.05, -.1, -.55] as const
+// Pulled 0.06 back and 0.01 across so the descending foot clears the upper
+// back (which sits 0.065 further forward than the buttocks) and lands on the
+// rear hip instead. Both characters stay planted on the sand at y = -.1.
+export const KICKER_START = [-1.11, -.1, -.54] as const
 
 // Actual skinned-mesh lower bounds every 25ms of the useful crash clip.
 // Short losses land near .45s, well before the old coarse dazed-pose samples.
