@@ -5,7 +5,15 @@ export const DEMO_SCHEMA_VERSION = 2
 export { INITIAL_CREDIT_UNITS, MAX_CREDIT_UNITS } from './credits'
 export const HISTORY_LIMIT = 50
 
-export interface GameSettings { sound: boolean; haptics: boolean }
+export interface GameSettings { sound: boolean; haptics: boolean; music?: boolean; sfx?: boolean; turbo?: boolean }
+export const audioPreferences = (settings: GameSettings) => ({ music: settings.music ?? settings.sound, sfx: settings.sfx ?? settings.sound })
+const validPreferences = (settings: GameSettings) => ['music', 'sfx', 'turbo'].every(key => settings[key as keyof GameSettings] === undefined || typeof settings[key as keyof GameSettings] === 'boolean')
+function cleanSettings(settings: GameSettings): GameSettings {
+  return { sound: settings.sound, haptics: settings.haptics,
+    ...(settings.music === undefined ? {} : { music: settings.music }),
+    ...(settings.sfx === undefined ? {} : { sfx: settings.sfx }),
+    ...(settings.turbo === undefined ? {} : { turbo: settings.turbo }) }
+}
 export interface DemoTransaction {
   sequence: number
   kind: 'debit' | 'credit' | 'reset'
@@ -55,7 +63,7 @@ export function decodeSession(raw: string | null): DemoSession | null {
     const maximum = MAX_CREDIT_UNITS / scale, initial = INITIAL_CREDIT_UNITS / scale
     if (![1, DEMO_SCHEMA_VERSION].includes(value?.version) || !integer(value.balance, maximum) ||
       !integer(value.sequence, Number.MAX_SAFE_INTEGER) ||
-      typeof value.settings?.sound !== 'boolean' || typeof value.settings?.haptics !== 'boolean' ||
+      typeof value.settings?.sound !== 'boolean' || typeof value.settings?.haptics !== 'boolean' || !validPreferences(value.settings) ||
       !Array.isArray(value.transactions) || value.transactions.length !== Math.min(value.sequence, HISTORY_LIMIT)) return null
     const transactions: DemoTransaction[] = []
     for (const item of value.transactions) {
@@ -77,7 +85,7 @@ export function decodeSession(raw: string | null): DemoSession | null {
     if (last ? last.sequence !== value.sequence || last.balance !== value.balance
       : value.sequence !== 0 || value.balance !== initial) return null
     return { version: DEMO_SCHEMA_VERSION, balance: value.balance * scale, sequence: value.sequence,
-      settings: { sound: value.settings.sound, haptics: value.settings.haptics },
+      settings: cleanSettings(value.settings),
       transactions: transactions.map(item => ({ ...item, amount: item.amount * scale, balance: item.balance * scale })) }
   } catch { return null }
 }
@@ -184,8 +192,8 @@ export function createDemoSessionStore(
     reset: () => transact('reset', INITIAL_CREDIT_UNITS),
     setSettings(settings: GameSettings): boolean {
       hydrate()
-      if (typeof settings?.sound !== 'boolean' || typeof settings?.haptics !== 'boolean') return false
-      save({ ...snapshot.session, settings: { sound: settings.sound, haptics: settings.haptics } })
+      if (typeof settings?.sound !== 'boolean' || typeof settings?.haptics !== 'boolean' || !validPreferences(settings)) return false
+      save({ ...snapshot.session, settings: cleanSettings(settings) })
       return true
     },
   }

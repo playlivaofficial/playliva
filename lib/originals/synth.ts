@@ -1,3 +1,4 @@
+import { createAudioMix, type AudioMix } from './audio-mix'
 /**
  * Shared runtime synthesis kit for PlayLiva Original soundscapes.
  *
@@ -8,6 +9,7 @@
  * master; SFX sit above a separate music bus that can duck under cues.
  */
 export interface Synth {
+  setMix(mix: AudioMix): void
   /** Audio-clock "now" (+5ms) when a cue may play, else null (muted, hidden, unsupported). */
   ready(): number | null
   readonly ctx: AudioContext | null
@@ -45,6 +47,8 @@ export interface NoiseOptions {
 
 export function createSynth(options: { masterGain?: number; sfxGain?: number; musicGain?: number } = {}): Synth {
   const MASTER = options.masterGain ?? 0.8, SFX = options.sfxGain ?? 0.9, MUSIC = options.musicGain ?? 0.12
+  const mix = createAudioMix()
+  let unlocked = false, resumeLoop = false, desiredMusicLevel = 1
   let ctx: AudioContext | null = null, master: GainNode | null = null, sfx: GainNode | null = null, music: GainNode | null = null
   let enabled = true, visible = true, noiseBuffer: AudioBuffer | null = null
   let timer: number | null = null, nextStep = 0, stepIndex = 0, stepSeconds = 0.125
@@ -52,7 +56,7 @@ export function createSynth(options: { masterGain?: number; sfxGain?: number; mu
   const voices = new Set<AudioScheduledSourceNode>()
 
   function build() {
-    if (ctx) return
+    if (ctx || !unlocked) return
     const Ctor = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
     if (!Ctor) return
     try { ctx = new Ctor() } catch { ctx = null; return }
@@ -62,7 +66,7 @@ export function createSynth(options: { masterGain?: number; sfxGain?: number; mu
     master = ctx.createGain(); master.gain.value = enabled ? MASTER : 0
     sfx = ctx.createGain(); sfx.gain.value = SFX
     music = ctx.createGain(); music.gain.value = 0
-    sfx.connect(master); music.connect(master); master.connect(limiter); limiter.connect(ctx.destination)
+    mix.connect(ctx, music, sfx, master); master.connect(limiter); limiter.connect(ctx.destination)
   }
   function track(node: AudioScheduledSourceNode, stopAt: number) {
     voices.add(node)
@@ -92,6 +96,7 @@ export function createSynth(options: { masterGain?: number; sfxGain?: number; mu
   function stopTimer() { if (timer !== null) { window.clearInterval(timer); timer = null } }
 
   const synth: Synth = {
+    setMix: mix.setMix,
     get ctx() { return ctx }, get sfx() { return sfx }, get music() { return music },
     get looping() { return timer !== null },
     ready() {
@@ -116,6 +121,7 @@ export function createSynth(options: { masterGain?: number; sfxGain?: number; mu
       } else if (visible) void ctx.resume().catch(() => {})
     },
     unlock() {
+      unlocked = true
       if (!enabled) return
       build()
       if (ctx?.state === 'suspended' && visible) void ctx.resume().catch(() => { /* gesture required */ })
@@ -123,10 +129,11 @@ export function createSynth(options: { masterGain?: number; sfxGain?: number; mu
     setVisible(next) {
       visible = next
       if (!ctx) return
-      if (!next) void ctx.suspend().catch(() => {})
-      else if (enabled) void ctx.resume().catch(() => {})
+      if (!next) { resumeLoop = timer !== null; synth.silence(); void ctx.suspend().catch(() => {}) }
+      else if (enabled) { void ctx.resume().catch(() => {}); if (resumeLoop && stepFn) { synth.startLoop(stepSeconds, stepFn); synth.musicLevel(desiredMusicLevel, .2) } resumeLoop = false }
     },
     musicLevel(level, seconds) {
+      desiredMusicLevel = level
       if (!ctx || !music) return
       const at = ctx.currentTime
       music.gain.cancelScheduledValues(at)

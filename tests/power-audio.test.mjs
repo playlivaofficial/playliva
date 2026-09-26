@@ -36,9 +36,28 @@ function fakeAudio() {
 }
 
 
-for(const kind of ['raio','brasil21'])test(kind+': lazy audio, every cue, single scheduler, mute/visibility/resume/dispose',()=>{
- const stub=fakeAudio();try{const a=audioModule.createPowerAudio(kind);assert.equal(stub.contexts.length,0);a.setEnabled(true);a.unlock();a.unlock();a.active(true);a.active(true);assert.equal(stub.contexts.length,1);assert.equal(stub.live,1);
+for(const kind of ['raio','brasil21','blackjack','roulette','mines'])test(kind+': lazy audio, every cue, single scheduler, mute/visibility/resume/dispose',()=>{
+ const stub=fakeAudio();try{const a=audioModule.createPowerAudio(kind);assert.equal(stub.contexts.length,0);a.setEnabled(true);a.active(true);a.cue('deal');assert.equal(stub.contexts.length,0,'preferences and effects alone cannot unlock audio');a.setMix({music:true,sfx:true});a.unlock();a.unlock();a.active(true);a.active(true);assert.equal(stub.contexts.length,1);assert.equal(stub.live,1);
  for(const cue of ['chip','remove','start','charge','feature','tick','land','deal','flip','hit','stand','double','win','power','loss','push','bust']){const before=stub.starts;a.cue(cue);assert.ok(stub.starts>before,cue)}
  a.setEnabled(false);assert.equal(stub.live,0);const before=stub.starts;a.cue('power');a.active(true);assert.equal(stub.starts,before);a.setEnabled(true);assert.equal(stub.live,1);a.setVisible(false);assert.equal(stub.live,0);a.setVisible(true);assert.equal(stub.live,1);for(let i=0;i<50;i++){a.active(false);assert.equal(stub.live,0);a.active(true);assert.equal(stub.live,1)}a.active(false);a.setEnabled(false);a.setEnabled(true);assert.equal(stub.live,0);a.dispose();assert.equal(stub.live,0);assert.equal(stub.contexts[0].closed,true);assert.equal(stub.contexts.length,1);
+ }finally{stub.restore()}
+})
+
+for(const [kind,path,factory] of [
+ ['capybara','capybara','createSlotAudio'],['golaco','golaco','createGolacoAudio'],
+ ['crash','crash','createCrashAudio'],['ginga','embaixadinha','createJuggleAudio'],
+])test(kind+': repeated rounds retain one context and stop on mute, hidden and dispose',async()=>{
+ const gameAudio=await import('../lib/originals/'+path+'/audio.ts'),stub=fakeAudio();
+ try{
+  const a=gameAudio[factory](),start=()=>kind==='crash'?a.scheduleLaunch(performance.now()):kind==='ginga'?a.touch('flick',0,0):a.bonusMusic(true,false);
+  const end=()=>kind==='crash'?a.endRound():kind==='ginga'?a.roundEnd():a.bonusMusic(false);
+  a.setMix({music:true,sfx:true});a.setEnabled(true);start();assert.equal(stub.contexts.length,0);
+  a.unlock();start();assert.equal(stub.contexts.length,1);assert.equal(stub.live,1);
+  for(let i=0;i<20;i++){end();start();assert.equal(stub.live,1)}
+  a.setVisible(false);assert.equal(stub.live,0);assert.equal(stub.contexts[0].state,'suspended');
+  a.setVisible(true);start();assert.equal(stub.live,1);
+  a.setEnabled(false);assert.equal(stub.live,0);const starts=stub.starts;start();assert.equal(stub.starts,starts);
+  a.setEnabled(true);a.unlock();start();assert.equal(stub.live,1);assert.equal(stub.contexts.length,1);
+  a.dispose();assert.equal(stub.live,0);assert.equal(stub.contexts[0].closed,true);
  }finally{stub.restore()}
 })

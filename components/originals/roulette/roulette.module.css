@@ -118,3 +118,9 @@
 /* Leave room for the taller winning-return reveal, not only a no-win result. */
 @media(min-width:768px) and (max-height:850px) { .stage { min-height: 390px; padding-block: 12px; } .wheel { max-width: 240px; } .brand b { font-size: 18px; } .brand { gap: 2px; } .orbitZone { gap: 5px; } .reveal { min-height: 56px; } }
 @media(prefers-reduced-motion:reduce) { .stage *,.controls * { animation: none !important; transition: none !important; } }
+
+/* Keep the wheel meaningful alongside the short betting summary on phones. */
+@media(max-width:767px){.orbitZone{grid-template-columns:112px minmax(0,1fr);gap:8px;margin-bottom:10px}.modeTabs button,.ranges button,.insidePicker select{min-height:44px}.game [data-game-controls]{position:sticky;bottom:6px}.game dialog fieldset{position:static;box-shadow:none}.stage[data-airing] .wheel{width:min(100%,260px)}}
+.stack{animation:chipSet .18s ease-out}.recent{display:flex;flex-wrap:wrap;gap:5px;align-items:center;padding:8px;font-size:11px;color:#f0e3c0}.recent b{min-width:28px;padding:4px;text-align:center;border-radius:5px;background:#182a39}.recent [data-color=red]{background:#813448}.recent [data-color=green]{background:#136446}@keyframes chipSet{from{transform:translateY(-7px) scale(1.1)}to{transform:none}}@media(prefers-reduced-motion:reduce){.stack{animation:none}}
+
+.recent{grid-column:1/-1}

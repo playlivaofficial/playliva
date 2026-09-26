@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import { useTableAudio } from '../power/use-table-audio'
 import { useCountry } from '@/components/country-context'
 import { DemoSessionProvider, useDemoSession } from '../demo-session'
 import { PlayGameShell } from '../play-game-shell'
@@ -18,8 +19,9 @@ export function BlackjackGame({ suppliedEngine }: { suppliedEngine?: BlackjackEn
   const { locale, countryCode } = useCountry(), { wallet, session, storageStatus } = useDemoSession()
   const [engine] = useState(() => suppliedEngine ?? createBlackjackEngine(wallet))
   const round = useSyncExternalStore(engine.subscribe, engine.getSnapshot, engine.getServerSnapshot)
+  const audio = useTableAudio('blackjack', session.settings.sound, true)
   const [stake, setStake] = useState(1000), [error, setError] = useState<string | null>(null)
-  const sound = useRef<AudioContext | null>(null), lastCue = useRef(''), opened = useRef(''), completed = useRef('')
+  const lastCue = useRef(''), opened = useRef(''), completed = useRef('')
   const copy = blackjackCopy(locale), ready = round.phase === 'ready', format = (n: number) => formatCredits(n, locale)
   useEffect(() => {
     const timer = window.setInterval(() => engine.tick(), 30)
@@ -38,27 +40,19 @@ export function BlackjackGame({ suppliedEngine }: { suppliedEngine?: BlackjackEn
     if (!round.roundId || key === lastCue.current || round.phase === 'ready') return
     lastCue.current = key
     if (session.settings.haptics && typeof navigator.vibrate === 'function') navigator.vibrate(8)
-    const audio = sound.current
-    if (!session.settings.sound || !audio || audio.state !== 'running') return
-    const oscillator = audio.createOscillator(), gain = audio.createGain()
-    const frequency = round.phase === 'result' ? (round.totalReturn > 0 ? 660 : 170) : 260
-    oscillator.type = 'sine'; oscillator.frequency.setValueAtTime(frequency, audio.currentTime)
-    oscillator.frequency.exponentialRampToValueAtTime(frequency * 1.25, audio.currentTime + .07)
-    gain.gain.setValueAtTime(.035, audio.currentTime); gain.gain.exponentialRampToValueAtTime(.001, audio.currentTime + .12)
-    oscillator.connect(gain); gain.connect(audio.destination); oscillator.start(); oscillator.stop(audio.currentTime + .13)
-    oscillator.onended = () => { oscillator.disconnect(); gain.disconnect() }
-  }, [round.roundId, cardCount, round.dealerRevealed, round.phase, round.totalReturn, session.settings.sound, session.settings.haptics])
-  useEffect(() => () => { void sound.current?.close(); sound.current = null }, [])
-  function unlock() { if (session.settings.sound) { try { sound.current ??= new AudioContext(); void sound.current.resume().catch(() => {}) } catch { /* Sound is optional. */ } } }
+    const hand = round.hands[0]
+    audio.cue(round.phase === 'result' ? hand?.result?.outcome === 'blackjack' ? 'power' : hand?.result?.outcome === 'push' ? 'push' : hand?.result?.outcome === 'bust' ? 'bust' : round.totalReturn > round.totalStake ? 'win' : round.totalReturn === round.totalStake ? 'push' : 'loss' : round.dealerRevealed ? 'flip' : 'deal')
+  }, [audio, round.roundId, cardCount, round.dealerRevealed, round.phase, round.hands, round.totalReturn, round.totalStake, session.settings.haptics])
+  function unlock() { audio.unlock() }
   function deal() { unlock(); const result = engine.deal(stake); setError(result.ok ? null : result.reason) }
   function act(action: BlackjackAction) {
     unlock(); const result = engine.act(action, round.revision)
-    if (result.ok) setError(null)
+    if (result.ok) { setError(null); if (action === 'stand' || action === 'double') audio.cue(action) }
     else if (!['stale-action', 'illegal-action'].includes(result.reason)) setError(result.reason)
   }
   const controls = <div className={styles.controls}>
     <div className={styles.betRow}>
-      <label htmlFor="blackjack-bet">{copy.bet}<select id="blackjack-bet" disabled={!ready} value={stake} onChange={e => { setStake(Number(e.target.value)); setError(null) }}>
+      <label htmlFor="blackjack-bet">{copy.bet}<select id="blackjack-bet" disabled={!ready} value={stake} onChange={e => { setStake(Number(e.target.value)); setError(null); audio.unlock(); audio.cue('chip') }}>
         {BLACKJACK_STAKES.map(value => <option key={value} value={value}>{format(value)}</option>)}
       </select></label>
       {ready ? <button type="button" className={styles.deal} onClick={deal} data-blackjack-deal>{round.completed ? copy.again : copy.deal}<span aria-hidden="true">↗</span></button> :

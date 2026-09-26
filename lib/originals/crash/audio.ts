@@ -1,3 +1,4 @@
+import { createAudioMix, type AudioMix } from '../audio-mix'
 /**
  * Island Crash audio.
  *
@@ -57,6 +58,8 @@ const CLAVE: readonly boolean[] = [true, false, false, true, false, false, true,
 type Voice = AudioScheduledSourceNode
 
 export interface CrashAudio {
+  setMix(mix: AudioMix): void
+  setVisible(visible: boolean): void
   /** Mirrors the shell's Sound toggle. Silences music and every pending cue. */
   setEnabled(enabled: boolean): void
   /** Must run inside a real user gesture so mobile browsers allow playback. */
@@ -71,6 +74,8 @@ export interface CrashAudio {
 }
 
 export function createCrashAudio(): CrashAudio {
+  const mix = createAudioMix()
+  let unlocked = false, visible = true, musicWanted = false
   let ctx: AudioContext | null = null
   let master: GainNode | null = null
   let musicBus: GainNode | null = null
@@ -83,7 +88,7 @@ export function createCrashAudio(): CrashAudio {
   const voices = new Set<Voice>()
 
   function build() {
-    if (ctx || disposed) return
+    if (ctx || disposed || !unlocked) return
     const Ctor = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
     if (!Ctor) return
     try { ctx = new Ctor() } catch { ctx = null; return }
@@ -93,7 +98,7 @@ export function createCrashAudio(): CrashAudio {
     master = ctx.createGain(); master.gain.value = enabled ? MASTER_GAIN : 0
     musicBus = ctx.createGain(); musicBus.gain.value = 0
     sfxBus = ctx.createGain(); sfxBus.gain.value = SFX_GAIN
-    musicBus.connect(master); sfxBus.connect(master)
+    mix.connect(ctx, musicBus, sfxBus!, master); /* routed through shared preference gates */
     master.connect(limiter); limiter.connect(ctx.destination)
   }
 
@@ -262,6 +267,8 @@ export function createCrashAudio(): CrashAudio {
   }
 
   return {
+    setMix: mix.setMix,
+    setVisible(next) { visible=next; if(!ctx)return; if(!next){silence();void ctx.suspend().catch(()=>{})}else if(enabled){void ctx.resume().catch(()=>{});if(musicWanted)startMusic(ctx.currentTime+.02)} },
     setEnabled(next: boolean) {
       enabled = next
       if (!ctx || !master) return
@@ -269,14 +276,16 @@ export function createCrashAudio(): CrashAudio {
       master.gain.cancelScheduledValues(now)
       master.gain.setValueAtTime(master.gain.value, now)
       master.gain.linearRampToValueAtTime(next ? MASTER_GAIN : 0, now + 0.08)
-      if (!next) silence()
+      if (!next) { silence(); void ctx.suspend().catch(()=>{}) } else if(visible) { void ctx.resume().catch(()=>{}); if(musicWanted)startMusic(ctx.currentTime+.02) }
     },
     unlock() {
-      if (!enabled || disposed) return
+      unlocked = true
+      if (!enabled || disposed || !visible) return
       build()
       if (ctx?.state === 'suspended') void ctx.resume().catch(() => { /* gesture required */ })
     },
     scheduleLaunch(contactAtMs: number) {
+      musicWanted = true
       if (!enabled || disposed) return
       build()
       if (!ctx) return
@@ -304,7 +313,7 @@ export function createCrashAudio(): CrashAudio {
       tone(at + 0.19, { type: 'sine', frequency: 1350, decay: 0.06, gain: 0.1 })
       duck(at, 0.35, 0.34)
     },
-    endRound() { stopMusic(0.6) },
+    endRound() { musicWanted = false; stopMusic(0.6) },
     dispose() {
       disposed = true
       silence()

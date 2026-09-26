@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import { useGameAudio } from '../use-game-audio'
 import { useCountry } from '@/components/country-context'
 import { DemoSessionProvider, useDemoSession } from '../demo-session'
 import { PlayGameShell } from '../play-game-shell'
@@ -26,7 +27,8 @@ export function GolacoPlay({ suppliedEngine }: { suppliedEngine?: GolacoEngine }
   const [loaded, setLoaded] = useState(false), [loadError, setLoadError] = useState(false), [attempt, setAttempt] = useState(0)
   // One lazily-built audio graph per mounted game (no AudioContext until a gesture).
   const assets = useRef(new Set<GolacoSymbol>()), [audio] = useState(createGolacoAudio)
-  const soundWas = useRef(session.settings.sound), reported = useRef({ spin: '', result: '', streak: '', bonus: '', summary: '' })
+  useGameAudio(audio)
+  const reported = useRef({ spin: '', result: '', streak: '', bonus: '', summary: '' })
   const copy = golacoCopy(locale), ready = round.phase === 'ready' || round.phase === 'bonus-summary'
   const sound = session.settings.sound
   useEffect(() => {
@@ -43,11 +45,9 @@ export function GolacoPlay({ suppliedEngine }: { suppliedEngine?: GolacoEngine }
   }, [audio])
   useEffect(() => {
     audio.setEnabled(sound)
-    if (sound && !soundWas.current) audio.unlock() // turning Sound on is itself a gesture
-    soundWas.current = sound
   }, [audio, sound])
-  const bonusMusic = sound && round.free && round.phase !== 'bonus-summary' && round.phase !== 'error'
-  useEffect(() => { audio.bonusMusic(bonusMusic) }, [audio, bonusMusic])
+  const bonusMusic = sound && round.phase !== 'bonus-summary' && round.phase !== 'error'
+  useEffect(() => { audio.bonusMusic(bonusMusic, round.free) }, [audio, bonusMusic, round.free, round.phase])
   useGolacoSound(round, sound ? audio : null, session.settings.haptics)
   // Analytics: each engine event is reported once (refs guard re-renders). Coarse labels only.
   useEffect(() => {
@@ -94,7 +94,7 @@ export function GolacoPlay({ suppliedEngine }: { suppliedEngine?: GolacoEngine }
     </button>
     {error && <p role="alert" className={styles.error}>{error === 'insufficient-credits' ? copy.insufficient : copy.unavailable}</p>}
   </div>
-  return <div className={styles.game} data-golaco-game data-ready={loaded} data-original-id={GOLACO.id} onPointerDown={unlockSound}>
+  return <div data-turbo={Boolean(session.settings.turbo)} className={styles.game} data-golaco-game data-ready={loaded} data-original-id={GOLACO.id} onPointerDown={unlockSound}>
     <PlayGameShell game={GOLACO} compact controls={controls} roundActive={!['ready', 'bonus-summary'].includes(round.phase) && round.error !== 'settlement-failed'}>
       <GolacoCabinet key={attempt} round={round} locale={locale} loaded={loaded} loadError={loadError}
         onAsset={symbol => { assets.current.add(symbol); if (assets.current.size >= SYMBOLS.length - 1) setLoaded(true) }}
