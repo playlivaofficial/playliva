@@ -1,5 +1,6 @@
 'use client'
 import Image from 'next/image'
+import { PowerFeature } from './power-feature'
 import { ArrowRight, Play } from 'lucide-react'
 import { useCountry } from '@/components/country-context'
 import { LocaleLink } from '@/components/locale-link'
@@ -31,6 +32,6 @@ export function RouletteDiscoverySection({ liveContext = false }: { liveContext?
   return <section className={styles.section} aria-labelledby={id} data-originals-roulette={liveContext ? 'live-context' : 'table-games'}>
     <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>{shared.originals}</p><h2 id={id}>{liveContext ? copy.liveTitle : copy.categoryTitle}</h2><p className={styles.sectionDescription}>{liveContext ? copy.liveDescription : copy.categoryDescription}</p></div>
       <LocaleLink href="/play" className={styles.hubLink}>{shared.hubLink}<ArrowRight size={17} aria-hidden="true"/></LocaleLink></div>
-    <RouletteFeature surface="category"/>
+    <RouletteFeature surface="category"/><PowerFeature kind="raio" surface="category"/>
   </section>
 }

@@ -61,6 +61,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/play/golaco', priority: 0.8 },
     { path: '/play/blackjack', priority: 0.8 },
     { path: '/play/roulette', priority: 0.8 },
+    { path: '/play/liva-raio', priority: 0.8 },
+    { path: '/play/liva-21-brasil', priority: 0.8 },
     { path: '/play/mines', priority: 0.8 },
     { path: '/offers', priority: 0.7 },
     { path: '/operators', priority: 0.6 },

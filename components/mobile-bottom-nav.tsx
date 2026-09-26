@@ -20,6 +20,7 @@ export function MobileBottomNav() {
   if (activePath === '/play/golaco') return null
   if (activePath === '/play/blackjack') return null
   if (activePath === '/play/roulette') return null
+  if (activePath === '/play/liva-raio' || activePath === '/play/liva-21-brasil') return null
   if (activePath === '/play/mines') return null
 
   const items = [

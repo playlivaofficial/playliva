@@ -20,6 +20,7 @@ import { createHash } from 'node:crypto'
 // and empty transactional-page gates represented by the updated hashes below.
 // m12-hardening tests verify the added behavior. No engine snapshot is rebased.
 // Approved Liva Ginga migration rebases only the sitemap slug in this fixture.
+// Raio / Brasil21 rebase only the additive table-event allowlist and six localized sitemap entries.
 test('redesign: protected outbound infrastructure remains unchanged except authorized Betsson play-real files', async () => {
   const expected = JSON.parse(await readFile(new URL('./fixtures/redesign-protected.json', import.meta.url), 'utf8'))
   for (const [path, hash] of Object.entries(expected)) {

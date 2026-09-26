@@ -8,6 +8,7 @@ import { IslandCrashFeature } from '@/components/originals/island-crash-feature'
 import { CapybaraFeature } from '@/components/originals/capybara-feature'
 import { BlackjackFeature } from '@/components/originals/blackjack-feature'
 import { RouletteFeature } from '@/components/originals/roulette-feature'
+import { PowerFeature } from '@/components/originals/power-feature'
 import { MinesFeature } from '@/components/originals/mines-feature'
 import { EmbaixadinhaFeature, GolacoFeature } from '@/components/originals/football-features'
 import { originalsDiscoveryCopy } from '@/lib/originals/discovery'
@@ -21,8 +22,8 @@ export function PlayView() {
   const product = productCopy(locale)
   const [filter, setFilter] = useState('all')
   const groups = [
-    { id: 'all', label: product.all, count: 7 }, { id: 'crash', label: product.crash, count: 2 },
-    { id: 'slots', label: product.slots, count: 2 }, { id: 'cards', label: product.cards, count: 2 },
+    { id: 'all', label: product.all, count: 9 }, { id: 'crash', label: product.crash, count: 2 },
+    { id: 'slots', label: product.slots, count: 2 }, { id: 'cards', label: product.cards, count: 4 },
     { id: 'instant', label: product.instant, count: 1 },
   ]
   return (
@@ -47,7 +48,7 @@ export function PlayView() {
       <div className={styles.filters} role="group" aria-label={product.all}>
         {groups.map(group => <button type="button" key={group.id} aria-pressed={filter === group.id} onClick={() => setFilter(group.id)}>{group.label}</button>)}
       </div>
-      <p className={styles.available} role="status">{product.resultCount.replace('{count}', String(groups.find(group => group.id === filter)?.count ?? 7))}</p>
+      <p className={styles.available} role="status">{product.resultCount.replace('{count}', String(groups.find(group => group.id === filter)?.count ?? 9))}</p>
       <div className={styles.hubGrid} data-filter={filter}>
         <div hidden={filter !== 'all' && filter !== 'crash'}><IslandCrashFeature surface="hub" /></div>
         <div hidden={filter !== 'all' && filter !== 'crash'}><EmbaixadinhaFeature surface="hub" /></div>
@@ -56,6 +57,8 @@ export function PlayView() {
         <div hidden={filter !== 'all' && filter !== 'cards'}><BlackjackFeature surface="hub" /></div>
         <div hidden={filter !== 'all' && filter !== 'cards'}><RouletteFeature surface="hub" /></div>
         <div hidden={filter !== 'all' && filter !== 'instant'}><MinesFeature surface="hub" /></div>
+        <div hidden={filter !== 'all' && filter !== 'cards'}><PowerFeature kind="raio" surface="hub" /></div>
+        <div hidden={filter !== 'all' && filter !== 'cards'}><PowerFeature kind="brasil21" surface="hub" /></div>
       </div>
       <p className={styles.hubDisclaimer}>{copy.disclaimer}</p>
       <section className={styles.keepDiscovering}>

@@ -1,3 +1,6 @@
+import { RAIO, RAIO_POSTER } from '@/lib/originals/raio/definition'
+import { BRASIL21, BRASIL21_POSTER } from '@/lib/originals/brasil21/definition'
+import { powerCopy } from '@/lib/originals/power-copy'
 import type { Locale } from '@/lib/types'
 import { ISLAND_CRASH } from '@/lib/originals/crash/definition'
 import { CAPYBARA_GOLD } from '@/lib/originals/capybara/definition'
@@ -92,6 +95,9 @@ export const SPOTLIGHT_GAMES: readonly SpotlightGame[] = [
     poster: '/originals/mines/jungle-poster.svg',
     posterAlt: byLocale((locale) => minesCopy(locale).posterAlt),
   },
+  ...([{game:RAIO,poster:RAIO_POSTER}, {game:BRASIL21,poster:BRASIL21_POSTER}]).map(({game,poster}) => ({
+    id:game.id, slug:game.slug, playPath:'/play/'+game.slug, title:game.title, category:byLocale(locale=>powerCopy(locale).category), poster, posterAlt:byLocale(locale=>`${game.title[locale]} — ${powerCopy(locale).category}`), posterHasTitle:true,
+  })),
 ]
 
 /** `01 / 05` style indicator: zero-padded to two digits, index is 1-based. */

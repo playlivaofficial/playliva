@@ -1,5 +1,6 @@
 'use client'
 import Image from 'next/image'
+import { PowerFeature } from './power-feature'
 import { ArrowRight, Play } from 'lucide-react'
 import { useCountry } from '@/components/country-context'
 import { LocaleLink } from '@/components/locale-link'
@@ -32,6 +33,6 @@ export function BlackjackDiscoverySection() {
   return <section className={styles.section} aria-labelledby="originals-blackjack-title" data-originals-section="live-casino">
     <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>{shared.originals}</p><h2 id="originals-blackjack-title">{copy.categoryTitle}</h2><p className={styles.sectionDescription}>{productCopy(locale).blackjackContext}</p></div>
       <LocaleLink href="/play" className={styles.hubLink}>{shared.hubLink}<ArrowRight size={17} aria-hidden="true" /></LocaleLink></div>
-    <BlackjackFeature surface="category" />
+    <BlackjackFeature surface="category"/><PowerFeature kind="brasil21" surface="category"/>
   </section>
 }

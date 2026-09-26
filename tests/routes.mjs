@@ -370,7 +370,7 @@ try {
       if (routePath === '/live-casino') {
         assert.ok(doc.querySelector('[data-originals-section="live-casino"]'))
         assert.ok(blackjack[0].compareDocumentPosition(doc.querySelector('main a[href*="/games/"]')) & 4)
-      } else assert.deepEqual([...doc.querySelectorAll('[data-original-card]')].map(e => e.getAttribute('data-original-card')), ['island-crash', 'liva-ginga', 'capybara-gold', 'golaco', 'blackjack', 'roulette', 'mines'])
+      } else assert.deepEqual([...doc.querySelectorAll('[data-original-card]')].map(e => e.getAttribute('data-original-card')), ['island-crash', 'liva-ginga', 'capybara-gold', 'golaco', 'blackjack', 'roulette', 'mines', ...(routePath === '/play' ? ['liva-raio', 'liva-21-brasil'] : [])])
     }
     for (const [slug, surfaces] of [['liva-ginga', ['', '/play', '/crash']], ['golaco', ['', '/play', '/slots']]]) {
       if (!surfaces.includes(routePath)) continue
@@ -428,7 +428,7 @@ try {
       assert.equal(doc.querySelectorAll('[data-mine]').length, 0)
       assert.equal(doc.querySelector('nav.fixed'), null)
     }
-    if (['/play/crash', '/play/liva-ginga', '/play/capybara-gold', '/play/golaco', '/play/blackjack', '/play/roulette', '/play/mines'].includes(routePath)) {
+    if (['/play/crash', '/play/liva-ginga', '/play/capybara-gold', '/play/golaco', '/play/blackjack', '/play/roulette', '/play/mines', '/play/liva-raio', '/play/liva-21-brasil'].includes(routePath)) {
       const viewport = doc.querySelector('[data-game-viewport]')
       const controls = doc.querySelector('[data-game-controls]')
       const unit = doc.querySelector('[data-game-unit]')
