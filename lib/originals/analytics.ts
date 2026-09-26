@@ -3,12 +3,12 @@ import type { CategorySlug, CountryCode, Locale } from '../types'
 import { localeToSegment } from '../locale'
 import { isDemoIdentifier } from './session'
 
-export type FreePlayEvent = 'free_play_open' | 'demo_round_start' | 'demo_round_complete' |
+export type FreePlayEvent = 'demo_table_action' | 'demo_table_feature' | 'demo_table_result' | 'free_play_open' | 'demo_round_start' | 'demo_round_complete' |
   'demo_balance_reset' | 'play_real_view' | 'play_real_click' |
   'demo_cashout' | 'demo_crash' | 'demo_slot_win' | 'demo_bonus_trigger' | 'demo_free_spin_start' |
   'demo_bonus_complete' | 'demo_streak_increase' | 'demo_sound_toggle'
 const FREE_PLAY_EVENTS: readonly FreePlayEvent[] = ['free_play_open', 'demo_round_start', 'demo_round_complete',
-  'demo_balance_reset', 'play_real_view', 'play_real_click', 'demo_cashout', 'demo_crash', 'demo_slot_win',
+  'demo_table_action', 'demo_table_feature', 'demo_table_result', 'demo_balance_reset', 'play_real_view', 'play_real_click', 'demo_cashout', 'demo_crash', 'demo_slot_win',
   'demo_bonus_trigger', 'demo_free_spin_start', 'demo_bonus_complete', 'demo_streak_increase', 'demo_sound_toggle']
 export interface FreePlayEventContext {
   originalId: string

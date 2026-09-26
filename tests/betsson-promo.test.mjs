@@ -1,3 +1,5 @@
+import raioDef from '../lib/originals/raio/definition.ts'
+import brasilDef from '../lib/originals/brasil21/definition.ts'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { registerHooks } from 'node:module'
@@ -242,8 +244,8 @@ test('attribution: UTMs and known social referrers are preserved per session; fr
   assert.equal(consent.parseConsent(null), null)
 })
 
-test('Originals shell mounts the engagement offer outside the game unit and opens it after cycles 3, 6 and 9 with milestone analytics', async () => {
-  const dom = new JSDOM('<div id="root"></div>', { url: 'https://www.playliva.com/pt-br/play/crash?utm_source=tiktok&utm_campaign=reel.1', virtualConsole: new VirtualConsole() })
+for(const game of [crashDef.ISLAND_CRASH,raioDef.RAIO,brasilDef.BRASIL21]) test(`${game.slug}: Originals shell offers after cycles 3, 6 and 9 with milestone analytics`, async () => {
+  const dom = new JSDOM('<div id="root"></div>', { url: `https://www.playliva.com/pt-br/play/${game.slug}?utm_source=tiktok&utm_campaign=reel.1`, virtualConsole: new VirtualConsole() })
   const saved = new Map()
   for (const key of ['window', 'self', 'document', 'location', 'navigator', 'Event', 'KeyboardEvent', 'HTMLElement', 'Node', 'IntersectionObserver']) {
     saved.set(key, Object.getOwnPropertyDescriptor(globalThis, key))
@@ -256,8 +258,8 @@ test('Originals shell mounts the engagement offer outside the game unit and open
   window.dataLayer = { push: item => events.push(item) }
   window.localStorage.setItem(consent.CONSENT_STORAGE_KEY, JSON.stringify({ necessary: true, analytics: true, marketing: false }))
   attribution.captureAttribution()
-  const game = crashDef.ISLAND_CRASH
-  const mount = roundActive => act(() => root.render(wrap('pt-BR', '/pt-br/play/crash',
+
+  const mount = roundActive => act(() => root.render(wrap('pt-BR', `/pt-br/play/${game.slug}`,
     React.createElement(providerModule.DemoSessionProvider, { store },
       React.createElement(shellModule.PlayGameShell, { game, roundActive, controls: React.createElement('button', {}, 'Start') },
         React.createElement('div', {}, 'viewport'))))))
@@ -297,7 +299,7 @@ test('Originals shell mounts the engagement offer outside the game unit and open
     const query = new URL(cta.getAttribute('href'), 'https://www.playliva.com').searchParams
     assert.equal(query.get('offer'), BETSSON_PROMO_OFFER_ID)
     assert.equal(query.get('placement'), 'originals_engagement_offer')
-    assert.equal(query.get('pageSlug'), 'crash')
+    assert.equal(query.get('pageSlug'), game.slug)
     assert.doesNotMatch(dialog.innerHTML, /betsson\.bet\.br|bannerflow/)
     assert.equal(dialog.querySelector('audio, video, [autoplay]'), null, 'no autoplay media')
     assert.doesNotMatch(dialog.textContent, /\d+:\d\d|termina em|expira/i, 'no countdown or fake urgency')
@@ -308,20 +310,21 @@ test('Originals shell mounts the engagement offer outside the game unit and open
     assert.equal(impression.brand, 'betsson')
     assert.equal(impression.placement, 'originals_engagement_offer')
     assert.equal(impression.surface, 'originals')
-    assert.equal(impression.gameSlug, 'crash')
+    assert.equal(impression.gameSlug, game.slug)
     assert.equal(impression.originalId, game.id)
     assert.equal(impression.country, 'BR')
     assert.equal(impression.language, 'pt-BR')
-    assert.equal(impression.url, '/pt-br/play/crash')
+    assert.equal(impression.url, `/pt-br/play/${game.slug}`)
     assert.equal(impression.trafficSource, 'tiktok')
     assert.equal(impression.utmCampaign, 'reel.1')
-    assert.equal(impression.category, 'crash')
+    assert.equal(impression.category, game.category)
     assert.equal(impression.completedCycleNumber, '3')
     assert.equal(impression.triggerMultiple, '3')
     assert.equal(impression.exposureNumber, '1')
     assert.ok(['mobile', 'desktop'].includes(impression.device))
     assert.equal(impression.email, undefined)
     await act(() => { cta.dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true })) })
+    assert.equal(events.filter(item => item.event === 'affiliate_click').length,1)
     const click = events.find(item => item.event === 'affiliate_click')
     assert.equal(click?.promoId, BETSSON_PROMO.promoId)
     assert.equal(click?.trafficSource, 'tiktok')
@@ -361,8 +364,8 @@ test('Originals shell mounts the engagement offer outside the game unit and open
   }
 })
 
-test('non-Brazil markets suppress every campaign surface, including the shell offer', async () => {
-  const dom = new JSDOM('<div id="root"></div>', { url: 'https://www.playliva.com/es-mx/play/crash', virtualConsole: new VirtualConsole() })
+for(const game of [crashDef.ISLAND_CRASH,raioDef.RAIO,brasilDef.BRASIL21]) test(`${game.slug}: non-Brazil suppresses every campaign surface`, async () => {
+  const dom = new JSDOM('<div id="root"></div>', { url: `https://www.playliva.com/es-mx/play/${game.slug}`, virtualConsole: new VirtualConsole() })
   const saved = new Map()
   for (const key of ['window', 'self', 'document', 'location', 'navigator', 'Event', 'HTMLElement', 'Node']) {
     saved.set(key, Object.getOwnPropertyDescriptor(globalThis, key))
@@ -372,8 +375,8 @@ test('non-Brazil markets suppress every campaign surface, including the shell of
   globalThis.IS_REACT_ACT_ENVIRONMENT = true
   const root = createRoot(document.getElementById('root'))
   const store = sessionModule.createDemoSessionStore(() => window.localStorage, () => 1)
-  const game = crashDef.ISLAND_CRASH
-  const mount = roundActive => act(() => root.render(wrap('es-MX', '/es-mx/play/crash',
+
+  const mount = roundActive => act(() => root.render(wrap('es-MX', `/es-mx/play/${game.slug}`,
     React.createElement(providerModule.DemoSessionProvider, { store },
       React.createElement(shellModule.PlayGameShell, { game, roundActive, controls: React.createElement('button', {}, 'Start') },
         React.createElement('div', {}, 'viewport'))))))

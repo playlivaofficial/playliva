@@ -36,6 +36,9 @@ export type TrackEventName =
   | 'demo_bonus_complete'
   | 'demo_streak_increase'
   | 'demo_sound_toggle'
+  | 'demo_table_action'
+  | 'demo_table_feature'
+  | 'demo_table_result'
 
 export type PageType =
   | 'home'
@@ -109,7 +112,7 @@ const EVENTS: readonly TrackEventName[] = ['page_view', 'game_view', 'comparison
   'affiliate_click', 'free_play_open', 'demo_round_start', 'demo_round_complete',
   'demo_balance_reset', 'play_real_view', 'play_real_click', 'offer_impression', 'offer_dismiss',
   'demo_cashout', 'demo_crash', 'demo_slot_win', 'demo_bonus_trigger', 'demo_free_spin_start',
-  'demo_bonus_complete', 'demo_streak_increase', 'demo_sound_toggle']
+  'demo_bonus_complete', 'demo_streak_increase', 'demo_sound_toggle', 'demo_table_action', 'demo_table_feature', 'demo_table_result']
 const CONTEXT_FIELDS = ['country', 'language', 'pageType', 'pageSlug', 'gameId', 'gameSlug',
   'matchId', 'matchSlug', 'category', 'operatorId', 'operatorSlug', 'offerId', 'ctaLocation',
   'placement', 'destination', 'originalId', 'roundId', 'promoId', 'brand', 'surface',

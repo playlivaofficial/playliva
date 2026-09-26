@@ -4,6 +4,8 @@ const STATIC_IMAGES: Record<string, string> = {
   '/play': '/icon-512.png',
   '/play/crash': '/originals/crash/island-crash-poster.webp',
   '/play/capybara-gold': '/originals/capybara-gold/river.webp',
+  '/play/liva-raio': '/originals/raio/share.jpg',
+  '/play/liva-21-brasil': '/originals/brasil21/share.jpg',
   '/play/liva-ginga': '/originals/embaixadinha/poster.webp',
   '/play/golaco': '/originals/golaco/poster.webp',
   '/play/blackjack': '/games/blackjack-live.webp',
