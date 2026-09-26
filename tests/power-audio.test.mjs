@@ -1,6 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import audioModule from '../lib/originals/power-audio.ts'
+import threeAudio from '../lib/originals/three-game-audio.ts'
 function fakeParam(value) {
   return { value, setValueAtTime(v) { this.value = v; return this }, exponentialRampToValueAtTime(v) { this.value = v; return this },
     linearRampToValueAtTime(v) { this.value = v; return this }, cancelScheduledValues() { return this } }
@@ -34,6 +35,13 @@ function fakeAudio() {
   return { contexts, get starts() { return starts }, get live() { return live },
     restore() { if (saved) Object.defineProperty(globalThis, 'window', saved); else delete globalThis.window } }
 }
+
+for(const kind of ['samba-drop','skuptu-levanta','carnaval-gold'])test(kind+': original audio lifecycle and separate shared mix',()=>{
+ const stub=fakeAudio();try{const a=threeAudio.createThreeAudio(kind);a.setMix({music:true,sfx:false});a.setEnabled(true);a.active(true);assert.equal(stub.contexts.length,0);a.unlock();a.unlock();assert.equal(stub.contexts.length,1);assert.equal(stub.live,1)
+ for(const cue of ['start','tick','anticipation','land','win','big','huge','cashout','fail','impact','stop','special','bonus','meter','retrigger','summary']){const before=stub.starts;a.cue(cue);assert.ok(stub.starts>before,cue)}
+ for(let i=0;i<30;i++){a.active(false);assert.equal(stub.live,0);a.active(true,i%2===0);assert.equal(stub.live,1)}a.setVisible(false);assert.equal(stub.live,0);a.setVisible(true);assert.equal(stub.live,1);a.setEnabled(false);const before=stub.starts;a.cue('win');assert.equal(stub.starts,before);assert.equal(stub.live,0);a.setEnabled(true);assert.equal(stub.live,1);a.dispose();assert.equal(stub.live,0);assert.equal(stub.contexts[0].closed,true)
+ }finally{stub.restore()}
+})
 
 
 for(const kind of ['raio','brasil21','blackjack','roulette','mines'])test(kind+': lazy audio, every cue, single scheduler, mute/visibility/resume/dispose',()=>{

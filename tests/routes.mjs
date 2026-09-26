@@ -370,7 +370,7 @@ try {
       if (routePath === '/live-casino') {
         assert.ok(doc.querySelector('[data-originals-section="live-casino"]'))
         assert.ok(blackjack[0].compareDocumentPosition(doc.querySelector('main a[href*="/games/"]')) & 4)
-      } else assert.deepEqual([...doc.querySelectorAll('[data-original-card]')].map(e => e.getAttribute('data-original-card')), ['island-crash', 'liva-ginga', 'capybara-gold', 'golaco', 'blackjack', 'roulette', 'mines', ...(routePath === '/play' ? ['liva-raio', 'liva-21-brasil'] : [])])
+      } else assert.deepEqual([...doc.querySelectorAll('[data-original-card]')].map(e => e.getAttribute('data-original-card')), routePath === '/play' ? ['samba-drop', 'skuptu-levanta', 'carnaval-gold', 'island-crash', 'liva-ginga', 'capybara-gold', 'golaco', 'blackjack', 'roulette', 'mines', 'liva-raio', 'liva-21-brasil'] : ['island-crash', 'liva-ginga', 'skuptu-levanta', 'capybara-gold', 'golaco', 'blackjack', 'roulette', 'mines'])
     }
     for (const [slug, surfaces] of [['liva-ginga', ['', '/play', '/crash']], ['golaco', ['', '/play', '/slots']]]) {
       if (!surfaces.includes(routePath)) continue
@@ -514,7 +514,17 @@ try {
     for (const script of doc.querySelectorAll('script[type="application/ld+json"]')) {
       const data = JSON.parse(script.textContent)
       assert.equal(data['@context'], 'https://schema.org', `${path}: schema context`)
-      assert.ok(['WebSite', 'Organization', 'BreadcrumbList'].includes(data['@type']), `${path}: schema must have an audited visible use`)
+      const newOriginal = ['/play/samba-drop', '/play/skuptu-levanta', '/play/carnaval-gold'].includes(routePath)
+      assert.ok(['WebSite', 'Organization', 'BreadcrumbList', ...(newOriginal ? ['VideoGame'] : [])].includes(data['@type']), `${path}: schema must have an audited visible use`)
+      if (data['@type'] === 'VideoGame') {
+        assert.equal(data.name, doc.querySelector('h1')?.textContent, `${path}: game schema names the visible game`)
+        assert.equal(data.url, `${SITE_URL}${path}`, `${path}: game schema is canonical`)
+        assert.equal(data.description, doc.querySelector('meta[name="description"]')?.content)
+        assert.equal(data.image, doc.querySelector('meta[property="og:image"]')?.content)
+        assert.equal(data.inLanguage, localeModule.segmentToLocale(segment))
+        assert.equal(data.isAccessibleForFree, true)
+        assert.equal(data.applicationCategory, 'GameApplication')
+      }
       assert.ok(!('aggregateRating' in data) && !('review' in data), `${path}: no invented ratings/reviews`)
       schemaTypes.set(data['@type'], (schemaTypes.get(data['@type']) ?? 0) + 1)
       if (data['@type'] === 'BreadcrumbList') for (const item of data.itemListElement) {
@@ -524,6 +534,7 @@ try {
     assert.equal(schemaTypes.get('WebSite'), 1, `${path}: one WebSite entity`)
     assert.equal(schemaTypes.get('Organization'), 1, `${path}: one Organization entity`)
     assert.ok((schemaTypes.get('BreadcrumbList') ?? 0) <= 1, `${path}: no duplicate breadcrumbs`)
+    assert.ok((schemaTypes.get('VideoGame') ?? 0) <= 1, `${path}: no duplicate game entity`)
     if (doc.querySelector('script[src*="googletagmanager"], script[src*="insights/script"]')) failures.push(`${path}: analytics script before consent`)
     if (path.includes('blackjack-live') && doc.querySelector('img[src*="blackjack-live.jpg"]')) failures.push(`${path}: mismatched Speed Blackjack artwork`)
     const metadataText = [...doc.querySelectorAll('meta[name="description"], img[alt]')].map((node) => node.content ?? node.alt).join(' ')

@@ -1,5 +1,6 @@
 'use client'
 import Image from 'next/image'
+import { ThreeGameFeature } from './three-game-feature'
 import { ArrowRight, Play } from 'lucide-react'
 import { useCountry } from '@/components/country-context'
 import { LocaleLink } from '@/components/locale-link'
@@ -30,5 +31,6 @@ export function MinesDiscoverySection() {
     <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>{shared.originals}</p><h2 id="originals-mines">{copy.categoryTitle}</h2><p className={styles.sectionDescription}>{copy.categoryDescription}</p></div>
       <LocaleLink href="/play" className={styles.hubLink}>{shared.hubLink}<ArrowRight size={17} aria-hidden="true"/></LocaleLink></div>
     <MinesFeature surface="category"/>
+    <ThreeGameFeature kind="samba-drop" surface="category"/>
   </section>
 }

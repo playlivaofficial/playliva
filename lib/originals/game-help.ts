@@ -5,6 +5,12 @@ export interface GameHelp { sections: { title:string; items:string[] }[]; paytab
 export async function loadGameHelp(slug:string,locale:Locale):Promise<GameHelp>{
  const t=settingsCopy(locale), sections:GameHelp['sections']=[]
  const add=(title:string,...items:string[])=>sections.push({title,items:items.flatMap(text=>text.split(/(?<=[.!?])\s+(?=[A-ZÁÉÍÓÚÂÊÔÃÕÇ])/u))})
+ if(['samba-drop','skuptu-levanta','carnaval-gold'].includes(slug)){
+  const {threeCopy,threeRules}=await import('./three-game-copy');const c=threeCopy(locale)
+  add(t.objective,...threeRules(slug as import('./three-game-definitions').ThreeGameKind,locale));add(t.limits,c.interruption);add(t.credits,c.credits)
+  if(slug==='carnaval-gold'){const {CARNAVAL_CONFIG:config,PAYING_SYMBOLS,SYMBOLS,LINES}=await import('./carnaval/config');return {sections,note:c.payNote,paytable:PAYING_SYMBOLS.map(s=>({symbol:c.symbols[SYMBOLS.indexOf(s)],rates:config.paytable[s].map(n=>n*LINES.length/config.payScale)}))}}
+  return {sections}
+ }
  if(slug==='capybara-gold'){
   const [{capybaraCopy},{SLOT_CONFIG,PAYING_SYMBOLS}]=await Promise.all([import('./capybara/copy'),import('./capybara/config')]);const c=capybaraCopy(locale)
   add(t.objective,c.rules);add(t.feature,c.wildRules,c.bonusRules);add(t.limits,c.interruption);add(t.credits,c.notice)

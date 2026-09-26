@@ -1,0 +1,32 @@
+{
+  "sources": [
+    {
+      "source": "Meshy_AI_Brazilian_Gym_Athlete_01a0df47_e50a_73a2_aa.glb",
+      "sha256": "1162d9e8532425fbce1a4741da310f8e713e38fa5dd372342bea323401122aae",
+      "bytes": 8372144,
+      "clip": "Ready",
+      "duration": 3.5333333015441895,
+      "channels": 72
+    },
+    {
+      "source": "Meshy_AI_Brazilian_Gym_Athlete_01a0df4b_6fc2_769c_9d.glb",
+      "sha256": "6d5e9bd58d3e9e582c4b1d64a503c0263dba4e7d46f6eca6040bffa3dbec5400",
+      "bytes": 8401072,
+      "clip": "Lift",
+      "duration": 4.5333333015441895,
+      "channels": 72
+    },
+    {
+      "source": "Meshy_AI_Brazilian_Gym_Athlete_01a0df4d_8e5c_7098_ac.glb",
+      "sha256": "1f97737c8edea595003730a7be99bf470cdfb4400fc55adf5f069b51416b4d22",
+      "bytes": 8328608,
+      "clip": "Fail",
+      "duration": 2.0333333015441895,
+      "channels": 72
+    }
+  ],
+  "runtime": {
+    "bytes": 1608628,
+    "sha256": "533331547e5560ac562d9807ef6b20c814487c2a2c7e7c36f1d2588969bf510a"
+  }
+}
