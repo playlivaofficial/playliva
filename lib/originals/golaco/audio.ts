@@ -1,3 +1,4 @@
+import type { AudioMix } from '../audio-mix'
 /**
  * Liva Golaço audio — original runtime synthesis (see lib/originals/synth.ts).
  *
@@ -24,6 +25,7 @@ const HOOK: readonly (number | null)[] = [
 ]
 
 export interface GolacoAudio {
+  setMix(mix: AudioMix): void
   setEnabled(enabled: boolean): void
   unlock(): void
   setVisible(visible: boolean): void
@@ -34,19 +36,19 @@ export interface GolacoAudio {
   bonusTrigger(trophies: number): void
   streakUp(level: number): void
   retrigger(): void
-  bonusMusic(active: boolean): void
+  bonusMusic(active: boolean, featured?: boolean): void
   bonusEnd(big: boolean): void
   dispose(): void
 }
 
 export function createGolacoAudio(): GolacoAudio {
   const s = createSynth({ musicGain: 0.12 })
-  let musicWanted = false
+  let musicWanted = false, musicLevel = 1
 
-  const crowd = (at: number, o: { duration: number; gain: number; low?: number; high?: number; attack?: number }) => {
+  const crowd = (at: number, o: { duration: number; gain: number; low?: number; high?: number; attack?: number; bus?: GainNode | null }) => {
     // Two formant-ish bands of noise read as a distant crowd, not wind.
-    s.noise(at, { duration: o.duration, gain: o.gain, type: 'bandpass', frequency: o.low ?? 520, sweepTo: (o.low ?? 520) * 1.25, q: 1.3, attack: o.attack ?? 0.12 })
-    s.noise(at, { duration: o.duration * 0.9, gain: o.gain * 0.7, type: 'bandpass', frequency: o.high ?? 1600, sweepTo: (o.high ?? 1600) * 1.2, q: 1.6, attack: o.attack ?? 0.12 })
+    s.noise(at, { duration: o.duration, gain: o.gain, type: 'bandpass', frequency: o.low ?? 520, sweepTo: (o.low ?? 520) * 1.25, q: 1.3, attack: o.attack ?? 0.12, bus: o.bus })
+    s.noise(at, { duration: o.duration * 0.9, gain: o.gain * 0.7, type: 'bandpass', frequency: o.high ?? 1600, sweepTo: (o.high ?? 1600) * 1.2, q: 1.6, attack: o.attack ?? 0.12, bus: o.bus })
   }
   const whistle = (at: number, length: number, gain = 0.07) => {
     s.tone(at, { frequency: 2900, decay: length, gain, attack: 0.01, partials: [[1.018, 0.85]] })
@@ -71,12 +73,13 @@ export function createGolacoAudio(): GolacoAudio {
     const lead = HOOK[index % HOOK.length]
     if (lead) s.brass(at, lead, 0.2, 0.04, bus)
     // Crowd bed: slow swells under the band.
-    if (index % 16 === 0) crowd(at, { duration: 2.2, gain: 0.03, attack: 0.9 })
+    if (index % 16 === 0) crowd(at, { duration: 2.2, gain: 0.03, attack: 0.9, bus })
   }
 
   return {
-    setEnabled(next) { s.setEnabled(next); if (next && musicWanted) s.startLoop(STEP, band) },
-    unlock: () => s.unlock(),
+    setMix: s.setMix,
+    setEnabled(next) { s.setEnabled(next); if (next && musicWanted) { s.startLoop(STEP, band); s.musicLevel(musicLevel, .3) } },
+    unlock: () => { s.unlock(); if(musicWanted){s.startLoop(STEP,band);s.musicLevel(musicLevel,.4)} },
     setVisible: next => s.setVisible(next),
     spinStart(free) {
       const at = s.ready()
@@ -156,9 +159,10 @@ export function createGolacoAudio(): GolacoAudio {
       whistle(at, 0.1); whistle(at + 0.14, 0.1)
       for (const [i, f] of [D5, F5, Bb5].entries()) s.bell(at + 0.2 + i * 0.06, f, 0.1, 0.45)
     },
-    bonusMusic(active) {
+    bonusMusic(active, featured = true) {
+      musicLevel = featured ? 1 : .4
       musicWanted = active
-      if (active) { s.startLoop(STEP, band); s.musicLevel(1, 0.6) }
+      if (active) { s.startLoop(STEP, band); s.musicLevel(featured ? 1 : .4, 0.6) }
       else { s.stopLoop(); s.musicLevel(0, 1) }
     },
     bonusEnd(big) {

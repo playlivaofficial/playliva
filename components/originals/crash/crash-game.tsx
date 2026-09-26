@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import Image from 'next/image'
+import { useGameAudio } from '../use-game-audio'
 import { useCountry } from '@/components/country-context'
 import { DemoSessionProvider, useDemoSession } from '../demo-session'
 import { PlayGameShell } from '../play-game-shell'
@@ -33,6 +34,7 @@ export function CrashGame() {
   const [attempt, setAttempt] = useState(0)
   const host = useRef<HTMLDivElement>(null)
   const [audio] = useState(createCrashAudio)
+  useGameAudio(audio)
   const launched = useRef<string | null>(null)
   const landed = useRef<string | null>(null)
   const completed = useRef<string | null>(null)
@@ -65,7 +67,7 @@ export function CrashGame() {
       category: 'crash', country: countryCode, locale, roundId: round.result.roundId })
   }, [round.result, countryCode, locale])
   useEffect(() => { audio.setEnabled(session.settings.sound) }, [audio, session.settings.sound])
-  useEffect(() => () => audio.dispose(), [audio])
+  useEffect(() => { const visible=()=>audio.setVisible(document.visibilityState!=='hidden'); visible(); document.addEventListener('visibilitychange',visible); return()=>{ document.removeEventListener('visibilitychange',visible);audio.dispose() } }, [audio])
   // One authoritative deadline per event: the same engine timestamps the
   // renderer seeks the kick clip with also schedule the impact audio, so the
   // thump lands on the contact frame rather than on a later React render.

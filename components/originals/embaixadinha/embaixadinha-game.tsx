@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import Image from 'next/image'
+import { useGameAudio } from '../use-game-audio'
 import { useCountry } from '@/components/country-context'
 import { DemoSessionProvider, useDemoSession } from '../demo-session'
 import { PlayGameShell } from '../play-game-shell'
@@ -47,6 +48,7 @@ export function EmbaixadinhaPlay() {
   const [engine] = useState(() => createJuggleEngine(wallet))
   const round = useSyncExternalStore(engine.subscribe, engine.getSnapshot, engine.getServerSnapshot)
   const [audio] = useState(createJuggleAudio)
+  useGameAudio(audio)
   const [stake, setStake] = useState('100.00')
   const [auto, setAuto] = useState(false)
   const [target, setTarget] = useState('2.00')
@@ -55,7 +57,7 @@ export function EmbaixadinhaPlay() {
   const [attempt, setAttempt] = useState(0)
   const host = useRef<HTMLDivElement>(null), hudValue = useRef<HTMLParagraphElement>(null), hudPhase = useRef<HTMLParagraphElement>(null), viewport = useRef<HTMLDivElement>(null)
   const sound = session.settings.sound, haptics = session.settings.haptics
-  const cues = useRef<JuggleCueSink | null>(null), soundWas = useRef(sound)
+  const cues = useRef<JuggleCueSink | null>(null)
   const settled = useRef<string | null>(null), cashedFor = useRef<string | null>(null)
   const copy = embaixadinhaCopy(locale)
   const active = isRoundActive(round.phase)
@@ -102,8 +104,6 @@ export function EmbaixadinhaPlay() {
   }, [engine, audio])
   useEffect(() => {
     audio.setEnabled(sound)
-    if (sound && !soundWas.current) audio.unlock()
-    soundWas.current = sound
   }, [audio, sound])
   useEffect(() => () => audio.dispose(), [audio])
   useEffect(() => {

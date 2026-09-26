@@ -110,3 +110,5 @@
 @media (min-width: 1024px) { .cell { max-height: clamp(70px, 11vh, 118px); } }
 @media (max-width: 380px) { .board { min-width: 0; padding: 3px 6px; } .board small { font-size: 7px; letter-spacing: .06em; } .featureBar { font-size: 8.5px; } .wordmark b { font-size: 22px; } }
 @media (prefers-reduced-motion: reduce) { .cabinet *, .cabinet *::after { animation: none !important; transition: none !important; } .strip { transform: translateY(-20%); filter: none; } .introTimer, .confetti { display: none; } }
+
+.game[data-turbo='false'] .strip { animation-duration: .5s; }

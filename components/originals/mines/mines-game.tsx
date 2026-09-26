@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import { useTableAudio } from '../power/use-table-audio'
 import { useCountry } from '@/components/country-context'
 import { DemoSessionProvider, useDemoSession } from '../demo-session'
 import { PlayGameShell } from '../play-game-shell'
@@ -18,8 +19,9 @@ export function MinesGame({ suppliedEngine }: { suppliedEngine?: MinesEngine }) 
   const { locale, countryCode } = useCountry(), { wallet, session, storageStatus } = useDemoSession()
   const [engine] = useState(() => suppliedEngine ?? createMinesEngine(wallet))
   const round = useSyncExternalStore(engine.subscribe, engine.getSnapshot, engine.getServerSnapshot)
+  const audio = useTableAudio('mines', session.settings.sound, true)
   const [stake, setStake] = useState(1000), [count, setCount] = useState(DEFAULT_MINES), [error, setError] = useState<string | null>(null)
-  const audio = useRef<AudioContext | null>(null), opened = useRef(''), completed = useRef(0)
+  const opened = useRef(''), completed = useRef(0)
   const copy = minesCopy(locale), ready = round.phase === 'ready', active = round.phase === 'active', result = round.result
   const format = (units: number) => formatCredits(units, locale)
   useEffect(() => {
@@ -32,23 +34,14 @@ export function MinesGame({ suppliedEngine }: { suppliedEngine?: MinesEngine }) 
     if (round.roundId && opened.current !== round.roundId) { opened.current = round.roundId; trackFreePlay('demo_round_start', context) }
     if (round.completed > completed.current) { completed.current = round.completed; trackFreePlay('demo_round_complete', context) }
   }, [round.roundId, round.completed, locale, countryCode])
-  useEffect(() => () => { void audio.current?.close(); audio.current = null }, [])
   function interaction(action: MinesAction, kind: 'start' | 'pick' | 'cash') {
     setError(action.ok ? null : action.reason)
     if (!action.ok) return
     const current = engine.getSnapshot(), secured = current.phase === 'cashed_out', hit = current.phase === 'mine_hit'
     try {
       if (session.settings.haptics && kind !== 'start' && typeof navigator.vibrate === 'function') navigator.vibrate(hit ? 18 : 8)
-      if (!session.settings.sound) return
-      const context = audio.current ??= new AudioContext()
-      void context.resume().catch(() => {})
-      const frequency = hit ? 120 : secured ? 880 : kind === 'pick' ? 500 + Math.min(current.safe.length, 20) * 24 : 280
-      const length = hit || secured ? .16 : .055
-      const oscillator = context.createOscillator(), gain = context.createGain()
-      oscillator.type = hit ? 'triangle' : 'sine'; oscillator.frequency.value = frequency
-      gain.gain.setValueAtTime(.035, context.currentTime); gain.gain.exponentialRampToValueAtTime(.001, context.currentTime + length)
-      oscillator.connect(gain); gain.connect(context.destination); oscillator.start(); oscillator.stop(context.currentTime + length)
-      oscillator.onended = () => { oscillator.disconnect(); gain.disconnect() }
+      audio.unlock()
+      audio.cue(hit ? 'bust' : secured ? 'win' : kind === 'pick' ? 'feature' : 'start')
     } catch { /* Optional feedback must never block a tile or settlement. */ }
   }
   const controls = <div className={styles.controls}>

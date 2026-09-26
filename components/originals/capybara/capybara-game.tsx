@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import { useGameAudio } from '../use-game-audio'
 import { useCountry } from '@/components/country-context'
 import { DemoSessionProvider, useDemoSession } from '../demo-session'
 import { PlayGameShell } from '../play-game-shell'
@@ -26,7 +27,8 @@ export function CapybaraGame({ suppliedEngine }: { suppliedEngine?: SlotEngine }
   const [loaded, setLoaded] = useState(false), [loadError, setLoadError] = useState(false), [attempt, setAttempt] = useState(0)
   // One lazily-built audio graph per mounted game (no AudioContext until a gesture).
   const assets = useRef(new Set<SlotSymbol>()), [audio] = useState(createSlotAudio)
-  const lastStarted = useRef<string | null>(null), lastCompleted = useRef<string | null>(null), soundWas = useRef(session.settings.sound)
+  useGameAudio(audio)
+  const lastStarted = useRef<string | null>(null), lastCompleted = useRef<string | null>(null)
   const copy = capybaraCopy(locale), ready = round.phase === 'ready' || round.phase === 'bonus-summary'
   const sound = session.settings.sound
   const context = { originalId: CAPYBARA_GOLD.id, originalSlug: CAPYBARA_GOLD.slug, category: CAPYBARA_GOLD.category, locale, country: countryCode }
@@ -46,11 +48,9 @@ export function CapybaraGame({ suppliedEngine }: { suppliedEngine?: SlotEngine }
   useEffect(() => {
     audio.setEnabled(sound)
     // Turning Sound on is itself a gesture; never create audio on mount.
-    if (sound && !soundWas.current) audio.unlock()
-    soundWas.current = sound
   }, [audio, sound])
-  const bonusMusic = sound && round.free && round.phase !== 'bonus-summary' && round.phase !== 'error'
-  useEffect(() => { audio.bonusMusic(bonusMusic) }, [audio, bonusMusic])
+  const bonusMusic = sound && round.phase !== 'bonus-summary' && round.phase !== 'error'
+  useEffect(() => { audio.bonusMusic(bonusMusic, round.free) }, [audio, bonusMusic, round.free, round.phase])
   useSlotSound(round, sound ? audio : null, session.settings.haptics)
   useEffect(() => {
     // Tracking failures/consent never control functional accounting.
@@ -81,7 +81,7 @@ export function CapybaraGame({ suppliedEngine }: { suppliedEngine?: SlotEngine }
     </button>
     {error && <p role="alert" className={styles.error}>{error === 'insufficient-credits' ? copy.insufficient : copy.unavailable}</p>}
   </div>
-  return <div className={styles.game} data-capybara-game data-ready={loaded} data-original-id={context.originalId} onPointerDown={unlockSound}>
+  return <div data-turbo={Boolean(session.settings.turbo)} className={styles.game} data-capybara-game data-ready={loaded} data-original-id={context.originalId} onPointerDown={unlockSound}>
     <PlayGameShell game={CAPYBARA_GOLD} compact controls={controls} roundActive={!['ready', 'bonus-summary'].includes(round.phase) && round.error !== 'settlement-failed'}>
       <CapybaraCabinet key={attempt} round={round} locale={locale} loaded={loaded} loadError={loadError}
         onAsset={symbol => { assets.current.add(symbol); if (assets.current.size === SYMBOLS.length) setLoaded(true) }}

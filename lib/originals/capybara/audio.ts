@@ -1,3 +1,4 @@
+import { createAudioMix, type AudioMix } from '../audio-mix'
 /**
  * Liva Capybara Gold audio.
  *
@@ -62,6 +63,7 @@ const CONGA: readonly (number | null)[] = [null, null, 1, null, null, 1.5, null,
 type Voice = AudioScheduledSourceNode
 
 export interface SlotAudio {
+  setMix(mix: AudioMix): void
   /** Mirrors the shell's Sound toggle. Off silences music and every pending cue. */
   setEnabled(enabled: boolean): void
   /** Must run inside a real user gesture so mobile browsers allow playback. */
@@ -79,12 +81,15 @@ export interface SlotAudio {
   multiplierUp(level: number): void
   retrigger(): void
   /** Idempotent: starts exactly one bonus music scheduler, or fades it out. */
-  bonusMusic(active: boolean): void
+  bonusMusic(active: boolean, featured?: boolean): void
   bonusEnd(big: boolean): void
   dispose(): void
 }
 
 export function createSlotAudio(): SlotAudio {
+  const mix = createAudioMix()
+  let musicLevel = 1
+  let unlocked = false
   let ctx: AudioContext | null = null
   let master: GainNode | null = null, sfxBus: GainNode | null = null, musicBus: GainNode | null = null
   let enabled = true, visible = true, musicWanted = false
@@ -95,7 +100,7 @@ export function createSlotAudio(): SlotAudio {
   const voices = new Set<Voice>()
 
   function build() {
-    if (ctx) return
+    if (ctx || !unlocked) return
     const Ctor = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
     if (!Ctor) return
     try { ctx = new Ctor() } catch { ctx = null; return }
@@ -105,7 +110,7 @@ export function createSlotAudio(): SlotAudio {
     master = ctx.createGain(); master.gain.value = enabled ? MASTER_GAIN : 0
     sfxBus = ctx.createGain(); sfxBus.gain.value = SFX_GAIN
     musicBus = ctx.createGain(); musicBus.gain.value = 0
-    sfxBus.connect(master); musicBus.connect(master)
+    mix.connect(ctx, musicBus, sfxBus!, master)
     master.connect(limiter); limiter.connect(ctx.destination)
   }
 
@@ -269,7 +274,7 @@ export function createSlotAudio(): SlotAudio {
     const gain = musicBus.gain
     gain.cancelScheduledValues(at)
     gain.setValueAtTime(Math.max(0.0001, gain.value), at)
-    gain.linearRampToValueAtTime(MUSIC_GAIN, at + 0.6)
+    gain.linearRampToValueAtTime(MUSIC_GAIN * musicLevel, at + 0.6)
     if (timer !== null) return // already running: never stack a second scheduler
     step = 0; nextStepTime = at + 0.05
     timer = window.setInterval(pump, TICK_MS)
@@ -300,6 +305,7 @@ export function createSlotAudio(): SlotAudio {
   }
 
   return {
+    setMix: mix.setMix,
     setEnabled(next) {
       if (enabled === next) return
       enabled = next
@@ -319,15 +325,17 @@ export function createSlotAudio(): SlotAudio {
       }
     },
     unlock() {
+      unlocked = true
       if (!enabled) return
       build()
       if (ctx?.state === 'suspended' && visible) void ctx.resume().catch(() => { /* gesture required */ })
+      if (musicWanted) startMusic()
     },
     setVisible(next) {
       visible = next
       if (!ctx) return
-      if (!next) { stopRoll(ctx.currentTime); stopRiser(ctx.currentTime); void ctx.suspend().catch(() => {}) }
-      else if (enabled) void ctx.resume().catch(() => {})
+      if (!next) { silence(); void ctx.suspend().catch(() => {}) }
+      else if (enabled) { void ctx.resume().catch(() => {}); if(musicWanted) startMusic() }
     },
     spinStart(free) {
       const at = ready()
@@ -449,7 +457,8 @@ export function createSlotAudio(): SlotAudio {
       for (const [i, note] of [D5, G5, B5, D6].entries()) bell(at + 0.1 + i * 0.05, note, 0.1, 0.4)
       tone(at + 0.1, { frequency: 600, bend: 2400, bendSeconds: 0.25, decay: 0.26, gain: 0.05 })
     },
-    bonusMusic(active) {
+    bonusMusic(active, featured = true) {
+      musicLevel = featured ? 1 : .4
       musicWanted = active
       if (active) startMusic()
       else stopMusic(1.2)

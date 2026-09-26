@@ -14,7 +14,7 @@ const en = {
   notice: 'Single-player entertainment. Background islanders are scenery. Credits have no cash value.',
   interruption: 'Leaving or reloading does not resume a flight or refund its stake. An already credited cashout stays in your saved balance.',
   math: 'Returns are rounded down to the nearest 0.01 Liva Credit. A cashout at the crash point loses. Maximum multiplier: 100×.',
-  soundHint: 'Sound starts off. Turn it on in game settings.',
+  soundHint: 'Choose music and sound effects in Settings.',
   errors: {
     'invalid-amount': 'Enter a positive credit amount with at most two decimal places.',
     'insufficient-credits': 'Not enough credits. Lower your stake or reset your demo balance.',
@@ -43,7 +43,7 @@ const copies: Record<Locale, CrashCopy> = {
     notice: 'Entretenimento para uma pessoa. Os habitantes ao fundo são parte do cenário. Os créditos não têm valor em dinheiro.',
     interruption: 'Sair ou recarregar não retoma o voo nem devolve os créditos usados. Uma retirada já creditada permanece no saldo salvo.',
     math: 'Os retornos são arredondados para baixo ao próximo 0,01 Liva Credit. Retirar no ponto da queda perde a rodada. Multiplicador máximo: 100×.',
-    soundHint: 'O som começa desligado. Ative nas configurações do jogo.',
+    soundHint: 'Escolha música e efeitos sonoros nas Configurações.',
     errors: {
       'invalid-amount': 'Digite um valor positivo de créditos com até duas casas decimais.',
       'insufficient-credits': 'Créditos insuficientes. Reduza o valor da rodada ou restaure o saldo de demonstração.',
@@ -69,7 +69,7 @@ const copies: Record<Locale, CrashCopy> = {
     notice: 'Entretenimiento para una persona. Los isleños del fondo son parte del escenario. Los créditos no tienen valor en dinero.',
     interruption: 'Salir o recargar no reanuda el vuelo ni devuelve los créditos usados. Un retiro ya acreditado permanece en tu saldo guardado.',
     math: 'Los retornos se redondean hacia abajo al siguiente 0.01 Liva Credit. Retirar en el punto de caída pierde la ronda. Multiplicador máximo: 100×.',
-    soundHint: 'El sonido empieza apagado. Actívalo en la configuración del juego.',
+    soundHint: 'Elige música y efectos de sonido en Ajustes.',
     errors: {
       'invalid-amount': 'Ingresa un valor positivo de créditos con hasta dos decimales.',
       'insufficient-credits': 'Créditos insuficientes. Reduce el valor de la ronda o restablece el saldo de demostración.',

@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react'
+import { GameSettings } from './game-settings'
+import settingsStyles from './game-settings.module.css'
 import { Button } from '@/components/ui/button'
 import { useCountry } from '@/components/country-context'
 import { useDemoSession } from './demo-session'
@@ -18,7 +20,7 @@ function subscribeFullscreen(listener: () => void) {
   return () => document.removeEventListener('fullscreenchange', listener)
 }
 
-/** Shared by the five implemented Originals; game engines remain route-isolated. */
+/** Shared by all implemented Originals; game engines remain route-isolated. */
 export function PlayGameShell({ game, children, controls, roundActive = false, compact = false }: {
   game: OriginalGameDefinition
   children: ReactNode
@@ -69,24 +71,10 @@ export function PlayGameShell({ game, children, controls, roundActive = false, c
     <p className={`${compact ? 'text-xs' : 'text-sm'} text-muted-foreground`}>{copy.boundary}</p>
     {storageStatus === 'memory-only' && <p role="status" className="text-sm text-muted-foreground">{copy.memoryOnly}</p>}
     {storageStatus === 'recovered' && <p role="status" className="text-sm text-muted-foreground">{copy.recovered}</p>}
-    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_18rem]">
-      <div className="min-w-0 space-y-4" data-game-unit>
-        <div aria-label={copy.viewport} data-game-viewport className="min-h-64 overflow-hidden rounded-2xl border border-border bg-card">{children}</div>
-        <fieldset disabled={!ready} aria-label={copy.controls} data-game-controls className="min-w-0 rounded-2xl border border-border bg-card p-4">{controls}</fieldset>
-      </div>
-      <aside data-session-panel aria-label={productCopy(locale).settings} className="space-y-4 rounded-2xl border border-border bg-card p-4">
-        <div className="flex flex-wrap gap-3">
-          <Button variant="outline" disabled={!ready} aria-pressed={session.settings.sound}
-            onClick={() => {
-              const sound = !session.settings.sound
-              if (wallet.setSettings({ ...session.settings, sound })) trackFreePlay('demo_sound_toggle', { originalId: id, originalSlug: slug, category, country: countryCode, locale, soundState: sound ? 'on' : 'off' })
-            }}>{copy.sound}</Button>
-          {capabilities[1] === 'true' && <Button variant="outline" disabled={!ready} aria-pressed={session.settings.haptics}
-            onClick={() => wallet.setSettings({ ...session.settings, haptics: !session.settings.haptics })}>{copy.haptics}</Button>}
-          {capabilities[0] === 'true' && <Button variant="outline" onClick={toggleFullscreen}>{capabilities[2] === 'true' ? copy.exitFullscreen : copy.fullscreen}</Button>}
-        </div>
-        {fullscreenError && <p role="status" className="text-sm">{copy.fullscreenUnavailable}</p>}
-        <Button variant="outline" disabled={!ready || roundActive} onClick={() => setResetOpen(true)}>{copy.reset}</Button>
+    <div data-game-toolbar className={settingsStyles.toolbar}>
+      <GameSettings slug={slug} ready={ready} roundActive={roundActive} haptics={capabilities[1] === 'true'} fullscreen={capabilities[0] === 'true' ? capabilities[2] === 'true' ? copy.exitFullscreen : copy.fullscreen : undefined} onFullscreen={toggleFullscreen} onAudioChange={sound => trackFreePlay('demo_sound_toggle', { originalId: id, originalSlug: slug, category, country: countryCode, locale, soundState: sound ? 'on' : 'off' })} />
+        <Button variant="outline" className={settingsStyles.resetControl} disabled={!ready || roundActive} onClick={() => setResetOpen(true)}>{copy.reset}</Button>
+    </div>
         {resetOpen && <div className="space-y-2" role="group" aria-label={copy.resetConfirm}>
           <p className="text-sm">{copy.resetConfirm}</p>
           <Button disabled={!ready || roundActive} onClick={() => {
@@ -96,6 +84,15 @@ export function PlayGameShell({ game, children, controls, roundActive = false, c
             }
           }}>{copy.confirm}</Button>{' '}<Button variant="ghost" onClick={() => setResetOpen(false)}>{copy.cancel}</Button>
         </div>}
+
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_18rem]">
+      <div className="min-w-0 space-y-4" data-game-unit>
+        <div aria-label={copy.viewport} data-game-viewport className="min-h-64 overflow-hidden rounded-2xl border border-border bg-card">{children}</div>
+        <fieldset disabled={!ready} aria-label={copy.controls} data-game-controls className="min-w-0 rounded-2xl border border-border bg-card p-4">{controls}</fieldset>
+      </div>
+      <aside data-session-panel aria-label={productCopy(locale).settings} className="space-y-4 rounded-2xl border border-border bg-card p-4">
+
+        {fullscreenError && <p role="status" className="text-sm">{copy.fullscreenUnavailable}</p>}
         <h2 className="font-semibold">{copy.history}</h2>
         {session.transactions.length === 0 ? <p className="text-sm text-muted-foreground">{copy.empty}</p> :
           <ol className="max-h-64 space-y-2 overflow-auto text-sm">{session.transactions.slice().reverse().map(item =>

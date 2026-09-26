@@ -137,6 +137,7 @@ function fakeAudio() {
       attack: { value: 0 }, release: { value: 0 },
     }),
     resume: () => Promise.resolve(),
+    suspend: () => Promise.resolve(),
     close: () => Promise.resolve(),
   }
   const saved = new Map()

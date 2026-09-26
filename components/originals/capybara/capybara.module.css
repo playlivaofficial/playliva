@@ -120,3 +120,5 @@
 @media (min-width: 640px) { .cabinet { padding: 0 20px 7px; } .cabinetHeader { min-height: 106px; } .mascot { width: 135px; height: 135px; top: -10px; right: 4px; } .wordmark > span { font-size: 10px; } .wordmark small { font-size: 13px; } .frame { gap: 5px; padding: 8px; } .featureBar { padding-inline: 12px; min-height: 35px; } .bonusBar > span { min-height: 40px; padding-inline: 12px; } .result { min-height: 54px; font-size: 15px; } .result small { font-size: 11px; } }
 @media (min-width: 1024px) { .cell { max-height: clamp(54px, 8vh, 80px); } .cabinetHeader { min-height: 84px; } .mascot { width: 108px; height: 108px; } .result { min-height: 42px; } }
 @media (prefers-reduced-motion: reduce) { .cabinet *, .cabinet *::after { animation: none !important; transition: none !important; } .strip { transform: translateY(-20%); filter: none; } .introTimer { display: none; } }
+
+.game[data-turbo='false'] .strip { animation-duration: .5s; }

@@ -1,13 +1,14 @@
+import { slotTiming } from '../slot-speed'
 import { MAX_CREDIT_UNITS, type DemoSessionStore, type WalletResult } from '../session'
 import { GOLACO } from './definition'
 import { GOLACO_CONFIG, REELS, type GolacoConfig, type GolacoSymbol } from './config'
 import { preparedMath, secureRandom, validateGrid, type GolacoEvaluation, type GolacoGrid, type SlotRandom } from './math'
 
 /** Reel k stops at FIRST_STOP_MS + k × STOP_GAP_MS; the last stop (SPIN_MS) settles. */
-export const SPIN_MS = 1300, FIRST_STOP_MS = 700, STOP_GAP_MS = 150
+export const SPIN_MS = 2200, FIRST_STOP_MS = 1200, STOP_GAP_MS = 250
 /** Once two trophies are visible on a paid spin, each remaining reel stops this far apart. */
-export const ANTICIPATION_GAP_MS = 620
-export const RESULT_MS = 400, BONUS_RESULT_MS = 650, BONUS_WIN_MS = 1150
+export const ANTICIPATION_GAP_MS = 720
+export const RESULT_MS = 850, BONUS_RESULT_MS = 1000, BONUS_WIN_MS = 1600
 /** Trophy highlight + Final de Ouro intro before free spins start on their own. */
 export const BONUS_INTRO_MS = 2100
 
@@ -51,6 +52,7 @@ export function createGolacoEngine(wallet: DemoSessionStore, options: {
     grid: IDLE_GRID, result: null, bonusRemaining: 0, bonusAwarded: 0, streak: 1, bonusTotal: 0, retriggered: 0, free: false,
     stopped: REELS, anticipation: false, completed: 0, error: null })
   let snapshot = initial, pending: GolacoResult | null = null, busy = false, lastTime = 0, freeIndex = 0
+  let timing = slotTiming(false, 'golaco')
   let stops: number[] = []
   const usedIds = new Set<string>(), listeners = new Set<() => void>()
   const publish = (patch: Partial<GolacoSnapshot>) => { snapshot = Object.freeze({ ...snapshot, ...patch }); listeners.forEach(fn => fn()) }
@@ -66,7 +68,7 @@ export function createGolacoEngine(wallet: DemoSessionStore, options: {
     return Object.freeze({ id, stake, free, grid, evaluation: math.evaluate(grid, stake, free ? snapshot.streak : null) })
   }
   function schedule(at: number) {
-    stops = Array.from({ length: REELS }, (_, reel) => at + FIRST_STOP_MS + reel * STOP_GAP_MS)
+    stops = Array.from({ length: REELS }, (_, reel) => at + timing.first + reel * timing.gap)
     return stops[REELS - 1]
   }
   const count = (symbols: readonly GolacoSymbol[], symbol: GolacoSymbol) => symbols.filter(value => value === symbol).length
@@ -84,7 +86,7 @@ export function createGolacoEngine(wallet: DemoSessionStore, options: {
     } else if (!snapshot.anticipation && reel < REELS - 1 &&
       count(result.grid.slice(0, reel + 1).flat(), 'taca') >= config.scatterTrigger - 1) {
       // Reacts to trophies that already landed; the remaining symbols are already fixed.
-      for (let next = reel + 1; next < REELS; next++) stops[next] = stops[next - 1] + ANTICIPATION_GAP_MS
+      for (let next = reel + 1; next < REELS; next++) stops[next] = stops[next - 1] + timing.anticipation
       Object.assign(patch, { anticipation: true, revealAt: stops[REELS - 1] })
     }
     return patch
@@ -138,6 +140,7 @@ export function createGolacoEngine(wallet: DemoSessionStore, options: {
         usedIds.add(id)
         const debit = wallet.debit(stake, { gameId: GOLACO.id, roundId: id })
         if (!debit.ok) { wallet.releaseRound(id); return debit }
+        timing = slotTiming(Boolean(wallet.getSnapshot().session.settings.turbo), 'golaco')
         pending = result; freeIndex = 0
         publish({ phase: 'spinning', seriesId: id, stake, spinAt: at, revealAt: schedule(at),
           stopped: 0, anticipation: false, bonusAwarded: 0, retriggered: 0,
@@ -159,11 +162,11 @@ export function createGolacoEngine(wallet: DemoSessionStore, options: {
         }
         // At most one new free spin per tick; throttled tabs never skip a bonus.
         else if (snapshot.phase === 'result' && at >= snapshot.revealAt +
-          (!snapshot.free ? RESULT_MS : snapshot.result?.evaluation.payout ? BONUS_WIN_MS : BONUS_RESULT_MS)) {
+          (!snapshot.free ? timing.result : snapshot.result?.evaluation.payout ? timing.bonusWin : timing.bonusResult)) {
           if (snapshot.free && snapshot.bonusRemaining > 0) startFree(at)
           else publish({ phase: 'ready' })
         }
-        else if (snapshot.phase === 'bonus-intro' && at >= snapshot.revealAt + BONUS_INTRO_MS) startFree(at)
+        else if (snapshot.phase === 'bonus-intro' && at >= snapshot.revealAt + timing.intro) startFree(at)
       } finally { busy = false }
     },
     continueBonus() {

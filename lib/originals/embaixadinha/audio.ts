@@ -1,3 +1,4 @@
+import type { AudioMix } from '../audio-mix'
 /**
  * Liva Embaixadinha audio — original runtime synthesis (see lib/originals/synth.ts).
  *
@@ -31,6 +32,7 @@ const HOOK: readonly (number | null)[] = [A4, null, D5, null, E5, Fs5, null, E5,
   Fs5, null, E5, D5, null, Cs5, null, A4, B4, null, A5, null, Fs5, null, null, null]
 
 export interface JuggleAudio {
+  setMix(mix: AudioMix): void
   setEnabled(enabled: boolean): void
   unlock(): void
   setVisible(visible: boolean): void
@@ -88,6 +90,7 @@ export function createJuggleAudio(): JuggleAudio {
   }
 
   return {
+    setMix: s.setMix,
     setEnabled(next) { s.setEnabled(next); if (!next) playing = false },
     unlock: () => s.unlock(),
     setVisible: next => s.setVisible(next),

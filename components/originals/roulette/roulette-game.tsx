@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import { useTableAudio } from '../power/use-table-audio'
 import { useCountry } from '@/components/country-context'
 import { DemoSessionProvider, useDemoSession } from '../demo-session'
 import { PlayGameShell } from '../play-game-shell'
@@ -19,8 +20,9 @@ export function RouletteGame({ suppliedEngine, presentationNow }: { suppliedEngi
   const { locale, countryCode } = useCountry(), { wallet, session, storageStatus } = useDemoSession()
   const [engine] = useState(() => suppliedEngine ?? createRouletteEngine(wallet))
   const round = useSyncExternalStore(engine.subscribe, engine.getSnapshot, engine.getServerSnapshot)
+  const audio = useTableAudio('roulette', session.settings.sound, true)
   const [chip, setChip] = useState(1000), [error, setError] = useState<string | null>(null)
-  const audio = useRef<AudioContext | null>(null), opened = useRef(''), completed = useRef(0)
+  const opened = useRef(''), completed = useRef(0)
   const copy = rouletteCopy(locale), ready = round.phase === 'betting', format = (n: number) => formatCredits(n, locale)
   const active = ['closing', 'spinning'].includes(round.phase), result = !active ? round.result : null
   const strongWin = Boolean(result?.bets.some(b => b.won && rouletteBet(b.betId)!.profitOdds >= 8) && result.profit > 0)
@@ -36,39 +38,20 @@ export function RouletteGame({ suppliedEngine, presentationNow }: { suppliedEngi
   }, [round.roundId, round.completed, locale, countryCode])
   useEffect(() => {
     if (!round.roundId || ready) return
-    const soundOn = session.settings.sound, hapticsOn = session.settings.haptics
-    function cue(frequency: number, length = .07, haptic = false) {
-      if (haptic && hapticsOn && typeof navigator.vibrate === 'function') navigator.vibrate(9)
-      const context = audio.current
-      if (!soundOn || !context || context.state !== 'running') return
-      const oscillator = context.createOscillator(), gain = context.createGain()
-      oscillator.frequency.value = frequency; gain.gain.setValueAtTime(.025, context.currentTime)
-      gain.gain.exponentialRampToValueAtTime(.001, context.currentTime + length)
-      oscillator.connect(gain); gain.connect(context.destination); oscillator.start(); oscillator.stop(context.currentTime + length)
-      oscillator.onended = () => { oscillator.disconnect(); gain.disconnect() }
-    }
-    if (round.phase === 'closing') cue(180, .13)
-    if (round.phase === 'settling') cue(430, .08, true)
-    if (round.phase === 'result') cue(round.result?.returned ? 640 : 190, .17)
-    const timers = round.phase === 'spinning' ? [2300, 2850, 3350].map(ms => window.setTimeout(() => cue(750, .025), ms)) : []
+    if (round.phase === 'closing') audio.cue('start')
+    if (round.phase === 'settling') { audio.cue('land'); if(session.settings.haptics && typeof navigator.vibrate === 'function') navigator.vibrate(9) }
+    if (round.phase === 'result') audio.cue(round.result?.returned ? 'win' : 'loss')
+    const timers = round.phase === 'spinning' ? [150,380,650,960,1310,1700,2130,2600,3100,3550].map(ms => window.setTimeout(() => audio.cue('tick'), ms)) : []
     return () => timers.forEach(clearTimeout)
-  }, [round.phase, round.roundId, round.result, ready, session.settings.sound, session.settings.haptics])
-  useEffect(() => () => { void audio.current?.close(); audio.current = null }, [])
+  }, [audio, round.phase, round.roundId, round.result, ready, session.settings.haptics])
   function interaction(result: RouletteResult, kind: 'chip' | 'clear' | 'spin' = 'chip') {
     setError(result.ok ? null : result.reason)
-    if (!result.ok || !session.settings.sound) return
-    try {
-      const context = audio.current ??= new AudioContext()
-      void context.resume().catch(() => {})
-      if (kind !== 'spin') {
-        const oscillator = context.createOscillator(), gain = context.createGain()
-        oscillator.frequency.value = kind === 'clear' ? 160 : 370
-        gain.gain.setValueAtTime(.025, context.currentTime); gain.gain.exponentialRampToValueAtTime(.001, context.currentTime + .06)
-        oscillator.connect(gain); gain.connect(context.destination); oscillator.start(); oscillator.stop(context.currentTime + .06)
-        oscillator.onended = () => { oscillator.disconnect(); gain.disconnect() }
-      }
-    } catch { /* Optional audio never blocks a virtual bet. */ }
+    if (!result.ok) return
+    audio.unlock()
+    if(kind!=='spin') audio.cue(kind==='clear'?'remove':'chip')
   }
+  const [history, setHistory] = useState<number[]>([])
+  useEffect(() => { let seen=engine.getSnapshot().completed; return engine.subscribe(()=>{const next=engine.getSnapshot();if(next.completed>seen&&next.result){seen=next.completed;setHistory(items=>[next.result!.number,...items].slice(0,10))}}) },[engine])
   const controls = <div className={styles.controls}>
     <div className={styles.primaryControls}>
       <label>{copy.chip}<select data-roulette-chip aria-label={copy.chip} value={chip} disabled={!ready} onChange={e => { setChip(Number(e.target.value)); setError(null) }}>
@@ -99,6 +82,7 @@ export function RouletteGame({ suppliedEngine, presentationNow }: { suppliedEngi
           </div>
         </div>
         <RouletteTable round={round} locale={locale} place={id => interaction(engine.place(id, chip))}/>
+        <div className={styles.recent} aria-label={copy.last}><span>{copy.last}</span>{history.map((n,i)=><b key={i} data-color={pocketColor(n)}>{n}</b>)}</div>
       </div>
     </PlayGameShell>
     <div className={styles.details}>
