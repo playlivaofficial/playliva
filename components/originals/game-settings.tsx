@@ -11,7 +11,7 @@ export function GameSettings({slug,ready,roundActive,haptics,fullscreen,onFullsc
  const {locale}=useCountry(),{wallet,session}=useDemoSession(),t=settingsCopy(locale)
  const dialog=useRef<HTMLDialogElement>(null),trigger=useRef<HTMLButtonElement>(null)
  const [tab,setTab]=useState<'settings'|'rules'|'paytable'>('settings'),[help,setHelp]=useState<GameHelp|null>(null),[failed,setFailed]=useState(false)
- const slot=slug==='capybara-gold'||slug==='golaco',mix=audioPreferences(session.settings)
+ const slot=slug==='capybara-gold'||slug==='golaco'||slug==='carnaval-gold',mix=audioPreferences(session.settings)
  // Release the top layer at settlement so the existing affiliate offer can own focus.
  useEffect(()=>{if(!roundActive&&dialog.current?.open){dialog.current.close();trigger.current?.focus()}},[roundActive])
  async function info(next:'rules'|'paytable') {setTab(next);if(help)return;setFailed(false);try{const {loadGameHelp}=await import('@/lib/originals/game-help');setHelp(await loadGameHelp(slug,locale))}catch{setFailed(true)}}

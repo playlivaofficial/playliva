@@ -1,5 +1,6 @@
 'use client'
 import Image from 'next/image'
+import { ThreeGameFeature } from './three-game-feature'
 import { ArrowRight, Play } from 'lucide-react'
 import { useCountry } from '@/components/country-context'
 import { LocaleLink } from '@/components/locale-link'
@@ -36,5 +37,6 @@ export function CapybaraDiscoverySection() {
       <LocaleLink href="/play" className={styles.hubLink}>{shared.hubLink}<ArrowRight size={17} aria-hidden="true" /></LocaleLink></div>
     <CapybaraFeature surface="category" />
     <GolacoFeature surface="category" />
+    <ThreeGameFeature kind="carnaval-gold" surface="category" />
   </section>
 }

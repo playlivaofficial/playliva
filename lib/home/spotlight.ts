@@ -2,6 +2,7 @@ import { RAIO, RAIO_POSTER } from '@/lib/originals/raio/definition'
 import { BRASIL21, BRASIL21_POSTER } from '@/lib/originals/brasil21/definition'
 import { powerCopy } from '@/lib/originals/power-copy'
 import type { Locale } from '@/lib/types'
+import { THREE_GAMES, gamePoster } from '@/lib/originals/three-game-definitions'
 import { ISLAND_CRASH } from '@/lib/originals/crash/definition'
 import { CAPYBARA_GOLD } from '@/lib/originals/capybara/definition'
 import { LIVA_BLACKJACK } from '@/lib/originals/blackjack/definition'
@@ -45,6 +46,7 @@ const byLocale = <T,>(pick: (locale: Locale) => T): Record<Locale, T> =>
   Object.fromEntries(locales.map((locale) => [locale, pick(locale)])) as Record<Locale, T>
 
 export const SPOTLIGHT_GAMES: readonly SpotlightGame[] = [
+  ...THREE_GAMES.map(game=>({id:game.id,slug:game.slug,playPath:`/play/${game.slug}`,title:game.title,category:byLocale(locale=>game.category==='crash'?'Crash':game.category==='slots'?'Slots':locale==='pt-BR'?'Jogos instantâneos':locale==='es-MX'?'Juegos instantáneos':'Instant Games'),poster:gamePoster(game.slug),posterAlt:game.title,posterHasTitle:true})),
   {
     id: ISLAND_CRASH.id, slug: ISLAND_CRASH.slug, playPath: ISLAND_CRASH_PLAY_PATH,
     title: byLocale(() => 'Island Crash'),

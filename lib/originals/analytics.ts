@@ -6,10 +6,10 @@ import { isDemoIdentifier } from './session'
 export type FreePlayEvent = 'demo_table_action' | 'demo_table_feature' | 'demo_table_result' | 'free_play_open' | 'demo_round_start' | 'demo_round_complete' |
   'demo_balance_reset' | 'play_real_view' | 'play_real_click' |
   'demo_cashout' | 'demo_crash' | 'demo_slot_win' | 'demo_bonus_trigger' | 'demo_free_spin_start' |
-  'demo_bonus_complete' | 'demo_streak_increase' | 'demo_sound_toggle'
+  'demo_bonus_complete' | 'demo_streak_increase' | 'demo_sound_toggle' | 'demo_bonus_retrigger'
 const FREE_PLAY_EVENTS: readonly FreePlayEvent[] = ['free_play_open', 'demo_round_start', 'demo_round_complete',
   'demo_table_action', 'demo_table_feature', 'demo_table_result', 'demo_balance_reset', 'play_real_view', 'play_real_click', 'demo_cashout', 'demo_crash', 'demo_slot_win',
-  'demo_bonus_trigger', 'demo_free_spin_start', 'demo_bonus_complete', 'demo_streak_increase', 'demo_sound_toggle']
+  'demo_bonus_trigger', 'demo_free_spin_start', 'demo_bonus_complete', 'demo_streak_increase', 'demo_sound_toggle', 'demo_bonus_retrigger']
 export interface FreePlayEventContext {
   originalId: string
   originalSlug: string
@@ -24,6 +24,8 @@ export interface FreePlayEventContext {
   spinsAwarded?: string
   streakLevel?: string
   soundState?: string
+  rows?: string
+  risk?: 'low' | 'medium' | 'high'
 }
 /** Explicit fields only: no balance/history, persistent guest identifier, query string or arbitrary payload. */
 export function trackFreePlay(event: FreePlayEvent, context: FreePlayEventContext): void {
@@ -37,6 +39,8 @@ export function trackFreePlay(event: FreePlayEvent, context: FreePlayEventContex
     roundId: context.roundId, operatorSlug: context.operatorSlug,
     multiplierBucket: context.multiplierBucket, winTier: context.winTier, spinsAwarded: context.spinsAwarded,
     streakLevel: context.streakLevel, soundState: context.soundState,
+    rows: ['8', '12', '16'].includes(context.rows ?? '') ? context.rows : undefined,
+    risk: ['low', 'medium', 'high'].includes(context.risk ?? '') ? context.risk : undefined,
     url: `/${localeToSegment(context.locale)}/play/${context.originalSlug}`,
   })
 }

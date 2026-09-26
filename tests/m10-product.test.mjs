@@ -141,7 +141,7 @@ test('M10: footer and trust display have no replacement characters in any suppor
 // Raio / Brasil21 add isolated engines, shared new-table copy/audio and three analytics events.
 // Existing engines, wallet and renderers in the protected roots are unchanged.
 // Casino UX V2 refreshes this presentation snapshot; casino-ux.test separately freezes production math.
-test('Originals: approved Casino UX V2 presentation and wallet snapshot', async () => {
+test('Originals: three-game additions and existing Casino UX V2 snapshot', async () => {
   const roots = ['lib/originals', 'components/originals/crash', 'components/originals/capybara', 'components/originals/blackjack', 'components/originals/roulette', 'components/originals/mines']
   const paths = []
   async function walk(path) {
@@ -154,6 +154,6 @@ test('Originals: approved Casino UX V2 presentation and wallet snapshot', async 
   for (const path of roots) await walk(path)
   const hash = createHash('sha256')
   for (const path of paths.sort()) hash.update(path + '\0' + (await readFile(new URL('../' + path, import.meta.url), 'utf8')).replace(/\r\n/g, '\n') + '\0')
-  assert.equal(paths.length, 88)
-  assert.equal(hash.digest('hex'), 'c2ff223f192e3d6a0bbb582077ebebe78b576b065971ab359d02ffcbb647ccab')
+  assert.equal(paths.length, 99)
+  assert.equal(hash.digest('hex'), 'bf6b813aea273b84ef1c7d82265e9f2e454ce304be2ec0a957e5ab12ff026797')
 })

@@ -27,7 +27,7 @@ test('one Original, complete localized copy, existing indexed routes and lightwe
   assert.deepEqual([info.format, info.width, info.height], ['webp', 1200, 675])
   for (const path of ['components/originals/island-crash-feature.tsx', 'lib/originals/discovery.ts']) {
     const source = await readFile(new URL(`../${path}`, import.meta.url), 'utf8')
-    assert.doesNotMatch(source, /import .*island-scene|import .*crash\/engine|import .*three|\.glb/)
+    assert.doesNotMatch(source, /import .*island-scene|import .*crash\/engine|import .*from .three[\x27\x22/]|\.glb/)
   }
   const feature = await readFile(new URL('../components/originals/island-crash-feature.tsx', import.meta.url), 'utf8')
   assert.equal((feature.match(/prefetch=\{false\}/g) ?? []).length, 2, 'poster and Play Free never prefetch the game payload')

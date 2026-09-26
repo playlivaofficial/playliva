@@ -22,9 +22,9 @@ test('Crash has complete original copy and reciprocal canonical/hreflang for all
     assert.ok(metadata.alternates.languages['x-default'].endsWith('/pt-br/play/crash'))
   }
 })
-test('only the nine implemented Originals subroutes enter the sitemap', () => {
+test('only the twelve implemented Originals subroutes enter the sitemap', () => {
   const urls = sitemapModule.default().map(entry => new URL(entry.url).pathname).filter(path => /\/play\//.test(path))
-  assert.deepEqual(urls.sort(), ['en', 'es-mx', 'pt-br'].flatMap(locale => ['blackjack', 'capybara-gold', 'crash', 'golaco', 'liva-21-brasil', 'liva-ginga', 'liva-raio', 'mines', 'roulette'].map(slug => `/${locale}/play/${slug}`)))
+  assert.deepEqual(urls.sort(), ['en', 'es-mx', 'pt-br'].flatMap(locale => ['blackjack', 'capybara-gold', 'carnaval-gold', 'crash', 'golaco', 'liva-21-brasil', 'liva-ginga', 'liva-raio', 'mines', 'roulette', 'samba-drop', 'skuptu-levanta'].map(slug => `/${locale}/play/${slug}`)))
 })
 test('manual auto cashout input supports localized decimals without silently rounding', () => {
   assert.equal(parseAutoInput('2.47'), 247)
@@ -43,7 +43,7 @@ test('renderer imports and character URLs stay inside the Crash integration', as
   assert.match(action, /disabled=\{round.phase !== 'ready' \|\| !loaded\}/)
   for (const path of ['app/layout.tsx', 'app/[locale]/layout.tsx', 'components/play-view.tsx']) {
     const source = await readFile(new URL(`../${path}`, import.meta.url), 'utf8')
-    assert.doesNotMatch(source, /island-scene|three|originals\/crash/)
+    assert.doesNotMatch(source, /island-scene|from .three[\x27\x22/]|originals\/crash/)
   }
 })
 test('the route-only action surface is never covered by the fixed mobile nav', async () => {

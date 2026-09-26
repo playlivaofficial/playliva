@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import { ThreeGameFeature } from './three-game-feature'
 import { ArrowRight, Gamepad2, Play } from 'lucide-react'
 import { useCountry } from '@/components/country-context'
 import { LocaleLink } from '@/components/locale-link'
@@ -58,6 +59,7 @@ export function OriginalsDiscoverySection({ surface }: { surface: 'home' | 'cate
       <div className={surface === 'home' ? styles.homeGrid : undefined}>
       <IslandCrashFeature surface={surface} />
       <EmbaixadinhaFeature surface={surface} />
+      <ThreeGameFeature kind="skuptu-levanta" surface={surface} />
       {surface === 'home' && <CapybaraFeature surface="home" />}
       {surface === 'home' && <GolacoFeature surface="home" />}
       {surface === 'home' && <BlackjackFeature surface="home" />}
