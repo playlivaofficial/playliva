@@ -1,9 +1,12 @@
+import { CrossDiscovery } from '@/components/discovery/related'
+import { JsonLd } from '@/components/json-ld'
+import { entitySchema } from '@/lib/discovery/schema'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { GAMES, getGame } from '@/lib/data'
 import { getGameContent, getCategoryName } from '@/lib/content'
 import { GameDetailView } from '@/components/game-detail-view'
-import { pageMetadata } from '@/lib/seo'
+import { pageMetadata } from '@/lib/discovery/seo'
 import { getGameOgImage } from '@/lib/game-artwork'
 import {
   DEFAULT_LOCALE_SEGMENT,
@@ -56,8 +59,8 @@ export default async function GamePage({
 }) {
   const { slug, locale } = await params
   const reference = getReferenceGame(slug)
-  if (reference) return <ReferenceGameView game={reference} locale={catalogLocale(locale)} />
+  if (reference) return <><JsonLd data={entitySchema(slug, isLocaleSegment(locale) ? locale : DEFAULT_LOCALE_SEGMENT)!} /><ReferenceGameView game={reference} locale={catalogLocale(locale)} /><CrossDiscovery slug={slug} segment={locale}/></>
   const game = getGame(slug)
   if (!game) notFound()
-  return <GameDetailView game={game} />
+  return <><JsonLd data={entitySchema(slug, isLocaleSegment(locale) ? locale : DEFAULT_LOCALE_SEGMENT)!} /><GameDetailView game={game} /><CrossDiscovery slug={slug} segment={locale}/></>
 }

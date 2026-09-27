@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { CategoryPageView } from '@/components/category-page-view'
 import { getCategoryContent } from '@/lib/content'
-import { pageMetadata } from '@/lib/seo'
+import { pageMetadata } from '@/lib/discovery/seo'
 import {
   DEFAULT_LOCALE_SEGMENT,
   isLocaleSegment,

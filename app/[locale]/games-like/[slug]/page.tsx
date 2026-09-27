@@ -1,10 +1,11 @@
+import { AlternativeFormats } from '@/components/discovery/alternatives'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { GAMES, getGame } from '@/lib/data'
 import { GamesLikeView } from '@/components/games-like-view'
 import { getGameContent } from '@/lib/content'
 import { getGameOgImage } from '@/lib/game-artwork'
-import { pageMetadata } from '@/lib/seo'
+import { pageMetadata } from '@/lib/discovery/seo'
 import {
   DEFAULT_LOCALE_SEGMENT,
   isLocaleSegment,
@@ -57,5 +58,5 @@ export default async function GamesLikePage({
   if (reference) return <ReferenceReadingView list={reference} locale={catalogLocale(locale)} />
   const game = getGame(slug)
   if (!game) notFound()
-  return <GamesLikeView game={game} />
+  return <><GamesLikeView game={game} /><AlternativeFormats slug={slug} segment={locale}/></>
 }

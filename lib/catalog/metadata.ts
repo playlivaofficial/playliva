@@ -1,5 +1,5 @@
 import { DEFAULT_LOCALE_SEGMENT, isLocaleSegment, segmentToLocale } from '@/lib/locale'
-import { pageMetadata } from '@/lib/seo'
+import { pageMetadata } from '@/lib/discovery/seo'
 import { catalogCopy } from './copy'
 import { getReferenceGame, getReferenceProvider, REFERENCE_GAMES } from './index'
 import { getReferenceComparison, getReferenceReadingList } from './editorial'

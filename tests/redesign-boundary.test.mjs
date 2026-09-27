@@ -21,6 +21,9 @@ import { createHash } from 'node:crypto'
 // m12-hardening tests verify the added behavior. No engine snapshot is rebased.
 // Approved Liva Ginga migration rebases only the sitemap slug in this fixture.
 // Raio / Brasil21 rebase only the additive table-event allowlist and six localized sitemap entries.
+// SEO Discovery V2 rebases only tracking.ts (three consented discovery event names)
+// and sitemap.ts (shared quality policy, same 313 canonical URLs). Routing,
+// commercial records, consent filtering and all engine hashes stay protected.
 test('redesign: protected outbound infrastructure remains unchanged except authorized Betsson play-real files', async () => {
   const expected = JSON.parse(await readFile(new URL('./fixtures/redesign-protected.json', import.meta.url), 'utf8'))
   for (const [path, hash] of Object.entries(expected)) {

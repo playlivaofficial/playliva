@@ -4,7 +4,7 @@ import { getGameList, getGameById } from '@/lib/data'
 import { getGameListContent } from '@/lib/content'
 import { BestListView } from '@/components/best-list-view'
 import { GAME_LISTS } from '@/lib/data'
-import { pageMetadata } from '@/lib/seo'
+import { pageMetadata } from '@/lib/discovery/seo'
 import {
   DEFAULT_LOCALE_SEGMENT,
   isLocaleSegment,

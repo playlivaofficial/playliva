@@ -35,7 +35,6 @@ export function HomePageClient() {
   return (
     <>
       <Hero />
-      <OriginalsDiscoverySection surface="home" />
 
       {/* Explore by game type */}
       <Section id="game-types">
@@ -70,6 +69,8 @@ export function HomePageClient() {
           ))}
         </div>
       </Section>
+
+      <OriginalsDiscoverySection surface="home" />
 
       <Section className="pt-4">
         <div className={styles.trust} data-discovery-explainer>

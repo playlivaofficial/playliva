@@ -157,8 +157,9 @@ test('M11: provider pages have documented overviews, category links and their ow
   for (const [locale, segment] of locales) for (const provider of PROVIDERS) {
     const dom = render(locale, segment, React.createElement(views.ProviderView, { providerId: provider.id, locale })), doc = dom.window.document
     assert.ok(doc.body.textContent.includes(provider.overview[locale]))
-    const count = REFERENCE_GAMES.filter(game => game.providerId === provider.id).length
-    assert.equal(doc.querySelectorAll('[data-reference-card]').length, Math.min(12, count))
+    const games = catalogSummaries(locale).filter(game => game.providerId === provider.id)
+    const count = games.length
+    assert.equal(doc.querySelectorAll('[data-provider-card]').length, Math.min(12, count))
     assert.ok(doc.querySelector('[data-betsson-banner="provider"] a[href^="/go"]'))
     assert.equal(doc.querySelector('a[href*="/where-to-play/"]'), null)
     dom.window.close()

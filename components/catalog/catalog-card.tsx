@@ -4,8 +4,8 @@ import type { CatalogSummary } from '@/lib/catalog/types'
 import { CatalogArtwork } from './catalog-artwork'
 import styles from '@/components/product-design.module.css'
 
-export function CatalogCard({ game, readLabel }: { game: CatalogSummary; readLabel: string }) {
-  return <LocaleLink href={`/games/${game.slug}`} className={styles.gameCard} data-provider-card={game.slug} data-reference-card={game.reference || undefined}>
+export function CatalogCard({ game, readLabel }: { game: CatalogSummary & { href?: string; kind?: 'provider' | 'original' }; readLabel: string }) {
+  return <LocaleLink href={game.href ?? `/games/${game.slug}`} prefetch={false} data-original-card={game.kind === 'original' || undefined} className={styles.gameCard} data-provider-card={game.slug} data-reference-card={game.reference || undefined}>
     <div className={styles.gameArt}><CatalogArtwork game={game} /></div>
     <div className={styles.gameBody}>
       <small>{game.provider} · {game.categoryLabel}</small><h3>{game.title}</h3><p>{game.summary}</p>

@@ -17,14 +17,14 @@ export const PROVIDERS: ReferenceProvider[] = [
     'es-MX': 'Los formatos de Evolution representados aquí incluyen mesas de cartas en vivo, dados físicos, ruleta y ruedas con presentador. Las fichas distinguen presentación de estudio y funciones aleatorias adicionales, y separan las cartas de baccarat de los dados de Bac Bo.',
   } },
   { id: 'smartsoft', name: 'SmartSoft', source: 'https://www.smartsoftgaming.com/', overview: {
-    en: 'The SmartSoft references focus on two crash presentations: Balloon’s ascending balloon and CarX’s moving car. CarX also documents an endpoint-range mode. A change in scenery or mode is not evidence that a round endpoint can be predicted.',
-    'pt-BR': 'As fichas da SmartSoft se concentram em duas apresentações crash: o balão ascendente de Balloon e o carro de CarX. CarX também documenta um modo de faixa de encerramento. Mudar o cenário ou o modo não torna o fim da rodada previsível.',
-    'es-MX': 'Las fichas de SmartSoft se centran en dos presentaciones crash: el globo ascendente de Balloon y el automóvil de CarX. CarX también documenta un modo de rango final. Cambiar el escenario o el modo no vuelve predecible el final de la ronda.',
+    en: 'Alongside JetX, the SmartSoft catalog documents two further crash presentations: Balloon’s ascending balloon and CarX’s moving car. CarX also documents an endpoint-range mode. A change in scenery or mode is not evidence that a round endpoint can be predicted.',
+    'pt-BR': 'Além de JetX, o catálogo da SmartSoft documenta duas outras apresentações crash: o balão ascendente de Balloon e o carro de CarX. CarX também documenta um modo de faixa de encerramento. Mudar o cenário ou o modo não torna o fim da rodada previsível.',
+    'es-MX': 'Además de JetX, el catálogo de SmartSoft documenta otras dos presentaciones crash: el globo ascendente de Balloon y el automóvil de CarX. CarX también documenta un modo de rango final. Cambiar el escenario o el modo no vuelve predecible el final de la ronda.',
   } },
   { id: 'spribe', name: 'SPRIBE', source: 'https://spribe.co/games', overview: {
-    en: 'This reference collection covers SPRIBE’s Dice and thirty-six-number Keno. One compares a numerical result with a threshold; the other compares selected numbers with a draw. Neither uses the continuously rising presentation of a crash game.',
-    'pt-BR': 'Esta coleção documenta Dice e o Keno de trinta e seis números da SPRIBE. O primeiro compara um resultado numérico com um limite; o segundo compara números selecionados com um sorteio. Nenhum usa a apresentação de crescimento contínuo de um jogo crash.',
-    'es-MX': 'Esta colección documenta Dice y el Keno de treinta y seis números de SPRIBE. El primero compara un resultado numérico con un límite; el segundo compara números seleccionados con un sorteo. Ninguno utiliza la presentación de crecimiento continuo de un juego crash.',
+    en: 'This collection covers SPRIBE’s Aviator, Mines, Plinko, Dice and thirty-six-number Keno. Dice and Keno use distinct numerical mechanics. One compares a numerical result with a threshold; the other compares selected numbers with a draw. Neither uses the continuously rising presentation of a crash game.',
+    'pt-BR': 'Esta coleção reúne Aviator, Mines, Plinko, Dice e o Keno de trinta e seis números da SPRIBE. Dice e Keno usam mecânicas numéricas distintas. O primeiro compara um resultado numérico com um limite; o segundo compara números selecionados com um sorteio. Nenhum usa a apresentação de crescimento contínuo de um jogo crash.',
+    'es-MX': 'Esta colección reúne Aviator, Mines, Plinko, Dice y el Keno de treinta y seis números de SPRIBE. Dice y Keno utilizan mecánicas numéricas distintas. El primero compara un resultado numérico con un límite; el segundo compara números seleccionados con un sorteo. Ninguno utiliza la presentación de crecimiento continuo de un juego crash.',
   } },
 ]
 export const getReferenceProvider = (id: string) => PROVIDERS.find(provider => provider.id === id)
