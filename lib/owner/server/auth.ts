@@ -5,8 +5,10 @@ import { resolve } from 'node:path'
 import { localEnabled, ownerDirectory, persistenceMode, readOwnerState, updateOwnerState } from './store'
 
 const scrypt = promisify(nodeScrypt)
-export const SESSION_SECONDS = 8 * 60 * 60
+export const SESSION_SECONDS = 30 * 24 * 60 * 60
+export const SESSION_REFRESH_SECONDS = 24 * 60 * 60
 export const ownerCookie = () => localEnabled() ? 'playliva_owner_local' : '__Host-playliva_owner'
+export const sessionCookieOptions = (expiresAt: number) => ({ httpOnly: true, secure: !localEnabled(), sameSite: 'strict' as const, path: '/', expires: new Date(expiresAt), maxAge: Math.max(0, Math.floor((expiresAt - Date.now()) / 1000)) })
 export const hashToken = (token: string) => createHash('sha256').update(token).digest('hex')
 export async function passwordConfig(): Promise<string | null> {
   if (process.env.OWNER_PASSWORD_HASH) return process.env.OWNER_PASSWORD_HASH
@@ -28,6 +30,27 @@ export async function validSession(token?: string) {
     const session = (await readOwnerState()).sessions[hashToken(token)]
     return Boolean(session && session.expiresAt > Date.now() && session.fingerprint === hashToken(config))
   } catch { return false }
+}
+/** Renew only an existing, unexpired session. CAS rechecks prevent logout resurrection. */
+export async function refreshSession(token?: string): Promise<{ expiresAt: number; renewed: boolean } | null> {
+  if (!token || !/^[a-f0-9]{64}$/.test(token)) return null
+  const config = await passwordConfig()
+  if (!config) return null
+  const id = hashToken(token), fingerprint = hashToken(config)
+  const current = (await readOwnerState()).sessions[id]
+  if (!current || current.expiresAt <= Date.now() || current.fingerprint !== fingerprint) return null
+  const due = (expiresAt: number) => expiresAt <= Date.now() + (SESSION_SECONDS - SESSION_REFRESH_SECONDS) * 1000
+  if (!due(current.expiresAt)) return { expiresAt: current.expiresAt, renewed: false }
+  return updateOwnerState(state => {
+    const session = state.sessions[id]
+    if (!session || session.expiresAt <= Date.now() || session.fingerprint !== fingerprint) return null
+    if (!due(session.expiresAt)) return { expiresAt: session.expiresAt, renewed: false }
+    session.expiresAt = Date.now() + SESSION_SECONDS * 1000
+    return { expiresAt: session.expiresAt, renewed: true }
+  })
+}
+export async function revokeSession(token?: string) {
+  if (token && /^[a-f0-9]{64}$/.test(token)) await updateOwnerState(state => { delete state.sessions[hashToken(token)] })
 }
 export async function login(password: string) {
   const config = await passwordConfig()
