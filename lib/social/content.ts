@@ -13,7 +13,7 @@ const UTM_VALUE = /^[a-z0-9][a-z0-9_.-]{0,99}$/
 const SITE = 'https://www.playliva.com'
 const GAME_SLUGS = Object.freeze(Object.keys(ORIGINAL_ROUTES) as OriginalSocialSlug[])
 
-export function trackedTargetUrl(item: Pick<SocialContentItem, 'targetUrl' | 'utmSource' | 'utmMedium' | 'utmCampaign' | 'utmContent'>): string {
+export function trackedTargetUrl(item: { targetUrl: string; utmSource: string; utmMedium: string; utmCampaign: string; utmContent: string }): string {
   const url = new URL(item.targetUrl)
   if (url.origin !== SITE) throw new Error('Social targets must stay on www.playliva.com')
   for (const [key, value] of Object.entries({

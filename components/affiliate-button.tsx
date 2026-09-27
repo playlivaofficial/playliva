@@ -1,12 +1,14 @@
 'use client'
 
-import { useEffect, useRef, type ComponentProps } from 'react'
+import { campaignForGoHref } from '@/lib/affiliates/click-context'
+import { useRef, type ComponentProps } from 'react'
 import { ArrowUpRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { buildGoHref, resolveDestination } from '@/lib/affiliate'
 import { getGameById } from '@/lib/data'
 import { track, type PageType, type TrackPayload } from '@/lib/tracking'
-import { attributionPayload } from '@/lib/attribution'
+import { usePathname } from 'next/navigation'
+import { useCommercialImpression } from '@/components/analytics/use-commercial-impression'
 import { useCountry } from '@/components/country-context'
 import type { CountryCode } from '@/lib/types'
 
@@ -55,13 +57,13 @@ export function AffiliateButton({
   country?: CountryCode
   children: React.ReactNode
   showIcon?: boolean
-  /** Central campaign context: adds promo fields + preserved attribution and mirrors the impression as `offer_impression`. */
+  /** Central campaign context: adds public campaign fields. */
   promo?: Pick<TrackPayload, 'promoId' | 'brand' | 'surface'>
 } & Omit<ComponentProps<typeof Button>, 'onClick' | 'render'>) {
   const { marketCode, locale } = useCountry()
   const country = countryProp ?? marketCode
   const buttonRef = useRef<HTMLAnchorElement>(null)
-  const hasFiredImpression = useRef(false)
+  const route = usePathname()
   const resolvedGame = gameSlug ?? (gameId ? getGameById(gameId)?.slug : undefined)
   const eligible = country !== null && country === marketCode && Boolean(resolveDestination({
     operatorSlug, offerId, country, category, gameSlug: resolvedGame,
@@ -82,47 +84,24 @@ export function AffiliateButton({
     placement: ctaLocation,
   })
 
-  useEffect(() => {
-    const node = buttonRef.current
-    if (!node || hasFiredImpression.current) return
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((entry) => entry.isIntersecting) && !hasFiredImpression.current) {
-          hasFiredImpression.current = true
-          const payload: TrackPayload = {
-            country: country ?? undefined,
-            language: locale,
-            pageType,
-            pageSlug,
-            gameId,
-            matchId,
-            category,
-            operatorId,
-            operatorSlug,
-            offerId,
-            placement: ctaLocation,
-            ...(promo ? { ...promo, ...attributionPayload() } : {}),
-          }
-          track('affiliate_impression', payload)
-          if (promo) track('offer_impression', payload)
-          observer.disconnect()
-        }
-      },
-      { threshold: 0.5 },
-    )
-    observer.observe(node)
-    return () => observer.disconnect()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  useCommercialImpression(buttonRef, `${route}:${country}:${locale}:${operatorSlug}:${offerId}:${ctaLocation}`, () => {
+    track('affiliate_impression', {
+      campaignKey: campaignForGoHref(href),
+      country: country ?? undefined, language: locale, pageType, pageSlug,
+      gameId, gameSlug: resolvedGame, matchId, category, operatorId, operatorSlug,
+      offerId, placement: ctaLocation, ...promo,
+    })
+  })
 
   const handleClick = () => {
     track('affiliate_click', {
+      campaignKey: campaignForGoHref(href),
       country: country ?? undefined,
       language: locale,
       pageType,
       pageSlug,
       gameId,
+      gameSlug: resolvedGame,
       matchId,
       category,
       operatorId,
@@ -131,7 +110,7 @@ export function AffiliateButton({
       ctaLocation,
       placement: ctaLocation,
       destination: offerId ?? operatorSlug,
-      ...(promo ? { ...promo, ...attributionPayload() } : {}),
+      ...promo,
     })
   }
 

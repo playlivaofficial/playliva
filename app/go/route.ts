@@ -3,6 +3,8 @@ import { affiliateFallbackPath, resolveDestination } from '@/lib/affiliate'
 import { ANALYTICS_COOKIE } from '@/lib/consent'
 import { COUNTRIES } from '@/lib/data'
 import type { CountryCode } from '@/lib/types'
+import { visitorMarket } from '@/lib/visitor-market'
+import { serverDestination } from '@/lib/affiliates/server-destinations'
 
 /**
  * `/go` is disallowed in `robots.ts`, but that only stops crawling — a
@@ -14,6 +16,7 @@ import type { CountryCode } from '@/lib/types'
 function redirect(url: string) {
   const response = NextResponse.redirect(url, { status: 302 })
   response.headers.set('X-Robots-Tag', 'noindex, nofollow')
+  response.headers.set('Cache-Control', 'private, no-store')
   return response
 }
 
@@ -43,7 +46,7 @@ export async function GET(request: NextRequest) {
     cookieLocale: request.cookies.get('playliva_locale')?.value,
   }), origin).toString()
 
-  if (!validCountry) {
+  if (!validCountry || visitorMarket(request.headers) !== validCountry) {
     return redirect(fallback)
   }
 
@@ -74,5 +77,6 @@ export async function GET(request: NextRequest) {
 
   // Partner attribution is functional without analytics. Optional measurement
   // requires consent; do not duplicate client events in unconditional server logs.
-  return redirect(destination.url)
+  const target = serverDestination(destination.url)
+  return redirect(target ?? fallback)
 }

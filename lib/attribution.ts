@@ -3,7 +3,7 @@
  *
  * Social posts (TikTok, Instagram Reels, YouTube Shorts) link straight to an
  * Original gameplay route with UTM parameters. Those parameters are captured
- * once per browser session and attached to consented promo/affiliate events,
+ * for the active visit and attached to consented promo/affiliate events,
  * so a landing on `/pt-br/play/crash?utm_source=tiktok` keeps its source all
  * the way to the outbound affiliate click without forcing traffic through the
  * homepage.
@@ -14,6 +14,8 @@
  */
 
 export const ATTRIBUTION_STORAGE_KEY = 'playliva.attribution'
+export const ATTRIBUTION_IDLE_MS = 30 * 60 * 1000
+let lastLocation: string | undefined
 
 export const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'] as const
 export type UtmKey = (typeof UTM_KEYS)[number]
@@ -75,7 +77,8 @@ function decode(raw: string | null): Attribution | null {
   try {
     const value = JSON.parse(raw)
     const trafficSource = sanitizeAttributionValue(value?.trafficSource)
-    if (!trafficSource || typeof value.utm !== 'object' || value.utm === null) return null
+    if (!trafficSource || typeof value.utm !== 'object' || value.utm === null ||
+      !Number.isFinite(value.touchedAt) || Date.now() - value.touchedAt > ATTRIBUTION_IDLE_MS || value.touchedAt > Date.now()) return null
     const utm: Partial<Record<UtmKey, string>> = {}
     for (const key of UTM_KEYS) {
       const item = sanitizeAttributionValue(value.utm[key])
@@ -88,33 +91,35 @@ function decode(raw: string | null): Attribution | null {
 }
 
 /**
- * Capture the landing attribution once per browser session. The first
- * navigation with UTMs or an external referrer wins; later in-app navigation
- * never overwrites it. Safe to call repeatedly.
+ * Preserve attribution across internal navigation for 30 minutes of inactivity.
+ * A new explicit campaign landing replaces the prior campaign. An unchanged
+ * address cannot revive an expired campaign in a tab left open overnight.
  */
 export function captureAttribution(): Attribution | null {
   if (typeof window === 'undefined') return null
   let stored: Attribution | null = null
   try { stored = decode(window.sessionStorage.getItem(ATTRIBUTION_STORAGE_KEY)) } catch { /* storage unavailable */ }
-  const landing = parseAttribution(window.location.search, document.referrer, window.location.hostname)
-  // Only an explicit UTM landing may replace a stored referrer-only classification.
-  const next = !stored || (landing && Object.keys(landing.utm).length > 0 && Object.keys(stored.utm).length === 0)
-    ? landing ?? stored
-    : stored
-  if (next && next !== stored) {
-    try { window.sessionStorage.setItem(ATTRIBUTION_STORAGE_KEY, JSON.stringify(next)) } catch { /* session only */ }
-  }
-  return next ?? { trafficSource: 'direct', utm: {} }
+  const changed = lastLocation !== window.location.href
+  const landing = changed ? parseAttribution(window.location.search, lastLocation === undefined ? document.referrer : null, window.location.hostname) : null
+  lastLocation = window.location.href
+  const next = landing ?? stored ?? { trafficSource: 'direct', utm: {} }
+  try { window.sessionStorage.setItem(ATTRIBUTION_STORAGE_KEY, JSON.stringify({ ...next, touchedAt: Date.now() })) } catch { /* session only */ }
+  return next
 }
 
 /** Read the preserved attribution without touching the current URL. */
 export function getAttribution(): Attribution {
   if (typeof window === 'undefined') return { trafficSource: 'direct', utm: {} }
   try {
-    return decode(window.sessionStorage.getItem(ATTRIBUTION_STORAGE_KEY)) ?? captureAttribution() ?? { trafficSource: 'direct', utm: {} }
+    return captureAttribution() ?? { trafficSource: 'direct', utm: {} }
   } catch {
     return { trafficSource: 'direct', utm: {} }
   }
+}
+
+export function clearAttribution() {
+  try { window.sessionStorage.removeItem(ATTRIBUTION_STORAGE_KEY) } catch { /* unavailable */ }
+  lastLocation = undefined
 }
 
 /** Flatten for the analytics allow-list: `utm_source` becomes `utmSource`, etc. */

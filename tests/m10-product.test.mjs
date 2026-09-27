@@ -28,7 +28,7 @@ const locales = [['en', 'en'], ['pt-BR', 'pt-br'], ['es-MX', 'es-mx']]
 function render(locale, segment, child) {
   const tree = React.createElement(AppRouterContext.Provider, { value: { push() {}, prefetch() {} } },
     React.createElement(PathnameContext.Provider, { value: `/${segment}` },
-      React.createElement(countryModule.CountryProvider, { initialLocale: locale }, child)))
+      React.createElement(countryModule.CountryProvider, { initialLocale: locale, visitorCountryCode: 'BR' }, child)))
   return new JSDOM(renderToStaticMarkup(tree))
 }
 
@@ -42,7 +42,7 @@ test('M10: provider identity, editorial facts, guide anchors and indexed interna
     assert.ok(doc.querySelector('#overview').textContent.includes(copy.whatIsIt ?? copy.about))
     for (const step of copy.howItWorks ?? []) assert.ok(doc.querySelector('#overview').textContent.includes(step))
     assert.ok(doc.querySelector(`a[href="/${segment}/games-like/${slug}"]`))
-    assert.ok(doc.querySelector(`a[href="/${segment}/where-to-play/${slug}"]`))
+    assert.equal(Boolean(doc.querySelector(`a[href="/${segment}/where-to-play/${slug}"]`)), segment === 'pt-br', 'Only published locale guides are linked')
     for (const link of doc.querySelectorAll('nav[aria-label] a[href^="#"]')) assert.ok(doc.querySelector(link.getAttribute('href')))
     assert.ok(doc.querySelector('a[href="#where-to-play"]'))
     assert.ok(doc.querySelector('#where-to-play'))

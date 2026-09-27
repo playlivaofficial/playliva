@@ -44,6 +44,8 @@ import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsore
 import { ProviderPlayRealCta } from '@/components/affiliates/provider-play-real-cta'
 import { RtpFact } from '@/components/rtp-fact'
 import { EditorialByline } from '@/components/editorial-byline'
+import { isWhereToPlayIndexable } from '@/lib/seo-market'
+import { localeToSegment } from '@/lib/locale'
 
 export function GameDetailView({ game }: { game: Game }) {
   const { marketCode: countryCode, country, t, locale } = useCountry()
@@ -55,6 +57,7 @@ export function GameDetailView({ game }: { game: Game }) {
   const deviceNames: Record<string, string> = { Desktop: copy.desktop, Mobile: copy.mobile, Tablet: copy.tablet }
 
   const operators = countryCode ? getOperatorsForGame(game, countryCode) : []
+  const hasPublishedGuide = isWhereToPlayIndexable(game, localeToSegment(locale))
   const providerPath = providerSlug(game.provider)
   const related = getRelatedGames(game, undefined, 4)
   const comparisons = getComparisonsForGame(game.id)
@@ -327,7 +330,7 @@ export function GameDetailView({ game }: { game: Game }) {
             description="Cada guia abaixo responde a uma dúvida diferente sobre disponibilidade, alternativas e comparações."
           />
           <div className="flex flex-wrap gap-3">
-            {operators.length > 0 && (
+            {hasPublishedGuide && (
               <Button render={<LocaleLink href="/where-to-play/aviator" />}>Onde jogar Aviator no Brasil</Button>
             )}
             <Button variant="outline" render={<LocaleLink href="/games-like/aviator" />}>Alternativas ao Aviator</Button>
@@ -345,7 +348,7 @@ export function GameDetailView({ game }: { game: Game }) {
             description="Use os guias relacionados para verificar disponibilidade, comparar mecânicas e navegar pelo catálogo de slots."
           />
           <div className="flex flex-wrap gap-3">
-            {operators.length > 0 && (
+            {hasPublishedGuide && (
               <Button render={<LocaleLink href={`/where-to-play/${game.slug}`} />}>
                 Onde jogar {game.title} no Brasil
               </Button>
@@ -373,7 +376,7 @@ export function GameDetailView({ game }: { game: Game }) {
             description="Use a ficha para entender o formato, a página Onde Jogar para conferir disponibilidade e os guias relacionados para comparar opções sem misturar produtos diferentes."
           />
           <div className="flex flex-wrap gap-3">
-            {operators.length > 0 && (
+            {hasPublishedGuide && (
               <Button render={<LocaleLink href={`/where-to-play/${game.slug}`} />}>
                 Onde jogar {game.title} no Brasil
               </Button>
@@ -453,7 +456,7 @@ export function GameDetailView({ game }: { game: Game }) {
           eyebrow={t('geo.whereToPlay')}
           title={t('game.whereToPlayTitle', { game: game.title, market: marketName })}
           description={t('game.whereToPlaySub')}
-          action={operators.length > 0 ? (
+          action={hasPublishedGuide ? (
             <Button
               variant="outline"
               size="lg"

@@ -106,7 +106,8 @@ function withTrackingTemplate(
 }
 
 /**
- * Resolve the final affiliate URL for a given operator/offer + market.
+ * Resolve a configured destination reference for an operator/offer + market.
+ * Private campaign keys become URLs only in the server-side /go adapter.
  * Returns null when the destination is missing, inactive, or the market is
  * not supported — callers must handle a graceful fallback.
  */

@@ -58,7 +58,7 @@ test('Blackjack discovery changes preserve verified commercial routing without e
   assert.equal(isAffiliateEligible({ ...partner, categories: ['sports'] }, 'BR'), false)
   // Fingerprint of ALL operator and offer records at e7a8218, not inferred approvals.
   assert.equal(createHash('sha256').update(JSON.stringify([OPERATORS, offersByCountry])).digest('hex'),
-    '41f3d9a976c4a0641ece98c29f3178fdece74cd492d311ce7a32f0f5e34b287a')
+    '5f09461318335fccd2b77af528ce85d3cf722682a8f8078b06993bdec3e494b8')
 })
 
 test('archived sportsbook component cannot render a betting action', () => {

@@ -46,7 +46,7 @@ const button = name => document.querySelector(`[data-mines-${name}]`)
 function tree(h, locale = 'pt-BR') {
   return React.createElement(React.StrictMode, {}, React.createElement(AppRouterContext.Provider, { value: { push() {}, replace() {} } },
     React.createElement(PathnameContext.Provider, { value: `/${locale.toLowerCase()}/play/mines` },
-      React.createElement(countryModule.CountryProvider, { initialLocale: locale }, React.createElement(providerModule.DemoSessionProvider, { store: h.wallet },
+      React.createElement(countryModule.CountryProvider, { initialLocale: locale, visitorCountryCode: 'BR' }, React.createElement(providerModule.DemoSessionProvider, { store: h.wallet },
         React.createElement(MinesGame, { suppliedEngine: h.engine }))))))
 }
 

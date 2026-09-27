@@ -14,7 +14,7 @@ warning treatment remain the gates for every new surface.
 | --- | --- | --- |
 | Campaign | `Betsson BR \| Ganhe 100 Giros!` | Media Gallery › Direct Links (Brand Betsson BR, Product Casino, Language Brazilian), setup id 13853 |
 | Headline used | `Ganhe 100 Giros!` (verbatim campaign title; banners read `GANHE 100 GIROS`) | Direct Link name and banner set `Studio_66626 - Betsson BR Casino Banners - BR` (media ids 209842–209856) |
-| Tracked affiliate link | `https://record.betsson.bet.br/_DtXajoX9_rhdXfJ7-ygnYWNd7ZgqdRLk/1/` | Direct Link tracking link for this affiliate account |
+| Tracked affiliate link | `playliva-affiliate:betsson-br-promo` | Direct Link tracking link for this affiliate account |
 | Landing page | `https://ofertas.betsson.bet.br/100giros-tigre-sortudo` | Landing Page Preview of the Direct Link |
 | Official creative CTA | `APOSTE E GANHE` (banner); PlayLiva uses the neutral `Jogar na Betsson` / localized "Play at Betsson" | Banner text layer |
 | Terms / conditions | **Not verifiable** from outside Brazil: the landing page 302-redirects to `ge.betsson.com` and the operator domain is blocked in the review browser | — |

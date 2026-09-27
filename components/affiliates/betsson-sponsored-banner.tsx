@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { campaignForGoHref } from '@/lib/affiliates/click-context'
+import { useRef } from 'react'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { AffiliateDisclosureLine } from '@/components/notices'
@@ -14,8 +15,8 @@ import {
   type BetssonBannerSurface,
   type BetssonSponsoredBannerModel,
 } from '@/lib/affiliates/betsson'
-import { attributionPayload } from '@/lib/attribution'
 import { track, type TrackPayload } from '@/lib/tracking'
+import { useCommercialImpression } from '@/components/analytics/use-commercial-impression'
 import styles from './betsson-banner.module.css'
 import { BrazilAdWarning } from './brazil-ad-warning'
 
@@ -26,6 +27,7 @@ export function BetssonHomeBanner() {
 
 function promoPayload(banner: BetssonSponsoredBannerModel, route: string): TrackPayload {
   return {
+    campaignKey: campaignForGoHref(banner.href),
     promoId: banner.promo?.promoId,
     brand: banner.promo?.brand,
     offerId: banner.promo?.offerId,
@@ -39,7 +41,6 @@ function promoPayload(banner: BetssonSponsoredBannerModel, route: string): Track
     country: banner.geo,
     language: banner.locale,
     url: route,
-    ...attributionPayload(),
   }
 }
 
@@ -58,23 +59,9 @@ export function BetssonSponsoredBanner({
   const route = usePathname()
   const banner = marketCode ? getBetssonSponsoredBanner(marketCode, locale, surface) : null
   const root = useRef<HTMLElement>(null)
-  const seen = useRef(false)
-  const promoId = banner?.promo?.promoId
-  // Campaign impressions only: generic brand banners keep their existing, un-instrumented behavior.
-  useEffect(() => {
-    const node = root.current
-    if (!node || !banner?.promo || seen.current || typeof IntersectionObserver === 'undefined') return
-    const observer = new IntersectionObserver((entries) => {
-      if (entries.some((entry) => entry.isIntersecting) && !seen.current) {
-        seen.current = true
-        track('offer_impression', promoPayload(banner, route))
-        observer.disconnect()
-      }
-    }, { threshold: 0.5 })
-    observer.observe(node)
-    return () => observer.disconnect()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [promoId, surface, route])
+  useCommercialImpression(root, `${route}:${marketCode}:${locale}:${surface}`, () => {
+    if (banner) track(banner.promo ? 'offer_impression' : 'affiliate_impression', promoPayload(banner, route))
+  })
   if (!banner) return null
   const variant = resolveBetssonBannerLayout(layout)
   const compact = variant === 'compact-header'
@@ -133,7 +120,7 @@ export function BetssonSponsoredBanner({
           size="lg"
           className={`${styles.cta} min-h-11 min-w-11 whitespace-normal px-4 ${surface === 'originals' ? 'w-auto max-w-full' : 'w-full sm:w-auto'}`}
           render={<a href={banner.href} target="_blank" rel="sponsored noopener noreferrer" data-promo-cta={promo ? '' : undefined}
-            onClick={promo ? () => track('affiliate_click', promoPayload(banner, route)) : undefined} />}
+            onClick={() => track('affiliate_click', promoPayload(banner, route))} />}
         >
           {label}
         </Button>

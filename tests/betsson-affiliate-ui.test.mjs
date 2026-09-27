@@ -56,7 +56,7 @@ const portuguesePromo = /Conheça cassino|não aceita apostas nem depósitos|por
 function wrap(locale, path, child) {
   return React.createElement(AppRouterContext.Provider, { value: { push() {}, prefetch() {} } },
     React.createElement(PathnameContext.Provider, { value: path },
-      React.createElement(CountryProvider, { initialLocale: locale }, child)))
+      React.createElement(CountryProvider, { initialLocale: locale, visitorCountryCode: 'BR' }, child)))
 }
 
 test('approved Betsson campaign data stays centralized and matches the operator record', () => {
@@ -71,9 +71,9 @@ test('approved Betsson campaign data stays centralized and matches the operator 
   assert.ok(campaigns.brand.placements.includes(GENERIC_OPERATOR_PLACEMENT))
   assert.equal(campaigns.brand.geo, 'BR')
   assert.equal(campaigns.brand.trackingKey, netreferTrackingKey(partner.affiliateUrl.BR))
-  assert.equal(campaigns.crash.trackingKey, '_DtXajoX9_riSXGwDxSNOy2Nd7ZgqdRLk')
-  assert.equal(campaigns.liveCasino.trackingKey, '_DtXajoX9_rgmwo_GmoYHy2Nd7ZgqdRLk')
-  assert.equal(campaigns.brand.trackingKey, '_DtXajoX9_riEp6ygYOshWmNd7ZgqdRLk')
+  assert.equal(campaigns.crash.trackingKey, null)
+  assert.equal(campaigns.liveCasino.trackingKey, null)
+  assert.equal(campaigns.brand.trackingKey, null)
   assert.notEqual(campaigns.brand.destination, campaigns.crash.destination)
   assert.notEqual(campaigns.brand.destination, campaigns.liveCasino.destination)
   assert.equal(BETSSON_CREATIVES.logo.assetPath, '/operators/betsson.png')
@@ -81,7 +81,7 @@ test('approved Betsson campaign data stays centralized and matches the operator 
   assert.deepEqual(HOMEPAGE_CREATIVES.map(creative => creative.id), ['betsson-operator-logo'])
   assert.match(BETSSON_CREATIVES.logo.source, /language-neutral|Media Store/)
   assert.equal(createHash('sha256').update(JSON.stringify([dataModule.OPERATORS, dataModule.offersByCountry])).digest('hex'),
-    '41f3d9a976c4a0641ece98c29f3178fdece74cd492d311ce7a32f0f5e34b287a')
+    '5f09461318335fccd2b77af528ce85d3cf722682a8f8078b06993bdec3e494b8')
 })
 
 test('homepage banner destination is the brand campaign and preserves required tracking without analytics', () => {

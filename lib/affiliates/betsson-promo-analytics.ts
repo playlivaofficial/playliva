@@ -8,11 +8,11 @@
  * `track()` layer; no wallet, identifier or free-text data is attached.
  */
 
-import { attributionPayload } from '../attribution'
+import { campaignForGoHref } from './click-context'
 import { track, type TrackPayload } from '../tracking'
 import type { BetssonPromoModel } from './betsson-promo'
 
-export type BetssonPromoEvent = 'offer_impression' | 'offer_dismiss' | 'affiliate_click'
+export type BetssonPromoEvent = 'affiliate_impression' | 'offer_impression' | 'offer_dismiss' | 'affiliate_click'
 
 export interface BetssonPromoEventContext {
   /** Original slug or provider game slug the promo appeared next to. */
@@ -29,6 +29,7 @@ export interface BetssonPromoEventContext {
 
 export function betssonPromoPayload(model: BetssonPromoModel, context: BetssonPromoEventContext = {}): TrackPayload {
   return {
+    campaignKey: campaignForGoHref(model.href),
     promoId: model.promoId,
     brand: model.brand,
     placement: model.placement,
@@ -49,7 +50,6 @@ export function betssonPromoPayload(model: BetssonPromoModel, context: BetssonPr
     country: model.market,
     language: model.locale,
     url: context.route,
-    ...attributionPayload(),
   }
 }
 

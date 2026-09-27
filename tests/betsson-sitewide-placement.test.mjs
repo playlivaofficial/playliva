@@ -52,7 +52,7 @@ const exactClaim = /Play Big Bass Splash at Betsson|Play Fruit Party at Betsson|
 function wrap(locale, path, child) {
   return React.createElement(AppRouterContext.Provider, { value: { push() {}, prefetch() {} } },
     React.createElement(PathnameContext.Provider, { value: path },
-      React.createElement(CountryProvider, { initialLocale: locale }, child)))
+      React.createElement(CountryProvider, { initialLocale: locale, visitorCountryCode: 'BR' }, child)))
 }
 
 function render(locale, path, child) {

@@ -1,4 +1,6 @@
 import { notFound } from 'next/navigation'
+import { headers } from 'next/headers'
+import { visitorMarket } from '@/lib/visitor-market'
 import { CountryProvider } from '@/components/country-context'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
@@ -34,6 +36,7 @@ export default async function LocaleLayout({
       <CountryProvider
         initialLocale={locale}
         initialCountryCode={seoMarketForLocaleSegment(localeSegment)}
+        visitorCountryCode={visitorMarket(await headers())}
       >
         <a href="#main-content" className="sr-only fixed left-4 top-3 z-[100] rounded-lg bg-foreground px-4 py-3 text-background focus:not-sr-only">{productCopy(locale).skipContent}</a>
         <SiteHeader />

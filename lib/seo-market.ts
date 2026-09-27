@@ -3,9 +3,9 @@ import type { Game, GameList, CountryCode } from './types'
 import type { LocaleSegment } from './locale'
 
 /**
- * Market represented by a crawlable locale route. This only seeds the
- * server-rendered baseline; the visitor's persisted/runtime GEO remains
- * independent and may replace it after hydration.
+ * Market represented by a crawlable editorial route. This controls SEO policy
+ * and internal guide discovery, never runtime affiliate eligibility. Request
+ * GEO and the saved market preference remain separate.
  */
 export function seoMarketForLocaleSegment(
   segment: LocaleSegment,

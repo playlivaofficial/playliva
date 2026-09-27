@@ -1,3 +1,10 @@
+import blackjackDef from '../lib/originals/blackjack/definition.ts'
+import rouletteDef from '../lib/originals/roulette/config.ts'
+import minesDef from '../lib/originals/mines/config.ts'
+import capybaraDef from '../lib/originals/capybara/definition.ts'
+import gingaDef from '../lib/originals/embaixadinha/definition.ts'
+import golacoDef from '../lib/originals/golaco/definition.ts'
+import threeDef from '../lib/originals/three-game-definitions.ts'
 import raioDef from '../lib/originals/raio/definition.ts'
 import brasilDef from '../lib/originals/brasil21/definition.ts'
 import test from 'node:test'
@@ -49,11 +56,12 @@ const { createTranslator } = i18nModule
 const partner = data.getOperator(BETSSON_PROMO.operatorSlug)
 const locales = [['pt-BR', 'pt-br'], ['en', 'en'], ['es-MX', 'es-mx']]
 const PLACEMENTS = Object.values(BETSSON_PROMO_PLACEMENTS)
+const allOriginals = [crashDef.ISLAND_CRASH, raioDef.RAIO, brasilDef.BRASIL21, blackjackDef.LIVA_BLACKJACK, rouletteDef.LIVA_ROULETTE, minesDef.LIVA_MINES, capybaraDef.CAPYBARA_GOLD, gingaDef.EMBAIXADINHA, golacoDef.GOLACO, ...threeDef.THREE_GAMES]
 
 function wrap(locale, path, child) {
   return React.createElement(AppRouterContext.Provider, { value: { push() {}, prefetch() {} } },
     React.createElement(PathnameContext.Provider, { value: path },
-      React.createElement(CountryProvider, { initialLocale: locale }, child)))
+      React.createElement(CountryProvider, { initialLocale: locale, visitorCountryCode: 'BR' }, child)))
 }
 const render = (locale, path, child) => new JSDOM(renderToStaticMarkup(wrap(locale, path, child))).window.document
 
@@ -65,8 +73,8 @@ test('central Betsson BR campaign config: verified wording only, licensed tracke
   assert.equal(BETSSON_PROMO.headline, 'Ganhe 100 Giros!')
   assert.equal(BETSSON_PROMO.subheadline, undefined, 'no unverified secondary claim')
   assert.equal(BETSSON_PROMO.ctaLabel, 'Jogar na Betsson')
-  assert.equal(BETSSON_PROMO.affiliateUrl, 'https://record.betsson.bet.br/_DtXajoX9_rhdXfJ7-ygnYWNd7ZgqdRLk/1/')
-  assert.equal(betssonModule.netreferTrackingKey(BETSSON_PROMO.affiliateUrl), '_DtXajoX9_rhdXfJ7-ygnYWNd7ZgqdRLk')
+  assert.equal(BETSSON_PROMO.affiliateUrl, 'playliva-affiliate:betsson-br-promo')
+  assert.equal(betssonModule.netreferTrackingKey(BETSSON_PROMO.affiliateUrl), null)
   assert.notEqual(BETSSON_PROMO.affiliateUrl, partner.affiliateUrl.BR, 'campaign link is the dedicated Direct Link, not the brand link')
   assert.equal(brazil.isAuthorizedBrazilDestination(partner, BETSSON_PROMO.affiliateUrl), true)
   assert.match(BETSSON_PROMO.landingPageUrl, /^https:\/\/ofertas\.betsson\.bet\.br\//)
@@ -244,13 +252,18 @@ test('attribution: UTMs and known social referrers are preserved per session; fr
   assert.equal(consent.parseConsent(null), null)
 })
 
-for(const game of [crashDef.ISLAND_CRASH,raioDef.RAIO,brasilDef.BRASIL21]) test(`${game.slug}: Originals shell offers after cycles 3, 6 and 9 with milestone analytics`, async () => {
+for(const game of allOriginals) test(`${game.slug}: Originals shell offers after cycles 3, 6 and 9 with milestone analytics`, async () => {
   const dom = new JSDOM('<div id="root"></div>', { url: `https://www.playliva.com/pt-br/play/${game.slug}?utm_source=tiktok&utm_campaign=reel.1`, virtualConsole: new VirtualConsole() })
   const saved = new Map()
   for (const key of ['window', 'self', 'document', 'location', 'navigator', 'Event', 'KeyboardEvent', 'HTMLElement', 'Node', 'IntersectionObserver']) {
     saved.set(key, Object.getOwnPropertyDescriptor(globalThis, key))
     Object.defineProperty(globalThis, key, { configurable: true, value: dom.window[key] })
   }
+  Object.defineProperty(globalThis, 'IntersectionObserver', { configurable: true, value: class {
+    constructor(callback) { this.callback = callback }
+    observe(target) { this.callback([{ target, isIntersecting: true, intersectionRatio: 1 }]) }
+    disconnect() {}
+  } })
   globalThis.IS_REACT_ACT_ENVIRONMENT = true
   const root = createRoot(document.getElementById('root'))
   const store = sessionModule.createDemoSessionStore(() => window.localStorage, () => 1)
@@ -304,7 +317,7 @@ for(const game of [crashDef.ISLAND_CRASH,raioDef.RAIO,brasilDef.BRASIL21]) test(
     assert.equal(dialog.querySelector('audio, video, [autoplay]'), null, 'no autoplay media')
     assert.doesNotMatch(dialog.textContent, /\d+:\d\d|termina em|expira/i, 'no countdown or fake urgency')
     assert.ok(dialog.querySelector('button[aria-label]'), 'explicit close control')
-    const impression = events.find(item => item.event === 'offer_impression')
+    const impression = events.find(item => item.event === 'offer_impression' && item.placement === 'originals_engagement_offer')
     assert.ok(impression)
     assert.equal(impression.promoId, BETSSON_PROMO.promoId)
     assert.equal(impression.brand, 'betsson')
@@ -344,9 +357,9 @@ for(const game of [crashDef.ISLAND_CRASH,raioDef.RAIO,brasilDef.BRASIL21]) test(
     assert.ok(second, 'cycle 6 reopens the offer after a dismissal')
     assert.equal(second.getAttribute('data-completed-cycle'), '6')
     assert.equal(second.getAttribute('data-exposure'), '2')
-    assert.equal(events.filter(item => item.event === 'offer_impression').length, 2)
-    assert.equal(events.filter(item => item.event === 'offer_impression')[1].completedCycleNumber, '6')
-    assert.equal(events.filter(item => item.event === 'offer_impression')[1].exposureNumber, '2')
+    assert.equal(events.filter(item => item.event === 'offer_impression' && item.placement === 'originals_engagement_offer').length, 2)
+    assert.equal(events.filter(item => item.event === 'offer_impression' && item.placement === 'originals_engagement_offer')[1].completedCycleNumber, '6')
+    assert.equal(events.filter(item => item.event === 'offer_impression' && item.placement === 'originals_engagement_offer')[1].exposureNumber, '2')
     await act(() => { document.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Escape', bubbles: true })) })
     assert.equal(document.querySelector('[data-betsson-engagement-offer]'), null, 'Escape dismisses')
     for (let round = 7; round <= 9; round += 1) { await mount(true); await mount(false) }
@@ -354,7 +367,7 @@ for(const game of [crashDef.ISLAND_CRASH,raioDef.RAIO,brasilDef.BRASIL21]) test(
     const third = document.querySelector('[data-betsson-engagement-offer]')
     assert.equal(third?.getAttribute('data-completed-cycle'), '9')
     assert.equal(third?.getAttribute('data-exposure'), '3')
-    assert.equal(events.filter(item => item.event === 'offer_impression').length, 3, 'one impression per milestone')
+    assert.equal(events.filter(item => item.event === 'offer_impression' && item.placement === 'originals_engagement_offer').length, 3, 'one impression per milestone')
     assert.equal(window.sessionStorage.getItem('playliva.betsson.engagement.betsson-br-casino-100-giros'), null, 'no session cap is written')
   } finally {
     await act(() => root.unmount())
@@ -364,7 +377,7 @@ for(const game of [crashDef.ISLAND_CRASH,raioDef.RAIO,brasilDef.BRASIL21]) test(
   }
 })
 
-for(const game of [crashDef.ISLAND_CRASH,raioDef.RAIO,brasilDef.BRASIL21]) test(`${game.slug}: non-Brazil suppresses every campaign surface`, async () => {
+for(const game of allOriginals) test(`${game.slug}: non-Brazil suppresses every campaign surface`, async () => {
   const dom = new JSDOM('<div id="root"></div>', { url: `https://www.playliva.com/es-mx/play/${game.slug}`, virtualConsole: new VirtualConsole() })
   const saved = new Map()
   for (const key of ['window', 'self', 'document', 'location', 'navigator', 'Event', 'HTMLElement', 'Node']) {
@@ -372,6 +385,11 @@ for(const game of [crashDef.ISLAND_CRASH,raioDef.RAIO,brasilDef.BRASIL21]) test(
     Object.defineProperty(globalThis, key, { configurable: true, value: dom.window[key] })
   }
   window.localStorage.setItem('playliva.country', 'MX')
+  Object.defineProperty(globalThis, 'IntersectionObserver', { configurable: true, value: class {
+    constructor(callback) { this.callback = callback }
+    observe(target) { this.callback([{ target, isIntersecting: true, intersectionRatio: 1 }]) }
+    disconnect() {}
+  } })
   globalThis.IS_REACT_ACT_ENVIRONMENT = true
   const root = createRoot(document.getElementById('root'))
   const store = sessionModule.createDemoSessionStore(() => window.localStorage, () => 1)

@@ -1,20 +1,27 @@
 'use client'
 
-import { useEffect } from 'react'
-import { captureAttribution } from '@/lib/attribution'
+import { useEffect, useRef } from 'react'
+import { usePathname, useSearchParams } from 'next/navigation'
+import { captureAttribution, clearAttribution } from '@/lib/attribution'
 import { hasAnalyticsConsent, subscribeConsent } from '@/lib/consent'
+import { track } from '@/lib/tracking'
 
-/**
- * Preserve inbound UTM / referrer attribution for the session so a direct
- * social landing on an Original keeps its source through to the affiliate
- * click. Runs only with analytics consent, mirroring the tracking layer, and
- * re-runs when consent is granted later on the same landing page.
- */
+/** Consent-aware page/content counts for document loads and SPA navigation. */
 export function AttributionCapture() {
+  const pathname = usePathname(), search = useSearchParams()
+  const last = useRef('')
   useEffect(() => {
-    const run = () => { if (hasAnalyticsConsent()) captureAttribution() }
+    const run = () => {
+      if (!hasAnalyticsConsent()) { clearAttribution(); return }
+      captureAttribution()
+      // Query/facet edits do not fabricate another page or content view.
+      if (last.current === pathname) return
+      last.current = pathname
+      track('page_view')
+      track('content_view')
+    }
     run()
     return subscribeConsent(run)
-  }, [])
+  }, [pathname, search])
   return null
 }

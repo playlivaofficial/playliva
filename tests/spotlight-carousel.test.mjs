@@ -37,7 +37,7 @@ const locales = [['pt-BR', 'pt-br'], ['en', 'en'], ['es-MX', 'es-mx']]
 function wrap(locale, path, child) {
   return React.createElement(AppRouterContext.Provider, { value: { push() {}, prefetch() {} } },
     React.createElement(PathnameContext.Provider, { value: path },
-      React.createElement(CountryProvider, { initialLocale: locale }, child)))
+      React.createElement(CountryProvider, { initialLocale: locale, visitorCountryCode: 'BR' }, child)))
 }
 const render = (locale, path, child) => new JSDOM(renderToStaticMarkup(wrap(locale, path, child))).window.document
 

@@ -126,7 +126,7 @@ export const BETSSON_PROMO: BetssonPromoConfig = {
   headline: 'Ganhe 100 Giros!',
   ctaLabel: 'Jogar na Betsson',
   // Media Gallery › Direct Links › "Betsson BR | Ganhe 100 Giros!" (setup 13853), Casino / Brazilian.
-  affiliateUrl: 'https://record.betsson.bet.br/_DtXajoX9_rhdXfJ7-ygnYWNd7ZgqdRLk/1/',
+  affiliateUrl: 'playliva-affiliate:betsson-br-promo',
   // Official campaign landing page behind that tracked link (geo-restricted to Brazil).
   landingPageUrl: 'https://ofertas.betsson.bet.br/100giros-tigre-sortudo',
   // No separate terms document is published in the affiliate portal; the landing page is the official terms access point.

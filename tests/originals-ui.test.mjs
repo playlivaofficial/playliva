@@ -53,7 +53,7 @@ test('test-only shell: wallet/settings/reset, consent-aware events, header spons
   const render = async (roundActive = false) => act(() => root.render(
     React.createElement(AppRouterContext.Provider, { value: { push() {} } },
       React.createElement(PathnameContext.Provider, { value: '/en/play/test-only' },
-        React.createElement(CountryProvider, { initialLocale: 'en' },
+        React.createElement(CountryProvider, { initialLocale: 'en', visitorCountryCode: 'BR' },
           React.createElement(DemoSessionProvider, { store },
             React.createElement(PlayGameShell, { game, roundActive, controls: React.createElement('button', {}, 'Test control') },
               React.createElement('div', {}, 'Test viewport only')),

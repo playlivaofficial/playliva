@@ -32,6 +32,8 @@ import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsore
 import type { BetssonBannerSurface } from '@/lib/affiliates/betsson'
 import { Button } from '@/components/ui/button'
 import { ContentCard } from '@/components/content-card'
+import { seoMarketForLocaleSegment } from '@/lib/seo-market'
+import { localeToSegment } from '@/lib/locale'
 
 export function CategoryPageView({ slug, referenceCatalog }: { slug: CategorySlug; referenceCatalog?: ReactNode }) {
   const { marketCode: country, t, locale } = useCountry()
@@ -45,7 +47,9 @@ export function CategoryPageView({ slug, referenceCatalog }: { slug: CategorySlu
     () => country ? getPopularGamesForCountry(country, undefined, GAMES.length).filter(g => discoveryCategory(g) === slug).slice(0, 8) : [],
     [country, slug],
   )
-  const bestList = country ? getGameListByCategoryCountry(slug, country) : undefined
+  // Editorial guide discovery follows its canonical market, not ad eligibility.
+  const editorialMarket = seoMarketForLocaleSegment(localeToSegment(locale))
+  const bestList = editorialMarket ? getGameListByCategoryCountry(slug, editorialMarket) : undefined
   const bestListContent = bestList
     ? getGameListContent(bestList, locale)
     : undefined

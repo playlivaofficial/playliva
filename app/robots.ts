@@ -19,6 +19,7 @@ export default function robots(): MetadataRoute.Robots {
         '/dev',
         '/owner',
         '/api/owner',
+        '/api/events',
       ],
     },
     sitemap: `${SITE_URL}/sitemap.xml`,

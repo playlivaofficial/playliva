@@ -1,6 +1,18 @@
 // Production HTTP/content regression crawl. Starts only a local server and
 // never follows affiliate redirects. Run after pnpm build.
+const nativeFetch = globalThis.fetch
+const fetch = (url, options = {}) => {
+  const path = new URL(url).pathname
+  const headers = new Headers(options.headers)
+  if (!headers.has('x-vercel-ip-country')) headers.set('x-vercel-ip-country', path.startsWith('/pt-br') || path === '/go' ? 'BR' : 'GE')
+  return nativeFetch(url, { ...options, headers })
+}
+
 import { spawn } from 'node:child_process'
+import { testDestinations } from './fixtures/affiliate-destinations.mjs'
+import privateDestinations from '../lib/affiliates/server-destinations.ts'
+const { serverDestination } = privateDestinations
+process.env.PLAYLIVA_AFFILIATE_DESTINATIONS = JSON.stringify(testDestinations)
 import { createServer } from 'node:net'
 import assert from 'node:assert/strict'
 import { once } from 'node:events'
@@ -216,7 +228,7 @@ try {
         redirect: 'manual', headers: consent ? { cookie: `${ANALYTICS_COOKIE}=${consent}` } : {},
       })
       assert.equal(response.status, 302)
-      assert.equal(response.headers.get('location'), partner.categoryAffiliateUrl['live-casino'].BR)
+      assert.equal(response.headers.get('location'), serverDestination(partner.categoryAffiliateUrl['live-casino'].BR))
     }
     for (const category of [undefined, 'crash', 'live-casino', 'slots']) {
       const query = new URLSearchParams({ operator: partner.slug, country: 'BR' })
@@ -225,7 +237,7 @@ try {
         redirect: 'manual', headers: consent ? { cookie: `${ANALYTICS_COOKIE}=${consent}` } : {},
       })
       assert.equal(response.status, 302)
-      assert.equal(response.headers.get('location'), partner.categoryAffiliateUrl?.[category]?.BR ?? partner.affiliateUrl.BR)
+      assert.equal(response.headers.get('location'), serverDestination(partner.categoryAffiliateUrl?.[category]?.BR ?? partner.affiliateUrl.BR))
     }
     for (const placement of ['homepage_banner', 'originals_generic_operator', 'play_hub_banner', 'game_detail_play_real']) {
       const query = new URLSearchParams({ operator: partner.slug, country: 'BR', placement })
@@ -233,7 +245,7 @@ try {
         redirect: 'manual', headers: consent ? { cookie: `${ANALYTICS_COOKIE}=${consent}` } : {},
       })
       assert.equal(response.status, 302)
-      assert.equal(response.headers.get('location'), partner.affiliateUrl.BR)
+      assert.equal(response.headers.get('location'), serverDestination(partner.affiliateUrl.BR))
     }
   }
   for (const path of paths) {
@@ -340,7 +352,7 @@ try {
           // While the central campaign is live the sponsor banner links to its official tracked offer link.
           const promoLive = promoModule.isBetssonPromoLive()
           assert.equal(bannerQuery.get('offer'), promoLive ? promoModule.BETSSON_PROMO_OFFER_ID : null)
-          assert.equal(bannerGo.headers.get('location'), promoLive ? promoModule.BETSSON_PROMO.affiliateUrl : partner.affiliateUrl.BR)
+          assert.equal(bannerGo.headers.get('location'), serverDestination(promoLive ? promoModule.BETSSON_PROMO.affiliateUrl : partner.affiliateUrl.BR))
           assert.ok(brazilModule.isAuthorizedBrazilDestination(partner, bannerGo.headers.get('location')))
           if (promoLive) assert.ok(banner.textContent.includes(promoModule.BETSSON_PROMO.headline))
           }
@@ -656,6 +668,17 @@ try {
     assert.equal(response.status, 302)
     assert.equal(new URL(response.headers.get('location')).pathname, `/${locale}/operators`)
     assert.equal(response.headers.get('x-robots-tag'), 'noindex, nofollow')
+  }
+  // Editorial guides remain discoverable without granting commercial eligibility.
+  for (const [path, guide] of [
+    ['/pt-br/games/blackjack-live', '/pt-br/where-to-play/blackjack-live'],
+    ['/es-mx/crash', '/es-mx/best/best-crash-games-mexico'],
+    ['/es-mx/slots', '/es-mx/best/best-slots-mexico'],
+  ]) {
+    const response = await fetch(base + path, { headers: { 'x-vercel-ip-country': 'GE' } })
+    const doc = new JSDOM(await response.text()).window.document
+    assert.ok(doc.querySelector(`a[href="${guide}"]`), `${path}: editorial guide remains linked`)
+    assert.equal(doc.querySelector('a[href^="/go?"]'), null, `${path}: no commercial link in noneligible HTML`)
   }
   assert.equal((await fetch(`${base}/dev/operators`)).status, 404)
   console.log(`Crawled ${paths.size} public/legal/demo URLs plus locale 404 and affiliate fallback probes. PT-BR OG coverage: ${ptOgImageCount}/${ptPublicCount}.`)

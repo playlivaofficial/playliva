@@ -64,7 +64,7 @@ test('period filters validate dates and default to 30 days', () => {
 })
 test('affiliate aggregation respects all dimensions, counts events and never infers revenue', () => {
   const base = { date: '2026-09-26', route: '/pt-br/play/crash', game: 'crash', locale: 'pt-BR', operator: 'op-betsson', placement: 'originals_engagement_offer', geo: 'BR', device: 'mobile', source: 'youtube', utmContent: 'creative-1' }
-  const events = [{ ...base, event: 'offer_impression', count: 20 }, { ...base, event: 'affiliate_click', count: 3 }, { ...base, geo: 'MX', event: 'affiliate_click', count: 9 }, { ...base, date: '2026-07-01', event: 'affiliate_click', count: 10 }]
+  const events = [{ ...base, event: 'affiliate_impression', count: 20 }, { ...base, event: 'affiliate_click', count: 3 }, { ...base, geo: 'MX', event: 'affiliate_click', count: 9 }, { ...base, date: '2026-07-01', event: 'affiliate_click', count: 10 }]
   const result = metrics.aggregateEvents(events, { ...filters, geo: 'BR', device: 'mobile', source: 'youtube', game: 'crash', locale: 'pt-br', operator: 'op-betsson', placement: 'originals_engagement_offer' })
   assert.equal(result.impressions, 20); assert.equal(result.clicks, 3); assert.equal(result.ctr, .15); assert.equal(result.popupClicks, 3)
   assert.equal(result.revenue, undefined)
