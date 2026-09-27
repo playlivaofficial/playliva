@@ -2,8 +2,7 @@ import { cookies } from 'next/headers'
 import { localMediaStream } from '@/lib/owner/server/local-files'
 import { Readable } from 'node:stream'
 import { apiAuthorized, ownerJson, PRIVATE_HEADERS } from '@/lib/owner/server/gate'
-import { allowedOrigin, hashToken, login, ownerCookie, SESSION_SECONDS } from '@/lib/owner/server/auth'
-import { localEnabled, updateOwnerState } from '@/lib/owner/server/store'
+import { allowedOrigin, login, ownerCookie, SESSION_SECONDS, sessionCookieOptions, refreshSession, revokeSession } from '@/lib/owner/server/auth'
 import { mediaFile, reviewCreative } from '@/lib/owner/server/social'
 import { syncYouTube } from '@/lib/owner/server/youtube'
 import { saveContent } from '@/lib/owner/server/content'
@@ -40,14 +39,23 @@ export async function POST(request: Request, context: Context) {
     const body = await smallJson(request)
     if (path.join('/') === 'login') {
       const token = await login(typeof body.password === 'string' ? body.password : '')
-      ;(await cookies()).set(ownerCookie(), token, { httpOnly: true, secure: !localEnabled(), sameSite: 'strict', path: '/', maxAge: SESSION_SECONDS })
+      ;(await cookies()).set(ownerCookie(), token, sessionCookieOptions(Date.now() + SESSION_SECONDS * 1000))
       return ownerJson({ message: 'Signed in.', redirect: '/owner/growth' })
     }
     if (path.join('/') === 'logout') {
       const jar = await cookies(), token = jar.get(ownerCookie())?.value
-      if (token) await updateOwnerState(state => { delete state.sessions[hashToken(token)] })
-      jar.set(ownerCookie(), '', { httpOnly: true, secure: !localEnabled(), sameSite: 'strict', path: '/', maxAge: 0 })
+      await revokeSession(token)
+      jar.set(ownerCookie(), '', sessionCookieOptions(0))
       return ownerJson({ message: 'Signed out.', redirect: '/owner/login' })
+    }
+    if (path.join('/') === 'session') {
+      const jar = await cookies(), token = jar.get(ownerCookie())?.value
+      const session = await refreshSession(token)
+      if (!session || !token) return ownerJson({ error: 'Owner authentication required.' }, 401)
+      // Also return the existing expiry on a concurrent renewal / lost response,
+      // so browser and durable state never diverge. This does not extend idle sessions.
+      jar.set(ownerCookie(), token, sessionCookieOptions(session.expiresAt))
+      return ownerJson({ renewed: session.renewed })
     }
     if (path[0] === 'social' && path.length === 2 && safeId(path[1]) && ['approve', 'reject', 'regenerate'].includes(String(body.action))) {
       if (body.action === 'approve' && body.reviewed !== 'on') return ownerJson({ error: 'Confirm that you have reviewed this creative before approving it.' }, 400)
