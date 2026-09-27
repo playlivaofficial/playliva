@@ -3,6 +3,8 @@ import { readFile } from 'node:fs/promises'
 
 const forbiddenNames = /(^|\/)(client_secret[^/]*\.json|token\.json|credentials\.json|\.youtube-oauth\/)/i
 const secretPatterns = [
+  /vercel_blob_rw_[A-Za-z0-9]+_[A-Za-z0-9]{20,}/,
+  /postgres(?:ql)?:\/\/[^\s:@]+:[^\s@]{8,}@[a-z0-9.-]+\.neon\.tech/i,
   /GOCSPX-[A-Za-z0-9_-]{20,}/,
   /ya29\.[A-Za-z0-9_-]{20,}/,
   /1\/\/[A-Za-z0-9_-]{30,}/,

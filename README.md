@@ -47,6 +47,18 @@ routes live in `app/`, UI in `components/`, static data/content in `lib/`, and
 runtime assets in `public/`. Immutable authoring inputs that must not be served
 live under `assets-source/`. Read `AGENTS.md` before making changes.
 
+## Private Owner Growth workspace
+
+The [production architecture and Social worker runbook](docs/owner-growth-production.md)
+covers durable state, private media, cloud generation, pinning and retention.
+
+Owner Growth V1 adds the private `/owner/growth` dashboard with Social, SEO,
+Affiliate and Content views. Read [the security, data sources, local setup and
+release boundaries](docs/owner-growth-v1.md) before enabling owner access.
+Production access stays closed until server credentials and durable storage
+are configured. Historical Shorts media is not bundled with the application.
+Public PlayLiva still runs locally without an environment file.
+
 ## Setup
 
 Use **Node.js 24.20.0** (`.nvmrc`) and **pnpm 10.30.3** (`packageManager` in
