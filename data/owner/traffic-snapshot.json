@@ -1,0 +1,29 @@
+{
+  "source": "Vercel Web Analytics · PlayLiva production",
+  "sourceUrl": "https://vercel.com/nikapopkha3-4447s-projects/playliva/analytics?period=30d",
+  "observedAt": "2026-09-27",
+  "periodLabel": "Aug 28, 2pm – Sep 27, 2:59pm, as displayed by Vercel",
+  "range": "Last 30 Days",
+  "visitors": 149,
+  "pageViews": 889,
+  "bounceRate": 0.43,
+  "customEvents": "No custom events",
+  "topPagesByVisitors": [
+    { "route": "/en", "visitors": 74 },
+    { "route": "/en/play/crash", "visitors": 62 },
+    { "route": "/pt-br", "visitors": 26 },
+    { "route": "/en/crash", "visitors": 24 },
+    { "route": "/en/games", "visitors": 23 },
+    { "route": "/en/play/capybara-gold", "visitors": 23 },
+    { "route": "/en/play", "visitors": 21 }
+  ],
+  "referrersByVisitors": [
+    { "source": "l.instagram.com", "visitors": 7 },
+    { "source": "facebook.com", "visitors": 4 },
+    { "source": "google.com", "visitors": 3 },
+    { "source": "app.ahrefs.com", "visitors": 1 },
+    { "source": "chatgpt.com", "visitors": 1 },
+    { "source": "m.facebook.com", "visitors": 1 }
+  ],
+  "note": "Manually observed completed dashboard report. Top rows only. Visitor counts across pages/referrers are not additive, and referrers are not session totals. This is not an automatic reporting connection."
+}

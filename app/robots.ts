@@ -17,6 +17,8 @@ export default function robots(): MetadataRoute.Robots {
         // hard-404s in production and carries its own noindex metadata —
         // this is belt-and-suspenders only.
         '/dev',
+        '/owner',
+        '/api/owner',
       ],
     },
     sitemap: `${SITE_URL}/sitemap.xml`,

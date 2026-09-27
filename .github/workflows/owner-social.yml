@@ -1,0 +1,73 @@
+name: Owner Social generation
+
+on:
+  schedule:
+    # 09:00 Tbilisi = 05:00 UTC. Durable state enforces 72h slots and deduplication.
+    - cron: '0 5 * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Controlled worker action (never uploads or publishes to social platforms)
+        type: choice
+        default: due
+        options: [due, canary, arm, retry, cleanup-dry-run]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: playliva-owner-social-production
+  cancel-in-progress: false
+
+jobs:
+  render:
+    if: github.repository == 'playlivaofficial/playliva' && vars.OWNER_SOCIAL_WORKER_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    environment: owner-social-production
+    timeout-minutes: 360
+    env:
+      OWNER_DATABASE_URL: ${{ secrets.OWNER_DATABASE_URL }}
+      BLOB_READ_WRITE_TOKEN: ${{ secrets.OWNER_BLOB_READ_WRITE_TOKEN }}
+      HF_HOME: ${{ github.workspace }}/social/output/model-cache
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      SOCIAL_CAPTURE_BASE_URL: https://www.playliva.com
+      SOCIAL_CHROME_PATH: /usr/bin/google-chrome
+      PLAYLIVA_SOCIAL_PYTHON: python
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - name: Install pinned JavaScript runtime dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Check due state before installing heavy render dependencies
+        id: preflight
+        env:
+          WORKER_MODE: ${{ inputs.mode || 'due' }}
+        run: node --import tsx scripts/owner/preflight.mjs
+      - uses: actions/setup-python@v5
+        if: steps.preflight.outputs.has_jobs == 'true'
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: scripts/owner/voice-requirements.txt
+      - name: Install CPU narration runtime
+        if: steps.preflight.outputs.has_jobs == 'true'
+        run: |
+          python -m pip install torch==2.9.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install -r scripts/owner/voice-requirements.txt
+          sudo apt-get update -qq
+          sudo apt-get install -y espeak-ng ffmpeg
+      - uses: actions/cache@v4
+        if: steps.preflight.outputs.has_jobs == 'true'
+        with:
+          path: social/output/model-cache
+          key: owner-kokoro-82m-v1
+      - name: Run durable single-concurrency worker
+        env:
+          WORKER_MODE: ${{ inputs.mode || 'due' }}
+        run: node --import tsx scripts/owner/cloud-worker.mjs --mode="$WORKER_MODE"

@@ -1,0 +1,95 @@
+{
+  "property": "sc-domain:playliva.com",
+  "sitemap": {
+    "url": "https://www.playliva.com/sitemap.xml",
+    "submitted": "27 Sept 2026",
+    "result": "Sitemap submitted successfully",
+    "tableStatus": "Success",
+    "lastRead": "9 Sept 2026",
+    "discoveredPages": 171
+  },
+  "newPages": [
+    {
+      "url": "https://www.playliva.com/pt-br/play/skuptu-levanta",
+      "inspection": "URL is unknown to Google",
+      "request": "accepted"
+    },
+    {
+      "url": "https://www.playliva.com/pt-br/play/samba-drop",
+      "inspection": "URL is unknown to Google",
+      "request": "accepted"
+    },
+    {
+      "url": "https://www.playliva.com/pt-br/play/carnaval-gold",
+      "inspection": "URL is unknown to Google",
+      "request": "accepted"
+    },
+    {
+      "url": "https://www.playliva.com/en/play/skuptu-levanta",
+      "inspection": "URL is unknown to Google",
+      "request": "accepted"
+    },
+    {
+      "url": "https://www.playliva.com/en/play/samba-drop",
+      "inspection": "URL is unknown to Google",
+      "request": "accepted"
+    },
+    {
+      "url": "https://www.playliva.com/en/play/carnaval-gold",
+      "inspection": "URL is unknown to Google",
+      "request": "accepted"
+    },
+    {
+      "url": "https://www.playliva.com/es-mx/play/skuptu-levanta",
+      "inspection": "URL is unknown to Google",
+      "request": "accepted"
+    },
+    {
+      "url": "https://www.playliva.com/es-mx/play/samba-drop",
+      "inspection": "URL is unknown to Google",
+      "request": "rejected: daily quota exceeded; Google asks to retry tomorrow"
+    },
+    {
+      "url": "https://www.playliva.com/es-mx/play/carnaval-gold",
+      "inspection": "URL is unknown to Google",
+      "request": "not attempted after confirmed daily quota exhaustion; pending reset"
+    }
+  ],
+  "existing": [
+    {
+      "url": "https://www.playliva.com/pt-br/play/liva-ginga",
+      "state": "Crawled - currently not indexed",
+      "fetch": "Successful",
+      "indexingAllowed": true,
+      "canonical": "Inspected URL",
+      "lastCrawl": "27 Sept 2026, 02:52:53"
+    },
+    {
+      "url": "https://www.playliva.com/pt-br/play/golaco",
+      "state": "Crawled - currently not indexed",
+      "fetch": "Successful",
+      "indexingAllowed": true,
+      "canonical": "Inspected URL",
+      "lastCrawl": "27 Sept 2026, 02:56:55",
+      "sitemaps": "Temporary processing error"
+    },
+    {
+      "url": "https://www.playliva.com/pt-br/play/liva-raio",
+      "state": "Crawled - currently not indexed",
+      "fetch": "Successful",
+      "indexingAllowed": true,
+      "canonical": "Inspected URL",
+      "lastCrawl": "27 Sept 2026, 03:00:52"
+    },
+    {
+      "url": "https://www.playliva.com/pt-br/play/liva-21-brasil",
+      "state": "Crawled - currently not indexed",
+      "fetch": "Successful",
+      "indexingAllowed": true,
+      "canonical": "Inspected URL",
+      "lastCrawl": "27 Sept 2026, 03:08:17"
+    }
+  ],
+  "blocker": "Daily URL indexing request quota exceeded",
+  "acceptanceIsNotIndexing": true
+}

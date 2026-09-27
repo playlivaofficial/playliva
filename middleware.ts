@@ -13,6 +13,15 @@ export function middleware(request: NextRequest) {
   const segments = pathname.split('/')
   const firstSegment = segments[1] ?? ''
 
+  // Private owner routing has its own server-side page and API authorization.
+  if (firstSegment === 'owner') {
+    const response = NextResponse.next()
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive')
+    response.headers.set('Cache-Control', 'private, no-store, max-age=0')
+    response.headers.set('Referrer-Policy', 'no-referrer')
+    return response
+  }
+
   // Liva Ginga migration: exact legacy game path only, preserving locale and
   // the original query (including social UTMs), without a duplicate index page.
   const legacyFootball = pathname.match(/^\/(?:(en|pt-br|es-mx)\/)?play\/embaixadinha\/?$/)

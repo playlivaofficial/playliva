@@ -1,5 +1,20 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Workstation attachments, owner credentials and generated media must never
+  // be deployment dependencies, including builds performed on an owner's PC.
+  outputFileTracingExcludes: {
+    '/*': ['./social/output/**/*', './social/.tmp/**/*', './.youtube-oauth/**/*', './.env*'],
+  },
+  async headers() {
+    const headers = [
+      { key: 'Cache-Control', value: 'private, no-store, max-age=0' },
+      { key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' },
+      { key: 'Referrer-Policy', value: 'no-referrer' },
+      { key: 'X-Content-Type-Options', value: 'nosniff' },
+      { key: 'Content-Security-Policy', value: "frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'" },
+    ]
+    return [{ source: '/owner/:path*', headers }, { source: '/api/owner/:path*', headers }]
+  },
   images: {
     unoptimized: true,
   },
