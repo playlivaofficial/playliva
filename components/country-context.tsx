@@ -26,10 +26,10 @@ import {
 } from '@/lib/locale'
 
 interface CountryContextValue {
-  /** GEO/market — drives operators, affiliate links, offers, availability. */
+  /** Selected editorial market; commercial eligibility also requires request GEO. */
   country: Country
   countryCode: CountryCode
-  /** Crawl-safe market used by commercial/editorial server output. */
+  /** Eligible commercial market from trusted request GEO and selected preference. */
   marketCode: CountryCode | null
   setCountryCode: (code: CountryCode) => void
   /**
@@ -50,7 +50,7 @@ interface CountryContextValue {
 
 const CountryContext = createContext<CountryContextValue | null>(null)
 
-// GEO persists in localStorage; LANGUAGE persists in the URL plus a cookie
+// Market preference persists in localStorage; LANGUAGE persists in the URL plus a cookie
 // (read by middleware for the bare `/` redirect) — the two never share state.
 const COUNTRY_STORAGE_KEY = 'playliva.country'
 const LOCALE_COOKIE = 'playliva_locale'
@@ -67,6 +67,7 @@ export function CountryProvider({
   children,
   initialLocale,
   initialCountryCode = DEFAULT_COUNTRY,
+  visitorCountryCode = null,
 }: {
   children: ReactNode
   /**
@@ -77,14 +78,16 @@ export function CountryProvider({
    * visitor sees in the address bar.
    */
   initialLocale: Locale
-  /** Crawl-safe server baseline; runtime GEO remains independently persisted. */
+  /** Editorial locale baseline; never grants commercial eligibility. */
   initialCountryCode?: CountryCode | null
+  /** Trusted request GEO. A saved market preference cannot grant eligibility. */
+  visitorCountryCode?: CountryCode | null
 }) {
   const pathname = usePathname()
   const router = useRouter()
   const [countryCode, setCountryCodeState] =
-    useState<CountryCode>(initialCountryCode ?? DEFAULT_COUNTRY)
-  const [marketReady, setMarketReady] = useState(initialCountryCode !== null)
+    useState<CountryCode>(visitorCountryCode ?? initialCountryCode ?? DEFAULT_COUNTRY)
+  const [marketReady, setMarketReady] = useState(visitorCountryCode !== null)
 
   // LANGUAGE is derived from the URL on every render, never from
   // independent client state — this keeps it perfectly in sync with
@@ -96,7 +99,7 @@ export function CountryProvider({
       : initialLocale
   }, [pathname, initialLocale])
 
-  // Restore persisted GEO selection on mount (survives navigation + refresh).
+  // Restore the market preference. It cannot override trusted visitor GEO.
   useEffect(() => {
     try {
       const stored = window.localStorage.getItem(COUNTRY_STORAGE_KEY)
@@ -150,7 +153,7 @@ export function CountryProvider({
     return {
       country,
       countryCode,
-      marketCode: marketReady ? countryCode : null,
+      marketCode: marketReady && countryCode === visitorCountryCode ? countryCode : null,
       setCountryCode,
       locale,
       setLocale,
@@ -159,7 +162,7 @@ export function CountryProvider({
       nameOf: (code: CountryCode) => getCountryName(code, locale),
       countries: PUBLIC_COUNTRIES,
     }
-  }, [countryCode, marketReady, setCountryCode, locale, setLocale])
+  }, [countryCode, marketReady, visitorCountryCode, setCountryCode, locale, setLocale])
 
   return (
     <CountryContext.Provider value={value}>{children}</CountryContext.Provider>

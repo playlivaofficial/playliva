@@ -47,7 +47,7 @@ const button = name => document.querySelector(`[data-roulette-${name}]`)
 function tree(h, locale = 'pt-BR') {
   return React.createElement(React.StrictMode, {}, React.createElement(AppRouterContext.Provider, { value: { push() {}, replace() {} } },
     React.createElement(PathnameContext.Provider, { value: '/pt-br/play/roulette' },
-      React.createElement(countryModule.CountryProvider, { initialLocale: locale }, React.createElement(providerModule.DemoSessionProvider, { store: h.wallet },
+      React.createElement(countryModule.CountryProvider, { initialLocale: locale, visitorCountryCode: 'BR' }, React.createElement(providerModule.DemoSessionProvider, { store: h.wallet },
         React.createElement(RouletteGame, { suppliedEngine: h.engine, presentationNow: h.now }))))))
 }
 test('Roulette mounted: chosen chip, stacking, Undo/Clear, debit once, freeze, exact ball and single return', async () => withDom(async (root, draw) => {

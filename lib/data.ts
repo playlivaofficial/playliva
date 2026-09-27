@@ -1,3 +1,4 @@
+import { privateCampaign } from './affiliates/campaign-references'
 import { BRAZIL_AD_RULES, isAuthorizedBrazilDestination } from './compliance/brazil'
 import { hasCurrentOfferEvidence } from './compliance/offers'
 import { BETSSON_PROMO, BETSSON_PROMO_OFFER_ID } from './affiliates/betsson-promo-config'
@@ -851,14 +852,14 @@ export const OPERATORS: Operator[] = [
     affiliateStatus: 'approved',
     lastVerifiedAt: '2026-08-14',
     affiliateUrl: {
-      BR: 'https://record.betsson.bet.br/_DtXajoX9_riEp6ygYOshWmNd7ZgqdRLk/1/',
+      BR: 'playliva-affiliate:betsson-br-brand',
     },
     categoryAffiliateUrl: {
       crash: {
-        BR: 'https://record.betsson.bet.br/_DtXajoX9_riSXGwDxSNOy2Nd7ZgqdRLk/1/',
+        BR: 'playliva-affiliate:betsson-br-crash',
       },
       'live-casino': {
-        BR: 'https://record.betsson.bet.br/_DtXajoX9_rgmwo_GmoYHy2Nd7ZgqdRLk/1/',
+        BR: 'playliva-affiliate:betsson-br-live-casino',
       },
     },
     // Explicit, manually-verified availability at Betsson BR. Crash titles
@@ -1060,6 +1061,7 @@ export function isCategorySlug(value: string): value is CategorySlug {
 /** Only configured HTTPS destinations, never placeholders or executable URLs. */
 export function isAffiliateUrl(value: string | undefined): boolean {
   if (!value) return false
+  if (privateCampaign(value)) return true
   try {
     const url = new URL(value)
     return url.protocol === 'https:' && !url.username && !url.password &&

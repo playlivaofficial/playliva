@@ -47,6 +47,14 @@ routes live in `app/`, UI in `components/`, static data/content in `lib/`, and
 runtime assets in `public/`. Immutable authoring inputs that must not be served
 live under `assets-source/`. Read `AGENTS.md` before making changes.
 
+## Revenue measurement
+
+[Revenue Readiness](docs/revenue-readiness.md) documents the consented commercial
+funnel, private campaign destination configuration and manual social link format.
+Commercial eligibility now uses Vercel request GEO independently of language or
+saved market selection. Local QA supplies `x-vercel-ip-country`; missing GEO
+suppresses commercial links. The public catalog and canonical URLs stay available.
+
 ## Private Owner Growth workspace
 
 The [production architecture and Social worker runbook](docs/owner-growth-production.md)

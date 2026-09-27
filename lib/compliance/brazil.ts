@@ -1,3 +1,4 @@
+import { privateCampaign } from '../affiliates/campaign-references'
 import type { Operator } from '../types'
 
 export const BRAZIL_AD_RULES = {
@@ -64,7 +65,9 @@ export function isAuthorizedBrazilDestination(
   const evidence = BRAZIL_AUTHORIZATIONS[operator.id]
   if (!hasCurrentBrazilEvidence(evidence, now) || !destination || evidence.operatorId !== operator.id) return false
   try {
-    const url = new URL(destination)
+    const campaign = privateCampaign(destination)
+    if (campaign && campaign.operatorId !== operator.id) return false
+    const url = new URL(campaign ? `https://${campaign.host}` : destination)
     return url.protocol === 'https:' && !url.username && !url.password && !url.port &&
       (url.hostname === evidence.authorizedDomain || url.hostname.endsWith(`.${evidence.authorizedDomain}`))
   } catch { return false }

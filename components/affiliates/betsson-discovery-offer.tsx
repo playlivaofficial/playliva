@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import { usePathname } from 'next/navigation'
 import Image from 'next/image'
 import { ArrowUpRight, ShieldCheck } from 'lucide-react'
@@ -11,6 +11,7 @@ import { useCountry } from '@/components/country-context'
 import { getCountryName } from '@/lib/data'
 import { BETSSON_PROMO_PLACEMENTS, betssonPromoExpiresAt, getBetssonPromo } from '@/lib/affiliates/betsson-promo'
 import { trackBetssonPromo } from '@/lib/affiliates/betsson-promo-analytics'
+import { useCommercialImpression } from '@/components/analytics/use-commercial-impression'
 import styles from './betsson-discovery-offer.module.css'
 import { BrazilAdWarning } from './brazil-ad-warning'
 
@@ -25,23 +26,10 @@ export function BetssonDiscoveryOffer({ gameSlug, pageSlug }: { gameSlug?: strin
   const { marketCode, locale, t } = useCountry()
   const model = marketCode ? getBetssonPromo(marketCode, locale, BETSSON_PROMO_PLACEMENTS.discoveryGame, { pageSlug: pageSlug ?? gameSlug }) : null
   const card = useRef<HTMLDivElement>(null)
-  const seen = useRef(false)
   const route = usePathname()
-  const promoId = model?.promoId
-  useEffect(() => {
-    const node = card.current
-    if (!node || !model || seen.current || typeof IntersectionObserver === 'undefined') return
-    const observer = new IntersectionObserver((entries) => {
-      if (entries.some((entry) => entry.isIntersecting) && !seen.current) {
-        seen.current = true
-        trackBetssonPromo('offer_impression', model, { gameSlug, route })
-        observer.disconnect()
-      }
-    }, { threshold: 0.5 })
-    observer.observe(node)
-    return () => observer.disconnect()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [promoId, gameSlug, route])
+  useCommercialImpression(card, `${route}:${marketCode}:${locale}:${model?.promoId}`, () => {
+    if (model) trackBetssonPromo('offer_impression', model, { gameSlug, route })
+  })
   if (!model) return null
   const showArt = model.creative.kind === 'banner'
   return <div ref={card} className={styles.card} data-betsson-discovery-offer="" data-promo-id={model.promoId} data-game-slug={gameSlug}

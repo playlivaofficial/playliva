@@ -13,7 +13,7 @@ test('desktop and mobile Play preserve every locale; game keeps the unobstructed
   for (const [locale, segment, label] of [['en', 'en', 'Play'], ['pt-BR', 'pt-br', 'Jogar'], ['es-MX', 'es-mx', 'Jugar']]) {
     const render = (path, child) => renderToStaticMarkup(React.createElement(AppRouterContext.Provider, { value: { push() {} } },
       React.createElement(PathnameContext.Provider, { value: path },
-        React.createElement(countryModule.CountryProvider, { initialLocale: locale }, child))))
+        React.createElement(countryModule.CountryProvider, { initialLocale: locale, visitorCountryCode: 'BR' }, child))))
     const doc = new JSDOM(render(`/${segment}/play`, React.createElement(React.Fragment, null,
       React.createElement(headerModule.SiteHeader), React.createElement(mobileModule.MobileBottomNav)))).window.document
     const entries = doc.querySelectorAll(`a[href="/${segment}/play"]`)

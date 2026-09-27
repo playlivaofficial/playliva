@@ -24,6 +24,11 @@ import { createHash } from 'node:crypto'
 // SEO Discovery V2 rebases only tracking.ts (three consented discovery event names)
 // and sitemap.ts (shared quality policy, same 313 canonical URLs). Routing,
 // commercial records, consent filtering and all engine hashes stay protected.
+// Revenue Readiness authorizes tracking.ts (consented collection/context),
+// affiliate-button.tsx (complete attribution and consent-aware impressions), and
+// app/go/route.ts (trusted request GEO and private destination resolution),
+// data.ts (public campaign references instead of private IDs), affiliate.ts
+// (resolver contract comment). Approved destinations, engines and SEO stay fixed.
 test('redesign: protected outbound infrastructure remains unchanged except authorized Betsson play-real files', async () => {
   const expected = JSON.parse(await readFile(new URL('./fixtures/redesign-protected.json', import.meta.url), 'utf8'))
   for (const [path, hash] of Object.entries(expected)) {

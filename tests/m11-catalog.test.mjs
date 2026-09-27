@@ -31,7 +31,7 @@ hooks.deregister()
 function render(locale, segment, child) {
   return new JSDOM(renderToStaticMarkup(React.createElement(AppRouterContext.Provider, { value: { push() {}, prefetch() {} } },
     React.createElement(PathnameContext.Provider, { value: `/${segment}` },
-      React.createElement(country.CountryProvider, { initialLocale: locale }, child)))))
+      React.createElement(country.CountryProvider, { initialLocale: locale, visitorCountryCode: 'BR' }, child)))))
 }
 
 test('M11: 31 sourced reference games are internally consistent and remain separate from commercial data', () => {

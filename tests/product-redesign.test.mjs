@@ -24,7 +24,7 @@ cssHooks.deregister()
 const locales = [['en', 'en'], ['pt-BR', 'pt-br'], ['es-MX', 'es-mx']]
 const wrap = (locale, path, child) => React.createElement(AppRouterContext.Provider, { value: { push() {}, prefetch() {} } },
   React.createElement(PathnameContext.Provider, { value: path },
-    React.createElement(countryModule.CountryProvider, { initialLocale: locale }, child)))
+    React.createElement(countryModule.CountryProvider, { initialLocale: locale, visitorCountryCode: 'BR' }, child)))
 
 test('redesign: complete localized interface copy, neutral discovery and no new commercial claims', () => {
   for (const [locale] of locales) {

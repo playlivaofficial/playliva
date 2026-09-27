@@ -25,7 +25,7 @@ export async function growthData(params: URLSearchParams) {
   const discovery = discoveryHealth(filters), indexing = indexingAudit()
   const inspected = indexing.filter(row => row.state === 'Crawled — currently not indexed' && (!filters.locale || row.locale === filters.locale) && (!filters.route || row.route === filters.route) && (!filters.game || row.route.endsWith('/play/'+filters.game)))
   const opportunities = [...seoOpportunities(search.data.queries), ...discovery.opportunities, ...inspected.map(row=>({id:'indexing-'+row.route.replaceAll('/','-'),kind:'not-indexed',priority:2,source:'Search Console inspection '+row.observedAt,topic:row.topic,route:row.url,reason:row.detail,action:'Inspect content and internal links, then check Google again. A request is not an indexing guarantee.'}))].sort((a,b)=>(a.priority??2)-(b.priority??2)||a.id.localeCompare(b.id))
-  const measured = ['connected', 'no_data'].includes(analytics.state) && (!filters.from || filters.from >= analytics.data.from) && filters.to <= analytics.data.to
+  const measured = ['connected', 'no_data'].includes(analytics.state) && (!filters.from || filters.from <= analytics.data.to) && filters.to >= analytics.data.from
   const filteredGame = ownerGames.filter(game => !filters.game || game.slug === filters.game)
   const games = filteredGame.map(game => {
     const pageData = search.data.pages.filter(row => new URL(row.page).pathname.endsWith(`/play/${game.slug}`)), impressions = pageData.reduce((sum, row) => sum + row.impressions, 0)

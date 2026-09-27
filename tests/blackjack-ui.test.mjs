@@ -50,7 +50,7 @@ const action = name => document.querySelector(`[data-blackjack-action="${name}"]
 function tree(h) {
   return React.createElement(React.StrictMode, {}, React.createElement(AppRouterContext.Provider, { value: { push() {}, replace() {} } },
     React.createElement(PathnameContext.Provider, { value: '/pt-br/play/blackjack' },
-      React.createElement(countryModule.CountryProvider, { initialLocale: 'pt-BR' },
+      React.createElement(countryModule.CountryProvider, { initialLocale: 'pt-BR', visitorCountryCode: 'BR' },
         React.createElement(providerModule.DemoSessionProvider, { store: h.wallet }, React.createElement(BlackjackGame, { suppliedEngine: h.engine }))))))
 }
 

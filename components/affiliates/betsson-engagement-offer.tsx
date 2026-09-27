@@ -12,6 +12,7 @@ import { createEngagementTrigger, type EngagementMilestone } from '@/lib/affilia
 import { trackBetssonPromo, type BetssonPromoEventContext } from '@/lib/affiliates/betsson-promo-analytics'
 import type { OriginalGameDefinition } from '@/lib/originals/definition'
 import styles from './betsson-engagement-offer.module.css'
+import { useCommercialImpression } from '@/components/analytics/use-commercial-impression'
 import { BrazilAdWarning } from './brazil-ad-warning'
 
 const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
@@ -70,6 +71,7 @@ function EngagementDialog({ model, game, milestone, onDismiss, t, route }: {
   const closeButton = useRef<HTMLButtonElement>(null)
   const restore = useRef<Element | null>(null)
   const context: BetssonPromoEventContext = { gameSlug: game.slug, originalId: game.id, category: game.category, route, milestone }
+  useCommercialImpression(dialog, `${route}:${milestone.completedCycleNumber}`, () => trackBetssonPromo('offer_impression', model, context))
   const dismiss = useCallback(() => {
     trackBetssonPromo('offer_dismiss', model, context)
     onDismiss()
@@ -78,7 +80,6 @@ function EngagementDialog({ model, game, milestone, onDismiss, t, route }: {
 
   useEffect(() => {
     restore.current = document.activeElement
-    trackBetssonPromo('offer_impression', model, context)
     closeButton.current?.focus()
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') { event.preventDefault(); dismiss(); return }

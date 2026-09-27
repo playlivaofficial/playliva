@@ -75,7 +75,7 @@ test('consent UI gates loaders/events, supports revocation/revisit, and preserve
     await act(async () => {
       root.render(React.createElement(AppRouterContext.Provider, { value: { push() {} } },
         React.createElement(PathnameContext.Provider, { value: '/en' },
-          React.createElement(CountryProvider, { initialLocale: 'en' },
+          React.createElement(CountryProvider, { initialLocale: 'en', visitorCountryCode: 'BR' },
             React.createElement(CookieBanner), React.createElement(SiteHeader), React.createElement(SiteFooter),
             React.createElement(ContactForm), React.createElement(ConsentedAnalytics),
             React.createElement(AffiliateButton, { operatorSlug: 'betsson-group-affiliates', category: 'crash' }, 'Partner link'),

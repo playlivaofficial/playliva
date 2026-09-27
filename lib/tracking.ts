@@ -10,8 +10,11 @@
  */
 
 import { hasAnalyticsConsent } from './consent'
+import { attributionPayload } from './attribution'
+import { commercialContext } from './commercial-context'
 
 export type TrackEventName =
+  | 'content_view'
   | 'discovery_search'
   | 'discovery_click'
   | 'provider_view'
@@ -45,6 +48,7 @@ export type TrackEventName =
   | 'demo_table_result'
 
 export type PageType =
+  | 'provider'
   | 'home'
   | 'games'
   | 'game'
@@ -60,6 +64,9 @@ export type PageType =
   | 'content'
 
 export interface TrackPayload {
+  campaignKey?: string
+  provider?: string
+  taxonomy?: string
   country?: string
   language?: string
   /** Legacy callers; normalized to the language field, never used as market. */
@@ -113,13 +120,13 @@ export interface TrackPayload {
   risk?: string
 }
 
-const EVENTS: readonly TrackEventName[] = ['discovery_search', 'discovery_click', 'provider_view', 'page_view', 'game_view', 'comparison_view',
+const EVENTS: readonly TrackEventName[] = ['content_view', 'discovery_search', 'discovery_click', 'provider_view', 'page_view', 'game_view', 'comparison_view',
   'category_view', 'where_to_play_view', 'operator_view', 'affiliate_impression',
   'affiliate_click', 'free_play_open', 'demo_round_start', 'demo_round_complete',
   'demo_balance_reset', 'play_real_view', 'play_real_click', 'offer_impression', 'offer_dismiss',
   'demo_cashout', 'demo_crash', 'demo_slot_win', 'demo_bonus_trigger', 'demo_free_spin_start',
   'demo_bonus_complete', 'demo_bonus_retrigger', 'demo_streak_increase', 'demo_sound_toggle', 'demo_table_action', 'demo_table_feature', 'demo_table_result']
-const CONTEXT_FIELDS = ['country', 'language', 'pageType', 'pageSlug', 'gameId', 'gameSlug',
+const CONTEXT_FIELDS = ['campaignKey', 'provider', 'taxonomy', 'country', 'language', 'pageType', 'pageSlug', 'gameId', 'gameSlug',
   'matchId', 'matchSlug', 'category', 'operatorId', 'operatorSlug', 'offerId', 'ctaLocation',
   'placement', 'destination', 'originalId', 'roundId', 'promoId', 'brand', 'surface',
   'trafficSource', 'utmSource', 'utmMedium', 'utmCampaign', 'utmContent', 'utmTerm',
@@ -164,7 +171,15 @@ export function track(event: TrackEventName, payload: TrackPayload = {}): void {
     event,
     timestamp: new Date().toISOString(),
     device: getDeviceClass(),
-    ...sanitizeTrackPayload(payload, window.location.pathname),
+    ...sanitizeTrackPayload({ ...attributionPayload(), ...payload, ...commercialContext(window.location.pathname, payload.placement) }, window.location.pathname),
+  }
+
+  // One activation, one random event receipt. A transport retry reuses its ID.
+  // No visitor ID, query string, partner URL, IP or referrer is sent.
+  if (['page_view', 'content_view', 'demo_round_start', 'demo_round_complete', 'affiliate_impression', 'offer_impression', 'affiliate_click'].includes(event) && typeof window.fetch === 'function') {
+    const body = JSON.stringify({ id: window.crypto.randomUUID(), ...data, event: event === 'offer_impression' ? 'affiliate_impression' : event })
+    const send = () => window.fetch('/api/events', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body, keepalive: true, credentials: 'same-origin' })
+    void send().then(response => { if (response.status >= 500 && hasAnalyticsConsent()) return send(); return response }).catch(() => { /* Measurement never interrupts navigation. */ })
   }
 
   if (typeof window !== 'undefined') {

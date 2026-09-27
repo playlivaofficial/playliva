@@ -1,5 +1,5 @@
 import { inPeriod, type Filters } from './model'
-export interface MetricEvent { date: string; event: string; count: number; route: string; game: string; locale: string; operator: string; placement: string; geo: string; device: string; source: string; utmContent: string }
+export interface MetricEvent { pageFamily?: string; taxonomy?: string; provider?: string; category?: string; campaign?: string; partnerCampaign?: string; platform?: string; date: string; event: string; count: number; route: string; game: string; locale: string; operator: string; placement: string; geo: string; device: string; source: string; utmContent: string }
 export const FUNNEL_EVENTS = ['page_view', 'demo_round_start', 'demo_round_complete', 'affiliate_impression', 'affiliate_click'] as const
 export function matchesEvent(row: MetricEvent, filters: Filters) {
   return inPeriod(row.date, filters) && (['game', 'route', 'locale', 'operator', 'placement', 'geo', 'device', 'source'] as const).every(key => !filters[key] || filters[key].toLowerCase() === row[key].toLowerCase())
@@ -7,12 +7,12 @@ export function matchesEvent(row: MetricEvent, filters: Filters) {
 export function aggregateEvents(rows: MetricEvent[], filters: Filters) {
   const matched = rows.filter(row => matchesEvent(row, filters))
   const sum = (events: string[]) => matched.filter(row => events.includes(row.event)).reduce((total, row) => total + row.count, 0)
-  const impressions = sum(['affiliate_impression', 'offer_impression']), clicks = sum(['affiliate_click'])
-  return { visits: sum(['page_view']), starts: sum(['demo_round_start']), cycles: sum(['demo_round_complete']), impressions, clicks, ctr: impressions ? clicks / impressions : null, popupImpressions: sum(['offer_impression']), popupClicks: matched.filter(row => row.event === 'affiliate_click' && row.placement === 'originals_engagement_offer').reduce((total, row) => total + row.count, 0) }
+  const impressions = sum(['affiliate_impression']), clicks = sum(['affiliate_click'])
+  return { visits: sum(['page_view']), contentViews: sum(['content_view']), starts: sum(['demo_round_start']), cycles: sum(['demo_round_complete']), impressions, clicks, ctr: impressions ? clicks / impressions : null, popupImpressions: matched.filter(row => row.event === 'affiliate_impression' && row.placement === 'originals_engagement_offer').reduce((total, row) => total + row.count, 0), popupClicks: matched.filter(row => row.event === 'affiliate_click' && row.placement === 'originals_engagement_offer').reduce((total, row) => total + row.count, 0) }
 }
 export function groupEvents(rows: MetricEvent[], filters: Filters, dimension: keyof MetricEvent) {
-  const values = [...new Set(rows.filter(row => matchesEvent(row, filters)).map(row => String(row[dimension])))]
-  return values.map(value => ({ value: value || 'Unspecified', ...aggregateEvents(rows.filter(row => String(row[dimension]) === value), filters) })).sort((a, b) => b.clicks - a.clicks || b.visits - a.visits)
+  const values = [...new Set(rows.filter(row => matchesEvent(row, filters)).map(row => String(row[dimension] ?? '')))]
+  return values.map(value => ({ value: value || 'Unspecified', ...aggregateEvents(rows.filter(row => String(row[dimension] ?? '') === value), filters) })).sort((a, b) => b.clicks - a.clicks || b.visits - a.visits)
 }
 export interface SearchRow { query: string; page: string; clicks: number; impressions: number; ctr: number; position: number; previousImpressions?: number; internalLinks?: number; landingPageChecked?: boolean }
 export function previousSearchPeriod(from: string, to: string) {

@@ -86,7 +86,7 @@ test('M12 warning area formula accounts for padded ads and responsive width', ()
 
 for (const locale of ['en', 'pt-BR', 'es-MX']) test(`M12 every existing promotional component carries one horizontal BR warning: ${locale}`, () => {
   const render = child => new JSDOM(renderToStaticMarkup(React.createElement(AppRouterContext.Provider, { value: { push() {}, prefetch() {} } },
-    React.createElement(PathnameContext.Provider, { value: '/en' }, React.createElement(country.CountryProvider, { initialLocale: locale }, child)))))
+    React.createElement(PathnameContext.Provider, { value: '/en' }, React.createElement(country.CountryProvider, { initialLocale: locale, visitorCountryCode: 'BR' }, child)))))
   for (const child of [
     React.createElement(banner.BetssonSponsoredBanner, { surface: 'homepage' }),
     React.createElement(providerCta.ProviderPlayRealCta, { gameSlug: 'aviator', category: 'crash' }),
