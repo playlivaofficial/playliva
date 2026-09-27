@@ -1,0 +1,1575 @@
+{
+  "observedAt": "2026-09-27T17:42:31.177Z",
+  "environment": "local-review-v2",
+  "base": "http://127.0.0.1:3130",
+  "sitemapCount": 313,
+  "failures": [],
+  "duplicates": [],
+  "pages": [
+    {
+      "path": "/en",
+      "inbound": 99,
+      "outbound": 39
+    },
+    {
+      "path": "/en/about",
+      "inbound": 99,
+      "outbound": 14
+    },
+    {
+      "path": "/en/affiliate-disclosure",
+      "inbound": 99,
+      "outbound": 14
+    },
+    {
+      "path": "/en/authors/playliva",
+      "inbound": 66,
+      "outbound": 46
+    },
+    {
+      "path": "/en/best/crash-games",
+      "inbound": 4,
+      "outbound": 21
+    },
+    {
+      "path": "/en/compare/aviator-vs-jetx",
+      "inbound": 6,
+      "outbound": 19
+    },
+    {
+      "path": "/en/compare/aviator-vs-spaceman",
+      "inbound": 6,
+      "outbound": 19
+    },
+    {
+      "path": "/en/compare/crazy-time-vs-lightning-roulette",
+      "inbound": 6,
+      "outbound": 19
+    },
+    {
+      "path": "/en/compare/gates-of-olympus-vs-sweet-bonanza",
+      "inbound": 6,
+      "outbound": 19
+    },
+    {
+      "path": "/en/compare/jetx-vs-spaceman",
+      "inbound": 6,
+      "outbound": 19
+    },
+    {
+      "path": "/en/compare/lightning-baccarat-vs-speed-baccarat",
+      "inbound": 4,
+      "outbound": 18
+    },
+    {
+      "path": "/en/compare/sugar-rush-vs-sugar-rush-1000",
+      "inbound": 4,
+      "outbound": 18
+    },
+    {
+      "path": "/en/compare/the-dog-house-vs-the-dog-house-megaways",
+      "inbound": 4,
+      "outbound": 18
+    },
+    {
+      "path": "/en/contact",
+      "inbound": 99,
+      "outbound": 14
+    },
+    {
+      "path": "/en/crash",
+      "inbound": 99,
+      "outbound": 32
+    },
+    {
+      "path": "/en/editorial-policy",
+      "inbound": 99,
+      "outbound": 15
+    },
+    {
+      "path": "/en/games",
+      "inbound": 99,
+      "outbound": 39
+    },
+    {
+      "path": "/en/games-like/aviator",
+      "inbound": 7,
+      "outbound": 23
+    },
+    {
+      "path": "/en/games-like/big-bass-bonanza",
+      "inbound": 3,
+      "outbound": 21
+    },
+    {
+      "path": "/en/games-like/blackjack-live",
+      "inbound": 3,
+      "outbound": 20
+    },
+    {
+      "path": "/en/games-like/crazy-time",
+      "inbound": 4,
+      "outbound": 22
+    },
+    {
+      "path": "/en/games-like/gates-of-olympus",
+      "inbound": 4,
+      "outbound": 22
+    },
+    {
+      "path": "/en/games-like/jetx",
+      "inbound": 5,
+      "outbound": 23
+    },
+    {
+      "path": "/en/games-like/lightning-roulette",
+      "inbound": 3,
+      "outbound": 22
+    },
+    {
+      "path": "/en/games-like/mines",
+      "inbound": 3,
+      "outbound": 20
+    },
+    {
+      "path": "/en/games-like/plinko",
+      "inbound": 3,
+      "outbound": 20
+    },
+    {
+      "path": "/en/games-like/reactoonz",
+      "inbound": 3,
+      "outbound": 20
+    },
+    {
+      "path": "/en/games-like/spaceman",
+      "inbound": 4,
+      "outbound": 23
+    },
+    {
+      "path": "/en/games-like/sugar-rush",
+      "inbound": 3,
+      "outbound": 20
+    },
+    {
+      "path": "/en/games-like/sweet-bonanza",
+      "inbound": 3,
+      "outbound": 22
+    },
+    {
+      "path": "/en/games-like/the-dog-house",
+      "inbound": 3,
+      "outbound": 20
+    },
+    {
+      "path": "/en/games/aviator",
+      "inbound": 21,
+      "outbound": 31
+    },
+    {
+      "path": "/en/games/bac-bo",
+      "inbound": 17,
+      "outbound": 27
+    },
+    {
+      "path": "/en/games/balloon",
+      "inbound": 14,
+      "outbound": 24
+    },
+    {
+      "path": "/en/games/big-bass-bonanza",
+      "inbound": 26,
+      "outbound": 28
+    },
+    {
+      "path": "/en/games/big-bass-splash",
+      "inbound": 27,
+      "outbound": 28
+    },
+    {
+      "path": "/en/games/blackjack-live",
+      "inbound": 18,
+      "outbound": 27
+    },
+    {
+      "path": "/en/games/book-of-dead",
+      "inbound": 7,
+      "outbound": 27
+    },
+    {
+      "path": "/en/games/carx",
+      "inbound": 15,
+      "outbound": 24
+    },
+    {
+      "path": "/en/games/crazy-time",
+      "inbound": 16,
+      "outbound": 29
+    },
+    {
+      "path": "/en/games/dr-toonz",
+      "inbound": 12,
+      "outbound": 25
+    },
+    {
+      "path": "/en/games/dream-catcher",
+      "inbound": 14,
+      "outbound": 27
+    },
+    {
+      "path": "/en/games/fruit-party",
+      "inbound": 25,
+      "outbound": 28
+    },
+    {
+      "path": "/en/games/gates-of-olympus",
+      "inbound": 23,
+      "outbound": 29
+    },
+    {
+      "path": "/en/games/gates-of-olympus-1000",
+      "inbound": 19,
+      "outbound": 28
+    },
+    {
+      "path": "/en/games/hot-fiesta",
+      "inbound": 19,
+      "outbound": 28
+    },
+    {
+      "path": "/en/games/immersive-roulette",
+      "inbound": 15,
+      "outbound": 27
+    },
+    {
+      "path": "/en/games/infinite-blackjack",
+      "inbound": 15,
+      "outbound": 27
+    },
+    {
+      "path": "/en/games/jetx",
+      "inbound": 13,
+      "outbound": 28
+    },
+    {
+      "path": "/en/games/lightning-baccarat",
+      "inbound": 11,
+      "outbound": 28
+    },
+    {
+      "path": "/en/games/lightning-roulette",
+      "inbound": 10,
+      "outbound": 28
+    },
+    {
+      "path": "/en/games/madame-destiny-megaways",
+      "inbound": 9,
+      "outbound": 28
+    },
+    {
+      "path": "/en/games/mines",
+      "inbound": 11,
+      "outbound": 24
+    },
+    {
+      "path": "/en/games/monopoly-live",
+      "inbound": 4,
+      "outbound": 26
+    },
+    {
+      "path": "/en/games/moon-princess",
+      "inbound": 8,
+      "outbound": 25
+    },
+    {
+      "path": "/en/games/plinko",
+      "inbound": 7,
+      "outbound": 24
+    },
+    {
+      "path": "/en/games/reactoonz",
+      "inbound": 11,
+      "outbound": 27
+    },
+    {
+      "path": "/en/games/reactoonz-100",
+      "inbound": 8,
+      "outbound": 25
+    },
+    {
+      "path": "/en/games/rise-of-olympus",
+      "inbound": 7,
+      "outbound": 25
+    },
+    {
+      "path": "/en/games/spaceman",
+      "inbound": 11,
+      "outbound": 31
+    },
+    {
+      "path": "/en/games/speed-baccarat",
+      "inbound": 8,
+      "outbound": 28
+    },
+    {
+      "path": "/en/games/spribe-dice",
+      "inbound": 14,
+      "outbound": 24
+    },
+    {
+      "path": "/en/games/spribe-keno",
+      "inbound": 11,
+      "outbound": 24
+    },
+    {
+      "path": "/en/games/starlight-princess",
+      "inbound": 4,
+      "outbound": 27
+    },
+    {
+      "path": "/en/games/starlight-princess-1000",
+      "inbound": 5,
+      "outbound": 27
+    },
+    {
+      "path": "/en/games/sugar-rush",
+      "inbound": 8,
+      "outbound": 30
+    },
+    {
+      "path": "/en/games/sugar-rush-1000",
+      "inbound": 7,
+      "outbound": 28
+    },
+    {
+      "path": "/en/games/sweet-bonanza",
+      "inbound": 8,
+      "outbound": 28
+    },
+    {
+      "path": "/en/games/sweet-bonanza-1000",
+      "inbound": 3,
+      "outbound": 27
+    },
+    {
+      "path": "/en/games/the-dog-house",
+      "inbound": 10,
+      "outbound": 30
+    },
+    {
+      "path": "/en/games/the-dog-house-megaways",
+      "inbound": 6,
+      "outbound": 29
+    },
+    {
+      "path": "/en/games/wild-west-gold",
+      "inbound": 6,
+      "outbound": 27
+    },
+    {
+      "path": "/en/games/wolf-gold",
+      "inbound": 4,
+      "outbound": 27
+    },
+    {
+      "path": "/en/instant-games",
+      "inbound": 99,
+      "outbound": 23
+    },
+    {
+      "path": "/en/live-casino",
+      "inbound": 99,
+      "outbound": 34
+    },
+    {
+      "path": "/en/offers",
+      "inbound": 99,
+      "outbound": 14
+    },
+    {
+      "path": "/en/operators",
+      "inbound": 99,
+      "outbound": 15
+    },
+    {
+      "path": "/en/operators/betsson-group-affiliates",
+      "inbound": 1,
+      "outbound": 16
+    },
+    {
+      "path": "/en/play",
+      "inbound": 99,
+      "outbound": 27
+    },
+    {
+      "path": "/en/play/blackjack",
+      "inbound": 12,
+      "outbound": 17
+    },
+    {
+      "path": "/en/play/capybara-gold",
+      "inbound": 34,
+      "outbound": 18
+    },
+    {
+      "path": "/en/play/carnaval-gold",
+      "inbound": 33,
+      "outbound": 26
+    },
+    {
+      "path": "/en/play/crash",
+      "inbound": 16,
+      "outbound": 18
+    },
+    {
+      "path": "/en/play/golaco",
+      "inbound": 33,
+      "outbound": 26
+    },
+    {
+      "path": "/en/play/liva-21-brasil",
+      "inbound": 20,
+      "outbound": 25
+    },
+    {
+      "path": "/en/play/liva-ginga",
+      "inbound": 15,
+      "outbound": 26
+    },
+    {
+      "path": "/en/play/liva-raio",
+      "inbound": 21,
+      "outbound": 25
+    },
+    {
+      "path": "/en/play/mines",
+      "inbound": 8,
+      "outbound": 18
+    },
+    {
+      "path": "/en/play/roulette",
+      "inbound": 7,
+      "outbound": 17
+    },
+    {
+      "path": "/en/play/samba-drop",
+      "inbound": 14,
+      "outbound": 26
+    },
+    {
+      "path": "/en/play/skuptu-levanta",
+      "inbound": 15,
+      "outbound": 26
+    },
+    {
+      "path": "/en/providers",
+      "inbound": 8,
+      "outbound": 20
+    },
+    {
+      "path": "/en/providers/evolution",
+      "inbound": 12,
+      "outbound": 31
+    },
+    {
+      "path": "/en/providers/play-n-go",
+      "inbound": 8,
+      "outbound": 23
+    },
+    {
+      "path": "/en/providers/pragmatic-play",
+      "inbound": 21,
+      "outbound": 37
+    },
+    {
+      "path": "/en/providers/smartsoft",
+      "inbound": 5,
+      "outbound": 20
+    },
+    {
+      "path": "/en/providers/spribe",
+      "inbound": 8,
+      "outbound": 24
+    },
+    {
+      "path": "/en/responsible-gaming",
+      "inbound": 99,
+      "outbound": 14
+    },
+    {
+      "path": "/en/slots",
+      "inbound": 99,
+      "outbound": 43
+    },
+    {
+      "path": "/en/table-games",
+      "inbound": 99,
+      "outbound": 17
+    },
+    {
+      "path": "/es-mx",
+      "inbound": 101,
+      "outbound": 40
+    },
+    {
+      "path": "/es-mx/about",
+      "inbound": 101,
+      "outbound": 14
+    },
+    {
+      "path": "/es-mx/affiliate-disclosure",
+      "inbound": 101,
+      "outbound": 14
+    },
+    {
+      "path": "/es-mx/authors/playliva",
+      "inbound": 68,
+      "outbound": 46
+    },
+    {
+      "path": "/es-mx/best/best-crash-games-mexico",
+      "inbound": 1,
+      "outbound": 22
+    },
+    {
+      "path": "/es-mx/best/best-slots-mexico",
+      "inbound": 1,
+      "outbound": 22
+    },
+    {
+      "path": "/es-mx/best/crash-games",
+      "inbound": 4,
+      "outbound": 21
+    },
+    {
+      "path": "/es-mx/compare/aviator-vs-jetx",
+      "inbound": 6,
+      "outbound": 19
+    },
+    {
+      "path": "/es-mx/compare/aviator-vs-spaceman",
+      "inbound": 6,
+      "outbound": 19
+    },
+    {
+      "path": "/es-mx/compare/crazy-time-vs-lightning-roulette",
+      "inbound": 6,
+      "outbound": 19
+    },
+    {
+      "path": "/es-mx/compare/gates-of-olympus-vs-sweet-bonanza",
+      "inbound": 6,
+      "outbound": 19
+    },
+    {
+      "path": "/es-mx/compare/jetx-vs-spaceman",
+      "inbound": 6,
+      "outbound": 19
+    },
+    {
+      "path": "/es-mx/compare/lightning-baccarat-vs-speed-baccarat",
+      "inbound": 4,
+      "outbound": 18
+    },
+    {
+      "path": "/es-mx/compare/sugar-rush-vs-sugar-rush-1000",
+      "inbound": 4,
+      "outbound": 18
+    },
+    {
+      "path": "/es-mx/compare/the-dog-house-vs-the-dog-house-megaways",
+      "inbound": 4,
+      "outbound": 18
+    },
+    {
+      "path": "/es-mx/contact",
+      "inbound": 101,
+      "outbound": 14
+    },
+    {
+      "path": "/es-mx/crash",
+      "inbound": 101,
+      "outbound": 33
+    },
+    {
+      "path": "/es-mx/editorial-policy",
+      "inbound": 101,
+      "outbound": 15
+    },
+    {
+      "path": "/es-mx/games",
+      "inbound": 101,
+      "outbound": 39
+    },
+    {
+      "path": "/es-mx/games-like/aviator",
+      "inbound": 8,
+      "outbound": 23
+    },
+    {
+      "path": "/es-mx/games-like/big-bass-bonanza",
+      "inbound": 4,
+      "outbound": 21
+    },
+    {
+      "path": "/es-mx/games-like/blackjack-live",
+      "inbound": 3,
+      "outbound": 20
+    },
+    {
+      "path": "/es-mx/games-like/crazy-time",
+      "inbound": 4,
+      "outbound": 22
+    },
+    {
+      "path": "/es-mx/games-like/gates-of-olympus",
+      "inbound": 5,
+      "outbound": 22
+    },
+    {
+      "path": "/es-mx/games-like/jetx",
+      "inbound": 6,
+      "outbound": 23
+    },
+    {
+      "path": "/es-mx/games-like/lightning-roulette",
+      "inbound": 3,
+      "outbound": 22
+    },
+    {
+      "path": "/es-mx/games-like/mines",
+      "inbound": 3,
+      "outbound": 20
+    },
+    {
+      "path": "/es-mx/games-like/plinko",
+      "inbound": 3,
+      "outbound": 20
+    },
+    {
+      "path": "/es-mx/games-like/reactoonz",
+      "inbound": 3,
+      "outbound": 20
+    },
+    {
+      "path": "/es-mx/games-like/spaceman",
+      "inbound": 5,
+      "outbound": 23
+    },
+    {
+      "path": "/es-mx/games-like/sugar-rush",
+      "inbound": 3,
+      "outbound": 20
+    },
+    {
+      "path": "/es-mx/games-like/sweet-bonanza",
+      "inbound": 4,
+      "outbound": 22
+    },
+    {
+      "path": "/es-mx/games-like/the-dog-house",
+      "inbound": 3,
+      "outbound": 20
+    },
+    {
+      "path": "/es-mx/games/aviator",
+      "inbound": 22,
+      "outbound": 31
+    },
+    {
+      "path": "/es-mx/games/bac-bo",
+      "inbound": 17,
+      "outbound": 27
+    },
+    {
+      "path": "/es-mx/games/balloon",
+      "inbound": 14,
+      "outbound": 24
+    },
+    {
+      "path": "/es-mx/games/big-bass-bonanza",
+      "inbound": 27,
+      "outbound": 28
+    },
+    {
+      "path": "/es-mx/games/big-bass-splash",
+      "inbound": 27,
+      "outbound": 28
+    },
+    {
+      "path": "/es-mx/games/blackjack-live",
+      "inbound": 18,
+      "outbound": 27
+    },
+    {
+      "path": "/es-mx/games/book-of-dead",
+      "inbound": 7,
+      "outbound": 27
+    },
+    {
+      "path": "/es-mx/games/carx",
+      "inbound": 15,
+      "outbound": 24
+    },
+    {
+      "path": "/es-mx/games/crazy-time",
+      "inbound": 17,
+      "outbound": 29
+    },
+    {
+      "path": "/es-mx/games/dr-toonz",
+      "inbound": 12,
+      "outbound": 25
+    },
+    {
+      "path": "/es-mx/games/dream-catcher",
+      "inbound": 14,
+      "outbound": 27
+    },
+    {
+      "path": "/es-mx/games/fruit-party",
+      "inbound": 25,
+      "outbound": 28
+    },
+    {
+      "path": "/es-mx/games/gates-of-olympus",
+      "inbound": 24,
+      "outbound": 29
+    },
+    {
+      "path": "/es-mx/games/gates-of-olympus-1000",
+      "inbound": 19,
+      "outbound": 28
+    },
+    {
+      "path": "/es-mx/games/hot-fiesta",
+      "inbound": 19,
+      "outbound": 28
+    },
+    {
+      "path": "/es-mx/games/immersive-roulette",
+      "inbound": 15,
+      "outbound": 27
+    },
+    {
+      "path": "/es-mx/games/infinite-blackjack",
+      "inbound": 15,
+      "outbound": 27
+    },
+    {
+      "path": "/es-mx/games/jetx",
+      "inbound": 14,
+      "outbound": 28
+    },
+    {
+      "path": "/es-mx/games/lightning-baccarat",
+      "inbound": 11,
+      "outbound": 28
+    },
+    {
+      "path": "/es-mx/games/lightning-roulette",
+      "inbound": 10,
+      "outbound": 28
+    },
+    {
+      "path": "/es-mx/games/madame-destiny-megaways",
+      "inbound": 9,
+      "outbound": 28
+    },
+    {
+      "path": "/es-mx/games/mines",
+      "inbound": 11,
+      "outbound": 24
+    },
+    {
+      "path": "/es-mx/games/monopoly-live",
+      "inbound": 4,
+      "outbound": 26
+    },
+    {
+      "path": "/es-mx/games/moon-princess",
+      "inbound": 8,
+      "outbound": 25
+    },
+    {
+      "path": "/es-mx/games/plinko",
+      "inbound": 7,
+      "outbound": 24
+    },
+    {
+      "path": "/es-mx/games/reactoonz",
+      "inbound": 11,
+      "outbound": 27
+    },
+    {
+      "path": "/es-mx/games/reactoonz-100",
+      "inbound": 8,
+      "outbound": 25
+    },
+    {
+      "path": "/es-mx/games/rise-of-olympus",
+      "inbound": 7,
+      "outbound": 25
+    },
+    {
+      "path": "/es-mx/games/spaceman",
+      "inbound": 12,
+      "outbound": 31
+    },
+    {
+      "path": "/es-mx/games/speed-baccarat",
+      "inbound": 8,
+      "outbound": 28
+    },
+    {
+      "path": "/es-mx/games/spribe-dice",
+      "inbound": 14,
+      "outbound": 24
+    },
+    {
+      "path": "/es-mx/games/spribe-keno",
+      "inbound": 11,
+      "outbound": 24
+    },
+    {
+      "path": "/es-mx/games/starlight-princess",
+      "inbound": 4,
+      "outbound": 27
+    },
+    {
+      "path": "/es-mx/games/starlight-princess-1000",
+      "inbound": 5,
+      "outbound": 27
+    },
+    {
+      "path": "/es-mx/games/sugar-rush",
+      "inbound": 8,
+      "outbound": 30
+    },
+    {
+      "path": "/es-mx/games/sugar-rush-1000",
+      "inbound": 7,
+      "outbound": 28
+    },
+    {
+      "path": "/es-mx/games/sweet-bonanza",
+      "inbound": 9,
+      "outbound": 28
+    },
+    {
+      "path": "/es-mx/games/sweet-bonanza-1000",
+      "inbound": 3,
+      "outbound": 27
+    },
+    {
+      "path": "/es-mx/games/the-dog-house",
+      "inbound": 10,
+      "outbound": 30
+    },
+    {
+      "path": "/es-mx/games/the-dog-house-megaways",
+      "inbound": 6,
+      "outbound": 29
+    },
+    {
+      "path": "/es-mx/games/wild-west-gold",
+      "inbound": 6,
+      "outbound": 27
+    },
+    {
+      "path": "/es-mx/games/wolf-gold",
+      "inbound": 4,
+      "outbound": 27
+    },
+    {
+      "path": "/es-mx/instant-games",
+      "inbound": 101,
+      "outbound": 23
+    },
+    {
+      "path": "/es-mx/live-casino",
+      "inbound": 101,
+      "outbound": 34
+    },
+    {
+      "path": "/es-mx/offers",
+      "inbound": 101,
+      "outbound": 14
+    },
+    {
+      "path": "/es-mx/operators",
+      "inbound": 101,
+      "outbound": 15
+    },
+    {
+      "path": "/es-mx/operators/betsson-group-affiliates",
+      "inbound": 1,
+      "outbound": 16
+    },
+    {
+      "path": "/es-mx/play",
+      "inbound": 101,
+      "outbound": 27
+    },
+    {
+      "path": "/es-mx/play/blackjack",
+      "inbound": 12,
+      "outbound": 17
+    },
+    {
+      "path": "/es-mx/play/capybara-gold",
+      "inbound": 34,
+      "outbound": 18
+    },
+    {
+      "path": "/es-mx/play/carnaval-gold",
+      "inbound": 33,
+      "outbound": 26
+    },
+    {
+      "path": "/es-mx/play/crash",
+      "inbound": 16,
+      "outbound": 18
+    },
+    {
+      "path": "/es-mx/play/golaco",
+      "inbound": 33,
+      "outbound": 26
+    },
+    {
+      "path": "/es-mx/play/liva-21-brasil",
+      "inbound": 20,
+      "outbound": 25
+    },
+    {
+      "path": "/es-mx/play/liva-ginga",
+      "inbound": 15,
+      "outbound": 26
+    },
+    {
+      "path": "/es-mx/play/liva-raio",
+      "inbound": 21,
+      "outbound": 25
+    },
+    {
+      "path": "/es-mx/play/mines",
+      "inbound": 8,
+      "outbound": 18
+    },
+    {
+      "path": "/es-mx/play/roulette",
+      "inbound": 7,
+      "outbound": 17
+    },
+    {
+      "path": "/es-mx/play/samba-drop",
+      "inbound": 14,
+      "outbound": 26
+    },
+    {
+      "path": "/es-mx/play/skuptu-levanta",
+      "inbound": 15,
+      "outbound": 26
+    },
+    {
+      "path": "/es-mx/providers",
+      "inbound": 8,
+      "outbound": 20
+    },
+    {
+      "path": "/es-mx/providers/evolution",
+      "inbound": 12,
+      "outbound": 31
+    },
+    {
+      "path": "/es-mx/providers/play-n-go",
+      "inbound": 8,
+      "outbound": 23
+    },
+    {
+      "path": "/es-mx/providers/pragmatic-play",
+      "inbound": 21,
+      "outbound": 37
+    },
+    {
+      "path": "/es-mx/providers/smartsoft",
+      "inbound": 5,
+      "outbound": 20
+    },
+    {
+      "path": "/es-mx/providers/spribe",
+      "inbound": 8,
+      "outbound": 24
+    },
+    {
+      "path": "/es-mx/responsible-gaming",
+      "inbound": 101,
+      "outbound": 14
+    },
+    {
+      "path": "/es-mx/slots",
+      "inbound": 101,
+      "outbound": 44
+    },
+    {
+      "path": "/es-mx/table-games",
+      "inbound": 101,
+      "outbound": 17
+    },
+    {
+      "path": "/pt-br",
+      "inbound": 110,
+      "outbound": 41
+    },
+    {
+      "path": "/pt-br/about",
+      "inbound": 110,
+      "outbound": 14
+    },
+    {
+      "path": "/pt-br/affiliate-disclosure",
+      "inbound": 110,
+      "outbound": 14
+    },
+    {
+      "path": "/pt-br/authors/playliva",
+      "inbound": 77,
+      "outbound": 46
+    },
+    {
+      "path": "/pt-br/best/best-crash-games-brazil",
+      "inbound": 2,
+      "outbound": 27
+    },
+    {
+      "path": "/pt-br/best/best-slots-brazil",
+      "inbound": 1,
+      "outbound": 28
+    },
+    {
+      "path": "/pt-br/best/crash-games",
+      "inbound": 6,
+      "outbound": 29
+    },
+    {
+      "path": "/pt-br/compare/aviator-vs-jetx",
+      "inbound": 9,
+      "outbound": 22
+    },
+    {
+      "path": "/pt-br/compare/aviator-vs-spaceman",
+      "inbound": 9,
+      "outbound": 22
+    },
+    {
+      "path": "/pt-br/compare/crazy-time-vs-lightning-roulette",
+      "inbound": 10,
+      "outbound": 23
+    },
+    {
+      "path": "/pt-br/compare/gates-of-olympus-vs-sweet-bonanza",
+      "inbound": 9,
+      "outbound": 23
+    },
+    {
+      "path": "/pt-br/compare/jetx-vs-spaceman",
+      "inbound": 8,
+      "outbound": 22
+    },
+    {
+      "path": "/pt-br/compare/lightning-baccarat-vs-speed-baccarat",
+      "inbound": 4,
+      "outbound": 18
+    },
+    {
+      "path": "/pt-br/compare/sugar-rush-vs-sugar-rush-1000",
+      "inbound": 4,
+      "outbound": 18
+    },
+    {
+      "path": "/pt-br/compare/the-dog-house-vs-the-dog-house-megaways",
+      "inbound": 4,
+      "outbound": 18
+    },
+    {
+      "path": "/pt-br/contact",
+      "inbound": 110,
+      "outbound": 14
+    },
+    {
+      "path": "/pt-br/crash",
+      "inbound": 110,
+      "outbound": 34
+    },
+    {
+      "path": "/pt-br/editorial-policy",
+      "inbound": 110,
+      "outbound": 15
+    },
+    {
+      "path": "/pt-br/games",
+      "inbound": 110,
+      "outbound": 39
+    },
+    {
+      "path": "/pt-br/games-like/aviator",
+      "inbound": 9,
+      "outbound": 28
+    },
+    {
+      "path": "/pt-br/games-like/big-bass-bonanza",
+      "inbound": 5,
+      "outbound": 23
+    },
+    {
+      "path": "/pt-br/games-like/blackjack-live",
+      "inbound": 4,
+      "outbound": 22
+    },
+    {
+      "path": "/pt-br/games-like/crazy-time",
+      "inbound": 7,
+      "outbound": 27
+    },
+    {
+      "path": "/pt-br/games-like/gates-of-olympus",
+      "inbound": 6,
+      "outbound": 27
+    },
+    {
+      "path": "/pt-br/games-like/jetx",
+      "inbound": 7,
+      "outbound": 25
+    },
+    {
+      "path": "/pt-br/games-like/lightning-roulette",
+      "inbound": 4,
+      "outbound": 24
+    },
+    {
+      "path": "/pt-br/games-like/mines",
+      "inbound": 3,
+      "outbound": 20
+    },
+    {
+      "path": "/pt-br/games-like/plinko",
+      "inbound": 3,
+      "outbound": 20
+    },
+    {
+      "path": "/pt-br/games-like/reactoonz",
+      "inbound": 3,
+      "outbound": 20
+    },
+    {
+      "path": "/pt-br/games-like/spaceman",
+      "inbound": 6,
+      "outbound": 25
+    },
+    {
+      "path": "/pt-br/games-like/sugar-rush",
+      "inbound": 3,
+      "outbound": 20
+    },
+    {
+      "path": "/pt-br/games-like/sweet-bonanza",
+      "inbound": 5,
+      "outbound": 24
+    },
+    {
+      "path": "/pt-br/games-like/the-dog-house",
+      "inbound": 3,
+      "outbound": 20
+    },
+    {
+      "path": "/pt-br/games/aviator",
+      "inbound": 26,
+      "outbound": 33
+    },
+    {
+      "path": "/pt-br/games/bac-bo",
+      "inbound": 17,
+      "outbound": 27
+    },
+    {
+      "path": "/pt-br/games/balloon",
+      "inbound": 14,
+      "outbound": 24
+    },
+    {
+      "path": "/pt-br/games/big-bass-bonanza",
+      "inbound": 31,
+      "outbound": 30
+    },
+    {
+      "path": "/pt-br/games/big-bass-splash",
+      "inbound": 27,
+      "outbound": 28
+    },
+    {
+      "path": "/pt-br/games/blackjack-live",
+      "inbound": 19,
+      "outbound": 29
+    },
+    {
+      "path": "/pt-br/games/book-of-dead",
+      "inbound": 7,
+      "outbound": 27
+    },
+    {
+      "path": "/pt-br/games/carx",
+      "inbound": 15,
+      "outbound": 24
+    },
+    {
+      "path": "/pt-br/games/crazy-time",
+      "inbound": 20,
+      "outbound": 31
+    },
+    {
+      "path": "/pt-br/games/dr-toonz",
+      "inbound": 12,
+      "outbound": 25
+    },
+    {
+      "path": "/pt-br/games/dream-catcher",
+      "inbound": 14,
+      "outbound": 29
+    },
+    {
+      "path": "/pt-br/games/fruit-party",
+      "inbound": 25,
+      "outbound": 28
+    },
+    {
+      "path": "/pt-br/games/gates-of-olympus",
+      "inbound": 28,
+      "outbound": 31
+    },
+    {
+      "path": "/pt-br/games/gates-of-olympus-1000",
+      "inbound": 19,
+      "outbound": 28
+    },
+    {
+      "path": "/pt-br/games/hot-fiesta",
+      "inbound": 19,
+      "outbound": 28
+    },
+    {
+      "path": "/pt-br/games/immersive-roulette",
+      "inbound": 15,
+      "outbound": 27
+    },
+    {
+      "path": "/pt-br/games/infinite-blackjack",
+      "inbound": 15,
+      "outbound": 27
+    },
+    {
+      "path": "/pt-br/games/jetx",
+      "inbound": 18,
+      "outbound": 30
+    },
+    {
+      "path": "/pt-br/games/lightning-baccarat",
+      "inbound": 11,
+      "outbound": 28
+    },
+    {
+      "path": "/pt-br/games/lightning-roulette",
+      "inbound": 13,
+      "outbound": 30
+    },
+    {
+      "path": "/pt-br/games/madame-destiny-megaways",
+      "inbound": 9,
+      "outbound": 28
+    },
+    {
+      "path": "/pt-br/games/mines",
+      "inbound": 11,
+      "outbound": 24
+    },
+    {
+      "path": "/pt-br/games/monopoly-live",
+      "inbound": 5,
+      "outbound": 28
+    },
+    {
+      "path": "/pt-br/games/moon-princess",
+      "inbound": 8,
+      "outbound": 25
+    },
+    {
+      "path": "/pt-br/games/plinko",
+      "inbound": 7,
+      "outbound": 24
+    },
+    {
+      "path": "/pt-br/games/reactoonz",
+      "inbound": 11,
+      "outbound": 27
+    },
+    {
+      "path": "/pt-br/games/reactoonz-100",
+      "inbound": 8,
+      "outbound": 25
+    },
+    {
+      "path": "/pt-br/games/rise-of-olympus",
+      "inbound": 7,
+      "outbound": 25
+    },
+    {
+      "path": "/pt-br/games/spaceman",
+      "inbound": 16,
+      "outbound": 33
+    },
+    {
+      "path": "/pt-br/games/speed-baccarat",
+      "inbound": 8,
+      "outbound": 28
+    },
+    {
+      "path": "/pt-br/games/spribe-dice",
+      "inbound": 14,
+      "outbound": 24
+    },
+    {
+      "path": "/pt-br/games/spribe-keno",
+      "inbound": 11,
+      "outbound": 24
+    },
+    {
+      "path": "/pt-br/games/starlight-princess",
+      "inbound": 4,
+      "outbound": 27
+    },
+    {
+      "path": "/pt-br/games/starlight-princess-1000",
+      "inbound": 5,
+      "outbound": 27
+    },
+    {
+      "path": "/pt-br/games/sugar-rush",
+      "inbound": 8,
+      "outbound": 30
+    },
+    {
+      "path": "/pt-br/games/sugar-rush-1000",
+      "inbound": 7,
+      "outbound": 28
+    },
+    {
+      "path": "/pt-br/games/sweet-bonanza",
+      "inbound": 14,
+      "outbound": 30
+    },
+    {
+      "path": "/pt-br/games/sweet-bonanza-1000",
+      "inbound": 3,
+      "outbound": 27
+    },
+    {
+      "path": "/pt-br/games/the-dog-house",
+      "inbound": 10,
+      "outbound": 30
+    },
+    {
+      "path": "/pt-br/games/the-dog-house-megaways",
+      "inbound": 6,
+      "outbound": 29
+    },
+    {
+      "path": "/pt-br/games/wild-west-gold",
+      "inbound": 6,
+      "outbound": 27
+    },
+    {
+      "path": "/pt-br/games/wolf-gold",
+      "inbound": 4,
+      "outbound": 27
+    },
+    {
+      "path": "/pt-br/instant-games",
+      "inbound": 110,
+      "outbound": 23
+    },
+    {
+      "path": "/pt-br/live-casino",
+      "inbound": 110,
+      "outbound": 37
+    },
+    {
+      "path": "/pt-br/offers",
+      "inbound": 110,
+      "outbound": 14
+    },
+    {
+      "path": "/pt-br/operators",
+      "inbound": 110,
+      "outbound": 15
+    },
+    {
+      "path": "/pt-br/operators/betsson-group-affiliates",
+      "inbound": 40,
+      "outbound": 24
+    },
+    {
+      "path": "/pt-br/play",
+      "inbound": 110,
+      "outbound": 27
+    },
+    {
+      "path": "/pt-br/play/blackjack",
+      "inbound": 13,
+      "outbound": 17
+    },
+    {
+      "path": "/pt-br/play/capybara-gold",
+      "inbound": 34,
+      "outbound": 18
+    },
+    {
+      "path": "/pt-br/play/carnaval-gold",
+      "inbound": 33,
+      "outbound": 26
+    },
+    {
+      "path": "/pt-br/play/crash",
+      "inbound": 17,
+      "outbound": 18
+    },
+    {
+      "path": "/pt-br/play/golaco",
+      "inbound": 33,
+      "outbound": 26
+    },
+    {
+      "path": "/pt-br/play/liva-21-brasil",
+      "inbound": 20,
+      "outbound": 25
+    },
+    {
+      "path": "/pt-br/play/liva-ginga",
+      "inbound": 15,
+      "outbound": 26
+    },
+    {
+      "path": "/pt-br/play/liva-raio",
+      "inbound": 21,
+      "outbound": 25
+    },
+    {
+      "path": "/pt-br/play/mines",
+      "inbound": 8,
+      "outbound": 18
+    },
+    {
+      "path": "/pt-br/play/roulette",
+      "inbound": 7,
+      "outbound": 17
+    },
+    {
+      "path": "/pt-br/play/samba-drop",
+      "inbound": 14,
+      "outbound": 26
+    },
+    {
+      "path": "/pt-br/play/skuptu-levanta",
+      "inbound": 15,
+      "outbound": 26
+    },
+    {
+      "path": "/pt-br/providers",
+      "inbound": 8,
+      "outbound": 20
+    },
+    {
+      "path": "/pt-br/providers/evolution",
+      "inbound": 17,
+      "outbound": 31
+    },
+    {
+      "path": "/pt-br/providers/play-n-go",
+      "inbound": 8,
+      "outbound": 23
+    },
+    {
+      "path": "/pt-br/providers/pragmatic-play",
+      "inbound": 27,
+      "outbound": 38
+    },
+    {
+      "path": "/pt-br/providers/smartsoft",
+      "inbound": 5,
+      "outbound": 20
+    },
+    {
+      "path": "/pt-br/providers/spribe",
+      "inbound": 8,
+      "outbound": 24
+    },
+    {
+      "path": "/pt-br/responsible-gaming",
+      "inbound": 110,
+      "outbound": 14
+    },
+    {
+      "path": "/pt-br/slots",
+      "inbound": 110,
+      "outbound": 45
+    },
+    {
+      "path": "/pt-br/table-games",
+      "inbound": 110,
+      "outbound": 17
+    },
+    {
+      "path": "/pt-br/where-to-play/aviator",
+      "inbound": 6,
+      "outbound": 23
+    },
+    {
+      "path": "/pt-br/where-to-play/big-bass-bonanza",
+      "inbound": 4,
+      "outbound": 22
+    },
+    {
+      "path": "/pt-br/where-to-play/blackjack-live",
+      "inbound": 2,
+      "outbound": 21
+    },
+    {
+      "path": "/pt-br/where-to-play/crazy-time",
+      "inbound": 4,
+      "outbound": 22
+    },
+    {
+      "path": "/pt-br/where-to-play/gates-of-olympus",
+      "inbound": 4,
+      "outbound": 23
+    },
+    {
+      "path": "/pt-br/where-to-play/jetx",
+      "inbound": 7,
+      "outbound": 23
+    },
+    {
+      "path": "/pt-br/where-to-play/lightning-roulette",
+      "inbound": 5,
+      "outbound": 22
+    },
+    {
+      "path": "/pt-br/where-to-play/spaceman",
+      "inbound": 7,
+      "outbound": 23
+    },
+    {
+      "path": "/pt-br/where-to-play/sweet-bonanza",
+      "inbound": 5,
+      "outbound": 23
+    }
+  ]
+}

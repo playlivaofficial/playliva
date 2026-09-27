@@ -12,6 +12,9 @@
 import { hasAnalyticsConsent } from './consent'
 
 export type TrackEventName =
+  | 'discovery_search'
+  | 'discovery_click'
+  | 'provider_view'
   | 'page_view'
   | 'game_view'
   | 'comparison_view'
@@ -110,7 +113,7 @@ export interface TrackPayload {
   risk?: string
 }
 
-const EVENTS: readonly TrackEventName[] = ['page_view', 'game_view', 'comparison_view',
+const EVENTS: readonly TrackEventName[] = ['discovery_search', 'discovery_click', 'provider_view', 'page_view', 'game_view', 'comparison_view',
   'category_view', 'where_to_play_view', 'operator_view', 'affiliate_impression',
   'affiliate_click', 'free_play_open', 'demo_round_start', 'demo_round_complete',
   'demo_balance_reset', 'play_real_view', 'play_real_click', 'offer_impression', 'offer_dismiss',

@@ -1,3 +1,11 @@
+import { DiscoveryEvents } from '@/components/discovery/events'
+import { catalogSummaries } from '@/lib/catalog'
+import { discoveryEntries } from '@/lib/discovery/catalog'
+import { discoveryCopy } from '@/lib/discovery/copy'
+import { editorialLinks } from '@/lib/discovery/links'
+import { InstantGuide } from '@/components/discovery/instant-guide'
+import { JsonLd } from '@/components/json-ld'
+import { discoveryListSchema } from '@/lib/discovery/schema'
 import type { Locale } from '@/lib/types'
 import type { ReferenceGame } from '@/lib/catalog/types'
 import type { ReferenceComparison, ReferenceReadingList } from '@/lib/catalog/editorial'
@@ -31,7 +39,7 @@ export function ReferenceGameView({ game, locale }: { game: ReferenceGame; local
   const c = catalogCopy(locale), content = game.content[locale], summary = referenceSummary(game, locale)
   const comparisons = REFERENCE_COMPARISONS.filter(item => item.a === game.slug || item.b === game.slug)
   const readingList = getReferenceReadingList(game.slug)
-  return <div data-reference-detail={game.slug}>
+  return <DiscoveryEvents surface="reference" slug={game.slug}><div data-reference-detail={game.slug}>
     <PageHero eyebrow={`${c.reference} / ${summary.provider}`} title={game.title} description={content.summary} breadcrumbs={[{ label: c.home, href: '/' }, { label: c.games, href: '/games' }, { label: game.title }]} sponsor={<BetssonSponsoredBanner surface="game" layout="compact-header" />} />
     <div className={styles.earlyCta}><ProviderPlayRealCta gameSlug={game.slug} category={game.category} /></div>
     <article className={`${styles.article} ${styles.prose}`}>
@@ -57,7 +65,7 @@ export function ReferenceGameView({ game, locale }: { game: ReferenceGame; local
       </section>}
       <Evidence games={[game]} locale={locale} />
     </article>
-  </div>
+  </div></DiscoveryEvents>
 }
 
 export function ReferenceComparisonView({ comparison, locale }: { comparison: ReferenceComparison; locale: Locale }) {
@@ -80,18 +88,18 @@ export function ReferenceReadingView({ list, locale }: { list: ReferenceReadingL
 
 export function ProviderIndexView({ locale }: { locale: Locale }) {
   const c = catalogCopy(locale)
-  return <><PageHero eyebrow={c.reference} title={c.providers} description={c.providersIntro} breadcrumbs={[{ label: c.home, href: '/' }, { label: c.games, href: '/games' }, { label: c.providers }]} sponsor={<BetssonSponsoredBanner surface="providers" layout="compact-header" />} /><Section><div className="grid gap-5 md:grid-cols-2">{PROVIDERS.map(provider => <ContentCard key={provider.id}><h2 className="text-xl font-bold">{provider.name}</h2><p className="mt-3 text-muted-foreground leading-relaxed">{provider.overview[locale]}</p><div className={styles.links}><LocaleLink href={`/providers/${provider.id}`}>{REFERENCE_GAMES.filter(g => g.providerId === provider.id).length} {c.catalogCount} →</LocaleLink></div></ContentCard>)}</div></Section></>
+  return <><PageHero eyebrow={c.reference} title={c.providers} description={c.providersIntro} breadcrumbs={[{ label: c.home, href: '/' }, { label: c.games, href: '/games' }, { label: c.providers }]} sponsor={<BetssonSponsoredBanner surface="providers" layout="compact-header" />} /><Section><div className="grid gap-5 md:grid-cols-2">{PROVIDERS.map(provider => <ContentCard key={provider.id}><h2 className="text-xl font-bold">{provider.name}</h2><p className="mt-3 text-muted-foreground leading-relaxed">{provider.overview[locale]}</p><div className={styles.links}><LocaleLink href={`/providers/${provider.id}`}>{catalogSummaries(locale).filter(g => g.providerId === provider.id).length} {c.catalogCount} →</LocaleLink></div></ContentCard>)}</div></Section></>
 }
 
 export function ProviderView({ providerId, locale }: { providerId: string; locale: Locale }) {
-  const c = catalogCopy(locale), provider = getReferenceProvider(providerId)!, games = REFERENCE_GAMES.filter(game => game.providerId === provider.id)
+  const c = catalogCopy(locale), provider = getReferenceProvider(providerId)!, games = catalogSummaries(locale).filter(game => game.providerId === provider.id)
   const categories = [...new Set(games.map(game => game.category))]
   const title = provider.id === 'pragmatic-play' && locale === 'pt-BR'
     ? 'Jogos da Pragmatic Play: catálogo e mecânicas'
     : provider.id === 'evolution' && locale === 'pt-BR'
       ? 'Jogos da Evolution: cassino ao vivo e game shows'
     : provider.name
-  return <div data-reference-provider={provider.id}>
+  return <DiscoveryEvents surface="provider" slug={provider.id}><div data-reference-provider={provider.id}>
     <PageHero eyebrow={c.providers} title={title} description={provider.overview[locale]} breadcrumbs={[{ label: c.home, href: '/' }, { label: c.providers, href: '/providers' }, { label: provider.name }]} sponsor={<BetssonSponsoredBanner surface="provider" layout="compact-header" />}>
       <div className={styles.links}>
         {categories.map(category => <LocaleLink key={category} href={`/${category}`}>{getCategoryName(category, locale)}</LocaleLink>)}
@@ -112,13 +120,18 @@ export function ProviderView({ providerId, locale }: { providerId: string; local
         </div>
       </ContentCard>
     </Section>}
-    <Section><p className="mb-6 max-w-3xl text-muted-foreground">{c.providerNote}</p><CatalogExplorer entries={games.map(game => referenceSummary(game, locale)).sort((a, b) => a.title.localeCompare(b.title, locale))} compact /></Section>
-  </div>
+    <Section><p className="mb-6 max-w-3xl text-muted-foreground">{c.providerNote}</p><CatalogExplorer entries={games.sort((a, b) => a.title.localeCompare(b.title, locale))} compact /><JsonLd data={discoveryListSchema(games.slice(0,12).map(g => ({title:g.title,href:`/games/${g.slug}`})),locale.toLowerCase())}/><div className={styles.links}>{editorialLinks(games.map(g=>g.slug),locale).map(link=><LocaleLink key={link.href} href={link.href}>{link.title}</LocaleLink>)}</div></Section>
+  </div></DiscoveryEvents>
 }
 
 export function CategoryReferenceSection({ category, locale }: { category: string; locale: Locale }) {
-  const games = REFERENCE_GAMES.filter(game => game.category === category)
-  if (!games.length) return null
-  const c = catalogCopy(locale)
-  return <Section className="border-t border-border" id={`reference-${category}`}><SectionHeading eyebrow={c.reference} title={c.catalog} description={c.catalogIntro} /><CatalogExplorer entries={games.map(game => referenceSummary(game, locale)).sort((a, b) => a.title.localeCompare(b.title, locale))} compact /></Section>
+  const entries=discoveryEntries(locale),games=REFERENCE_GAMES.filter(game=>game.category===category),real=entries.filter(g=>g.kind==='provider'&&(g.category===category||category==='table-games'&&g.format==='blackjack'))
+  const originals=entries.filter(g=>g.kind==='original'&&(g.category===category||category==='live-casino'&&g.category==='table-games'))
+  const providers=[...new Map(real.map(g=>[g.providerId,g.provider])).entries()],c=catalogCopy(locale),d=discoveryCopy(locale)
+  return <Section className="border-t border-border" id={`reference-${category}`}>
+    {category==='instant-games'&&<InstantGuide locale={locale}/>}
+    {games.length>0&&<><SectionHeading eyebrow={c.reference} title={c.catalog} description={c.catalogIntro}/><CatalogExplorer entries={games.map(g=>referenceSummary(g,locale)).sort((a,b)=>a.title.localeCompare(b.title,locale))} compact/></>}
+    <nav aria-label={d.navigation} className={styles.related}><h2 className="text-xl font-bold">{d.providers}</h2><div className={styles.links}>{providers.map(([id,name])=><LocaleLink key={id} href={`/providers/${id}`}>{name}</LocaleLink>)}</div><div className={styles.links}>{editorialLinks(real.map(g=>g.slug),locale).map(link=><LocaleLink key={link.href} href={link.href}>{link.title}</LocaleLink>)}</div></nav>
+    <div className={styles.related}><h2 className="text-xl font-bold">{d.own}</h2><p className="mt-3 text-muted-foreground">{d.crossNote}</p><div className={styles.links}>{originals.map(g=><LocaleLink key={g.href} href={g.href} prefetch={false}>{g.title} · PlayLiva Original</LocaleLink>)}</div></div>
+  </Section>
 }

@@ -1,5 +1,7 @@
 'use client'
 
+import { DiscoverySearch } from '@/components/discovery/search'
+
 import { ArrowUpRight, ArrowRight, Play } from 'lucide-react'
 import { LocaleLink } from '@/components/locale-link'
 import { useCountry } from '@/components/country-context'
@@ -17,6 +19,7 @@ export function Hero() {
         <p className={styles.eyebrow}>{copy.eyebrow}</p>
         <h1>{copy.heroLead}{' '}<span>{copy.heroAccent}</span></h1>
         <p className={styles.heroDescription}>{copy.heroDescription}</p>
+        <DiscoverySearch />
         <div className={styles.heroActions}>
           <LocaleLink href="/play" className={styles.primaryAction} data-hero-play-free><Play size={18} aria-hidden="true" fill="currentColor" />{copy.play}<ArrowRight size={18} aria-hidden="true" /></LocaleLink>
           <LocaleLink href="/games" className={styles.secondaryAction} data-hero-explore>{copy.explore}<ArrowUpRight size={18} aria-hidden="true" /></LocaleLink>

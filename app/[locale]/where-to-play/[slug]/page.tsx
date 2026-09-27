@@ -4,7 +4,7 @@ import { GAMES, getGame } from '@/lib/data'
 import { getGameContent } from '@/lib/content'
 import { WhereToPlayView } from '@/components/where-to-play-view'
 import { getGameOgImage } from '@/lib/game-artwork'
-import { pageMetadata } from '@/lib/seo'
+import { pageMetadata } from '@/lib/discovery/seo'
 import {
   DEFAULT_LOCALE_SEGMENT,
   isLocaleSegment,

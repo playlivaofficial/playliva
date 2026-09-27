@@ -1,3 +1,4 @@
+import { entitySupplement } from './discovery/entity-copy'
 import type {
   CategorySlug,
   Comparison,
@@ -391,8 +392,8 @@ const GAME_CONTENT: Record<Locale, Record<string, GameContent>> = {
       mechanics: ['Revelar cuadrícula', 'Selección de riesgo', 'Cash-out manual'],
     },
     g5: {
-      description: 'Un slot de alta volatilidad con tema del dios del trueno.',
-      shortDescription: 'Slot de alta volatilidad con pago en cualquier posición.',
+      description: 'Un slot de tema mitológico con cascadas y multiplicadores.',
+      shortDescription: 'Slot de cascadas con pago en cualquier posición.',
       gameType: 'Video slot',
       mechanics: ['Pago en cualquier posición', 'Multiplicadores', 'Giros gratis', 'Tumble'],
       whatIsIt:
@@ -513,7 +514,7 @@ const GAME_CONTENT: Record<Locale, Record<string, GameContent>> = {
         'Aviator became known for pairing a simple mechanic with fast rounds and a presentation that is easy to grasp at a glance. That combination — simplicity, pace, and visual clarity — helped the game become a reference point within the crash game category, serving as an entry point for players getting to know this game format.',
     },
     g2: {
-      description: 'A fighter-jet-themed multiplier game with a loyal player base.',
+      description: 'A fighter-jet-themed crash game with a rising multiplier and manual cash-out.',
       shortDescription: 'Fighter-jet-themed multiplier.',
       gameType: 'Crash / multiplier',
       mechanics: ['Rising multiplier', 'Manual cash-out', 'Dual bets'],
@@ -531,8 +532,8 @@ const GAME_CONTENT: Record<Locale, Record<string, GameContent>> = {
       mechanics: ['Grid reveal', 'Risk selection', 'Manual cash-out'],
     },
     g5: {
-      description: 'A high-volatility slot themed around the god of thunder.',
-      shortDescription: 'High-volatility slot with pays-anywhere wins.',
+      description: 'A mythology-themed slot with tumbling symbols and multipliers.',
+      shortDescription: 'Pay-anywhere wins with tumbling symbols.',
       gameType: 'Video slot',
       mechanics: ['Pays anywhere', 'Multipliers', 'Free spins', 'Tumble'],
     },
@@ -576,7 +577,7 @@ const GAME_CONTENT: Record<Locale, Record<string, GameContent>> = {
 }
 
 export function getGameContent(game: Game, locale: Locale) {
-  const c = GAME_CONTENT[locale]?.[game.id]
+  const c = { ...GAME_CONTENT[locale]?.[game.id], ...entitySupplement(game.id, locale) }
   const description = c?.description ?? game.description
   const categoryName = getCategoryContent(game.category, locale).name
   const about =
@@ -709,14 +710,14 @@ const CATEGORY_CONTENT: Record<Locale, Record<CategorySlug | 'sports', CategoryC
     },
     'live-casino': {
       name: 'Cassino ao Vivo',
-      description: 'Explore roleta ao vivo, blackjack com dealer e game shows da Evolution, com guias factuais e disponibilidade verificada.',
+      description: 'Explore roleta ao vivo, blackjack com dealer e game shows da Evolution, com guias factuais de regras e formatos.',
       cta: 'Explorar ao Vivo',
       h1: 'Jogos de cassino ao vivo: roleta, blackjack e game shows',
       seoTitle: 'Cassino ao Vivo: Roleta, Blackjack e Game Shows | PlayLiva',
       seoDescription:
         'Explore jogos de cassino ao vivo, Crazy Time, Lightning Roulette, Blackjack Live e títulos da Evolution com guias e disponibilidade verificada.',
     },
-    'table-games': { name: 'Jogos de Mesa', description: 'Explore jogos de mesa de cassino e suas regras.', cta: 'Explorar Jogos de Mesa' },
+    'table-games': { name: 'Jogos de Mesa', description: 'Conheça regras de blackjack, compare formatos de mesa e explore guias de jogos ao vivo e Originals gratuitos em espaços distintos.', cta: 'Explorar Jogos de Mesa' },
     'instant-games': { name: 'Jogos Instantâneos', description: 'Descubra Mines, Plinko e suas mecânicas de jogos instantâneos.', cta: 'Explorar Jogos Instantâneos' },
     sports: {
       name: 'Esportes',
@@ -732,16 +733,16 @@ const CATEGORY_CONTENT: Record<Locale, Record<CategorySlug | 'sports', CategoryC
     },
     slots: {
       name: 'Slots',
-      description: 'Descubre slots populares y nuevos lanzamientos.',
+      description: 'Compara slots de rodillos y cuadrículas, sus mecánicas documentadas y las diferencias entre ediciones.',
       cta: 'Explorar Slots',
     },
     'live-casino': {
       name: 'Casino en Vivo',
-      description: 'Explora mesas con dealer en vivo y experiencias de casino.',
+      description: 'Explora mesas de cartas transmitidas en vivo, ruleta y ruedas con presentador; compara sus reglas y formatos.',
       cta: 'Explorar en Vivo',
     },
-    'table-games': { name: 'Juegos de Mesa', description: 'Explora juegos de mesa de casino y sus reglas.', cta: 'Explorar Juegos de Mesa' },
-    'instant-games': { name: 'Juegos Instantáneos', description: 'Descubre Mines, Plinko y sus mecánicas de juegos instantáneos.', cta: 'Explorar Juegos Instantáneos' },
+    'table-games': { name: 'Juegos de Mesa', description: 'Conoce reglas de blackjack y compara formatos de mesa, guías de juegos en vivo y PlayLiva Originals gratuitos por separado.', cta: 'Explorar Juegos de Mesa' },
+    'instant-games': { name: 'Juegos Instantáneos', description: 'Compara Mines, Plinko, Dice y Keno: elegir casillas, soltar una pelota y comparar números son mecánicas distintas.', cta: 'Explorar Juegos Instantáneos' },
     sports: {
       name: 'Deportes',
       description: 'Visita LivaSports, el sitio de deportes de nuestra red.',
@@ -751,21 +752,21 @@ const CATEGORY_CONTENT: Record<Locale, Record<CategorySlug | 'sports', CategoryC
   en: {
     crash: {
       name: 'Crash',
-      description: 'Fast-paced multiplier games and popular crash titles.',
+      description: 'Compare rising-multiplier games, cash-out choices and the differences between documented crash titles.',
       cta: 'Explore Crash',
     },
     slots: {
       name: 'Slots',
-      description: 'Discover popular slots and new releases.',
+      description: 'Explore reel and grid slots through documented mechanics, provider catalogs and comparisons of specific editions.',
       cta: 'Explore Slots',
     },
     'live-casino': {
       name: 'Live Casino',
-      description: 'Explore live dealer tables and casino experiences.',
+      description: 'Compare streamed card tables, roulette and hosted wheel shows. Explore the differences between their rules and presentation.',
       cta: 'Explore Live',
     },
-    'table-games': { name: 'Table Games', description: 'Explore casino table games and their rules.', cta: 'Explore Table Games' },
-    'instant-games': { name: 'Instant Games', description: 'Discover Mines, Plinko and their instant-game mechanics.', cta: 'Explore Instant Games' },
+    'table-games': { name: 'Table Games', description: 'Explore blackjack rules and compare table formats with live-dealer guides and separate free PlayLiva Originals.', cta: 'Explore Table Games' },
+    'instant-games': { name: 'Instant Games', description: 'Compare Mines, Plinko, Dice and Keno: tile choices, ball drops, numerical thresholds and number draws are different formats.', cta: 'Explore Instant Games' },
     sports: {
       name: 'Sports',
       description: 'Visit LivaSports, the sports site in our network.',

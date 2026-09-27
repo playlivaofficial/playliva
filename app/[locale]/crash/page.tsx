@@ -3,7 +3,7 @@ import { CategoryPageView } from '@/components/category-page-view'
 import { CategoryReferenceSection } from '@/components/catalog/reference-views'
 import { catalogLocale } from '@/lib/catalog/metadata'
 import { getCategoryContent } from '@/lib/content'
-import { pageMetadata } from '@/lib/seo'
+import { pageMetadata } from '@/lib/discovery/seo'
 import {
   DEFAULT_LOCALE_SEGMENT,
   isLocaleSegment,

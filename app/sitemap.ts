@@ -1,3 +1,4 @@
+import { discoveryIndexability } from '@/lib/discovery/indexability'
 import type { MetadataRoute } from 'next'
 import {
   GAMES,
@@ -34,6 +35,7 @@ function localizedEntry(
   const localizedPath = (segment: LocaleSegment) =>
     `/${segment}${path === '/' ? '' : path}`
 
+  segments = segments.filter(segment => discoveryIndexability(path, segment).index)
   const languages = Object.fromEntries([
     ...segments.map((s) => [s, absoluteUrl(localizedPath(s))]),
     ...(segments.includes(DEFAULT_LOCALE_SEGMENT)

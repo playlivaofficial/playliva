@@ -1,3 +1,4 @@
+import { discoveryHealth } from './discovery'
 import 'server-only'
 import { requireOwner } from './gate'
 import { readOwnerState, persistenceMode, localEnabled } from './store'
@@ -21,7 +22,9 @@ export async function growthData(params: URLSearchParams) {
   let state = emptyOwnerState(), persistenceError = false
   try { state = await readOwnerState() } catch { persistenceError = true }
   const [social, analytics, search, youtubeReady] = await Promise.all([socialLibrary(state), analyticsSource(), searchSource(filters), youtubeReadiness()])
-  const opportunities = seoOpportunities(search.data.queries)
+  const discovery = discoveryHealth(filters), indexing = indexingAudit()
+  const inspected = indexing.filter(row => row.state === 'Crawled — currently not indexed' && (!filters.locale || row.locale === filters.locale) && (!filters.route || row.route === filters.route) && (!filters.game || row.route.endsWith('/play/'+filters.game)))
+  const opportunities = [...seoOpportunities(search.data.queries), ...discovery.opportunities, ...inspected.map(row=>({id:'indexing-'+row.route.replaceAll('/','-'),kind:'not-indexed',priority:2,source:'Search Console inspection '+row.observedAt,topic:row.topic,route:row.url,reason:row.detail,action:'Inspect content and internal links, then check Google again. A request is not an indexing guarantee.'}))].sort((a,b)=>(a.priority??2)-(b.priority??2)||a.id.localeCompare(b.id))
   const measured = ['connected', 'no_data'].includes(analytics.state) && (!filters.from || filters.from >= analytics.data.from) && filters.to <= analytics.data.to
   const filteredGame = ownerGames.filter(game => !filters.game || game.slug === filters.game)
   const games = filteredGame.map(game => {
@@ -33,7 +36,7 @@ export async function growthData(params: URLSearchParams) {
       seoImpressions: search.state === 'connected' && pageData.length ? impressions : null,
       topLocale: pageData.sort((a, b) => b.clicks - a.clicks)[0]?.page.split('/')[3] ?? null }
   }).sort((a, b) => params.get('gameSort') === 'clicks' ? (b.metrics?.clicks ?? -1) - (a.metrics?.clicks ?? -1) : params.get('gameSort') === 'creatives' ? b.creatives - a.creatives : a.title.localeCompare(b.title))
-  return { filters, games, catalog: ownerGames, social, analytics, measured, search, opportunities, indexing: indexingAudit(), searchAudit, youtubeReady,
+  return { filters, games, catalog: ownerGames, social, analytics, measured, search, opportunities, indexing, discovery, searchAudit, youtubeReady,
     automation: await generationSummary(state), privateMedia: privateStorageConfigured(),
     metrics: measured ? aggregateEvents(analytics.data.events, filters) : null,
     groups: affiliateReport(analytics.data.events, filters).groups, conversions: conversionSource(),

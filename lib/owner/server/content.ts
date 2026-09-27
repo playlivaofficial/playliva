@@ -8,7 +8,7 @@ import type { Opportunity } from '../metrics'
 export function contentPipeline(state: OwnerState, creatives: Creative[], opportunities: Opportunity[]): ContentItem[] {
   const inventory = publishedInventory()
   const next: ContentItem[] = ownerGames.filter(game => !creatives.some(item => item.gameSlug === game.slug)).map(game => ({ id: `social-${game.slug}`, type: 'Social opportunity', locale: 'pt-br', topic: game.title, query: '', route: `/pt-br${game.route}`, status: 'opportunity', reason: `This live Original has no creative in the imported ${creatives.length}-item Shorts library.`, updatedAt: null, source: 'Catalog compared with Social Engine inventory' }))
-  const seo: ContentItem[] = opportunities.map(item => ({ id: `seo-${item.id}`, type: 'SEO opportunity', locale: new URL(item.route || 'https://www.playliva.com/pt-br').pathname.split('/')[1], topic: item.topic, query: item.topic, route: item.route ? new URL(item.route).pathname : '', status: 'opportunity', reason: `${item.reason} ${item.action}`, updatedAt: null, source: 'Search Console performance rules' }))
+  const seo: ContentItem[] = opportunities.map(item => ({ id: `seo-${item.id}`, type: 'SEO opportunity', locale: new URL(item.route || 'https://www.playliva.com/pt-br').pathname.split('/')[1], topic: item.topic, query: item.topic, route: item.route ? new URL(item.route).pathname : '', status: 'opportunity', reason: `${item.reason} ${item.action}`, updatedAt: null, source: item.source ?? 'Search Console performance rules' }))
   const rows = [...inventory, ...next, ...seo].map(item => state.content[item.id] ?? item)
   return [...rows, ...Object.values(state.content).filter(item => !rows.some(row => row.id === item.id))]
 }

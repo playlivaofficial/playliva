@@ -457,7 +457,12 @@ try {
         assert.ok(!gameChunks.some(name => url?.includes(name)), `${path}: game runtime leaks into ordinary page`)
       }
     } else {
-      assert.doesNotMatch(doc.querySelector('main')?.textContent ?? '', /JetX|Aviator|SmartSoft|SPRIBE|Robinson Crusoe|\bFriday\b/i)
+      const gameplay = doc.querySelector('main').cloneNode(true)
+      gameplay.querySelector('[data-cross-discovery]')?.remove()
+      assert.doesNotMatch(gameplay.textContent, /JetX|Aviator|SmartSoft|SPRIBE|Robinson Crusoe|\bFriday\b/i)
+      const cross = doc.querySelector('[data-cross-discovery="crash"]')
+      assert.ok(cross?.querySelector(`a[href="/${segment}/games/aviator"]`), `${path}: related provider guide outside gameplay`)
+      assert.ok(doc.querySelector('[data-game-unit]').compareDocumentPosition(cross) & 4, `${path}: discovery follows the game`)
       assert.ok(doc.querySelector('[data-phase="ready"]'), `${path}: real game shell`)
     }
     const sportsNav = doc.querySelector('header nav a[href="https://livasports.com"]')
@@ -514,9 +519,20 @@ try {
     for (const script of doc.querySelectorAll('script[type="application/ld+json"]')) {
       const data = JSON.parse(script.textContent)
       assert.equal(data['@context'], 'https://schema.org', `${path}: schema context`)
+      const realEntity = /^\/games\/[^/]+$/.test(routePath)
+      const listPage = routePath === '/games' || /^\/providers\/[^/]+$/.test(routePath)
       const newOriginal = ['/play/samba-drop', '/play/skuptu-levanta', '/play/carnaval-gold'].includes(routePath)
-      assert.ok(['WebSite', 'Organization', 'BreadcrumbList', ...(newOriginal ? ['VideoGame'] : [])].includes(data['@type']), `${path}: schema must have an audited visible use`)
-      if (data['@type'] === 'VideoGame') {
+      assert.ok(['WebSite', 'Organization', 'BreadcrumbList', ...(newOriginal || realEntity ? ['VideoGame'] : []), ...(listPage ? ['ItemList'] : [])].includes(data['@type']), `${path}: schema must have an audited visible use`)
+      if (data['@type'] === 'VideoGame' && realEntity) {
+        const game = catalogModule.catalogSummaries(localeModule.segmentToLocale(segment)).find(g=>g.slug===routePath.split('/').pop())
+        assert.equal(data.name,game.title);assert.equal(data.publisher.name,game.provider);assert.equal(data.url,SITE_URL+path)
+        assert.equal(data.offers,undefined);assert.equal(data.isAccessibleForFree,undefined)
+      }
+      if (data['@type'] === 'ItemList') {
+        assert.ok(data.itemListElement.length>0 && data.itemListElement.length<=12)
+        for(const [i,item] of data.itemListElement.entries()){assert.equal(item.position,i+1);assert.ok(doc.querySelector(`a[href="${new URL(item.url).pathname}"]`),`${path}: visible list destination`)}
+      }
+      if (data['@type'] === 'VideoGame' && newOriginal) {
         assert.equal(data.name, doc.querySelector('h1')?.textContent, `${path}: game schema names the visible game`)
         assert.equal(data.url, `${SITE_URL}${path}`, `${path}: game schema is canonical`)
         assert.equal(data.description, doc.querySelector('meta[name="description"]')?.content)

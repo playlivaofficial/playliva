@@ -1,5 +1,7 @@
 'use client'
 
+import { DiscoverySearch } from '@/components/discovery/search'
+
 import { ArrowRight, Check } from 'lucide-react'
 import { ThreeGameFeature } from '@/components/originals/three-game-feature'
 import { useState } from 'react'
@@ -46,6 +48,7 @@ export function PlayView() {
           </ul>
         </div>
       </header>
+      <DiscoverySearch />
       <div className={styles.filters} role="group" aria-label={product.all}>
         {groups.map(group => <button type="button" key={group.id} aria-pressed={filter === group.id} onClick={() => setFilter(group.id)}>{group.label}</button>)}
       </div>
