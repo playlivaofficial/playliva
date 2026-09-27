@@ -6,6 +6,7 @@ import store from '../../lib/owner/server/store.ts'
 import automationModel from '../../lib/owner/automation-model.ts'
 import objectStorage from '../../lib/owner/server/object-storage.ts'
 import { renderMaster } from './render-master.mjs'
+import { JOBS_PER_WORKER } from './worker-plan.mjs'
 const { enqueueBatch, armAutomation, claimJob, heartbeat, finishJob, retryFailures, claimCleanup, finishCleanup } = automation
 const { readOwnerState, persistenceMode } = store
 const { retentionCandidates } = automationModel
@@ -17,16 +18,17 @@ if (persistenceMode() !== 'durable_postgres' || !privateStorageConfigured()) thr
 if (mode === 'arm') { await armAutomation(); console.log('Social automation armed. No rendering or publishing ran.'); process.exit(0) }
 if (mode === 'cleanup-dry-run') { console.log(JSON.stringify({ candidates: retentionCandidates((await readOwnerState()).automation).map(job => job.id), deleted: 0 })); process.exit(0) }
 const batchId = await enqueueBatch(mode === 'canary' ? 'canary' : 'scheduled')
-if (mode === 'retry') {
+if (mode === 'retry' && process.env.OWNER_RETRY_PREPARED !== 'true') {
   const batches = (await readOwnerState()).automation.batches
   for (const batch of batches.filter(row => ['failed', 'partial'].includes(row.state))) await retryFailures(batch.id)
 }
 // One CPU render at a time. Leases also protect against duplicate workflow starts.
-let completed = 0, failures = 0
+let completed = 0, failures = 0, attempted = 0
 const scratchRoot = resolve(process.env.RUNNER_TEMP || 'social/output/owner-growth', 'social-worker')
-while (true) {
+while (attempted < JOBS_PER_WORKER) {
   const job = await claimJob(mode === 'canary' ? batchId : undefined)
   if (!job) break
+  attempted++
   const folder = resolve(scratchRoot, job.id, job.leaseToken)
   await mkdir(folder, { recursive: true })
   const timer = setInterval(() => { heartbeat(job.id, job.leaseToken).catch(() => {}) }, 60000)
@@ -63,5 +65,5 @@ for (const job of retentionCandidates((await readOwnerState()).automation)) {
   try { await deletePrivate(claim.keys); await finishCleanup(claim.id, claim.token) }
   catch { console.error(JSON.stringify({ id: claim.id, cleanup: 'pending retry; metadata preserved' })); failures++ }
 }
-console.log(JSON.stringify({ batchId, completed, failures, autoPublish: false }))
+console.log(JSON.stringify({ batchId, completed, failures, attempted, workerJobLimit: JOBS_PER_WORKER, autoPublish: false }))
 if (failures) process.exitCode = 1

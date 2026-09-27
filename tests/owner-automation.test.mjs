@@ -11,8 +11,32 @@ import store from '../lib/owner/server/store.ts'
 import media from '../lib/owner/server/object-storage.ts'
 import social from '../lib/owner/server/social.ts'
 import { cleanAttempt } from '../scripts/owner/worker-scratch.mjs'
+import { workerPlan, JOBS_PER_WORKER } from '../scripts/owner/worker-plan.mjs'
 
 const games = automation.generationGames()
+test('cloud dispatch splits 36/39 jobs into sequential bounded workers; canary and idle remain single jobs', () => {
+  const state = { ...automationModel.emptyAutomation(), armed: true, nextDueAt: '2026-10-01T05:00:00Z' }, now = '2026-10-01T05:01:00Z'
+  const plan = (mode, size = 36) => workerPlan(state, mode, size, now, automationModel.dueBatch)
+  assert.equal(JOBS_PER_WORKER, 3)
+  assert.equal(plan('due').slots.length, 12)
+  assert.equal(plan('due', 39).slots.length, 13)
+  assert.equal(plan('canary').expectedJobs, 1)
+  assert.deepEqual(plan('arm').slots, [0])
+  state.armed = false
+  assert.equal(plan('due').hasJobs, false)
+  state.batches.push({ id: 'canary-v1', kind: 'canary', state: 'completed' })
+  assert.equal(plan('canary').hasJobs, false)
+  state.jobs.a = { batchId: 'batch-old', state: 'failed', attempts: 3 }
+  state.jobs.b = { batchId: 'batch-old', state: 'failed', attempts: 1 }
+  state.jobs.c = { batchId: 'batch-old', state: 'completed', attempts: 1 }
+  assert.equal(plan('retry').expectedJobs, 1)
+  state.armed = true
+  state.batches.push({ id: 'batch-old', kind: 'scheduled', state: 'failed' })
+  assert.equal(plan('due').hasJobs, false, 'failed batches do not allocate an empty 12-worker matrix')
+  for (let i = 0; i < 7; i++) state.jobs[`queued-${i}`] = { state: 'queued' }
+  assert.equal(plan('due').slots.length, 3, 'resume only remaining queued jobs')
+  assert.throws(() => workerPlan(automationModel.emptyAutomation(), 'invalid', 36, now, automationModel.dueBatch), /Unsupported/)
+})
 test('worker scratch cleanup only removes its validated two-level attempt directory', async () => {
   const root = await mkdtemp(resolve(tmpdir(), 'playliva-worker-'))
   const attempt = resolve(root, 'job', 'lease'), preserved = resolve(root, 'job', 'other-lease')

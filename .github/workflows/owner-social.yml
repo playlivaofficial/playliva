@@ -20,8 +20,35 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  render:
+  plan:
     if: github.repository == 'playlivaofficial/playliva' && vars.OWNER_SOCIAL_WORKER_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    environment: owner-social-production
+    timeout-minutes: 15
+    outputs:
+      slots: ${{ steps.plan.outputs.slots }}
+    env:
+      OWNER_DATABASE_URL: ${{ secrets.OWNER_DATABASE_URL }}
+      WORKER_MODE: ${{ inputs.mode || 'due' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - id: plan
+        run: node --import tsx scripts/owner/preflight.mjs --plan
+  render:
+    needs: plan
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        slot: ${{ fromJSON(needs.plan.outputs.slots) }}
     runs-on: ubuntu-latest
     environment: owner-social-production
     timeout-minutes: 360
@@ -33,6 +60,7 @@ jobs:
       SOCIAL_CAPTURE_BASE_URL: https://www.playliva.com
       SOCIAL_CHROME_PATH: /usr/bin/google-chrome
       PLAYLIVA_SOCIAL_PYTHON: python
+      OWNER_RETRY_PREPARED: 'true'
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4

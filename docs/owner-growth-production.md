@@ -32,7 +32,7 @@ Each scheduled start is 72 hours after the preceding scheduled start, at 09:00 T
 
 The due timestamp is a durable batch key. Duplicate wakes and manual retries reuse the same active batch. A partially completed batch blocks another full batch until its failures are handled. Every eligible entry in the canonical `SPOTLIGHT_GAMES` registry produces three jobs, one per angle: wow, challenge and feature. Twelve games currently derive 36 jobs; the test thirteenth entry produces 39 without a generator change.
 
-The worker claims one queued job at a time, renews a 30-minute lease every minute and fences writes with a unique lease token. A stopped worker's expired job becomes failed. Retry queues only failed jobs, with a three-attempt cap; successful jobs are preserved. Further intervention after that cap requires inspecting the underlying failure, not an automatic expensive loop.
+The worker claims one queued job at a time, renews a 30-minute lease every minute and fences writes with a unique lease token. Each cloud worker processes at most three creatives. A lightweight planner derives the number of workers from the real queue/registry (36 jobs → 12 sequential workers; 39 → 13), with matrix parallelism fixed at one. This avoids packing an entire heavy batch into GitHub's six-hour per-job limit. A stopped worker's expired job becomes failed. Retry queues only failed jobs once per workflow, with a three-attempt cap; successful jobs are preserved. Further intervention after that cap requires inspecting the underlying failure, not an automatic expensive loop.
 
 The daily worker also consumes manually queued jobs. The owner UI explicitly says these wait for the next cloud wake-up. An operator can dispatch the workflow for immediate processing. A full batch is not forced to prove a deployment.
 
@@ -69,7 +69,9 @@ node --import tsx scripts/owner/cloud-worker.mjs --mode=retry
 node --import tsx scripts/owner/cloud-worker.mjs --mode=cleanup-dry-run
 ```
 
-The canary creates one fresh Island Crash creative, not any historical master. Inspect its QC, preview and download before arming. `arm` refuses without a completed canary. To pause scheduling, disable the repository worker variable; queued metadata remains durable. Worker logs include IDs/status/counts, never credentials or raw provider responses.
+The canary creates one fresh Island Crash creative, not any historical master. Inspect its QC, preview and download before arming. `arm` refuses without a completed canary. A direct CLI worker invocation handles at most three jobs; the cloud workflow plans enough sequential invocations to drain the current batch. To pause scheduling, disable the repository worker variable; queued metadata remains durable. Worker logs include IDs/status/counts, never credentials or raw provider responses.
+
+The first actual production cloud canary on 27 September 2026 passed in 12m54s from claim to durable completion (15m02s including initial runtime installation/cache setup). It produced a 20-second 25.82 MB master with measured 30.00fps source cadence, 34ms p95 frame gap and −16.15 LUFS. Authenticated playback, 206 byte ranges, full download, independent-process review/pin persistence and anonymous Blob denial all passed. The canary remains pinned and awaiting owner creative review. Do not use this single 3D example as a guaranteed runtime for every game.
 
 ## Costs and recovery
 
