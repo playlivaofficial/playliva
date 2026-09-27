@@ -176,7 +176,12 @@ export function track(event: TrackEventName, payload: TrackPayload = {}): void {
 
   // One activation, one random event receipt. A transport retry reuses its ID.
   // No visitor ID, query string, partner URL, IP or referrer is sent.
-  if (['page_view', 'content_view', 'demo_round_start', 'demo_round_complete', 'affiliate_impression', 'offer_impression', 'affiliate_click'].includes(event) && typeof window.fetch === 'function') {
+  // The first-party feed accepts the canonical discovery inventory only. Legal
+  // templates, archive pages and other noindex documents are outside that feed.
+  const noindex = typeof document !== 'undefined' && /\bnoindex\b/i.test(document.querySelector('meta[name="robots"]')?.getAttribute('content') ?? '')
+  // Filtered Games views still belong to the same canonical Games route.
+  const canonicalGamesView = /^\/(en|pt-br|es-mx)\/games$/.test(window.location.pathname)
+  if ((!noindex || canonicalGamesView) && ['page_view', 'content_view', 'demo_round_start', 'demo_round_complete', 'affiliate_impression', 'offer_impression', 'affiliate_click'].includes(event) && typeof window.fetch === 'function') {
     const body = JSON.stringify({ id: window.crypto.randomUUID(), ...data, event: event === 'offer_impression' ? 'affiliate_impression' : event })
     const send = () => window.fetch('/api/events', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body, keepalive: true, credentials: 'same-origin' })
     void send().then(response => { if (response.status >= 500 && hasAnalyticsConsent()) return send(); return response }).catch(() => { /* Measurement never interrupts navigation. */ })

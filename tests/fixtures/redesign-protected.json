@@ -2,7 +2,7 @@
   "lib/affiliate.ts": "2ab4b5683776bc266c53c8025a72ba0aaaf5fb2306bdc6dcc76297d85d923471",
   "lib/data.ts": "62ec5f46d5e62c802b2bf5a920c96a223914ee969cc556b73dd0105da2e0028e",
   "lib/consent.ts": "dda3f5a6e39088bde2ad0bd08093a1c88dbfe2afac39d83fa6927b169340d24f",
-  "lib/tracking.ts": "f8cfe7fc792e9ec0109fe19ef476ef7fd4eab406bc87f74517e7e82c21b87f21",
+  "lib/tracking.ts": "1035f83238e4e00e05049e5bc0d031af7962b899be59841c36464cce0b63eb73",
   "lib/originals/play-real.ts": "ef7ed4886a21bb6f7e034e512b1bd68f2b59b132c3f0abd6628b63f9e5a2bbc2",
   "lib/originals/blackjack/play-real.ts": "8e625fcb7021e09658f2a8be51a147b4708e0f6d5869664488caed7e0e25a72a",
   "lib/originals/roulette/play-real.ts": "167cd0f3f71625d3ad9e25a557ba49120f039aacd9da3e8a43453ac747213968",

@@ -10,6 +10,7 @@ import country from '../components/country-context.tsx'
 import button from '../components/affiliate-button.tsx'
 import capture from '../components/analytics/attribution-capture.tsx'
 import consent from '../lib/consent.ts'
+import tracking from '../lib/tracking.ts'
 
 const h = React.createElement
 function tree(path, visitor = 'BR') {
@@ -67,6 +68,15 @@ test('late consent, SPA context, retry idempotency and saved-market bypass prote
     assert.equal(requests.filter(r => r.event === 'page_view').length, 2)
     assert.equal(requests.at(-1).taxonomy, 'playliva_where_to_play')
     assert.equal(requests.at(-1).trafficSource, 'tiktok')
+    const noindex = document.createElement('meta'); noindex.name = 'robots'; noindex.content = 'noindex, follow'; document.head.append(noindex)
+    const beforeNoindex = requests.length
+    tracking.track('page_view')
+    assert.equal(requests.length, beforeNoindex, 'noindex pages do not send rejected canonical-feed requests')
+    window.history.pushState({}, '', '/pt-br/games?provider=spribe')
+    tracking.track('page_view')
+    assert.equal(requests.length, beforeNoindex + 1, 'Games facets still measure the canonical Games route')
+    window.history.pushState({}, '', '/pt-br/where-to-play/aviator')
+    noindex.remove()
     window.localStorage.setItem('playliva.country', 'BR')
     await mount(null)
     assert.equal(document.querySelectorAll('a[href^="/go?"]').length, 0, 'saved Brazil cannot override noneligible request GEO')
