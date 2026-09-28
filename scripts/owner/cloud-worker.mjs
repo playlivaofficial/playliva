@@ -8,6 +8,7 @@ import automationModel from '../../lib/owner/automation-model.ts'
 import objectStorage from '../../lib/owner/server/object-storage.ts'
 import { renderMaster } from './render-master.mjs'
 import { JOBS_PER_WORKER } from './worker-plan.mjs'
+import { finishWorker } from './worker-exit.mjs'
 const { enqueueBatch, armAutomation, claimJob, heartbeat, finishJob, retryFailures, claimCleanup, finishCleanup } = automation
 const { readOwnerState, persistenceMode } = store
 const { retentionCandidates } = automationModel
@@ -70,5 +71,4 @@ for (const job of mode === 'canary' ? retentionCandidates((await readOwnerState(
   try { await deletePrivate(claim.keys); await finishCleanup(claim.id, claim.token) }
   catch { console.error(JSON.stringify({ id: claim.id, cleanup: 'pending retry; metadata preserved' })); failures++ }
 }
-console.log(JSON.stringify({ batchId, completed, failures, attempted, workerJobLimit: JOBS_PER_WORKER, autoPublish: false }))
-if (failures) process.exitCode = 1
+finishWorker({ batchId, completed, failures, attempted, workerJobLimit: JOBS_PER_WORKER, autoPublish: false }, failures ? 1 : 0)

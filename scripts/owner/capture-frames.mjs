@@ -42,9 +42,12 @@ export async function capture(job, folder, seconds) {
     ended.catch(() => {})
     const diagnostics = { settings: { width: 1080, height: 1920, frameRate: 30, mode: 'offline-frame-clock' }, frames: 0, phases: [], actions: 0, repeatedFrames: 0, longestRepeat: 0, movingFrames: 0, movingRepeats: 0 }
     let previous = '', lastAction = -2, previousHash = '', repeats = 0
-    const deadline = Date.now() + 25 * 60000
+    // Production CPU evidence: Ginga's native 600-frame capture takes ~25 min.
+    // Give this heavier scene headroom instead of reducing quality or cadence.
+    const budgetMinutes = job.gameSlug === 'liva-ginga' ? 60 : 25
+    const deadline = Date.now() + budgetMinutes * 60000
     for (let frame = 0; frame < seconds * 30; frame++) {
-      if (Date.now() > deadline) throw new Error('Capture exceeded the 25-minute job budget.')
+      if (Date.now() > deadline) throw new Error(`Capture exceeded the ${budgetMinutes}-minute job budget.`)
       if (pipeError) throw new Error('Capture encoder pipe failed.')
       const elapsed = frame / 30
       await page.clock.runFor(frame % 3 === 2 ? 34 : 33)
