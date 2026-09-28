@@ -20,5 +20,10 @@ export async function installGenerationStage(page, job) {
     const framing = document.createElement('style')
     framing.textContent = '.social-game{height:920px;max-height:920px}.social-game [data-game-viewport]{min-height:700px}#owner-social-stage[data-game=crash] [data-game-viewport]>div,#owner-social-stage[data-game=liva-ginga] [data-game-viewport]>div{height:800px!important;min-height:800px!important}.social-game [data-mines-phase],.social-game [data-blackjack-phase],.social-game [data-roulette-phase],.social-game [data-slot-phase]{min-height:750px!important}'
     document.head.append(framing)
+    // Preserve the real game, but omit its "Retorno garantido" cash-out banner
+    // from a standalone social creative where that wording loses context.
+    const safeResult = document.createElement('style')
+    safeResult.textContent = '#owner-social-stage[data-game=skuptu-levanta] [data-game-viewport] [role=status]{display:none!important}'
+    document.head.append(safeResult)
   }, { job, logo })
 }

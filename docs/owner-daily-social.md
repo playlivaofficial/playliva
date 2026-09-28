@@ -30,6 +30,8 @@ Every inventory request rechecks the live range preview, download readability/le
 
 The existing gameplay renderer is reused, with game-specific routes, controls, artwork and phases. Daily angle, hook and capture variant selection avoids the previous three batches' near-duplicate hooks for the same game. Existing virtual-credit/18+ disclosures remain. Technical QC does not replace human creative review.
 
+Skuptu's existing settled cash-out banner uses "Retorno garantido" wording. Capture-only CSS omits that banner from standalone social footage to avoid a guaranteed-return claim outside the game's context. Public game UI, settlement and virtual-credit disclosures remain unchanged.
+
 Motion continuity is measured on visible gameplay, excluding the intentional final 1.8-second branded end card. Otherwise a long flight continuing behind that static card can falsely fail as repeated gameplay. Frozen visible gameplay still fails the unchanged repeat threshold, and failures report safe frame counts for diagnosis.
 
 ## Verification and recovery
