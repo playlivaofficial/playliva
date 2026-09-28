@@ -16,6 +16,10 @@ Workflow planning creates/reconciles the day's slots before calculating its boun
 
 There is no second scheduler, platform upload, or automatic publication. Daily history is retained; the old latest-two-batches deletion does not run for daily production. Storage therefore grows with retained daily videos and must be monitored.
 
+After all attempts, persistence and scratch cleanup finish, the CLI flushes its final report and explicitly exits with success/failure status. Leftover third-party process handles must not retain the workflow concurrency lock after completed work.
+
+The CPU capture budget is 25 minutes, with 60 minutes for Liva Ginga: its first production 600-frame capture took almost 25 minutes. This headroom changes only render wall time, never native resolution, frame cadence or gameplay. The enclosing worker retains its existing six-hour limit.
+
 Visual QA also checks captured game layout. The capture-stage header/footer styles apply only to the stage's direct children, never to a game's nested cabinet headers. For a demonstrated visual-QC defect, an operator may dispatch `retry` with explicit `repair_ids`. Only today's completed, unapproved, unpinned, unpublished masters qualify. Their old private media references are retained in `mediaHistory`; the same daily slots are recovered. Repeating the repair on the same commit is idempotent. Normal daily reruns never invalidate successful masters.
 
 ## Actual media is authoritative
