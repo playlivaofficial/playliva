@@ -11,7 +11,8 @@ import { operatorOverview, ownerGames } from './catalog'
 import { youtubeReadiness } from './youtube'
 import { aggregateEvents } from '../metrics'
 import { affiliateReport, conversionSource } from './affiliate'
-import { generationSummary } from './automation'
+import { generationGames, generationSummary } from './automation'
+import { dailyInventory, isReadyVideo } from '../social-inventory'
 import { privateStorageConfigured } from './object-storage'
 import trafficSnapshot from '@/data/owner/traffic-snapshot.json'
 import searchSnapshot from '@/data/owner/search-performance-snapshot.json'
@@ -30,13 +31,16 @@ export async function growthData(params: URLSearchParams) {
   const games = filteredGame.map(game => {
     const pageData = search.data.pages.filter(row => new URL(row.page).pathname.endsWith(`/play/${game.slug}`)), impressions = pageData.reduce((sum, row) => sum + row.impressions, 0)
     return { ...game, metrics: measured ? aggregateEvents(analytics.data.events, { ...filters, game: game.slug }) : null,
-      creatives: social.data.filter(row => row.gameSlug === game.slug).length,
+      creatives: social.data.filter(row => row.gameSlug === game.slug && isReadyVideo(row)).length,
       // The bounded top-page report cannot establish zero for an omitted page.
       seoClicks: search.state === 'connected' && pageData.length ? pageData.reduce((sum, row) => sum + row.clicks, 0) : null,
       seoImpressions: search.state === 'connected' && pageData.length ? impressions : null,
       topLocale: pageData.sort((a, b) => b.clicks - a.clicks)[0]?.page.split('/')[3] ?? null }
   }).sort((a, b) => params.get('gameSort') === 'clicks' ? (b.metrics?.clicks ?? -1) - (a.metrics?.clicks ?? -1) : params.get('gameSort') === 'creatives' ? b.creatives - a.creatives : a.title.localeCompare(b.title))
+  const inventory = dailyInventory(generationGames(), social.data)
+  const daily = { ...inventory, items: inventory.items.map(item => ({ ...item, error: item.creativeId ? state.automation.jobs[item.creativeId]?.error : 'Today’s video has not been generated yet.' })) }
   return { filters, games, catalog: ownerGames, social, analytics, measured, search, opportunities, indexing, discovery, searchAudit, youtubeReady,
+    daily,
     automation: await generationSummary(state), privateMedia: privateStorageConfigured(),
     metrics: measured ? aggregateEvents(analytics.data.events, filters) : null,
     groups: affiliateReport(analytics.data.events, filters).groups, conversions: conversionSource(),

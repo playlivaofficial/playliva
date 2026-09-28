@@ -5,7 +5,7 @@ import manifestSeed from '@/social/content/youtube-shorts-br.json'
 import { normalizeManifest } from '../social-model'
 import type { Creative, OwnerState, Source } from '../model'
 import { localEnabled, logActivity, readOwnerState, updateOwnerState } from './store'
-import { privateStorageConfigured } from './object-storage'
+import { inspectJob } from './media-inventory'
 
 export async function socialManifest(): Promise<unknown> {
   return localEnabled() && process.env.OWNER_SOCIAL_MANIFEST ? JSON.parse(await readLocalText(resolve(process.env.OWNER_SOCIAL_MANIFEST))) : manifestSeed
@@ -28,20 +28,28 @@ export async function mediaFile(id: string, kind: 'video' | 'thumbnail') {
 export async function socialLibrary(state?: OwnerState): Promise<Source<Creative[]>> {
   try {
     const current = state ?? await readOwnerState(), creatives = normalizeManifest(await socialManifest(), current.creatives)
-    for (const job of Object.values(current.automation.jobs)) {
-      const override = current.creatives[job.id] ?? {}
-      creatives.push({ ...job.creative, ...override, media: { video: job.mediaStatus === 'available' && privateStorageConfigured(), thumbnail: job.mediaStatus === 'available' && privateStorageConfigured() } })
+    for (const item of creatives) item.availability = 'ARCHIVED'
+    const jobs = Object.values(current.automation.jobs)
+    for (let start = 0; start < jobs.length; start += 4) {
+      const checked = await Promise.all(jobs.slice(start, start + 4).map(async job => {
+        const check = await inspectJob(job), override = current.creatives[job.id] ?? {}
+        return { ...job.creative, ...override, availability: check.status, mediaBytes: check.bytes, mediaCheckedAt: check.checkedAt, generationDate: job.generationDate, canonicalGameId: job.canonicalGameId,
+          media: { video: check.ready, thumbnail: check.ready } }
+      }))
+      creatives.push(...checked)
     }
-    return { state: creatives.length ? 'connected' : 'no_data', label: 'Social Engine metadata', detail: 'Imported source records plus persistent owner review state. QC describes the recorded render; media availability is checked separately.', data: creatives }
+    return { state: creatives.length ? 'connected' : 'no_data', label: 'Verified social inventory', detail: 'READY requires successful rendering plus live private preview, download and thumbnail checks. Historical metadata remains in the archive, not usable video inventory.', data: creatives }
   } catch { return { state: 'unavailable', label: 'Social Engine metadata', detail: 'The manifest or owner state could not be read. Existing records have been preserved.', data: [] } }
 }
 export async function withMedia(item: Creative): Promise<Creative> {
+  if (item.availability) return item
   if (item.id.startsWith('batch-') || item.id.startsWith('canary-')) return item
   const [video, thumbnail] = await Promise.all([mediaFile(item.id, 'video'), mediaFile(item.id, 'thumbnail')])
   return { ...item, media: { video: Boolean(video), thumbnail: Boolean(thumbnail) } }
 }
 export async function reviewCreative(id: string, action: 'approve' | 'reject' | 'regenerate', reason: string) {
   const manifest = await socialManifest()
+  if (action === 'approve' && !(await socialLibrary()).data.find(item => item.id === id)?.media.video) throw new Error('Approval requires a verified available video.')
   return updateOwnerState(state => {
     const generated = state.automation.jobs[id]
     const item = generated?.creative ?? normalizeManifest(manifest, state.creatives).find(row => row.id === id)

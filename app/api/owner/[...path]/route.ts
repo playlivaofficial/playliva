@@ -9,7 +9,7 @@ import { saveContent } from '@/lib/owner/server/content'
 import { growthData } from '@/lib/owner/server/overview'
 import { safeId } from '@/lib/owner/model'
 import { generatedMediaResponse, privateStorageConfigured } from '@/lib/owner/server/object-storage'
-import { enqueueBatch, retryFailures, setPinned } from '@/lib/owner/server/automation'
+import { enqueueBatch, reconcileDailyMedia, retryFailures, setPinned } from '@/lib/owner/server/automation'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -65,6 +65,7 @@ export async function POST(request: Request, context: Context) {
     if (path.join('/') === 'generation/batch') {
       if (body.confirmed !== 'yes' || !privateStorageConfigured()) throw new Error('Social generation requires confirmation and private storage.')
       const id = await enqueueBatch('manual')
+      if (id) { await reconcileDailyMedia(id); await retryFailures(id) }
       return ownerJson({ message: id ? `Batch ${id} queued. The cloud worker will pick it up; nothing is published.` : 'Generation is not armed. Complete the production canary first.' })
     }
     if (path[0] === 'generation' && path[1] === 'retry' && path.length === 3 && safeId(path[2])) return ownerJson({ message: `${await retryFailures(path[2])} failed jobs queued for the next worker run.` })

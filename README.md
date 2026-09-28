@@ -57,6 +57,8 @@ suppresses commercial links. The public catalog and canonical URLs stay availabl
 
 ## Private Owner Growth workspace
 
+[Daily Social factory](docs/owner-daily-social.md): one real private video per eligible Original per Tbilisi calendar day, verified media inventory, recoverable daily slots and archived historical metadata.
+
 The [production architecture and Social worker runbook](docs/owner-growth-production.md)
 covers durable state, private media, cloud generation, pinning and retention.
 

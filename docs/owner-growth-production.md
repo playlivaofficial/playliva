@@ -1,3 +1,7 @@
+# Current daily factory
+
+The daily, one-video-per-game production behavior and verified-inventory rules in [owner-daily-social.md](owner-daily-social.md) supersede the historical 72-hour/three-angle/retention descriptions below. This historical implementation record is retained for provenance.
+
 # Owner Growth production and Social generation
 
 This milestone extends the existing private dashboard. It does not change public games, odds, settlement, affiliate cadence, GEO rules, SEO copy, routes or analytics. The productionization brief supersedes the previous local-review-only release boundary. Release remains conditional on verified configuration, tests and a controlled production canary.
