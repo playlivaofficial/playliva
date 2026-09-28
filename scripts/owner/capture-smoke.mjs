@@ -8,6 +8,7 @@ import planner from '../../lib/owner/creative-planner.ts'
 import model from '../../lib/owner/automation-model.ts'
 import { installGenerationStage } from './generation-stage.mjs'
 import { advanceScene } from './capture-actions.mjs'
+import { pauseCaptureClock, hasReadyCaptureControl } from './capture-clock.mjs'
 
 // Exercise capture controls/layout for each actual registry entry. This creates
 // screenshots only, not video masters, uploads, or historical regeneration.
@@ -25,10 +26,11 @@ try {
     await page.clock.install({ time: new Date() })
     page.on('pageerror', error => errors.push(error.message))
     const job = planner.planCreative(game, 'wow', 'smoke-v1', new Date().toISOString(), model.emptyAutomation())
-    await page.goto(base + new URL(job.creative.targetUrl).pathname, { waitUntil: 'networkidle' })
-    await page.locator('[data-game-unit]').waitFor({ state: 'visible' }); await page.waitForTimeout(3500)
+    await page.goto(base + new URL(job.creative.targetUrl).pathname, { waitUntil: 'domcontentloaded' })
+    await page.locator('[data-game-unit]').waitFor({ state: 'visible' })
+    await page.waitForFunction(hasReadyCaptureControl, undefined, { timeout: 90000 })
     await installGenerationStage(page, job)
-    await page.clock.pauseAt(await page.evaluate(() => Date.now() + 100))
+    await pauseCaptureClock(page)
     await page.evaluate(() => { window.ownerAnimations = new Map() })
     let actions = 0
     const phases = new Set()

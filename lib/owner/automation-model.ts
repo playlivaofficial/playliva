@@ -20,6 +20,7 @@ export interface GenerationJob {
   mediaStatus: 'pending' | 'available' | 'missing' | 'purging' | 'purged'; mediaKey?: string; thumbnailKey?: string
   mediaVerifiedAt?: string; mediaSha256?: string
   visualRepairVersion?: string
+  manualRetryLimit?: number
   mediaHistory?: { mediaKey: string; thumbnailKey?: string; bytes?: number; completedAt?: string; repairVersion: string; reason: string }[]
   purgedAt?: string; cleanupToken?: string; bytes?: number; downloadCount: number
 }

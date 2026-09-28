@@ -129,3 +129,26 @@ test('explicit visual repair preserves private originals and the daily identity,
   state=await store.readOwnerState();assert.equal(state.automation.jobs[job.id].state,'queued')
   await assert.rejects(service.repairVisualQc([job.id],version,'2026-10-02T06:00:00Z'),/today/)
 })
+
+test('explicit versioned repair grants one bounded attempt after failure without resetting history or reopening automatic retries', async () => {
+  process.env.OWNER_LOCAL_ENABLED='1';process.env.OWNER_DATA_DIR=await mkdtemp(resolve(tmpdir(),'social-failed-repair-'))
+  delete process.env.OWNER_DATABASE_URL;delete process.env.OWNER_REDIS_REST_URL;delete process.env.VERCEL
+  await store.updateOwnerState(s=>{s.automation.armed=true})
+  const batch=await service.enqueueBatch('manual',now),job=await service.claimJob(batch,now)
+  await store.updateOwnerState(s=>{s.automation.jobs[job.id].attempts=3})
+  await service.finishJob(job.id,job.leaseToken,{error:'Capture startup failed'})
+  assert.equal(await service.retryFailures(batch),0)
+  const version='c'.repeat(40)
+  assert.equal(await service.repairVisualQc([job.id],version,now),1)
+  assert.equal(await service.repairVisualQc([job.id],version,now),0)
+  let row=(await store.readOwnerState()).automation.jobs[job.id]
+  assert.equal(row.attempts,3);assert.equal(row.manualRetryLimit,4)
+  assert.equal(await service.retryFailures(batch),1)
+  const retry=await service.claimJob(batch,now)
+  assert.equal(retry.id,job.id);assert.equal(retry.attempts,4)
+  await service.finishJob(retry.id,retry.leaseToken,{error:'Controlled failure'})
+  assert.equal(await service.retryFailures(batch),0)
+  assert.equal(await service.repairVisualQc([job.id],version,now),0)
+  row=(await store.readOwnerState()).automation.jobs[job.id]
+  assert.equal(row.attempts,4);assert.equal(row.state,'failed')
+})

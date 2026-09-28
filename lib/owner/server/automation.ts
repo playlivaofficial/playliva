@@ -104,8 +104,8 @@ export async function reconcileDailyMedia(batchId: string, inspect = inspectJob)
 export async function retryFailures(batchId: string) {
   return updateOwnerState(state => {
     let count = 0
-    for (const row of Object.values(state.automation.jobs)) if (row.batchId === batchId && row.state === 'failed' && row.attempts < 3) { row.state = 'queued'; row.error = undefined; count++ }
-    if (count) { refreshBatch(state.automation, batchId, new Date().toISOString()); logActivity(state, 'failed_jobs_requeued', batchId, `${count} failed jobs queued. Completed jobs were preserved; three-attempt cap.`) }
+    for (const row of Object.values(state.automation.jobs)) if (row.batchId === batchId && row.state === 'failed' && row.attempts < (row.manualRetryLimit ?? 3)) { row.state = 'queued'; row.error = undefined; count++ }
+    if (count) { refreshBatch(state.automation, batchId, new Date().toISOString()); logActivity(state, 'failed_jobs_requeued', batchId, `${count} failed jobs queued. Completed jobs preserved; bounded automatic or explicit repair allowance.`) }
     return count
   })
 }
@@ -116,8 +116,8 @@ export async function recoverInterruptedJobs(now = new Date().toISOString()) {
     let count = 0
     for (const row of Object.values(state.automation.jobs)) {
       if (!row.generationDate || !['rendering', 'qc'].includes(row.state) || !row.leaseUntil || row.leaseUntil >= now) continue
-      row.state = row.attempts < 3 ? 'queued' : 'failed'
-      row.error = row.state === 'failed' ? 'Worker lease expired; three-attempt limit reached.' : undefined
+      row.state = row.attempts < (row.manualRetryLimit ?? 3) ? 'queued' : 'failed'
+      row.error = row.state === 'failed' ? 'Worker lease expired; attempt limit reached.' : undefined
       row.leaseToken = undefined; row.leaseUntil = undefined
       refreshBatch(state.automation, row.batchId, now); count++
     }
@@ -135,19 +135,20 @@ export async function repairVisualQc(ids: string[], version: string, now = new D
       if (!row || row.generationDate !== generationDate(now)) throw new Error('Visual repair is limited to today’s existing slots.')
       if (row.visualRepairVersion === version) continue
       const creative = { ...row.creative, ...state.creatives[row.id] }
-      if (row.state !== 'completed' || !row.mediaKey || row.pinned || row.attempts >= 3 || creative.reviewStatus === 'approved' || creative.uploadStatus !== 'not_uploaded' || creative.publishStatus !== 'unpublished') throw new Error('Visual repair cannot replace active, protected or published work.')
+      if (!['completed', 'failed'].includes(row.state) || (row.state === 'completed' && !row.mediaKey) || row.pinned || creative.reviewStatus === 'approved' || creative.uploadStatus !== 'not_uploaded' || creative.publishStatus !== 'unpublished') throw new Error('Visual repair cannot replace active, protected or published work.')
     }
     let count = 0
     for (const row of rows) {
       if (row.visualRepairVersion === version) continue
-      const reason = 'Capture layout failed visual QC; previous private master retained for audit.'
-      ;(row.mediaHistory ??= []).push({ mediaKey: row.mediaKey!, thumbnailKey: row.thumbnailKey, bytes: row.bytes, completedAt: row.completedAt, repairVersion: version, reason })
+      const reason = row.state === 'failed' ? `Explicit recovery after render failure: ${row.error ?? 'failed capture'}` : 'Capture failed visual QC; previous private master retained for audit.'
+      if (row.mediaKey && !row.mediaHistory?.some(item => item.mediaKey === row.mediaKey)) (row.mediaHistory ??= []).push({ mediaKey: row.mediaKey, thumbnailKey: row.thumbnailKey, bytes: row.bytes, completedAt: row.completedAt, repairVersion: version, reason })
+      row.manualRetryLimit = Math.max(row.manualRetryLimit ?? 3, row.attempts + 1)
       row.visualRepairVersion = version; row.state = 'failed'; row.mediaStatus = 'pending'; row.error = reason
       row.creative.renderStatus = 'failed'; row.creative.qc = null; row.completedAt = undefined
       const batch = state.automation.batches.find(batch => batch.id === row.batchId)
       if (batch) batch.completedAt = undefined
       refreshBatch(state.automation, row.batchId, now)
-      logActivity(state, 'visual_qc_repair', row.id, reason); count++
+      logActivity(state, 'visual_qc_repair', row.id, `${reason} Version ${version}; cumulative attempts ${row.attempts}; explicit limit ${row.manualRetryLimit}.`); count++
     }
     return count
   })
