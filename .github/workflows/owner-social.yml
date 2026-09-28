@@ -12,7 +12,7 @@ on:
         default: due
         options: [due, today, canary, arm, retry, cleanup-dry-run]
       repair_ids:
-        description: Optional comma-separated daily IDs that failed visual QC (retry mode only; preserves previous private files)
+        description: Explicit daily IDs for visual/failure repair (retry only; one bounded allowance per commit, preserves files/history)
         type: string
         default: ''
 
