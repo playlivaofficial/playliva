@@ -35,3 +35,16 @@ test('intentional static end card is excluded from gameplay motion QC without ex
   assert.equal(isMovingGameplayFrame('juggling',17,20),true)
   assert.equal(isMovingGameplayFrame('lifting',19,20),false)
 })
+
+test('Skuptu social framing omits the guaranteed-return banner without changing the underlying game or other status messages', async () => {
+  const dom=new JSDOM('<html><head></head><body><div data-game-unit><div role="status" id="outside">Outside viewport</div><div data-game-viewport><canvas></canvas><div role="status" id="cash">RETORNO GARANTIDO</div></div><div data-game-controls><div role="status" id="controls">Controls</div></div></div></body></html>')
+  const previous=globalThis.document;globalThis.document=dom.window.document
+  try{
+    await installGenerationStage({evaluate:async(fn,arg)=>fn(arg)},{gameSlug:'skuptu-levanta',creative:{hook:'Uma rodada de verdade',gameTitle:'Skuptu Levanta'}})
+    assert.equal(dom.window.getComputedStyle(document.getElementById('cash')).display,'none')
+    assert.notEqual(dom.window.getComputedStyle(document.getElementById('outside')).display,'none')
+    assert.notEqual(dom.window.getComputedStyle(document.getElementById('controls')).display,'none')
+    assert.ok(document.querySelector('canvas'))
+    assert.match(document.querySelector('#owner-social-stage > footer').textContent,/sem valor monetário/)
+  }finally{globalThis.document=previous;dom.window.close()}
+})
