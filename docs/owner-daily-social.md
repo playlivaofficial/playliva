@@ -16,6 +16,8 @@ Workflow planning creates/reconciles the day's slots before calculating its boun
 
 There is no second scheduler, platform upload, or automatic publication. Daily history is retained; the old latest-two-batches deletion does not run for daily production. Storage therefore grows with retained daily videos and must be monitored.
 
+Visual QA also checks captured game layout. The capture-stage header/footer styles apply only to the stage's direct children, never to a game's nested cabinet headers. For a demonstrated visual-QC defect, an operator may dispatch `retry` with explicit `repair_ids`. Only today's completed, unapproved, unpinned, unpublished masters qualify. Their old private media references are retained in `mediaHistory`; the same daily slots are recovered. Repeating the repair on the same commit is idempotent. Normal daily reruns never invalidate successful masters.
+
 ## Actual media is authoritative
 
 Flow: lease → game-specific live gameplay capture → PT-BR narration/original procedural audio → 1080×1920 native 30fps QC → private immutable MP4/poster upload → full persisted MP4 checksum/size verification plus preview/download/poster reads → CAS completion, fenced by lease.

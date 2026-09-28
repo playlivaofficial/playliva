@@ -107,3 +107,25 @@ test('daily hook rotation retains recent per-game history without repeating adja
     jobs.forEach(job => { state.jobs[job.id] = job });state.batches.push({ id })
   }
 })
+test('explicit visual repair preserves private originals and the daily identity, refuses protected history, and is idempotent', async () => {
+  process.env.OWNER_LOCAL_ENABLED='1';process.env.OWNER_DATA_DIR=await mkdtemp(resolve(tmpdir(),'social-visual-repair-'))
+  delete process.env.OWNER_DATABASE_URL;delete process.env.OWNER_REDIS_REST_URL;delete process.env.VERCEL
+  await store.updateOwnerState(s=>{s.automation.armed=true})
+  const batch=await service.enqueueBatch('manual',now),job=await service.claimJob(batch,now),other=await service.claimJob(batch,now)
+  await service.finishJob(job.id,job.leaseToken,{...ref,qc,duration:20},input=>media.inspectPrivateMedia(input,reader))
+  await service.finishJob(other.id,other.leaseToken,{...ref,qc,duration:20},input=>media.inspectPrivateMedia(input,reader))
+  const version='b'.repeat(40),before=await store.readOwnerState()
+  await store.updateOwnerState(s=>{s.creatives[other.id]={reviewStatus:'approved'}})
+  await assert.rejects(service.repairVisualQc([job.id,other.id],version,now),/protected/)
+  assert.equal((await store.readOwnerState()).automation.jobs[job.id].state,'completed','all requested IDs are validated before any mutation')
+  assert.equal(await service.repairVisualQc([job.id],version,now),1)
+  assert.equal(await service.repairVisualQc([job.id],version,now),0)
+  let state=await store.readOwnerState(),row=state.automation.jobs[job.id]
+  assert.equal(row.state,'failed');assert.equal(row.mediaHistory.length,1);assert.equal(row.mediaHistory[0].mediaKey,ref.mediaKey)
+  assert.equal(row.mediaKey,ref.mediaKey,'no private file is deleted')
+  assert.equal(Object.keys(state.automation.jobs).length,Object.keys(before.automation.jobs).length)
+  assert.deepEqual(state.automation.jobs[other.id],before.automation.jobs[other.id])
+  assert.equal(await service.retryFailures(batch),1)
+  state=await store.readOwnerState();assert.equal(state.automation.jobs[job.id].state,'queued')
+  await assert.rejects(service.repairVisualQc([job.id],version,'2026-10-02T06:00:00Z'),/today/)
+})

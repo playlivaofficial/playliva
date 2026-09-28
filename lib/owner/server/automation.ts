@@ -125,6 +125,33 @@ export async function recoverInterruptedJobs(now = new Date().toISOString()) {
     return count
   })
 }
+/** Explicit operator repair after visual QC. Never automatic: protects approved,
+ * pinned and uploaded history; retains the rejected private object and slot ID. */
+export async function repairVisualQc(ids: string[], version: string, now = new Date().toISOString()) {
+  if (!/^[a-f0-9]{40}$/.test(version) || !ids.length || ids.some(id => !/^daily-\d{8}-[a-z0-9-]+$/.test(id))) throw new Error('Invalid visual repair request.')
+  return updateOwnerState(state => {
+    const rows = [...new Set(ids)].map(id => state.automation.jobs[id])
+    for (const row of rows) {
+      if (!row || row.generationDate !== generationDate(now)) throw new Error('Visual repair is limited to today’s existing slots.')
+      if (row.visualRepairVersion === version) continue
+      const creative = { ...row.creative, ...state.creatives[row.id] }
+      if (row.state !== 'completed' || !row.mediaKey || row.pinned || row.attempts >= 3 || creative.reviewStatus === 'approved' || creative.uploadStatus !== 'not_uploaded' || creative.publishStatus !== 'unpublished') throw new Error('Visual repair cannot replace active, protected or published work.')
+    }
+    let count = 0
+    for (const row of rows) {
+      if (row.visualRepairVersion === version) continue
+      const reason = 'Capture layout failed visual QC; previous private master retained for audit.'
+      ;(row.mediaHistory ??= []).push({ mediaKey: row.mediaKey!, thumbnailKey: row.thumbnailKey, bytes: row.bytes, completedAt: row.completedAt, repairVersion: version, reason })
+      row.visualRepairVersion = version; row.state = 'failed'; row.mediaStatus = 'pending'; row.error = reason
+      row.creative.renderStatus = 'failed'; row.creative.qc = null; row.completedAt = undefined
+      const batch = state.automation.batches.find(batch => batch.id === row.batchId)
+      if (batch) batch.completedAt = undefined
+      refreshBatch(state.automation, row.batchId, now)
+      logActivity(state, 'visual_qc_repair', row.id, reason); count++
+    }
+    return count
+  })
+}
 export async function setPinned(id: string, pinned: boolean) {
   return updateOwnerState(state => {
     const row = state.automation.jobs[id]
