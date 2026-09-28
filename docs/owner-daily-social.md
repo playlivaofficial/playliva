@@ -16,6 +16,8 @@ Workflow planning creates/reconciles the day's slots before calculating its boun
 
 There is no second scheduler, platform upload, or automatic publication. Daily history is retained; the old latest-two-batches deletion does not run for daily production. Storage therefore grows with retained daily videos and must be monitored.
 
+Visual QA also checks captured game layout. The capture-stage header/footer styles apply only to the stage's direct children, never to a game's nested cabinet headers. For a demonstrated visual-QC defect, an operator may dispatch `retry` with explicit `repair_ids`. Only today's completed, unapproved, unpinned, unpublished masters qualify. Their old private media references are retained in `mediaHistory`; the same daily slots are recovered. Repeating the repair on the same commit is idempotent. Normal daily reruns never invalidate successful masters.
+
 ## Actual media is authoritative
 
 Flow: lease → game-specific live gameplay capture → PT-BR narration/original procedural audio → 1080×1920 native 30fps QC → private immutable MP4/poster upload → full persisted MP4 checksum/size verification plus preview/download/poster reads → CAS completion, fenced by lease.
@@ -23,6 +25,8 @@ Flow: lease → game-specific live gameplay capture → PT-BR narration/original
 Every inventory request rechecks the live range preview, download readability/length and JPEG thumbnail in bounded groups. Only a completed, QC-passed, non-empty valid MP4 with successful reads becomes READY. No provider URL, credential or storage key is sent to the browser. Browser previews/downloads use the same private storage reader behind the unchanged owner authorization boundary. Missing or unavailable files cannot contribute to the daily or library count. Local historical metadata is ARCHIVED.
 
 The existing gameplay renderer is reused, with game-specific routes, controls, artwork and phases. Daily angle, hook and capture variant selection avoids the previous three batches' near-duplicate hooks for the same game. Existing virtual-credit/18+ disclosures remain. Technical QC does not replace human creative review.
+
+Motion continuity is measured on visible gameplay, excluding the intentional final 1.8-second branded end card. Otherwise a long flight continuing behind that static card can falsely fail as repeated gameplay. Frozen visible gameplay still fails the unchanged repeat threshold, and failures report safe frame counts for diagnosis.
 
 ## Verification and recovery
 

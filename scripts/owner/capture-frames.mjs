@@ -1,4 +1,4 @@
-import { advanceScene } from './capture-actions.mjs'
+import { advanceScene, isMovingGameplayFrame } from './capture-actions.mjs'
 import { chromium } from 'playwright-core'
 import { existsSync } from 'node:fs'
 import { mkdir, writeFile } from 'node:fs/promises'
@@ -55,7 +55,9 @@ export async function capture(job, folder, seconds) {
       if (result.phase !== previous) { diagnostics.phases.push({ time: elapsed, phase: result.phase }); previous = result.phase }
       const png = await page.screenshot({ type: 'png', timeout: 30000 })
       const hash = createHash('sha256').update(png).digest('hex')
-      if (/flying|lifting|juggling/.test(result.phase)) { diagnostics.movingFrames++; if (hash === previousHash) diagnostics.movingRepeats++ }
+      // The intentional static end card covers the game during the last 1.8s.
+      // A still-flying engine behind it is not a visible frozen gameplay frame.
+      if (isMovingGameplayFrame(result.phase, elapsed, seconds)) { diagnostics.movingFrames++; if (hash === previousHash) diagnostics.movingRepeats++ }
       if (hash === previousHash) { diagnostics.repeatedFrames++; repeats++ } else repeats = 0
       diagnostics.longestRepeat = Math.max(diagnostics.longestRepeat, repeats); previousHash = hash
       if (!encoder.stdin.write(png)) await once(encoder.stdin, 'drain')
@@ -64,11 +66,11 @@ export async function capture(job, folder, seconds) {
       if (frame % 150 === 149) console.log(JSON.stringify({ capture: job.id, frames: frame + 1, total: seconds * 30 }))
     }
     encoder.stdin.end(); await ended
+    await writeFile(resolve(folder, 'capture.json'), JSON.stringify(diagnostics))
     if (errors.length || diagnostics.actions < 2) throw new Error('Capture had a page error or insufficient gameplay actions.')
     if (['crash', 'liva-ginga', 'skuptu-levanta'].includes(job.gameSlug) && (diagnostics.movingFrames < 30 || diagnostics.movingRepeats / diagnostics.movingFrames > .1)) {
-      throw new Error('Capture motion continuity failed: repeated or missing moving frames.')
+      throw new Error(`Capture motion continuity failed: ${diagnostics.movingFrames} moving frames, ${diagnostics.movingRepeats} repeats, longest static run ${diagnostics.longestRepeat}.`)
     }
-    await writeFile(resolve(folder, 'capture.json'), JSON.stringify(diagnostics))
     return { raw, diagnostics }
   } finally { encoder?.kill(); await browser.close() }
 }

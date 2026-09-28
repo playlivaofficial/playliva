@@ -6,6 +6,10 @@ const mode = process.env.WORKER_MODE || 'due'
 if (!['due', 'today', 'canary', 'arm', 'retry', 'cleanup-dry-run'].includes(mode)) throw new Error('Unsupported worker mode.')
 let batchId = process.env.OWNER_BATCH_ID
 if (process.argv.includes('--plan') && ['due', 'today', 'retry', 'canary'].includes(mode)) {
+  if (process.env.OWNER_VISUAL_REPAIR_IDS) {
+    if (mode !== 'retry') throw new Error('Visual repair requires explicit retry mode.')
+    await service.repairVisualQc(process.env.OWNER_VISUAL_REPAIR_IDS.split(',').map(id => id.trim()).filter(Boolean), process.env.GITHUB_SHA)
+  }
   if (mode !== 'canary') await service.recoverInterruptedJobs()
   batchId = await service.enqueueBatch(mode === 'canary' ? 'canary' : mode === 'today' ? 'manual' : 'scheduled')
   if (batchId) {

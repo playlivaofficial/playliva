@@ -19,6 +19,8 @@ export interface GenerationJob {
   creative: Creative; voiceLine: string; captureVariant: number; pinned: boolean; pinHistory: { at: string; pinned: boolean }[]
   mediaStatus: 'pending' | 'available' | 'missing' | 'purging' | 'purged'; mediaKey?: string; thumbnailKey?: string
   mediaVerifiedAt?: string; mediaSha256?: string
+  visualRepairVersion?: string
+  mediaHistory?: { mediaKey: string; thumbnailKey?: string; bytes?: number; completedAt?: string; repairVersion: string; reason: string }[]
   purgedAt?: string; cleanupToken?: string; bytes?: number; downloadCount: number
 }
 export interface GenerationBatch {

@@ -11,6 +11,10 @@ on:
         type: choice
         default: due
         options: [due, today, canary, arm, retry, cleanup-dry-run]
+      repair_ids:
+        description: Optional comma-separated daily IDs that failed visual QC (retry mode only; preserves previous private files)
+        type: string
+        default: ''
 
 permissions:
   contents: read
@@ -32,6 +36,7 @@ jobs:
       OWNER_DATABASE_URL: ${{ secrets.OWNER_DATABASE_URL }}
       BLOB_READ_WRITE_TOKEN: ${{ secrets.OWNER_BLOB_READ_WRITE_TOKEN }}
       WORKER_MODE: ${{ inputs.mode || 'due' }}
+      OWNER_VISUAL_REPAIR_IDS: ${{ inputs.repair_ids || '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4

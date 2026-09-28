@@ -1,4 +1,6 @@
 /** Capture-only driver; uses real controls and observes actual game phases. */
+export const isMovingGameplayFrame = (phase, elapsed, seconds) => elapsed < seconds - 1.8 && /flying|lifting|juggling/.test(phase)
+
 export function advanceScene({ elapsed, variant, seconds, act }) {
         let actions = 0
         const click = selector => { const target = document.querySelector(selector); if (target && !target.disabled && !target.closest('fieldset:disabled')) { target.click(); actions++; return true } return false }
