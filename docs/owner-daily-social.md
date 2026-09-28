@@ -34,6 +34,8 @@ Skuptu's existing settled cash-out banner uses "Retorno garantido" wording. Capt
 
 Motion continuity is measured on visible gameplay, excluding the intentional final 1.8-second branded end card. Otherwise a long flight continuing behind that static card can falsely fail as repeated gameplay. Frozen visible gameplay still fails the unchanged repeat threshold, and failures report safe frame counts for diagnosis.
 
+Skuptu motion classification reads the visible lift HUD. Its cashout button becomes disabled and changes text after settlement while the actual lift continues; using that button as the motion signal incorrectly excluded those frames and caused false insufficient-motion failures. Capture actions, outcomes, frame thresholds and public gameplay are unchanged.
+
 Capture startup waits for an enabled gameplay control, then pauses with 30 seconds of idle headroom before its first game action. The previous 100ms pause deadline reproducibly throws “Cannot fast-forward to the past” under a delayed control round-trip. Readiness replaces a fragile global network-idle/fixed-delay assumption. Stage-only progress and sanitized capture-stage errors expose failures without provider responses or secrets. A failed slot at its automatic attempt cap may receive one explicit additional allowance per repair commit through `repair_ids`; cumulative attempts and activity history are preserved. Repeating that repair version grants nothing further, and normal scheduler retries remain bounded.
 
 ## Verification and recovery

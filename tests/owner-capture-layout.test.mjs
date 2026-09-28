@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import {JSDOM} from 'jsdom'
 import {installGenerationStage} from '../scripts/owner/generation-stage.mjs'
-import {isMovingGameplayFrame} from '../scripts/owner/capture-actions.mjs'
+import {advanceScene,isMovingGameplayFrame} from '../scripts/owner/capture-actions.mjs'
 
 test('capture frame does not reposition nested game cabinet headers or footers', async () => {
   const dom=new JSDOM('<html><head><style>.cabinet-header,.cabinet-footer{position:relative;top:0px}</style></head><body><div data-game-unit><div data-game-viewport><header class="cabinet-header">Golaço</header><div>Reels</div><footer class="cabinet-footer">Result</footer></div></div></body></html>')
@@ -47,4 +47,18 @@ test('Skuptu social framing omits the guaranteed-return banner without changing 
     assert.ok(document.querySelector('canvas'))
     assert.match(document.querySelector('#owner-social-stage > footer').textContent,/sem valor monetário/)
   }finally{globalThis.document=previous;dom.window.close()}
+})
+
+test('Skuptu motion QC observes the continuing lift after cashout instead of the disabled wager control', () => {
+  const dom=new JSDOM('<div id="owner-social-stage" data-game="skuptu-levanta"><div data-game-viewport><div data-failed="false"><span>FORÇA TOTAL</span><strong>1.10×</strong></div></div><div data-game-controls><button disabled>RETORNO GARANTIDO · 1.10</button></div></div>')
+  const previousDocument=globalThis.document,previousWindow=globalThis.window
+  globalThis.document=dom.window.document;globalThis.window=dom.window;document.getAnimations=()=>[];window.ownerAnimations=new Map()
+  try{
+    const observe=()=>advanceScene({elapsed:5,variant:0,seconds:20,act:false}).phase
+    assert.equal(observe(),'lifting')
+    assert.equal(isMovingGameplayFrame(observe(),5,20),true)
+    document.querySelector('[data-failed]').dataset.failed='true';assert.equal(observe(),'failed')
+    document.querySelector('[data-failed]').dataset.failed='false';document.querySelector('span').textContent='PREPARE A PEGADA';assert.equal(observe(),'preparing')
+    document.querySelector('button').disabled=false;document.querySelector('span').textContent='O PALCO É SEU';assert.equal(observe(),'ready')
+  }finally{globalThis.document=previousDocument;globalThis.window=previousWindow;dom.window.close()}
 })
