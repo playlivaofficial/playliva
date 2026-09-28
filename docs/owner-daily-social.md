@@ -26,6 +26,8 @@ Every inventory request rechecks the live range preview, download readability/le
 
 The existing gameplay renderer is reused, with game-specific routes, controls, artwork and phases. Daily angle, hook and capture variant selection avoids the previous three batches' near-duplicate hooks for the same game. Existing virtual-credit/18+ disclosures remain. Technical QC does not replace human creative review.
 
+Motion continuity is measured on visible gameplay, excluding the intentional final 1.8-second branded end card. Otherwise a long flight continuing behind that static card can falsely fail as repeated gameplay. Frozen visible gameplay still fails the unchanged repeat threshold, and failures report safe frame counts for diagnosis.
+
 ## Verification and recovery
 
 Run frozen install, lint, typecheck, full tests, build, route checks and secret scan. Daily tests cover concurrent deduplication, timezone boundaries, canonical identity, new/disabled games, actual bytes, missing/zero/corrupt objects, checksum, preview/download failures, failed persistence, partial recovery and archive exclusion.

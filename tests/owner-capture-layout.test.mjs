@@ -2,6 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import {JSDOM} from 'jsdom'
 import {installGenerationStage} from '../scripts/owner/generation-stage.mjs'
+import {isMovingGameplayFrame} from '../scripts/owner/capture-actions.mjs'
 
 test('capture frame does not reposition nested game cabinet headers or footers', async () => {
   const dom=new JSDOM('<html><head><style>.cabinet-header,.cabinet-footer{position:relative;top:0px}</style></head><body><div data-game-unit><div data-game-viewport><header class="cabinet-header">Golaço</header><div>Reels</div><footer class="cabinet-footer">Result</footer></div></div></body></html>')
@@ -15,4 +16,22 @@ test('capture frame does not reposition nested game cabinet headers or footers',
     assert.equal(style(document.querySelector('.cabinet-footer')).position,'relative')
     assert.equal(document.querySelectorAll('[data-game-unit]').length,1)
   }finally{globalThis.document=previous;dom.window.close()}
+})
+
+test('intentional static end card is excluded from gameplay motion QC without excusing frozen visible gameplay', () => {
+  const inspect=(frozen)=>{
+    let moving=0,repeated=0
+    for(let frame=0;frame<600;frame++){
+      const elapsed=frame/30,phase=elapsed<8?'preparing':'flying'
+      const same=elapsed>=18.2||frozen
+      if(isMovingGameplayFrame(phase,elapsed,20)){moving++;if(same)repeated++}
+    }
+    return{moving,repeated,passes:moving>=30&&repeated/moving<=.1}
+  }
+  assert.ok(inspect(false).passes,'long flights remain valid when the final branded card covers them')
+  assert.equal(inspect(false).repeated,0)
+  assert.equal(inspect(true).passes,false,'frozen gameplay still fails the original strict threshold')
+  assert.equal(isMovingGameplayFrame('ready',2,20),false)
+  assert.equal(isMovingGameplayFrame('juggling',17,20),true)
+  assert.equal(isMovingGameplayFrame('lifting',19,20),false)
 })
