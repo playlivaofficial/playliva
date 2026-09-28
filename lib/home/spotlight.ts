@@ -28,6 +28,8 @@ import { productCopy } from '@/lib/product-discovery'
  * editing the component. Order mirrors the Play hub.
  */
 export interface SpotlightGame {
+  /** Explicitly disabled entries are excluded from social generation. */
+  enabled?: boolean
   /** Original id, e.g. `island-crash`; also the `data-spotlight-game` hook. */
   id: string
   /** Route under `/[locale]/play/`. */

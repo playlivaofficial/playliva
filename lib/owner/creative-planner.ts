@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto'
-import { ANGLES, hookSimilarity, type Angle, type AutomationState, type GenerationGame, type GenerationJob } from './automation-model'
+import { ANGLES, dailyJobId, eligibleGenerationGames, generationDate, hookSimilarity, type Angle, type AutomationState, type GenerationGame, type GenerationJob } from './automation-model'
 
 const hooks: Record<Angle, string[]> = {
   wow: ['Olha essa rodada de {game}!', 'O momento que muda tudo está chegando.', 'Segura essa sequência no {game}!', 'Pisca e você perde o melhor momento.', 'Essa partida merecia um replay.', 'O suspense cabe inteiro nessa tela.', 'Vem ver o que aconteceu nessa tentativa.', 'Já sentiu aquela tensão no último segundo?', 'A próxima jogada promete uma surpresa.', 'O ritmo acelerou por aqui!', 'Começou tranquilo. E agora?', 'Assiste até o fim dessa rodada.'],
@@ -36,6 +36,14 @@ export function planCreative(game: GenerationGame, angle: Angle, batchId: string
   }
 }
 export function planBatch(games: GenerationGame[], batchId: string, now: string, state: AutomationState, canary = false) {
+  games = eligibleGenerationGames(games)
   if (!games.length || new Set(games.map(game => game.slug)).size !== games.length) throw new Error('Social game registry is empty or contains duplicates.')
-  return games.flatMap(game => (canary ? ANGLES.slice(0, 1) : ANGLES).map(angle => planCreative(game, angle, batchId, now, state)))
+  if (new Set(games.map(game => game.id ?? game.slug)).size !== games.length) throw new Error('Social canonical game IDs must be unique.')
+  return games.map(game => {
+    const date = generationDate(now)
+    const angle = canary ? ANGLES[0] : ANGLES[createHash('sha256').update(`${game.id ?? game.slug}:${date}`).digest().readUInt32BE(0) % ANGLES.length]
+    const job = planCreative(game, angle, batchId, now, state)
+    if (!canary) { job.id = dailyJobId(game, date); job.creative.id = job.id; job.creative.utmContent = job.id; job.generationDate = date; job.canonicalGameId = game.id ?? game.slug }
+    return job
+  })
 }

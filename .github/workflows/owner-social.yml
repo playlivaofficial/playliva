@@ -2,7 +2,7 @@ name: Owner Social generation
 
 on:
   schedule:
-    # 09:00 Tbilisi = 05:00 UTC. Durable state enforces 72h slots and deduplication.
+    # One cycle daily at 09:00 Tbilisi. Durable canonical-game/date slots deduplicate reruns.
     - cron: '0 5 * * *'
   workflow_dispatch:
     inputs:
@@ -10,7 +10,7 @@ on:
         description: Controlled worker action (never uploads or publishes to social platforms)
         type: choice
         default: due
-        options: [due, canary, arm, retry, cleanup-dry-run]
+        options: [due, today, canary, arm, retry, cleanup-dry-run]
 
 permissions:
   contents: read
@@ -27,8 +27,10 @@ jobs:
     timeout-minutes: 15
     outputs:
       slots: ${{ steps.plan.outputs.slots }}
+      batch_id: ${{ steps.plan.outputs.batch_id }}
     env:
       OWNER_DATABASE_URL: ${{ secrets.OWNER_DATABASE_URL }}
+      BLOB_READ_WRITE_TOKEN: ${{ secrets.OWNER_BLOB_READ_WRITE_TOKEN }}
       WORKER_MODE: ${{ inputs.mode || 'due' }}
     steps:
       - uses: actions/checkout@v4
@@ -61,6 +63,7 @@ jobs:
       SOCIAL_CHROME_PATH: /usr/bin/google-chrome
       PLAYLIVA_SOCIAL_PYTHON: python
       OWNER_RETRY_PREPARED: 'true'
+      OWNER_BATCH_ID: ${{ needs.plan.outputs.batch_id }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4

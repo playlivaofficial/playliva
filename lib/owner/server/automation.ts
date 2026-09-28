@@ -1,28 +1,32 @@
 import { randomUUID } from 'node:crypto'
 import { SPOTLIGHT_GAMES } from '../../home/spotlight'
-import { atOrAfterNine, dueBatch, refreshBatch, retentionCandidates, type GenerationJob } from '../automation-model'
+import { atOrAfterNine, dailyBatchId, dailyJobId, generationDate, dueBatch, refreshBatch, retentionCandidates, eligibleGenerationGames, type GenerationGame, type GenerationJob } from '../automation-model'
 import { planBatch } from '../creative-planner'
 import { logActivity, readOwnerState, updateOwnerState } from './store'
 import type { Creative, OwnerState } from '../model'
+import { inspectJob, inspectPrivateMedia } from './media-inventory'
 
-export const generationGames = () => SPOTLIGHT_GAMES.map(game => ({ slug: game.slug, title: game.title['pt-BR'], category: game.category.en, route: game.playPath }))
-export async function enqueueBatch(mode: 'scheduled' | 'manual' | 'canary', now = new Date().toISOString()) {
-  const games = generationGames()
+export const generationGames = () => eligibleGenerationGames(SPOTLIGHT_GAMES.map(game => ({ id: game.id, slug: game.slug, title: game.title['pt-BR'], category: game.category.en, route: game.playPath, enabled: game.enabled })))
+export async function enqueueBatch(mode: 'scheduled' | 'manual' | 'canary', now = new Date().toISOString(), catalog: GenerationGame[] = generationGames()) {
+  const games = eligibleGenerationGames(catalog)
   return updateOwnerState(state => {
     const automation = state.automation
     if (mode === 'scheduled') automation.lastSchedulerAt = now
     if (mode !== 'canary' && !automation.armed) return null
-    const active = automation.batches.find(batch => batch.kind === (mode === 'canary' ? 'canary' : 'scheduled') && ['queued', 'running', 'partial', 'failed'].includes(batch.state))
-    if (active) return active.id
     if (mode === 'scheduled' && !dueBatch(automation, now)) return null
-    const slot = mode === 'canary' ? 'canary-v1' : automation.nextDueAt ?? atOrAfterNine(new Date(now))
-    const id = mode === 'canary' ? slot : `batch-${slot.slice(0, 10).replaceAll('-', '')}`
-    if (automation.batches.some(batch => batch.id === id)) return id
+    const date = generationDate(now), slot = `${date}T05:00:00.000Z`
+    const id = mode === 'canary' ? 'canary-v1' : dailyBatchId(date)
+    if (mode === 'canary' && automation.batches.some(batch => batch.id === id)) return id
     const selected = mode === 'canary' ? games.filter(game => game.slug === 'crash') : games
-    const jobs = planBatch(selected, id, now, automation, mode === 'canary')
-    automation.batches.push({ id, scheduledAt: mode === 'canary' ? now : slot, createdAt: now, kind: mode === 'canary' ? 'canary' : 'scheduled', state: 'queued', expected: jobs.length, gameCount: selected.length })
+    const missing = mode === 'canary' ? selected : selected.filter(game => !automation.jobs[dailyJobId(game, date)])
+    const jobs = missing.length ? planBatch(missing, id, now, automation, mode === 'canary') : []
+    let batch = automation.batches.find(batch => batch.id === id)
+    if (!batch) { batch = { id, scheduledAt: mode === 'canary' ? now : slot, createdAt: now, kind: mode === 'canary' ? 'canary' : 'daily', state: 'queued', expected: selected.length, gameCount: selected.length }; automation.batches.push(batch) }
+    batch.expected = selected.length; batch.gameCount = selected.length
+    if (mode !== 'canary') batch.gameIds = selected.map(game => game.id ?? game.slug)
     for (const job of jobs) automation.jobs[job.id] = job
-    logActivity(state, 'batch_queued', id, `${jobs.length} universal PT-BR masters queued. No upload or publishing.`)
+    if (jobs.length) { batch.completedAt = undefined; refreshBatch(automation, id, now); logActivity(state, 'batch_queued', id, `${jobs.length} missing daily PT-BR slots queued. No upload or publishing.`) }
+    if (mode !== 'canary') automation.nextDueAt = atOrAfterNine(new Date(Date.parse(now) + 1))
     return id
   })
 }
@@ -32,7 +36,7 @@ export async function armAutomation() {
     if (!state.automation.armed) {
       state.automation.armed = true
       state.automation.nextDueAt = atOrAfterNine(new Date())
-      logActivity(state, 'automation_armed', 'social', 'Daily scheduler evaluates the 72-hour due date at 09:00 Tbilisi.')
+      logActivity(state, 'automation_armed', 'social', 'Daily production at 09:00 Tbilisi; one slot per canonical game and calendar date.')
     }
   })
 }
@@ -46,7 +50,8 @@ export async function claimJob(batchId?: string, now = new Date().toISOString())
         refreshBatch(automation, row.batchId, now)
       }
     }
-    const row = Object.values(automation.jobs).find(job => job.state === 'queued' && (!batchId || job.batchId === batchId))
+    const eligible = new Set(generationGames().map(game => game.id ?? game.slug))
+    const row = Object.values(automation.jobs).find(job => job.state === 'queued' && (batchId ? job.batchId === batchId : Boolean(job.generationDate)) && (!job.generationDate || eligible.has(job.canonicalGameId!)))
     if (!row) return null
     row.state = 'rendering'; row.attempts++; row.startedAt = now; row.error = undefined
     row.leaseToken = randomUUID(); row.leaseUntil = new Date(Date.parse(now) + 30 * 60000).toISOString()
@@ -63,7 +68,10 @@ export async function heartbeat(id: string, token: string, qc = false) {
     state.automation.lastWorkerAt = new Date().toISOString()
   })
 }
-export async function finishJob(id: string, token: string, result: { mediaKey: string; thumbnailKey: string; bytes: number; qc: NonNullable<Creative['qc']>; duration: number } | { error: string }) {
+export async function finishJob(id: string, token: string, result: { mediaKey: string; thumbnailKey: string; bytes: number; mediaSha256: string; qc: NonNullable<Creative['qc']>; duration: number } | { error: string }, inspect = inspectPrivateMedia) {
+  // Storage is verified before the state transaction. The lease is rechecked
+  // inside CAS, so a late worker cannot overwrite a newer attempt.
+  if (!('error' in result) && (!/^[a-f0-9]{64}$/.test(result.mediaSha256) || !(await inspect(result)).ready)) throw new Error('Social persistent media verification failed; job is not READY.')
   return updateOwnerState(state => {
     const row = state.automation.jobs[id], now = new Date().toISOString()
     if (!row || row.leaseToken !== token || !['rendering', 'qc'].includes(row.state)) throw new Error('Social worker lease was lost.')
@@ -71,6 +79,7 @@ export async function finishJob(id: string, token: string, result: { mediaKey: s
     else {
       if (!result.qc.passed || result.qc.width !== 1080 || result.qc.height !== 1920 || result.qc.fps !== 30) throw new Error('Social QC did not meet the universal master standard.')
       row.state = 'completed'; row.completedAt = now; row.mediaStatus = 'available'; row.mediaKey = result.mediaKey; row.thumbnailKey = result.thumbnailKey; row.bytes = result.bytes
+      row.mediaVerifiedAt = now; row.mediaSha256 = result.mediaSha256
       row.creative.qc = result.qc; row.creative.renderStatus = 'rendered'; row.creative.updatedAt = now; row.creative.duration = result.duration
     }
     row.leaseToken = undefined; row.leaseUntil = undefined
@@ -78,12 +87,41 @@ export async function finishJob(id: string, token: string, result: { mediaKey: s
     logActivity(state, row.state === 'completed' ? 'creative_rendered' : 'render_failed', id, row.state === 'completed' ? 'Private master passed QC; owner review required.' : row.error!)
   })
 }
+/** Recover the same slot only after a definitive missing/invalid object result.
+ * Transient provider failures do not discard a completed reference. */
+export async function reconcileDailyMedia(batchId: string, inspect = inspectJob) {
+  const snapshot = await readOwnerState()
+  for (const job of Object.values(snapshot.automation.jobs).filter(job => job.batchId === batchId && job.state === 'completed')) {
+    const result = await inspect(job)
+    if (!result.ready && result.missing) await updateOwnerState(state => {
+      const current = state.automation.jobs[job.id]
+      if (current?.state !== 'completed' || current.mediaKey !== job.mediaKey) return
+      current.state = 'failed'; current.mediaStatus = 'missing'; current.error = 'Persistent media is missing or invalid; recover this daily slot.'
+      refreshBatch(state.automation, batchId, new Date().toISOString())
+    })
+  }
+}
 export async function retryFailures(batchId: string) {
   return updateOwnerState(state => {
     let count = 0
     for (const row of Object.values(state.automation.jobs)) if (row.batchId === batchId && row.state === 'failed' && row.attempts < 3) { row.state = 'queued'; row.error = undefined; count++ }
-    if (count) refreshBatch(state.automation, batchId, new Date().toISOString())
-    logActivity(state, 'failed_jobs_requeued', batchId, `${count} failed jobs queued. Completed jobs were preserved; three-attempt cap.`)
+    if (count) { refreshBatch(state.automation, batchId, new Date().toISOString()); logActivity(state, 'failed_jobs_requeued', batchId, `${count} failed jobs queued. Completed jobs were preserved; three-attempt cap.`) }
+    return count
+  })
+}
+/** Recover interrupted leases before planning runner dependencies. Live leases
+ * and completed slots remain untouched, including previous daily batches. */
+export async function recoverInterruptedJobs(now = new Date().toISOString()) {
+  return updateOwnerState(state => {
+    let count = 0
+    for (const row of Object.values(state.automation.jobs)) {
+      if (!row.generationDate || !['rendering', 'qc'].includes(row.state) || !row.leaseUntil || row.leaseUntil >= now) continue
+      row.state = row.attempts < 3 ? 'queued' : 'failed'
+      row.error = row.state === 'failed' ? 'Worker lease expired; three-attempt limit reached.' : undefined
+      row.leaseToken = undefined; row.leaseUntil = undefined
+      refreshBatch(state.automation, row.batchId, now); count++
+    }
+    if (count) logActivity(state, 'interrupted_jobs_recovered', 'social', `${count} expired daily leases recovered without replacing completed slots.`)
     return count
   })
 }
@@ -117,7 +155,7 @@ export async function finishCleanup(id: string, token: string) {
 export async function generationSummary(current?: OwnerState) {
   const { automation } = current ?? await readOwnerState()
   return { armed: automation.armed, nextDueAt: automation.nextDueAt, lastSchedulerAt: automation.lastSchedulerAt, lastWorkerAt: automation.lastWorkerAt,
-    batches: automation.batches.slice(-20).reverse().map(batch => ({ ...batch, completed: Object.values(automation.jobs).filter(job => job.batchId === batch.id && ['completed', 'purged'].includes(job.state)).length,
-      failed: Object.values(automation.jobs).filter(job => job.batchId === batch.id && job.state === 'failed').length })),
+    batches: automation.batches.slice(-20).reverse().map(batch => ({ ...batch, completed: Object.values(automation.jobs).filter(job => job.batchId === batch.id && (!batch.gameIds || batch.gameIds.includes(job.canonicalGameId!)) && ['completed', 'purged'].includes(job.state)).length,
+      failed: Object.values(automation.jobs).filter(job => job.batchId === batch.id && (!batch.gameIds || batch.gameIds.includes(job.canonicalGameId!)) && job.state === 'failed').length })),
     jobs: Object.values(automation.jobs).map(({ id, batchId, angle, state, attempts, error, pinned, mediaStatus, purgedAt, downloadCount }) => ({ id, batchId, angle, state, attempts, error, pinned, mediaStatus, purgedAt, downloadCount })) }
 }
