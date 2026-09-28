@@ -36,7 +36,10 @@ export function advanceScene({ elapsed, variant, seconds, act }) {
           phase = dropping ? 'dropping' : document.querySelector('[data-game-viewport] [aria-live]')?.textContent.includes('×') ? 'landed' : 'ready'
         } else if (game === 'skuptu-levanta') {
           const button = document.querySelector('[data-game-controls] button')
-          phase = document.querySelector('[data-failed=true]') ? 'failed' : /RETIRAR/.test(button?.textContent || '') ? 'lifting' : button?.disabled ? 'preparing' : 'ready'
+          // Cashout disables/relabels the control, but the actual lift continues
+          // until failure. Read the visible PT-BR HUD, not wager availability.
+          const hud = document.querySelector('[data-game-viewport] [data-failed]')
+          phase = hud?.dataset.failed === 'true' ? 'failed' : hud?.querySelector('span')?.textContent.trim() === 'FORÇA TOTAL' ? 'lifting' : button?.disabled ? 'preparing' : 'ready'
         }
         return { actions, phase }
       }
