@@ -20,7 +20,8 @@ export async function searchSource(filters: Filters): Promise<Source<SearchData>
     const matches=(r:SearchFact)=> (!route||r.page===canonicalPage('https://www.playliva.com'+route)) && (!filters.locale||r.page.startsWith(`https://www.playliva.com/${filters.locale}/`)) && (!filters.geo||r.country===countryCode(filters.geo)) && (!filters.device||r.device===filters.device.toLowerCase())
     const current=(r:SearchFact)=>r.date>=from&&r.date<=to
     const selected=facts.filter(matches), withFilters=Boolean(route||filters.locale||filters.geo||filters.device)
-    const total=aggregate(facts.filter(r=>r.grain===(withFilters?'page':'total')&&current(r)&&(!withFilters||matches(r))))
+    const totalRows=facts.filter(r=>r.grain===(withFilters?'page':'total')&&current(r)&&(!withFilters||matches(r)))
+    const total=aggregate(totalRows)
     const rows=(grain:'query'|'page'):SearchRow[]=>{
       const grouped=new Map<string,SearchFact[]>()
       for(const r of selected.filter(r=>r.grain===grain)) {const key=JSON.stringify([r.page,r.query]);grouped.set(key,[...(grouped.get(key)??[]),r])}
@@ -36,6 +37,6 @@ export async function searchSource(filters: Filters): Promise<Source<SearchData>
     }
     const health=freshness(state), rules=signals(facts,state.newest,new Set(publishedInventory().map(r=>'https://www.playliva.com'+r.route)),countryCode(filters.geo||'br'),filters.locale||'pt-br').filter(s=>!route||s.page==='https://www.playliva.com'+route)
     const coverage=state.coverageFrom&&from<state.coverageFrom?` Requested history before ${state.coverageFrom} is unavailable.`:''
-    return {state:total.impressions?'connected':'no_data',label:'Persisted Google Search Console',observedAt:state.lastSuccess,detail:`Final web-search data, ${from} to ${to}. Freshness: ${health}. ${withFilters?'Page-level aggregation for the selected filters.':'Property-level totals include anonymized queries.'} Query rows may omit anonymized/Google-truncated data; missing rows are unknown. No Google requests occur when opening this view.${coverage}`,data:{...total,position:total.impressions?total.position:null,pages:rows('page'),queries:rows('query'),intelligence:{state,runs,freshness:health,from,to,signals:rules,countries:breakdown('country'),devices:breakdown('device')}}}
+    return {state:total.impressions?'connected':'no_data',label:'Persisted Google Search Console',observedAt:state.lastSuccess,detail:`Final web-search data, ${from} to ${to}. Freshness: ${health}. ${withFilters?'Page-level aggregation for the selected filters.':'Property-level totals include anonymized queries.'} Granular page/query/country/device rows can omit data that appears in less-granular Google reports. Missing rows are unknown, not zero. No Google requests occur when opening this view.${coverage}`,data:{...total,...(!totalRows.length?{clicks:null,impressions:null,ctr:null}:{}),position:total.impressions?total.position:null,pages:rows('page'),queries:rows('query'),intelligence:{state,runs,freshness:health,from,to,signals:rules,countries:breakdown('country'),devices:breakdown('device')}}}
   }catch{return {state:'unavailable',label:'Search Console performance',detail:'Persisted reporting is unavailable; Autopilot state cannot be confirmed. No edits will use missing evidence. Historical inspection records remain available.',data}}
 }
