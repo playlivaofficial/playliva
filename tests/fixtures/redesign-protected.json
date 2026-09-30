@@ -2,7 +2,7 @@
   "lib/affiliate.ts": "2ab4b5683776bc266c53c8025a72ba0aaaf5fb2306bdc6dcc76297d85d923471",
   "lib/data.ts": "62ec5f46d5e62c802b2bf5a920c96a223914ee969cc556b73dd0105da2e0028e",
   "lib/consent.ts": "dda3f5a6e39088bde2ad0bd08093a1c88dbfe2afac39d83fa6927b169340d24f",
-  "lib/tracking.ts": "1035f83238e4e00e05049e5bc0d031af7962b899be59841c36464cce0b63eb73",
+  "lib/tracking.ts": "56ed80b87fd6286d54f77112603465256a566ccc0138b05e59a926b735f7284c",
   "lib/originals/play-real.ts": "ef7ed4886a21bb6f7e034e512b1bd68f2b59b132c3f0abd6628b63f9e5a2bbc2",
   "lib/originals/blackjack/play-real.ts": "8e625fcb7021e09658f2a8be51a147b4708e0f6d5869664488caed7e0e25a72a",
   "lib/originals/roulette/play-real.ts": "167cd0f3f71625d3ad9e25a557ba49120f039aacd9da3e8a43453ac747213968",
@@ -11,7 +11,7 @@
   "components/operator-card.tsx": "b327f57ac7afacc37fa736752e03db6ed70ef6736f7aa37e2f6a2a8d6eaae0d0",
   "components/where-to-play.tsx": "f846c3c00bb1a65c13dd70cc6337a33fd3e6e45f1ad5fee23e086d5b4e3d19d5",
   "components/featured-operators.tsx": "774de8f813649e8640f8c4fae8d6328955d21e738abd359fcc6e2fb639488175",
-  "app/go/route.ts": "c838409ce6c842dc39805d1a006f5ceec2482e292ea902984b20054ec0756f4c",
+  "app/go/route.ts": "e076cf4080e418292b48ade4d7b8f34aa1e6f07ab7c0e5ae7592913f52c173ff",
   "lib/seo.ts": "17e9fa89127c67cd4293d5094fcb12a817204ee36c83c5a48aca82e9d8fc6cff",
   "app/sitemap.ts": "9f17e8ad1758c6bbc3c4f45884b683a7527651e18653e5498ad69a0ad3cfdd3c"
 }

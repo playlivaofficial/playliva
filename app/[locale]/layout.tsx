@@ -1,6 +1,8 @@
 import { notFound } from 'next/navigation'
 import { headers } from 'next/headers'
 import { visitorMarket } from '@/lib/visitor-market'
+import { ownerGeoStatus } from '@/lib/owner/server/geo-preview'
+import { OwnerGeoPreview } from '@/components/owner/geo-preview'
 import { CountryProvider } from '@/components/country-context'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
@@ -28,6 +30,8 @@ export default async function LocaleLayout({
   const { locale: localeSegment } = await params
   if (!isLocaleSegment(localeSegment)) notFound()
   const locale = segmentToLocale(localeSegment)
+  const requestHeaders = await headers()
+  const ownerGeo = await ownerGeoStatus(requestHeaders)
 
   return (
     <>
@@ -36,8 +40,10 @@ export default async function LocaleLayout({
       <CountryProvider
         initialLocale={locale}
         initialCountryCode={seoMarketForLocaleSegment(localeSegment)}
-        visitorCountryCode={visitorMarket(await headers())}
+        visitorCountryCode={ownerGeo.previewGeo ?? visitorMarket(requestHeaders)}
+        previewCountryCode={ownerGeo.previewGeo}
       >
+        {ownerGeo.authorized && <OwnerGeoPreview status={ownerGeo} />}
         <a href="#main-content" className="sr-only fixed left-4 top-3 z-[100] rounded-lg bg-foreground px-4 py-3 text-background focus:not-sr-only">{productCopy(locale).skipContent}</a>
         <SiteHeader />
         <main id="main-content" tabIndex={-1} className="min-h-screen pb-20 outline-none md:pb-0">{children}</main>
@@ -46,7 +52,7 @@ export default async function LocaleLayout({
         <CookieBanner />
         <AttributionCapture />
       </CountryProvider>
-      {process.env.NODE_ENV === 'production' && <ConsentedAnalytics />}
+      {process.env.NODE_ENV === 'production' && !ownerGeo.previewGeo && <ConsentedAnalytics />}
     </>
   )
 }

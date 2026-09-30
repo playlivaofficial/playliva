@@ -68,6 +68,7 @@ export function CountryProvider({
   initialLocale,
   initialCountryCode = DEFAULT_COUNTRY,
   visitorCountryCode = null,
+  previewCountryCode = null,
 }: {
   children: ReactNode
   /**
@@ -82,6 +83,8 @@ export function CountryProvider({
   initialCountryCode?: CountryCode | null
   /** Trusted request GEO. A saved market preference cannot grant eligibility. */
   visitorCountryCode?: CountryCode | null
+  /** Server-authorized owner preview only; never read from browser storage. */
+  previewCountryCode?: CountryCode | null
 }) {
   const pathname = usePathname()
   const router = useRouter()
@@ -148,21 +151,22 @@ export function CountryProvider({
   }, [locale])
 
   const value = useMemo<CountryContextValue>(() => {
-    const country = getCountry(countryCode)
+    const effectiveCountryCode = previewCountryCode ?? countryCode
+    const country = getCountry(effectiveCountryCode)
     const t = createTranslator(locale)
     return {
       country,
-      countryCode,
-      marketCode: marketReady && countryCode === visitorCountryCode ? countryCode : null,
+      countryCode: effectiveCountryCode,
+      marketCode: marketReady && effectiveCountryCode === visitorCountryCode ? effectiveCountryCode : null,
       setCountryCode,
       locale,
       setLocale,
       t,
-      countryName: getCountryName(countryCode, locale),
+      countryName: getCountryName(effectiveCountryCode, locale),
       nameOf: (code: CountryCode) => getCountryName(code, locale),
       countries: PUBLIC_COUNTRIES,
     }
-  }, [countryCode, marketReady, visitorCountryCode, setCountryCode, locale, setLocale])
+  }, [countryCode, previewCountryCode, marketReady, visitorCountryCode, setCountryCode, locale, setLocale])
 
   return (
     <CountryContext.Provider value={value}>{children}</CountryContext.Provider>

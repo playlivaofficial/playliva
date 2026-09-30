@@ -22,15 +22,16 @@ export async function verifyPassword(password: string, encoded: string) {
   const actual = await scrypt(password, salt, 64) as Buffer
   return timingSafeEqual(actual, Buffer.from(expected, 'hex'))
 }
-export async function validSession(token?: string) {
-  if (!token || !/^[a-f0-9]{64}$/.test(token)) return false
+export async function authorizedSession(token?: string) {
+  if (!token || !/^[a-f0-9]{64}$/.test(token)) return null
   try {
     const config = await passwordConfig()
-    if (!config) return false
+    if (!config) return null
     const session = (await readOwnerState()).sessions[hashToken(token)]
-    return Boolean(session && session.expiresAt > Date.now() && session.fingerprint === hashToken(config))
-  } catch { return false }
+    return session && session.expiresAt > Date.now() && session.fingerprint === hashToken(config) ? session : null
+  } catch { return null }
 }
+export async function validSession(token?: string) { return Boolean(await authorizedSession(token)) }
 /** Renew only an existing, unexpired session. CAS rechecks prevent logout resurrection. */
 export async function refreshSession(token?: string): Promise<{ expiresAt: number; renewed: boolean } | null> {
   if (!token || !/^[a-f0-9]{64}$/.test(token)) return null

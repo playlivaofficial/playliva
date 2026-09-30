@@ -57,6 +57,11 @@ suppresses commercial links. The public catalog and canonical URLs stay availabl
 
 ## Private Owner Growth workspace
 
+[Owner GEO preview](docs/owner-geo-preview.md) lets an authenticated owner select
+Brazil, Mexico or Real GEO from the existing workspace and inspect site-wide
+commercial eligibility without a VPN. The selection belongs only to that owner
+session and never changes real visitor GEO or grants eligibility from language.
+
 [Daily Social factory](docs/owner-daily-social.md): one real private video per eligible Original per Tbilisi calendar day, verified media inventory, recoverable daily slots and archived historical metadata.
 
 The [production architecture and Social worker runbook](docs/owner-growth-production.md)
