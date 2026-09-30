@@ -65,6 +65,7 @@ test('striking distance and low CTR include windows and isolate BR/PT-BR/indexab
   assert.equal(signals(facts.map(r=>({...r,country:'usa'})),end,inventory).length,0)
   assert.equal(signals(facts,end,new Set()).length,0)
   assert.equal(signals(facts.map(r=>({...r,page:r.page.replace('/pt-br/','/en/')})),end,inventory).length,0)
+  assert.deepEqual(signals([...facts,...facts.map(r=>({...r,grain:'query',query:''}))],end,inventory),observed)
 })
 test('conservative editor creates one real title experiment with complete reversible evidence',()=>{
   const next=autopilot.evaluateSearch(ready(),declining(),inventory,()=>({previous:'Aviator — Guia',next:'Aviator: como funciona e onde jogar'}),now)

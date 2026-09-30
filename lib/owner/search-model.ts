@@ -42,7 +42,7 @@ export interface Signal { page: string; query: string; kind: string; reason: str
 export function signals(facts: SearchFact[], end: string, indexable: Set<string>, country = 'bra', locale = 'pt-br'): Signal[] {
   const groups = new Map<string, SearchFact[]>()
   for (const row of facts) {
-    if (!['page', 'query'].includes(row.grain) || row.country !== country || !row.page.startsWith(`https://www.playliva.com/${locale}/`) || !indexable.has(row.page)) continue
+    if (!['page', 'query'].includes(row.grain) || row.grain === 'query' && !row.query || row.country !== country || !row.page.startsWith(`https://www.playliva.com/${locale}/`) || !indexable.has(row.page)) continue
     const key = JSON.stringify([row.page, row.query]); groups.set(key, [...(groups.get(key) ?? []), row])
   }
   const result: Signal[] = []
