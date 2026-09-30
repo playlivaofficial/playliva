@@ -1,3 +1,4 @@
+import videoPolicy from '../../lib/owner/video-production.ts'
 import { capture } from './capture-frames.mjs'
 export { capture } from './capture-frames.mjs'
 export { installGenerationStage } from './generation-stage.mjs'
@@ -24,6 +25,7 @@ async function duration(file) {
   return Number(m[1]) * 3600 + Number(m[2]) * 60 + Number(m[3])
 }
 export async function renderMaster(job, folder) {
+  videoPolicy.videoProductionPolicy.assertEnabled()
   await mkdir(folder, { recursive: true })
   const jobPath = resolve(folder, 'job.json'), voice = resolve(folder, 'voice.wav')
   await writeFile(jobPath, JSON.stringify({ voiceLine: job.voiceLine }))

@@ -20,7 +20,7 @@ export interface Creative {
   youtube: { videoId: string | null; state: YouTubeState; source: string; checkedAt: string | null; views: number | null; likes: number | null; comments: number | null }
   uploadHistory: UploadHistory[]; qc: { passed: boolean; inspectedAt: string; width: number; height: number; fps: number; bitrate: number; lufs: number; notes: string[] } | null
   media: { video: boolean; thumbnail: boolean }; utmCampaign: string; utmContent: string; targetUrl: string; hashtags: string[]
-  availability?: 'READY' | 'QUEUED' | 'RENDERING' | 'FAILED' | 'MISSING_MEDIA' | 'ARCHIVED'
+  availability?: 'STORED' | 'READY' | 'QUEUED' | 'RENDERING' | 'FAILED' | 'MISSING_MEDIA' | 'ARCHIVED'
   mediaBytes?: number; mediaCheckedAt?: string; generationDate?: string; canonicalGameId?: string
 }
 export interface Activity { id: string; at: string; action: string; target: string; detail: string }

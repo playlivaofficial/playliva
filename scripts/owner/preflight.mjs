@@ -1,3 +1,5 @@
+import videoPolicy from '../../lib/owner/video-production.ts'
+if (!videoPolicy.VIDEO_PRODUCTION_ENABLED) { console.log(JSON.stringify({ status: 'disabled', expected: 0, workers: 0, slots: [], message: videoPolicy.VIDEO_PRODUCTION_DISABLED })); process.exit(0) }
 import { appendFile } from 'node:fs/promises'
 import store from '../../lib/owner/server/store.ts'
 import service from '../../lib/owner/server/automation.ts'

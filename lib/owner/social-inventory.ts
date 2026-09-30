@@ -4,6 +4,9 @@ import type { Creative } from './model'
 export function isReadyVideo(item: Creative) {
   return item.availability === 'READY' && item.renderStatus === 'rendered' && item.qc?.passed === true && item.media.video && item.media.thumbnail && (item.mediaBytes ?? 0) > 0 && item.duration > 0
 }
+export function isStoredVideo(item: Creative) {
+  return isReadyVideo(item) || (item.availability === 'STORED' && item.renderStatus === 'rendered' && item.qc?.passed === true && (item.mediaBytes ?? 0) > 0 && item.duration > 0)
+}
 export function dailyInventory(games: GenerationGame[], creatives: Creative[], now = new Date().toISOString()) {
   const date = generationDate(now)
   const items = eligibleGenerationGames(games).map(game => {

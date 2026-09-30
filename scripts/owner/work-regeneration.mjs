@@ -1,3 +1,5 @@
+import videoPolicy from '../../lib/owner/video-production.ts'
+if (!videoPolicy.VIDEO_PRODUCTION_ENABLED) { console.log(JSON.stringify({ status: 'disabled', expected: 0, workers: 0, slots: [], message: videoPolicy.VIDEO_PRODUCTION_DISABLED })); process.exit(0) }
 // Explicit, single-job workstation execution. Never uploads or publishes.
 import { spawn } from 'node:child_process'
 import { readFile } from 'node:fs/promises'

@@ -1,3 +1,4 @@
+import { videoProductionPolicy } from '../video-production'
 import { readLocalText, realLocalPath, localFileStat } from './local-files'
 import { resolve, relative, isAbsolute, extname } from 'node:path'
 import { randomUUID } from 'node:crypto'
@@ -25,20 +26,21 @@ export async function mediaFile(id: string, kind: 'video' | 'thumbnail') {
     return info.isFile() ? { path, size: info.size, modified: info.mtime.toISOString(), type: kind === 'video' ? extname(path) === '.webm' ? 'video/webm' : 'video/mp4' : extname(path) === '.png' ? 'image/png' : extname(path) === '.webp' ? 'image/webp' : 'image/jpeg' } : null
   } catch { return null }
 }
-export async function socialLibrary(state?: OwnerState): Promise<Source<Creative[]>> {
+export async function socialLibrary(state?: OwnerState, inspectId?: string, inspect = inspectJob): Promise<Source<Creative[]>> {
   try {
     const current = state ?? await readOwnerState(), creatives = normalizeManifest(await socialManifest(), current.creatives)
     for (const item of creatives) item.availability = 'ARCHIVED'
     const jobs = Object.values(current.automation.jobs)
     for (let start = 0; start < jobs.length; start += 4) {
       const checked = await Promise.all(jobs.slice(start, start + 4).map(async job => {
-        const check = await inspectJob(job), override = current.creatives[job.id] ?? {}
+        const stored = job.state === 'completed' && job.mediaStatus === 'available' && job.creative.renderStatus === 'rendered' && Boolean(job.mediaKey && job.thumbnailKey && job.bytes && job.creative.qc?.passed)
+        const check = job.id === inspectId ? await inspect(job) : { status: stored ? 'STORED' as const : job.state === 'failed' ? 'FAILED' as const : job.state === 'queued' ? 'QUEUED' as const : ['rendering', 'qc'].includes(job.state) ? 'RENDERING' as const : 'ARCHIVED' as const, bytes: job.bytes, checkedAt: job.mediaVerifiedAt, ready: false }, override = current.creatives[job.id] ?? {}
         return { ...job.creative, ...override, availability: check.status, mediaBytes: check.bytes, mediaCheckedAt: check.checkedAt, generationDate: job.generationDate, canonicalGameId: job.canonicalGameId,
           media: { video: check.ready, thumbnail: check.ready } }
       }))
       creatives.push(...checked)
     }
-    return { state: creatives.length ? 'connected' : 'no_data', label: 'Verified social inventory', detail: 'READY requires successful rendering plus live private preview, download and thumbnail checks. Historical metadata remains in the archive, not usable video inventory.', data: creatives }
+    return { state: creatives.length ? 'connected' : 'no_data', label: 'Historical social library', detail: 'STORED means a preserved media reference, not a live verification. Opening one review checks that video on demand. Automatic production and background media scans are disabled.', data: creatives }
   } catch { return { state: 'unavailable', label: 'Social Engine metadata', detail: 'The manifest or owner state could not be read. Existing records have been preserved.', data: [] } }
 }
 export async function withMedia(item: Creative): Promise<Creative> {
@@ -48,8 +50,9 @@ export async function withMedia(item: Creative): Promise<Creative> {
   return { ...item, media: { video: Boolean(video), thumbnail: Boolean(thumbnail) } }
 }
 export async function reviewCreative(id: string, action: 'approve' | 'reject' | 'regenerate', reason: string) {
+  if (action === 'regenerate') videoProductionPolicy.assertEnabled()
   const manifest = await socialManifest()
-  if (action === 'approve' && !(await socialLibrary()).data.find(item => item.id === id)?.media.video) throw new Error('Approval requires a verified available video.')
+  if (action === 'approve' && !(await socialLibrary(undefined, id)).data.find(item => item.id === id)?.media.video) throw new Error('Approval requires a verified available video.')
   return updateOwnerState(state => {
     const generated = state.automation.jobs[id]
     const item = generated?.creative ?? normalizeManifest(manifest, state.creatives).find(row => row.id === id)

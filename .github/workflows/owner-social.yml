@@ -1,9 +1,7 @@
 name: Owner Social generation
 
 on:
-  schedule:
-    # One cycle daily at 09:00 Tbilisi. Durable canonical-game/date slots deduplicate reruns.
-    - cron: '0 5 * * *'
+  # Disabled: preserve workflow history without scheduled video production.
   workflow_dispatch:
     inputs:
       mode:
@@ -25,7 +23,7 @@ concurrency:
 
 jobs:
   plan:
-    if: github.repository == 'playlivaofficial/playliva' && vars.OWNER_SOCIAL_WORKER_ENABLED == 'true'
+    if: ${{ false }}
     runs-on: ubuntu-latest
     environment: owner-social-production
     timeout-minutes: 15
@@ -50,6 +48,7 @@ jobs:
       - id: plan
         run: node --import tsx scripts/owner/preflight.mjs --plan
   render:
+    if: ${{ false }}
     needs: plan
     strategy:
       fail-fast: false

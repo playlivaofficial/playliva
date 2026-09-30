@@ -1,3 +1,4 @@
+import { videoProductionPolicy } from '../video-production'
 import { randomUUID } from 'node:crypto'
 import { SPOTLIGHT_GAMES } from '../../home/spotlight'
 import { atOrAfterNine, dailyBatchId, dailyJobId, generationDate, dueBatch, refreshBatch, retentionCandidates, eligibleGenerationGames, type GenerationGame, type GenerationJob } from '../automation-model'
@@ -8,6 +9,7 @@ import { inspectJob, inspectPrivateMedia } from './media-inventory'
 
 export const generationGames = () => eligibleGenerationGames(SPOTLIGHT_GAMES.map(game => ({ id: game.id, slug: game.slug, title: game.title['pt-BR'], category: game.category.en, route: game.playPath, enabled: game.enabled })))
 export async function enqueueBatch(mode: 'scheduled' | 'manual' | 'canary', now = new Date().toISOString(), catalog: GenerationGame[] = generationGames()) {
+  videoProductionPolicy.assertEnabled()
   const games = eligibleGenerationGames(catalog)
   return updateOwnerState(state => {
     const automation = state.automation
@@ -31,6 +33,7 @@ export async function enqueueBatch(mode: 'scheduled' | 'manual' | 'canary', now 
   })
 }
 export async function armAutomation() {
+  videoProductionPolicy.assertEnabled()
   return updateOwnerState(state => {
     if (!state.automation.batches.some(batch => batch.kind === 'canary' && batch.state === 'completed')) throw new Error('Social canary must pass before arming generation.')
     if (!state.automation.armed) {
@@ -41,6 +44,7 @@ export async function armAutomation() {
   })
 }
 export async function claimJob(batchId?: string, now = new Date().toISOString()): Promise<GenerationJob | null> {
+  videoProductionPolicy.assertEnabled()
   return updateOwnerState(state => {
     const automation = state.automation
     automation.lastWorkerAt = now
@@ -60,6 +64,7 @@ export async function claimJob(batchId?: string, now = new Date().toISOString())
   })
 }
 export async function heartbeat(id: string, token: string, qc = false) {
+  videoProductionPolicy.assertEnabled()
   return updateOwnerState(state => {
     const row = state.automation.jobs[id]
     if (!row || row.leaseToken !== token || !['rendering', 'qc'].includes(row.state)) throw new Error('Social worker lease was lost.')
@@ -69,6 +74,7 @@ export async function heartbeat(id: string, token: string, qc = false) {
   })
 }
 export async function finishJob(id: string, token: string, result: { mediaKey: string; thumbnailKey: string; bytes: number; mediaSha256: string; qc: NonNullable<Creative['qc']>; duration: number } | { error: string }, inspect = inspectPrivateMedia) {
+  videoProductionPolicy.assertEnabled()
   // Storage is verified before the state transaction. The lease is rechecked
   // inside CAS, so a late worker cannot overwrite a newer attempt.
   if (!('error' in result) && (!/^[a-f0-9]{64}$/.test(result.mediaSha256) || !(await inspect(result)).ready)) throw new Error('Social persistent media verification failed; job is not READY.')
@@ -90,6 +96,7 @@ export async function finishJob(id: string, token: string, result: { mediaKey: s
 /** Recover the same slot only after a definitive missing/invalid object result.
  * Transient provider failures do not discard a completed reference. */
 export async function reconcileDailyMedia(batchId: string, inspect = inspectJob) {
+  videoProductionPolicy.assertEnabled()
   const snapshot = await readOwnerState()
   for (const job of Object.values(snapshot.automation.jobs).filter(job => job.batchId === batchId && job.state === 'completed')) {
     const result = await inspect(job)
@@ -102,6 +109,7 @@ export async function reconcileDailyMedia(batchId: string, inspect = inspectJob)
   }
 }
 export async function retryFailures(batchId: string) {
+  videoProductionPolicy.assertEnabled()
   return updateOwnerState(state => {
     let count = 0
     for (const row of Object.values(state.automation.jobs)) if (row.batchId === batchId && row.state === 'failed' && row.attempts < (row.manualRetryLimit ?? 3)) { row.state = 'queued'; row.error = undefined; count++ }
@@ -112,6 +120,7 @@ export async function retryFailures(batchId: string) {
 /** Recover interrupted leases before planning runner dependencies. Live leases
  * and completed slots remain untouched, including previous daily batches. */
 export async function recoverInterruptedJobs(now = new Date().toISOString()) {
+  videoProductionPolicy.assertEnabled()
   return updateOwnerState(state => {
     let count = 0
     for (const row of Object.values(state.automation.jobs)) {
@@ -128,6 +137,7 @@ export async function recoverInterruptedJobs(now = new Date().toISOString()) {
 /** Explicit operator repair after visual QC. Never automatic: protects approved,
  * pinned and uploaded history; retains the rejected private object and slot ID. */
 export async function repairVisualQc(ids: string[], version: string, now = new Date().toISOString()) {
+  videoProductionPolicy.assertEnabled()
   if (!/^[a-f0-9]{40}$/.test(version) || !ids.length || ids.some(id => !/^daily-\d{8}-[a-z0-9-]+$/.test(id))) throw new Error('Invalid visual repair request.')
   return updateOwnerState(state => {
     const rows = [...new Set(ids)].map(id => state.automation.jobs[id])
@@ -164,6 +174,7 @@ export async function setPinned(id: string, pinned: boolean) {
   })
 }
 export async function claimCleanup(id: string) {
+  videoProductionPolicy.assertEnabled()
   return updateOwnerState(state => {
     const row = retentionCandidates(state.automation).find(job => job.id === id)
     if (!row) return null
@@ -172,6 +183,7 @@ export async function claimCleanup(id: string) {
   })
 }
 export async function finishCleanup(id: string, token: string) {
+  videoProductionPolicy.assertEnabled()
   return updateOwnerState(state => {
     const row = state.automation.jobs[id]
     if (!row || row.cleanupToken !== token || row.pinned || row.mediaStatus !== 'purging') throw new Error('Social cleanup claim is invalid.')
@@ -182,7 +194,7 @@ export async function finishCleanup(id: string, token: string) {
 }
 export async function generationSummary(current?: OwnerState) {
   const { automation } = current ?? await readOwnerState()
-  return { armed: automation.armed, nextDueAt: automation.nextDueAt, lastSchedulerAt: automation.lastSchedulerAt, lastWorkerAt: automation.lastWorkerAt,
+  return { enabled: false, expectedDailyVideos: 0, armed: false, nextDueAt: null, lastSchedulerAt: automation.lastSchedulerAt, lastWorkerAt: automation.lastWorkerAt,
     batches: automation.batches.slice(-20).reverse().map(batch => ({ ...batch, completed: Object.values(automation.jobs).filter(job => job.batchId === batch.id && (!batch.gameIds || batch.gameIds.includes(job.canonicalGameId!)) && ['completed', 'purged'].includes(job.state)).length,
       failed: Object.values(automation.jobs).filter(job => job.batchId === batch.id && (!batch.gameIds || batch.gameIds.includes(job.canonicalGameId!)) && job.state === 'failed').length })),
     jobs: Object.values(automation.jobs).map(({ id, batchId, angle, state, attempts, error, pinned, mediaStatus, purgedAt, downloadCount }) => ({ id, batchId, angle, state, attempts, error, pinned, mediaStatus, purgedAt, downloadCount })) }
