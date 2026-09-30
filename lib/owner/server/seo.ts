@@ -1,37 +1,8 @@
 import audit from '@/data/owner/search-console-audit.json'
-import { googleAccessToken, googleCredentials, googleRead } from './google'
-import { indexingState, seoOpportunities, previousSearchPeriod, compareSearchPeriods, type SearchRow } from '../metrics'
-import type { Filters, Source } from '../model'
+import { indexingState, seoOpportunities } from '../metrics'
 import { publishedInventory } from './catalog'
+export { searchSource, type SearchData } from './search-report'
 
-export interface SearchData { clicks: number | null; impressions: number | null; ctr: number | null; position: number | null; queries: SearchRow[]; pages: SearchRow[] }
-export async function searchSource(filters: Filters): Promise<Source<SearchData>> {
-  const data: SearchData = { clicks: null, impressions: null, ctr: null, position: null, queries: [], pages: [] }
-  if (!await googleCredentials('search')) return { state: 'not_connected', label: 'Search Console performance', detail: 'The signed-in browser audit is preserved separately. A server-side Search Console read connection has not been configured.', data }
-  try {
-    const token = await googleAccessToken('search'), property = process.env.OWNER_SEARCH_PROPERTY || 'sc-domain:playliva.com'
-    const endpoint = `https://www.googleapis.com/webmasters/v3/sites/${encodeURIComponent(property)}/searchAnalytics/query`
-    const groups: { dimension: string; operator: string; expression: string }[] = []
-    const route = filters.route || (filters.game ? `/${filters.locale || 'pt-br'}/play/${filters.game}` : '')
-    if (route) groups.push({ dimension: 'page', operator: 'equals', expression: `https://www.playliva.com${route}` })
-    else if (filters.locale) groups.push({ dimension: 'page', operator: 'contains', expression: `/${filters.locale.toLowerCase()}/` })
-    const startDate = filters.from || new Date(Date.now() - 480 * 86400000).toISOString().slice(0, 10)
-    const query = (dimensions: string[], from = startDate, to = filters.to) => googleRead(endpoint, token, { startDate: from, endDate: to, dimensions, rowLimit: 1000, dataState: 'final', ...(groups.length ? { dimensionFilterGroups: [{ filters: groups }] } : {}) })
-    const [summary, queries, pages] = await Promise.all([query([]), query(['query', 'page']), query(['page'])])
-    const total = summary.rows?.[0]
-    const normalize = (rows: { keys: string[]; clicks: number; impressions: number; ctr: number; position: number }[], withQuery: boolean): SearchRow[] => (rows ?? []).map(row => ({ query: withQuery ? row.keys[0] : '', page: row.keys[withQuery ? 1 : 0], clicks: row.clicks, impressions: row.impressions, ctr: row.ctr, position: row.position }))
-    const currentQueries = normalize(queries.rows, true), currentPages = normalize(pages.rows, false)
-    const previous = previousSearchPeriod(filters.from, filters.to)
-    let comparedQueries = currentQueries, comparedPages = currentPages, comparison = 'No comparable period selected.'
-    if (previous) {
-      const results = await Promise.allSettled([query(['query', 'page'], previous.from, previous.to), query(['page'], previous.from, previous.to)])
-      if (results[0].status === 'fulfilled') comparedQueries = compareSearchPeriods(currentQueries, normalize(results[0].value.rows, true))
-      if (results[1].status === 'fulfilled') comparedPages = compareSearchPeriods(currentPages, normalize(results[1].value.rows, false))
-      comparison = `Comparison: ${previous.from} to ${previous.to}; only matching observed rows. Missing rows remain unknown.${results.some(result => result.status === 'rejected') ? ' Some comparison data is unavailable.' : ''}`
-    }
-    return { state: total ? 'connected' : 'no_data', label: 'Search Console performance', detail: `Final Google data, ${startDate} to ${filters.to}. Top 1,000 query/page rows; anonymized queries may be omitted. ${comparison}`, observedAt: new Date().toISOString(), data: { clicks: total?.clicks ?? 0, impressions: total?.impressions ?? 0, ctr: total?.ctr ?? 0, position: total?.position ?? null, queries: comparedQueries, pages: comparedPages } }
-  } catch { return { state: 'unavailable', label: 'Search Console performance', detail: 'Google reporting is unavailable or authorization has expired. The historical audit remains available below.', data } }
-}
 export function indexingAudit() {
   const known = [...audit.newPages.map(row => ({ url: row.url, state: indexingState(row.inspection, row.request), detail: row.inspection, request: row.request })), ...audit.existing.map(row => ({ url: row.url, state: indexingState(row.state), detail: `${row.state}; fetch ${row.fetch}; canonical ${row.canonical}`, request: 'No new request recorded in this audit' }))]
   return publishedInventory().map(row => {

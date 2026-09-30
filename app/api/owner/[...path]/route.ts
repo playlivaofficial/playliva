@@ -11,6 +11,8 @@ import { safeId } from '@/lib/owner/model'
 import { generatedMediaResponse, privateStorageConfigured } from '@/lib/owner/server/object-storage'
 import { enqueueBatch, reconcileDailyMedia, retryFailures, setPinned } from '@/lib/owner/server/automation'
 import { VIDEO_PRODUCTION_ENABLED, VIDEO_PRODUCTION_DISABLED } from '@/lib/owner/video-production'
+import { setAutopilot, evaluateAutopilot } from '@/lib/owner/server/search-autopilot'
+import { refreshSearchTitles } from '@/lib/owner/server/search-metadata'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -38,6 +40,11 @@ export async function POST(request: Request, context: Context) {
   if (path.join('/') !== 'login' && !await apiAuthorized(request, true)) return ownerJson({ error: 'Owner authentication required.' }, 401)
   try {
     const body = await smallJson(request)
+    if (path.join('/') === 'seo/control' && ['yes', 'no'].includes(String(body.enabled))) {
+      refreshSearchTitles(await setAutopilot(body.enabled === 'yes'))
+      if (body.enabled === 'yes') refreshSearchTitles((await evaluateAutopilot()).changedPages)
+      return ownerJson({ message: body.enabled === 'yes' ? 'SEO Autopilot enabled. Edits require sufficient evidence.' : 'SEO Autopilot disabled; experiment titles restored.' })
+    }
     if (!VIDEO_PRODUCTION_ENABLED && (path[0] === 'generation' || (path[0] === 'social' && body.action === 'regenerate'))) {
       return ownerJson({ error: VIDEO_PRODUCTION_DISABLED, expectedDailyVideos: 0 }, 409)
     }

@@ -44,6 +44,8 @@ export function seoOpportunities(rows: SearchRow[]): Opportunity[] {
 }
 export function indexingState(coverage: string, request?: string) {
   if (/crawled.*not indexed/i.test(coverage)) return 'Crawled — currently not indexed'
+  if (/discovered.*not indexed/i.test(coverage)) return 'Discovered — currently not indexed'
+  if (/quota/i.test(coverage) || /quota/i.test(request ?? '')) return 'Quota blocked'
   if (/^indexed$|submitted and indexed|url is on google/i.test(coverage)) return 'Indexed'
   if (/unavailable/i.test(coverage)) return 'Inspection unavailable'
   return request === 'accepted' ? 'Requested' : 'Unknown'

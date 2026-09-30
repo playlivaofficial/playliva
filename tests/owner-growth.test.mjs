@@ -142,7 +142,7 @@ test('read-only Google adapter rejects failed authorization, verifies channel an
   const actualFetch = globalThis.fetch, requests = []
   try {
     globalThis.fetch = async () => new Response('{}', { status: 401 })
-    assert.equal((await seo.searchSource(filters)).state, 'unavailable')
+    assert.equal((await seo.searchSource(filters)).state, 'not_connected') // Reporting requires durable storage; dashboard reads never call Google.
     await assert.rejects(youtube.syncYouTube(), /authorization/)
     assert.equal((await store.readOwnerState()).activity.length, 0)
     globalThis.fetch = async (url, init) => {

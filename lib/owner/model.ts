@@ -36,7 +36,7 @@ export interface OwnerState {
 export const emptyOwnerState = (): OwnerState => ({ version: 2, automation: emptyAutomation(), creatives: {}, content: {}, activity: [], jobs: [], sessions: {}, attempts: { count: 0, resetsAt: 0 } })
 export interface Filters { period: string; from: string; to: string; game: string; route: string; locale: string; operator: string; placement: string; geo: string; device: string; source: string }
 export function readFilters(params: URLSearchParams, now = new Date()): Filters {
-  const period = ['7', '30', '90', 'all', 'custom'].includes(params.get('period') ?? '') ? params.get('period')! : '30'
+  const period = ['7', '14', '28', '30', '90', 'all', 'custom'].includes(params.get('period') ?? '') ? params.get('period')! : '30'
   const end = now.toISOString().slice(0, 10)
   const start = new Date(now.getTime() - (Number(period) - 1 || 29) * 86400000).toISOString().slice(0, 10)
   const date = (value: string | null, fallback: string) => value && /^\d{4}-\d{2}-\d{2}$/.test(value) && Number.isFinite(Date.parse(value)) ? value : fallback
