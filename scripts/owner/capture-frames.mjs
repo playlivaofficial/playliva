@@ -1,3 +1,4 @@
+import videoPolicy from '../../lib/owner/video-production.ts'
 import { advanceScene, isMovingGameplayFrame } from './capture-actions.mjs'
 import { chromium } from 'playwright-core'
 import { existsSync } from 'node:fs'
@@ -14,6 +15,7 @@ import { pauseCaptureClock, hasReadyCaptureControl } from './capture-clock.mjs'
  * Slow CPU/GPU work changes render duration, never footage cadence. No frame duplication.
  */
 export async function capture(job, folder, seconds) {
+  videoPolicy.videoProductionPolicy.assertEnabled()
   await mkdir(folder, { recursive: true })
   const executablePath = [process.env.SOCIAL_CHROME_PATH, '/usr/bin/google-chrome', '/usr/bin/chromium', 'C:/Program Files/Google/Chrome/Application/chrome.exe'].filter(Boolean).find(existsSync)
   if (!executablePath) throw new Error('Chrome runtime is missing.')

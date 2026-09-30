@@ -11,9 +11,10 @@ import { operatorOverview, ownerGames } from './catalog'
 import { youtubeReadiness } from './youtube'
 import { aggregateEvents } from '../metrics'
 import { affiliateReport, conversionSource } from './affiliate'
-import { generationGames, generationSummary } from './automation'
-import { dailyInventory, isReadyVideo } from '../social-inventory'
+import { generationSummary } from './automation'
+import { isStoredVideo } from '../social-inventory'
 import { privateStorageConfigured } from './object-storage'
+import { generationDate } from '../automation-model'
 import trafficSnapshot from '@/data/owner/traffic-snapshot.json'
 import searchSnapshot from '@/data/owner/search-performance-snapshot.json'
 
@@ -22,7 +23,7 @@ export async function growthData(params: URLSearchParams) {
   const filters = readFilters(params)
   let state = emptyOwnerState(), persistenceError = false
   try { state = await readOwnerState() } catch { persistenceError = true }
-  const [social, analytics, search, youtubeReady] = await Promise.all([socialLibrary(state), analyticsSource(), searchSource(filters), youtubeReadiness()])
+  const [social, analytics, search, youtubeReady] = await Promise.all([socialLibrary(state, params.get('creative') ?? undefined), analyticsSource(), searchSource(filters), youtubeReadiness()])
   const discovery = discoveryHealth(filters), indexing = indexingAudit()
   const inspected = indexing.filter(row => row.state === 'Crawled — currently not indexed' && (!filters.locale || row.locale === filters.locale) && (!filters.route || row.route === filters.route) && (!filters.game || row.route.endsWith('/play/'+filters.game)))
   const opportunities = [...seoOpportunities(search.data.queries), ...discovery.opportunities, ...inspected.map(row=>({id:'indexing-'+row.route.replaceAll('/','-'),kind:'not-indexed',priority:2,source:'Search Console inspection '+row.observedAt,topic:row.topic,route:row.url,reason:row.detail,action:'Inspect content and internal links, then check Google again. A request is not an indexing guarantee.'}))].sort((a,b)=>(a.priority??2)-(b.priority??2)||a.id.localeCompare(b.id))
@@ -31,14 +32,13 @@ export async function growthData(params: URLSearchParams) {
   const games = filteredGame.map(game => {
     const pageData = search.data.pages.filter(row => new URL(row.page).pathname.endsWith(`/play/${game.slug}`)), impressions = pageData.reduce((sum, row) => sum + row.impressions, 0)
     return { ...game, metrics: measured ? aggregateEvents(analytics.data.events, { ...filters, game: game.slug }) : null,
-      creatives: social.data.filter(row => row.gameSlug === game.slug && isReadyVideo(row)).length,
+      creatives: social.data.filter(row => row.gameSlug === game.slug && isStoredVideo(row)).length,
       // The bounded top-page report cannot establish zero for an omitted page.
       seoClicks: search.state === 'connected' && pageData.length ? pageData.reduce((sum, row) => sum + row.clicks, 0) : null,
       seoImpressions: search.state === 'connected' && pageData.length ? impressions : null,
       topLocale: pageData.sort((a, b) => b.clicks - a.clicks)[0]?.page.split('/')[3] ?? null }
   }).sort((a, b) => params.get('gameSort') === 'clicks' ? (b.metrics?.clicks ?? -1) - (a.metrics?.clicks ?? -1) : params.get('gameSort') === 'creatives' ? b.creatives - a.creatives : a.title.localeCompare(b.title))
-  const inventory = dailyInventory(generationGames(), social.data)
-  const daily = { ...inventory, items: inventory.items.map(item => ({ ...item, error: item.creativeId ? state.automation.jobs[item.creativeId]?.error : 'Today’s video has not been generated yet.' })) }
+  const daily = { enabled: false, date: generationDate(new Date().toISOString()), timezone: 'Asia/Tbilisi', expected: 0, ready: 0, items: [] }
   return { filters, games, catalog: ownerGames, social, analytics, measured, search, opportunities, indexing, discovery, searchAudit, youtubeReady,
     daily,
     automation: await generationSummary(state), privateMedia: privateStorageConfigured(),

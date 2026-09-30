@@ -10,6 +10,7 @@ import { growthData } from '@/lib/owner/server/overview'
 import { safeId } from '@/lib/owner/model'
 import { generatedMediaResponse, privateStorageConfigured } from '@/lib/owner/server/object-storage'
 import { enqueueBatch, reconcileDailyMedia, retryFailures, setPinned } from '@/lib/owner/server/automation'
+import { VIDEO_PRODUCTION_ENABLED, VIDEO_PRODUCTION_DISABLED } from '@/lib/owner/video-production'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -37,6 +38,9 @@ export async function POST(request: Request, context: Context) {
   if (path.join('/') !== 'login' && !await apiAuthorized(request, true)) return ownerJson({ error: 'Owner authentication required.' }, 401)
   try {
     const body = await smallJson(request)
+    if (!VIDEO_PRODUCTION_ENABLED && (path[0] === 'generation' || (path[0] === 'social' && body.action === 'regenerate'))) {
+      return ownerJson({ error: VIDEO_PRODUCTION_DISABLED, expectedDailyVideos: 0 }, 409)
+    }
     if (path.join('/') === 'login') {
       const token = await login(typeof body.password === 'string' ? body.password : '')
       ;(await cookies()).set(ownerCookie(), token, sessionCookieOptions(Date.now() + SESSION_SECONDS * 1000))
@@ -71,7 +75,7 @@ export async function POST(request: Request, context: Context) {
     if (path[0] === 'generation' && path[1] === 'retry' && path.length === 3 && safeId(path[2])) return ownerJson({ message: `${await retryFailures(path[2])} failed jobs queued for the next worker run.` })
     if (path[0] === 'pin' && path.length === 2 && safeId(path[1]) && ['yes', 'no'].includes(String(body.pinned))) {
       await setPinned(path[1], body.pinned === 'yes')
-      return ownerJson({ message: body.pinned === 'yes' ? 'Pinned. Media is protected from cleanup.' : 'Unpinned. Normal retention applies.' })
+      return ownerJson({ message: body.pinned === 'yes' ? 'Pinned. Media is protected from cleanup.' : 'Unpinned. Historical media is preserved; automatic cleanup is disabled.' })
     }
     if (path.join('/') === 'content') return ownerJson({ message: await saveContent(body) })
     return ownerJson({ error: 'Unknown owner action.' }, 404)

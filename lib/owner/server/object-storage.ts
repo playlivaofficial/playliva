@@ -1,3 +1,4 @@
+import { videoProductionPolicy } from '../video-production'
 import { put, del } from '@vercel/blob'
 import { openPrivateMedia, validMediaKey } from './media-inventory'
 export { validMediaKey } from './media-inventory'
@@ -6,12 +7,14 @@ import { readOwnerState, updateOwnerState } from './store'
 
 export const privateStorageConfigured = () => Boolean(process.env.BLOB_READ_WRITE_TOKEN || (process.env.BLOB_STORE_ID && process.env.VERCEL))
 export async function uploadPrivate(key: string, body: Blob, type: string) {
+  videoProductionPolicy.assertEnabled()
   if (!validMediaKey(key)) throw new Error('Social media key is invalid.')
   const result = await put(key, body, { access: 'private', addRandomSuffix: false, allowOverwrite: false, contentType: type, multipart: body.size > 5000000 })
   if (!new URL(result.url).hostname.endsWith('.private.blob.vercel-storage.com')) throw new Error('Social storage is not private.')
   return result.pathname
 }
 export async function deletePrivate(keys: string[]) {
+  videoProductionPolicy.assertEnabled()
   if (keys.some(key => !validMediaKey(key))) throw new Error('Social cleanup path is invalid.')
   if (keys.length) await del(keys)
 }

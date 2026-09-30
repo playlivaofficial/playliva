@@ -1,3 +1,6 @@
+import { mock } from 'node:test'
+import videoPolicy from '../lib/owner/video-production.ts'
+mock.method(videoPolicy.videoProductionPolicy, 'assertEnabled', () => {})
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { mkdtemp, mkdir, readFile, writeFile, stat } from 'node:fs/promises'
