@@ -10,6 +10,7 @@ const fetch = (url, options = {}) => {
 
 import { spawn } from 'node:child_process'
 import { testDestinations } from './fixtures/affiliate-destinations.mjs'
+import { ownerGeoHttpFixture } from './fixtures/owner-geo-http.mjs'
 import privateDestinations from '../lib/affiliates/server-destinations.ts'
 const { serverDestination } = privateDestinations
 process.env.PLAYLIVA_AFFILIATE_DESTINATIONS = JSON.stringify(testDestinations)
@@ -170,7 +171,14 @@ await once(listener, 'listening')
 const port = listener.address().port
 await new Promise((resolve) => listener.close(resolve))
 const base = `http://127.0.0.1:${port}`
-const server = spawn(process.execPath, ['node_modules/next/dist/bin/next', 'start', '--hostname', '127.0.0.1', '--port', String(port)], { stdio: ['ignore', 'pipe', 'pipe'] })
+const ownerGeoFixture = await ownerGeoHttpFixture()
+// Authentication now participates in public rendering. Its local adapter must
+// not pull hundreds of MB of immutable authoring inputs into deployed functions.
+for (const path of ['[locale]/page', 'owner/growth/page', 'go/route', 'api/owner/geo-preview/route']) {
+  const trace = JSON.parse(await readFile(new URL(`../.next/server/app/${path}.js.nft.json`, import.meta.url), 'utf8'))
+  assert.ok(trace.files.every(file => !file.replaceAll('\\', '/').includes('/assets-source/')), `${path}: authoring assets must not be packaged`)
+}
+const server = spawn(process.execPath, ['node_modules/next/dist/bin/next', 'start', '--hostname', '127.0.0.1', '--port', String(port)], { stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env, ...ownerGeoFixture.env }, windowsHide: true })
 let output = ''
 server.stdout.on('data', (chunk) => { output += chunk })
 server.stderr.on('data', (chunk) => { output += chunk })
@@ -681,6 +689,7 @@ try {
     assert.equal(doc.querySelector('a[href^="/go?"]'), null, `${path}: no commercial link in noneligible HTML`)
   }
   assert.equal((await fetch(`${base}/dev/operators`)).status, 404)
+  await ownerGeoFixture.verify(base)
   console.log(`Crawled ${paths.size} public/legal/demo URLs plus locale 404 and affiliate fallback probes. PT-BR OG coverage: ${ptOgImageCount}/${ptPublicCount}.`)
   if (failures.length) console.error(failures.join('\n'))
   assert.equal(failures.length, 0, `${failures.length} content/SEO failures`)

@@ -3,7 +3,10 @@ const nextConfig = {
   // Workstation attachments, owner credentials and generated media must never
   // be deployment dependencies, including builds performed on an owner's PC.
   outputFileTracingExcludes: {
-    '/*': ['./social/output/**/*', './social/.tmp/**/*', './.youtube-oauth/**/*', './.env*'],
+    // Owner session reads also run on public pages for GEO preview. Keep the
+    // immutable authoring inputs out of every function; public runtime assets
+    // remain served normally. These inputs are never read by application code.
+    '/*': ['./assets-source/**/*', './social/output/**/*', './social/.tmp/**/*', './.youtube-oauth/**/*', './.env*'],
   },
   async headers() {
     const headers = [

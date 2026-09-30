@@ -166,6 +166,7 @@ export function getDeviceClass(): 'mobile' | 'desktop' | undefined {
 }
 
 export function track(event: TrackEventName, payload: TrackPayload = {}): void {
+  if (typeof document !== 'undefined' && document.querySelector('[data-owner-geo-preview]')) return
   if (typeof window === 'undefined' || !hasAnalyticsConsent() || !EVENTS.includes(event)) return
   const data: Record<string, unknown> = {
     event,

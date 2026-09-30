@@ -4,6 +4,7 @@ import { ANALYTICS_COOKIE } from '@/lib/consent'
 import { eventInput } from '@/lib/owner/server/event-input'
 import { recordEvent } from '@/lib/owner/server/event-store'
 import { postgresConfigured } from '@/lib/owner/server/postgres'
+import { ownerGeoStatus } from '@/lib/owner/server/geo-preview'
 
 export const runtime = 'nodejs'
 const salt = randomBytes(32), buckets = new Map<string, { at: number; count: number }>()
@@ -15,6 +16,7 @@ export async function POST(request: NextRequest) {
   try { source = new URL(origin ?? '') } catch { return respond(403) }
   if (source.host !== host || !['https:', ...(process.env.VERCEL ? [] : ['http:'])].includes(source.protocol) || request.headers.get('sec-fetch-site') === 'cross-site' || request.cookies.get(ANALYTICS_COOKIE)?.value !== 'granted') return respond(403)
   if (request.headers.get('content-type')?.split(';')[0] !== 'application/json' || Number(request.headers.get('content-length')) > 4096) return respond(413)
+  if ((await ownerGeoStatus(request.headers)).previewGeo) return respond(204)
   // Short-lived in-memory buckets; no raw IP, hash, user ID or cookie is stored
   // in the event database. The database also imposes a 100k/day safety ceiling.
   const now = Date.now()

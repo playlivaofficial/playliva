@@ -3,7 +3,7 @@ import { affiliateFallbackPath, resolveDestination } from '@/lib/affiliate'
 import { ANALYTICS_COOKIE } from '@/lib/consent'
 import { COUNTRIES } from '@/lib/data'
 import type { CountryCode } from '@/lib/types'
-import { visitorMarket } from '@/lib/visitor-market'
+import { commercialMarket } from '@/lib/owner/server/geo-preview'
 import { serverDestination } from '@/lib/affiliates/server-destinations'
 
 /**
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
     cookieLocale: request.cookies.get('playliva_locale')?.value,
   }), origin).toString()
 
-  if (!validCountry || visitorMarket(request.headers) !== validCountry) {
+  if (!validCountry || await commercialMarket(request.headers) !== validCountry) {
     return redirect(fallback)
   }
 

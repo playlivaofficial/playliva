@@ -27,6 +27,8 @@ import { createHash } from 'node:crypto'
 // Revenue Readiness authorizes tracking.ts (consented collection/context),
 // affiliate-button.tsx (complete attribution and consent-aware impressions), and
 // app/go/route.ts (trusted request GEO and private destination resolution),
+// Owner GEO preview authorizes app/go/route.ts (authenticated session GEO)
+// and tracking.ts (exclude owner preview telemetry); other snapshots remain fixed.
 // data.ts (public campaign references instead of private IDs), affiliate.ts
 // (resolver contract comment). Approved destinations, engines and SEO stay fixed.
 test('redesign: protected outbound infrastructure remains unchanged except authorized Betsson play-real files', async () => {

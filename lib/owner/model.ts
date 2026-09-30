@@ -31,7 +31,7 @@ export interface ContentItem { id: string; type: string; locale: string; topic: 
 export interface RegenJob { id: string; creativeId: string; requestedAt: string; state: 'queued' | 'running' | 'completed' | 'failed'; finishedAt?: string; detail: string }
 export interface OwnerState {
   version: 2; automation: AutomationState; creatives: Record<string, CreativeState>; content: Record<string, ContentItem>; activity: Activity[]; jobs: RegenJob[]
-  sessions: Record<string, { expiresAt: number; fingerprint: string }>; attempts: { count: number; resetsAt: number }
+  sessions: Record<string, { expiresAt: number; fingerprint: string; previewGeo?: 'BR' | 'MX' | null }>; attempts: { count: number; resetsAt: number }
 }
 export const emptyOwnerState = (): OwnerState => ({ version: 2, automation: emptyAutomation(), creatives: {}, content: {}, activity: [], jobs: [], sessions: {}, attempts: { count: 0, resetsAt: 0 } })
 export interface Filters { period: string; from: string; to: string; game: string; route: string; locale: string; operator: string; placement: string; geo: string; device: string; source: string }
