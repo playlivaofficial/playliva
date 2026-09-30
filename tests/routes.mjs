@@ -172,6 +172,12 @@ const port = listener.address().port
 await new Promise((resolve) => listener.close(resolve))
 const base = `http://127.0.0.1:${port}`
 const ownerGeoFixture = await ownerGeoHttpFixture()
+// Authentication now participates in public rendering. Its local adapter must
+// not pull hundreds of MB of immutable authoring inputs into deployed functions.
+for (const path of ['[locale]/page', 'owner/growth/page', 'go/route', 'api/owner/geo-preview/route']) {
+  const trace = JSON.parse(await readFile(new URL(`../.next/server/app/${path}.js.nft.json`, import.meta.url), 'utf8'))
+  assert.ok(trace.files.every(file => !file.replaceAll('\\', '/').includes('/assets-source/')), `${path}: authoring assets must not be packaged`)
+}
 const server = spawn(process.execPath, ['node_modules/next/dist/bin/next', 'start', '--hostname', '127.0.0.1', '--port', String(port)], { stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env, ...ownerGeoFixture.env }, windowsHide: true })
 let output = ''
 server.stdout.on('data', (chunk) => { output += chunk })

@@ -18,6 +18,12 @@ environment settings or database migration are needed. Existing records without
 the optional field default to Real GEO. Updates recheck session validity inside
 the existing atomic store operation and never extend the login lifetime.
 
+Because owner-session checks now participate in public rendering, Next tracing
+also reaches the local owner filesystem adapter. The deployment configuration
+explicitly excludes `assets-source/` (immutable authoring inputs, never runtime
+files) from function bundles. Public game assets remain unchanged. The production
+route gate checks the public page, owner page, outbound and preview API traces.
+
 The shared CountryProvider receives the server-authorized commercial country;
 all existing banners, sponsors, Offers, affiliate CTAs and recurring Originals
 popups therefore use the same eligibility. Preview temporarily takes precedence
