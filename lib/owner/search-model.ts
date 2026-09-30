@@ -73,7 +73,9 @@ export function measureExperiment(experiment: Experiment, facts: SearchFact[], e
   if (experiment.status !== 'measuring') return experiment
   const rows = facts.filter(row => row.grain === 'page' && row.page === experiment.page && row.country === 'bra')
   const measurements = SEARCH_WINDOWS.filter(days => shiftDay(experiment.startDate, days - 1) <= end).map(days => {
-    const current = windowMeasure(rows, shiftDay(experiment.startDate, days - 1), days), previous = windowMeasure(rows, shiftDay(experiment.startDate, -1), days)
+    // Keep the recorded final-data baseline fixed. Never include the edit day
+    // or silently move the comparison forward as Google's lag catches up.
+    const current = windowMeasure(rows, shiftDay(experiment.startDate, days - 1), days), previous = windowMeasure(rows, experiment.baseline.to, days)
     const sufficient = current.impressions >= 1000 && previous.impressions >= 1000 && previous.clicks >= 20 && current.days >= Math.min(5, days) && previous.days >= Math.min(5, days) && Math.abs(current.position - previous.position) <= 2
     const verdict = !sufficient ? 'insufficient' : current.ctr < previous.ctr * 0.7 && current.clicks < previous.clicks * 0.7 ? 'negative' : current.ctr > previous.ctr * 1.2 && current.clicks > previous.clicks * 1.2 ? 'positive' : 'neutral'
     return { window: days, current, previous, verdict }

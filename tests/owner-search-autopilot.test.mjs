@@ -6,6 +6,9 @@ import ingestion from '../lib/owner/server/search-ingestion.ts'
 import autopilot from '../lib/owner/server/search-autopilot.ts'
 import schema from '../lib/owner/server/search-schema.ts'
 import video from '../lib/owner/video-production.ts'
+import report from '../lib/owner/server/search-report.ts'
+import persistence from '../lib/owner/server/search-store.ts'
+import ownerModel from '../lib/owner/model.ts'
 const {shiftDay,signals,emptySeoState,measureExperiment,canonicalPage}=model
 const page='https://www.playliva.com/pt-br/games/aviator', end='2026-09-27', now=new Date('2026-09-30T12:00:00Z'), inventory=new Set([page])
 const fixture=(current={impressions:100,clicks:1},previous={impressions:100,clicks:5})=>Array.from({length:56},(_,i)=>({grain:'page',date:shiftDay(end,-55+i),page,query:'',country:'bra',device:'mobile',position:8,...(i>=28?current:previous)}))
@@ -80,13 +83,15 @@ test('disabled, stale, insufficient history and page cooldown all prevent new ed
   for(const s of [{...ready(),enabled:false},{...ready(),lastSuccess:'2026-09-01T00:00:00Z'},{...ready(),coverageFrom:end},{...ready(),experiments:[{page,status:'rolled_back',endedAt:now.toISOString(),startedAt:now.toISOString()}]}]) assert.equal(model.eligibleExperiment(signal,s,now,'old','new'),false)
 })
 test('measure at full 7/14/28 days; sustained negatives rollback, noise is inconclusive',()=>{
-  const e={id:'fixture',page,status:'measuring',startDate:'2026-09-01',measurements:[]}
+  const e={id:'fixture',page,status:'measuring',startDate:'2026-09-01',baseline:{to:'2026-08-31'},measurements:[]}
   const facts=Array.from({length:56},(_,i)=>({...fixture()[0],date:shiftDay('2026-08-04',i),impressions:200,clicks:i<28?10:1}))
   assert.equal(measureExperiment(e,facts,'2026-09-06',now).status,'measuring')
   assert.equal(measureExperiment(e,facts,'2026-09-07',now).status,'measuring')
   const loss=measureExperiment(e,facts,'2026-09-14',now);assert.equal(loss.status,'rolled_back');assert.equal(loss.measurements.length,2)
   const noise=facts.map(r=>({...r,impressions:10,clicks:0}));assert.equal(measureExperiment(e,noise,'2026-09-28',now).status,'inconclusive')
   const gain=facts.map(r=>({...r,clicks:r.date<'2026-09-01'?10:15}));assert.equal(measureExperiment(e,gain,'2026-09-28',now).status,'winner')
+  const lagged={...e,startDate:'2026-09-04'}
+  assert.deepEqual(measureExperiment(lagged,facts,'2026-09-10',now).measurements[0].previous,model.windowMeasure(facts,'2026-08-31',7))
 })
 test('owner kill switch restores active titles and retains audit/history',async()=>{
   const store=memoryStore();store.seed({...ready(),experiments:[{id:'a',page,status:'measuring',previous:'old',next:'new'}]},fixture())
@@ -99,4 +104,18 @@ test('additive migration matches runtime bootstrap; SEO scheduling cannot wake v
   assert.equal(video.VIDEO_PRODUCTION_ENABLED,false)
   const config=JSON.parse(await readFile('vercel.json','utf8'));assert.deepEqual(config.crons,[{path:'/api/cron/seo',schedule:'17 9 * * *'}])
   const route=await readFile('app/api/cron/seo/route.ts','utf8');assert.doesNotMatch(route,/social|render|video|youtube/i);assert.match(route,/timingSafeEqual/);assert.match(route,/VERCEL_ENV!==\x27production\x27/)
+})
+
+test('persisted dashboard anchors periods to final Google dates and never invents zero from omitted dimensions',async()=>{
+  const original={...persistence.searchStore}, previous=process.env.OWNER_DATABASE_URL
+  process.env.OWNER_DATABASE_URL='fixture-not-used'
+  Object.assign(persistence.searchStore,{state:async()=>ready(),runs:async()=>[],facts:async()=>[{...fixture()[0],date:end,grain:'total',page:'',query:'',country:'',device:'',clicks:2,impressions:99,position:48.4}]})
+  try {
+    const result=await report.searchSource(ownerModel.readFilters(new URLSearchParams('period=28&locale=pt-br&geo=br'),now))
+    assert.equal(result.data.intelligence.from,'2026-08-31');assert.equal(result.data.intelligence.to,end)
+    assert.equal(result.state,'no_data');assert.equal(result.data.clicks,null);assert.equal(result.data.impressions,null);assert.equal(result.data.ctr,null)
+    assert.match(result.detail,/unknown, not zero/)
+    const all=await report.searchSource(ownerModel.readFilters(new URLSearchParams('period=28'),now))
+    assert.equal(all.data.clicks,2);assert.equal(all.data.impressions,99);assert.equal(all.state,'connected')
+  }finally{Object.assign(persistence.searchStore,original);if(previous===undefined)delete process.env.OWNER_DATABASE_URL;else process.env.OWNER_DATABASE_URL=previous}
 })

@@ -74,7 +74,9 @@ days in each, ≥20 baseline clicks, CTR down ≥30% at rank within two position
 and corroborating 7/14-day CTR decline with ≥200 impressions in each period.
 The ledger stores previous/new title, evidence, baseline, start, status and
 measurement results. Full post-change calendar days start on the following
-Pacific day. Source metadata changes invalidate the overlay instead of being
+Pacific day. Comparisons stay anchored to the recorded final-data baseline;
+they never move forward to include the edit day as Google's reporting catches up.
+Source metadata changes invalidate the overlay instead of being
 overwritten. Concurrent owner changes are protected by a revision check.
 
 Measurement at 7/14/28 days needs ≥1,000 impressions per comparable period,
