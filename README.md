@@ -386,3 +386,5 @@ Both games use original procedural Web Audio from the shared
 - `node scripts/golaco-visual-qa.mjs` (:3114) and
   `node scripts/embaixadinha-visual-qa.mjs` (:3113, `--poster` re-renders the
   poster) serve local-only deterministic scenarios. No public overrides exist.
+
+Owner Search Console setup, daily cost bounds, evidence rules and rollback controls: [SEO Autopilot](docs/owner-search-autopilot.md).

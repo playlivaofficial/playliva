@@ -17,6 +17,7 @@ import { createTranslator } from '@/lib/i18n'
 import { REFERENCE_GAMES, getReferenceGame } from '@/lib/catalog'
 import { ReferenceGameView } from '@/components/catalog/reference-views'
 import { catalogLocale, referenceMetadata } from '@/lib/catalog/metadata'
+import { applySearchTitle } from '@/lib/owner/server/search-metadata'
 
 export function generateStaticParams() {
   return [...GAMES, ...REFERENCE_GAMES].map((g) => ({ slug: g.slug }))
@@ -29,7 +30,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug, locale: localeSegment } = await params
   const reference = referenceMetadata('games', slug, localeSegment)
-  if (reference) return reference
+  if (reference) return applySearchTitle(reference)
   const game = getGame(slug)
   if (!game) return { title: 'Game not found', robots: { index: false } }
   // Metadata copy must match the page's own LANGUAGE (URL locale segment),
@@ -41,7 +42,7 @@ export async function generateMetadata({
   const content = getGameContent(game, locale)
   const categoryName = getCategoryName(game.category, locale)
   const seoOverride = content.seo?.game
-  return pageMetadata({
+  return applySearchTitle(pageMetadata({
     title: seoOverride?.title ?? `${game.title} — ${categoryName}`,
     description:
       seoOverride?.description ??
@@ -49,7 +50,7 @@ export async function generateMetadata({
     path: `/games/${game.slug}`,
     localeSegment,
     images: getGameOgImage(game),
-  })
+  }))
 }
 
 export default async function GamePage({
