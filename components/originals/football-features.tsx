@@ -1,4 +1,6 @@
 'use client'
+
+import { contentLocale } from '@/lib/locale'
 import Image from 'next/image'
 import { ArrowRight, Play } from 'lucide-react'
 import { useCountry } from '@/components/country-context'
@@ -16,7 +18,7 @@ function FootballCard({ game, poster, posterAlt, category, description, cardId, 
   game: OriginalGameDefinition; poster: string; posterAlt: string; category: string; description: string; cardId: string; surface: Surface
 }) {
   const { locale } = useCountry(), shared = originalsDiscoveryCopy(locale)
-  const Heading = surface === 'hub' ? 'h2' : 'h3', title = game.title[locale], href = `/play/${game.slug}`
+  const Heading = surface === 'hub' ? 'h2' : 'h3', title = game.title[contentLocale(locale)], href = `/play/${game.slug}`
   return <article className={styles.card} data-original-card={cardId} data-surface={surface}>
     <LocaleLink href={href} prefetch={false} className={styles.posterLink} aria-label={`${shared.playFree}: ${title}`}>
       <Image src={poster} alt={posterAlt} fill sizes="(max-width: 767px) 100vw, 700px" className={styles.poster} />
@@ -34,13 +36,13 @@ function FootballCard({ game, poster, posterAlt, category, description, cardId, 
 }
 
 export function EmbaixadinhaFeature({ surface }: { surface: Surface }) {
-  const { locale } = useCountry(), copy = FOOTBALL_CARDS.embaixadinha[locale]
+  const { locale } = useCountry(), copy = FOOTBALL_CARDS.embaixadinha[contentLocale(locale)]
   return <FootballCard game={EMBAIXADINHA} poster={EMBAIXADINHA_POSTER} posterAlt={copy.posterAlt} category={copy.category}
     description={copy.discovery} cardId="liva-ginga" surface={surface} />
 }
 
 export function GolacoFeature({ surface }: { surface: Surface }) {
-  const { locale } = useCountry(), copy = FOOTBALL_CARDS.golaco[locale]
+  const { locale } = useCountry(), copy = FOOTBALL_CARDS.golaco[contentLocale(locale)]
   return <FootballCard game={GOLACO} poster={GOLACO_POSTER} posterAlt={copy.posterAlt} category={copy.category}
     description={copy.discovery} cardId="golaco" surface={surface} />
 }

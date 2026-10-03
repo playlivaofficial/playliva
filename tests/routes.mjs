@@ -4,7 +4,7 @@ const nativeFetch = globalThis.fetch
 const fetch = (url, options = {}) => {
   const path = new URL(url).pathname
   const headers = new Headers(options.headers)
-  if (!headers.has('x-vercel-ip-country')) headers.set('x-vercel-ip-country', path.startsWith('/pt-br') || path === '/go' ? 'BR' : 'GE')
+  if (!headers.has('x-vercel-ip-country')) headers.set('x-vercel-ip-country', path.startsWith('/es-co') ? 'CO' : path.startsWith('/es-pe') ? 'PE' : path.startsWith('/es-mx') ? 'MX' : path.startsWith('/pt-br') || path === '/go' ? 'BR' : 'GE')
   return nativeFetch(url, { ...options, headers })
 }
 
@@ -14,6 +14,9 @@ import { ownerGeoHttpFixture } from './fixtures/owner-geo-http.mjs'
 import privateDestinations from '../lib/affiliates/server-destinations.ts'
 const { serverDestination } = privateDestinations
 process.env.PLAYLIVA_AFFILIATE_DESTINATIONS = JSON.stringify(testDestinations)
+// Keep legacy secrets present to prove they cannot reactivate retired BR links.
+// Real approvals are pending; no synthetic operator is served by this crawl.
+process.env.PLAYLIVA_COMMERCIAL_REGISTRY = '[]'
 import { createServer } from 'node:net'
 import assert from 'node:assert/strict'
 import { once } from 'node:events'
@@ -39,6 +42,7 @@ import catalogQueryModule from '../lib/catalog/query.ts'
 import brazilModule from '../lib/compliance/brazil.ts'
 import rtpModule from '../lib/rtp.ts'
 import promoModule from '../lib/affiliates/betsson-promo-config.ts'
+import spotlightModule from '../lib/home/spotlight.ts'
 const { originalsDiscoveryCopy, ISLAND_CRASH_POSTER } = discoveryModule
 const { ANALYTICS_COOKIE } = consentModule
 
@@ -171,6 +175,11 @@ await once(listener, 'listening')
 const port = listener.address().port
 await new Promise((resolve) => listener.close(resolve))
 const base = `http://127.0.0.1:${port}`
+function assertInternalFallback(response, reason) {
+  const target = new URL(response.headers.get('location'))
+  // Next normalizes its internal origin to localhost in some local runtimes.
+  assert.ok(['127.0.0.1', 'localhost'].includes(target.hostname) && target.port === String(port) && target.protocol === 'http:', reason)
+}
 const ownerGeoFixture = await ownerGeoHttpFixture()
 // Authentication now participates in public rendering. Its local adapter must
 // not pull hundreds of MB of immutable authoring inputs into deployed functions.
@@ -199,6 +208,10 @@ for (const name of await readdir(chunkRoot)) {
 }
 assert.ok(gameChunks.length >= 1, 'Crash renderer must exist in the production output')
 for (const locale of LOCALE_SEGMENTS) {
+  for (const path of ['', '/games', '/providers', '/offers', '/operators', '/play', '/arcade', ...CATEGORIES.map(category => `/${category.slug}`)]) paths.add(`/${locale}${path}`)
+  for (const game of catalogModule.catalogSummaries(localeModule.segmentToLocale(locale))) paths.add(`/${locale}/games/${game.slug}`)
+  for (const provider of catalogModule.PROVIDERS) paths.add(`/${locale}/providers/${provider.id}`)
+  for (const game of spotlightModule.SPOTLIGHT_GAMES) paths.add(`/${locale}${game.playPath}`)
   paths.add(`/${locale}/sports`)
   for (const sport of SPORTS) paths.add(`/${locale}/sports/${sport.slug}`)
   for (const league of LEAGUES) paths.add(`/${locale}/sports/${league.sport}/${league.slug}`)
@@ -215,12 +228,32 @@ try {
     await pause(250)
   }
   assert.ok(ready, 'local production server starts')
-  assert.ok(publicPaths.every(path => !/^\/(en|pt-br|es-mx)\/sports(?:\/|$)/.test(path)), 'Sports archive URLs excluded from sitemap')
+  for (const [country, language, cookie, expected] of [
+    ['MX', 'es', '', 'es-mx'], ['CO', 'es', '', 'es-co'], ['PE', '', '', 'es-pe'],
+    ['CO', 'en-US', '', 'en'], ['PE', 'es', 'playliva_locale=pt-br', 'pt-br'],
+    ['BR', '', '', 'pt-br'], ['GE', '', '', 'en'], ['', 'ka-GE', '', 'en'],
+  ]) {
+    const response = await fetch(base + '/', { redirect: 'manual', headers: {
+      'x-vercel-ip-country': country, 'accept-language': language, cookie,
+    } })
+    assert.equal(response.status, 302)
+    assert.equal(new URL(response.headers.get('location'), base).pathname, '/' + expected)
+    assert.match(response.headers.get('cache-control'), /private.*no-store/)
+  }
+  const legacy = await fetch(base + '/games/aviator', { redirect: 'manual', headers: { 'x-vercel-ip-country': 'CO', 'accept-language': 'es' } })
+  assert.equal(legacy.status, 308)
+  assert.equal(new URL(legacy.headers.get('location'), base).pathname, '/pt-br/games/aviator', 'historic bare routes retain deterministic SEO destination')
+  assert.ok(publicPaths.every(path => !/^\/(en|pt-br|es-mx|es-co|es-pe)\/sports(?:\/|$)/.test(path)), 'Sports archive URLs excluded from sitemap')
   const sitemapResponse = await fetch(`${base}/sitemap.xml`)
   assert.equal(sitemapResponse.status, 200)
   const sitemapText = await sitemapResponse.text()
-  assert.doesNotMatch(sitemapText, /\/(?:en|pt-br|es-mx)\/sports(?:[\/<"])/, 'served sitemap excludes Sports archive URLs')
-  for (const segment of LOCALE_SEGMENTS) assert.ok(sitemapText.includes(`${SITE_URL}/${segment}/play</loc>`))
+  assert.doesNotMatch(sitemapText, /\/(?:en|pt-br|es-mx|es-co|es-pe)\/sports(?:[\/<"])/, 'served sitemap excludes Sports archive URLs')
+  for (const segment of LOCALE_SEGMENTS) {
+    assert.ok(sitemapText.includes(`${SITE_URL}/${segment}</loc>`), `${segment}: regional home is discoverable`)
+    assert.ok(sitemapText.includes(`${SITE_URL}/${segment}/games</loc>`), `${segment}: shared catalog is discoverable`)
+    assert.equal(sitemapText.includes(`${SITE_URL}/${segment}/play</loc>`), !['es-co', 'es-pe'].includes(segment), `${segment}: intentional shared-rules indexing`)
+  }
+  assert.ok(publicPaths.length < 350, 'pending approvals do not create a combinatorial index expansion')
   const poster = await fetch(base + ISLAND_CRASH_POSTER)
   assert.equal(poster.status, 200)
   assert.ok((await poster.arrayBuffer()).byteLength < 100_000)
@@ -236,7 +269,7 @@ try {
         redirect: 'manual', headers: consent ? { cookie: `${ANALYTICS_COOKIE}=${consent}` } : {},
       })
       assert.equal(response.status, 302)
-      assert.equal(response.headers.get('location'), serverDestination(partner.categoryAffiliateUrl['live-casino'].BR))
+      assertInternalFallback(response, 'retired BR category routes fail closed')
     }
     for (const category of [undefined, 'crash', 'live-casino', 'slots']) {
       const query = new URLSearchParams({ operator: partner.slug, country: 'BR' })
@@ -245,7 +278,7 @@ try {
         redirect: 'manual', headers: consent ? { cookie: `${ANALYTICS_COOKIE}=${consent}` } : {},
       })
       assert.equal(response.status, 302)
-      assert.equal(response.headers.get('location'), serverDestination(partner.categoryAffiliateUrl?.[category]?.BR ?? partner.affiliateUrl.BR))
+      assertInternalFallback(response, 'retired BR category destinations remain suppressed')
     }
     for (const placement of ['homepage_banner', 'originals_generic_operator', 'play_hub_banner', 'game_detail_play_real']) {
       const query = new URLSearchParams({ operator: partner.slug, country: 'BR', placement })
@@ -253,7 +286,7 @@ try {
         redirect: 'manual', headers: consent ? { cookie: `${ANALYTICS_COOKIE}=${consent}` } : {},
       })
       assert.equal(response.status, 302)
-      assert.equal(response.headers.get('location'), serverDestination(partner.affiliateUrl.BR))
+      assertInternalFallback(response, 'retired BR placements remain suppressed')
     }
   }
   for (const path of paths) {
@@ -263,9 +296,9 @@ try {
     const doc = dom.window.document
     const canonical = doc.querySelector('link[rel="canonical"]')?.href
     if (canonical !== SITE_URL + path) failures.push(`${path}: canonical ${canonical}`)
-    const routePath = path.replace(/^\/(en|pt-br|es-mx)/, '')
+    const routePath = path.split('/').slice(2).join('/') ? '/' + path.split('/').slice(2).join('/') : ''
     const segment = path.split('/')[1]
-    const commercialBaseline = segment === 'pt-br'
+    const commercialBaseline = false // Current approvals are pending in every target GEO.
     // Dynamic Original fallbacks stay non-heading while the streamed shell
     // owns the route's single semantic H1.
     assert.equal(doc.querySelectorAll('h1').length, 1, `${path}: one semantic page heading`)
@@ -277,7 +310,7 @@ try {
       const trafficRobots = [...doc.querySelectorAll('meta[name="robots"], meta[name="googlebot"]')].map((meta) => meta.content)
       assert.ok(trafficRobots.length && trafficRobots.every((value) => !value.includes('noindex') && value.includes('follow')), `${path}: index, follow`)
       for (const href of trafficPage.links) {
-        assert.ok(doc.querySelector(`main a[href="${href}"]`), `${path}: internal link ${href}`)
+        if (!doc.querySelector(`main a[href="${href}"]`)) failures.push(`${path}: internal link ${href}`)
       }
     }
     if (publicPaths.includes(path)) {
@@ -289,14 +322,7 @@ try {
         if (doc.querySelector('meta[property="og:image"]')) ptOgImageCount += 1
       }
     }
-    for (const link of doc.querySelectorAll('a[href^="/go?"]')) {
-      const ad = link.closest('[data-betting-ad]')
-      assert.ok(ad, `${path}: every operator action belongs to a warned ad`)
-      assert.equal(ad.querySelectorAll('[data-brazil-ad-warning]').length, 1, `${path}: one central warning per ad`)
-      assert.ok(ad.textContent.includes(brazilModule.BRAZIL_AD_RULES.warnings[0]), `${path}: statutory warning wording`)
-      assert.ok(ad.textContent.includes('18+'), `${path}: age warning`)
-      assert.equal(ad.getAttribute('data-evidence-state'), 'pending', `${path}: cached ad evidence must be rechecked before display`)
-    }
+    assert.equal(doc.querySelector('a[href^="/go?"], [data-betting-ad], [data-commercial-banner], [data-betsson-banner]'), null, `${path}: pending regions and retired Brazil expose no commercial surface`)
     if (routePath.startsWith('/games/')) {
       const slug = routePath.split('/').pop()
       assert.equal(doc.querySelectorAll('[data-rtp-fact]').length, rtpModule.RTP_EVIDENCE[slug] ? 1 : 0, `${path}: sourced RTP only`)
@@ -410,7 +436,7 @@ try {
       assert.ok(article?.querySelector('ol, ul') && article.textContent.length > 600, `${path}: visible rules and description`)
       const crumbs = [...doc.querySelectorAll('script[type="application/ld+json"]')].map(e => e.textContent).find(t => t.includes('BreadcrumbList'))
       assert.ok(crumbs?.includes(`/${segment}/play"`) && crumbs.includes(routePath === '/play/golaco' ? 'Liva Golaço' : 'Liva Ginga'), `${path}: breadcrumb structured data`)
-      assert.ok(doc.querySelector(`link[rel="alternate"][hreflang="x-default"]`), `${path}: hreflang`)
+      assert.equal(Boolean(doc.querySelector('link[rel="alternate"][hreflang="x-default"]')), publicPaths.includes(path), `${path}: indexable Originals have an equivalent neutral default`)
       assert.equal(doc.querySelector('nav.fixed'), null, `${path}: controls unobstructed by mobile nav`)
       assert.doesNotMatch(doc.querySelector('main')?.textContent ?? '', /Nike|Adidas|CBF|FIFA|Neymar|Pel[ée]\b/, `${path}: no protected marks`)
     }
@@ -498,17 +524,17 @@ try {
     }
     const marketScoped = routePath.startsWith('/where-to-play/') || GAME_LISTS.some((list) => routePath === `/best/${list.slug}`)
     for (const alternateSegment of LOCALE_SEGMENTS) {
-      const expected = marketScoped ? alternateSegment === segment && publicPaths.includes(path) : true
+      const expected = publicPaths.includes(path) && publicPaths.includes(`/${alternateSegment}${routePath}`) && (!marketScoped || alternateSegment === segment)
       assert.equal(Boolean(doc.querySelector(`link[hreflang="${alternateSegment}"]`)), expected, `${path}: hreflang ${alternateSegment}`)
       if (expected) assert.equal(doc.querySelector(`link[hreflang="${alternateSegment}"]`)?.href, `${SITE_URL}/${alternateSegment}${routePath}`, `${path}: hreflang URL ${alternateSegment}`)
     }
-    const expectDefault = !marketScoped || routePath.startsWith('/where-to-play/') && segment === 'pt-br' && publicPaths.includes(path)
+    const expectDefault = !marketScoped && publicPaths.includes(path) && publicPaths.includes(`/en${routePath}`)
     assert.equal(Boolean(doc.querySelector('link[hreflang="x-default"]')), expectDefault, `${path}: x-default presence`)
-    if (expectDefault) assert.equal(doc.querySelector('link[hreflang="x-default"]')?.href, `${SITE_URL}/pt-br${routePath}`, `${path}: x-default`)
+    if (expectDefault) assert.equal(doc.querySelector('link[hreflang="x-default"]')?.href, `${SITE_URL}/en${routePath}`, `${path}: neutral x-default`)
     for (const link of doc.querySelectorAll('a[href]')) {
       const url = new URL(link.getAttribute('href'), base + path)
       if (url.origin === base && !url.pathname.startsWith('/go')) linkedPaths.add(url.pathname)
-      if ((!routePath.startsWith('/sports') || link.closest('header, footer')) && /\/(?:en|pt-br|es-mx)\/sports(?:\/|$)/.test(url.pathname)) {
+      if ((!routePath.startsWith('/sports') || link.closest('header, footer')) && /\/(?:en|pt-br|es-mx|es-co|es-pe)\/sports(?:\/|$)/.test(url.pathname)) {
         failures.push(`${path}: Sports link in normal discovery/navigation`)
       }
     }
@@ -527,7 +553,11 @@ try {
       expected.push(...catalogModule.REFERENCE_GAMES.filter(g => g.category === category.slug)
         .sort((a, b) => a.title.localeCompare(b.title, localeModule.segmentToLocale(segment)))
         .slice(0, catalogQueryModule.CATALOG_PAGE_SIZE).map(g => g.slug))
-      assert.deepEqual([...new Set(gameLinks)].sort(), expected.sort(), `${path}: category membership`)
+      const actualMembers = [...new Set(gameLinks)].sort()
+      const expectedMembers = expected.sort()
+      if (JSON.stringify(actualMembers) !== JSON.stringify(expectedMembers)) {
+        failures.push(`${path}: category membership ${JSON.stringify(actualMembers)} expected ${JSON.stringify(expectedMembers)}`)
+      }
     }
     const robots = [...doc.querySelectorAll('meta[name="robots"], meta[name="googlebot"]')].map((meta) => meta.content)
     if (routePath.startsWith('/sports')) {
@@ -588,7 +618,7 @@ try {
       const locale = localeModule.segmentToLocale(segment), c = catalogCopyModule.catalogCopy(locale)
       const art = game.artwork
       assert.equal(doc.querySelector('h1').textContent, game.title)
-      for (const field of ['summary', 'overview', 'howItWorks']) assert.ok(doc.querySelector('main').textContent.includes(game.content[locale][field]), `${path}: ${field}`)
+      for (const field of ['summary', 'overview', 'howItWorks']) assert.ok(doc.querySelector('main').textContent.includes(game.content[localeModule.contentLocale(locale)][field]), `${path}: ${field}`)
       assert.ok(art.status !== 'fallback')
       assert.ok(doc.querySelector('[data-artwork-status="sourced"]'))
       assert.ok(art.status !== 'fallback' && doc.querySelector(`main img[src="${art.assetPath}"]`))
@@ -602,7 +632,7 @@ try {
       assert.doesNotMatch(doc.body.textContent, /This game may not be available at Betsson/i)
       assert.equal(Boolean(doc.querySelector('[data-betsson-banner="game"]')), commercialBaseline)
       assert.ok(doc.querySelector('main').textContent.includes(c.evidence))
-      assert.equal(doc.querySelector('meta[name="description"]').content, game.content[locale].summary)
+      assert.equal(doc.querySelector('meta[name="description"]').content, game.content[localeModule.contentLocale(locale)].summary)
     }
     if (doc.querySelector('[data-catalog-explorer]')) assert.ok(doc.querySelectorAll('[data-catalog-results] > a').length <= 12)
     if (routePath.startsWith('/games/') && doc.querySelector('[data-provider-detail]')) {
@@ -641,9 +671,8 @@ try {
       assert.equal(Boolean(doc.querySelector('[data-betsson-banner="best-list"]')), commercialBaseline, `${path}: best-list Betsson banner`)
     }
     if (routePath === '/offers') {
-      assert.ok(doc.querySelector('[data-offers-sponsored]'))
+      assert.equal(doc.querySelector('[data-offers-sponsored]'), null, `${path}: no invented sponsor while approvals are pending`)
       assert.ok(doc.querySelector('[data-offers-verified]'))
-      assert.match(doc.querySelector('[data-offers-sponsored]')?.textContent ?? '', /Sponsored Partner|Parceiro patrocinado|Socio patrocinado/)
     }
     assert.equal(doc.querySelectorAll('[data-betsson-banner] h2').length, 0, `${path}: sponsor copy stays out of heading outline`)
     if (['/terms', '/privacy-policy', '/affiliate-disclosure', '/responsible-gaming', '/cookie-policy'].includes(routePath)) {
@@ -702,6 +731,9 @@ try {
   console.log(`Crawled ${paths.size} public/legal/demo URLs plus locale 404 and affiliate fallback probes. PT-BR OG coverage: ${ptOgImageCount}/${ptPublicCount}.`)
   if (failures.length) console.error(failures.join('\n'))
   assert.equal(failures.length, 0, `${failures.length} content/SEO failures`)
+} catch (error) {
+  if (failures.length) console.error(failures.join('\n'))
+  throw error
 } finally {
   if (server.exitCode === null) {
     const exited = once(server, 'exit')

@@ -1,3 +1,4 @@
+import { GeoEditorialGuide } from '@/components/geo-editorial-guide'
 import type { Metadata } from 'next'
 import { Section } from '@/components/section'
 import { GameDirectory } from '@/components/discovery/directory'
@@ -44,6 +45,7 @@ export default async function GamesPage({ params, searchParams }: { params: Prom
       <Section className="py-8 sm:py-12">
         <GameDirectory locale={catalogLocale(locale)} segment={locale} params={query} />
       </Section>
+      <GeoEditorialGuide surface="games" />
     </>
   )
 }

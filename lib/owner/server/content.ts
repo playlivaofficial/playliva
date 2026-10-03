@@ -4,6 +4,7 @@ import { ownerGames, publishedInventory } from './catalog'
 import { logActivity, updateOwnerState } from './store'
 import type { Creative } from '../model'
 import type { Opportunity } from '../metrics'
+import { isLocaleSegment } from '@/lib/locale'
 
 export function contentPipeline(state: OwnerState, creatives: Creative[], opportunities: Opportunity[]): ContentItem[] {
   const inventory = publishedInventory()
@@ -15,8 +16,8 @@ export function contentPipeline(state: OwnerState, creatives: Creative[], opport
 export async function saveContent(input: Record<string, unknown>) {
   const text = (key: string, limit = 240) => typeof input[key] === 'string' ? input[key].trim().slice(0, limit) : ''
   const status = text('status') as ContentItem['status'], topic = text('topic'), locale = text('locale'), route = text('route')
-  if (!CONTENT_STATES.includes(status) || !topic || !['pt-br', 'en', 'es-mx'].includes(locale)) throw new Error('Provide a topic, supported locale and valid content state.')
-  if (route && (!/^\/(pt-br|en|es-mx)(\/[a-z0-9-]+)*$/.test(route) || !route.startsWith(`/${locale}`))) throw new Error('Use a clean public route matching the selected locale.')
+  if (!CONTENT_STATES.includes(status) || !topic || !isLocaleSegment(locale)) throw new Error('Provide a topic, supported locale and valid content state.')
+  if (route && (!/^\/[a-z-]+(?:\/[a-z0-9-]+)*$/.test(route) || route.split('/')[1] !== locale)) throw new Error('Use a clean public route matching the selected locale.')
   if (status === 'published' && !publishedInventory().some(item => item.route === route)) throw new Error('Published status requires an existing sitemap page. This tool does not publish pages.')
   const id = text('id') || `plan-${randomUUID()}`
   if (!/^[a-z0-9-]{1,140}$/.test(id)) throw new Error('Invalid content ID.')

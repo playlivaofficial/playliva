@@ -1,3 +1,5 @@
+import { contentLocale } from '@/lib/locale'
+import type { ContentLocale } from '@/lib/types'
 import type { Locale } from '@/lib/types'
 
 const en = {
@@ -27,7 +29,7 @@ const en = {
   },
 }
 type CrashCopy = { [K in keyof typeof en]: K extends 'errors' ? Record<keyof typeof en.errors, string> : string }
-const copies: Record<Locale, CrashCopy> = {
+const copies: Record<ContentLocale, CrashCopy> = {
   en,
   'pt-BR': {
     description: 'Uma ilha ensolarada. Um chute espetacular. Retire antes que seu náufrago volte ao chão. Jogue grátis com Liva Credits virtuais.',
@@ -82,7 +84,7 @@ const copies: Record<Locale, CrashCopy> = {
     },
   },
 }
-export const crashCopy = (locale: Locale) => copies[locale]
+export const crashCopy = (locale: Locale) => copies[contentLocale(locale)]
 export function parseAutoInput(value: string): number {
   const normalized = value.trim().replace(',', '.')
   if (!/^\d{1,3}(?:\.\d{1,2})?$/.test(normalized)) return NaN

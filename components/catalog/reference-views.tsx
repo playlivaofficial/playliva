@@ -1,3 +1,4 @@
+import { contentLocale } from '@/lib/locale'
 import { DiscoveryEvents } from '@/components/discovery/events'
 import { catalogSummaries } from '@/lib/catalog'
 import { discoveryEntries } from '@/lib/discovery/catalog'
@@ -36,7 +37,7 @@ function Evidence({ games, locale }: { games: ReferenceGame[]; locale: Locale })
 }
 
 export function ReferenceGameView({ game, locale }: { game: ReferenceGame; locale: Locale }) {
-  const c = catalogCopy(locale), content = game.content[locale], summary = referenceSummary(game, locale)
+  const c = catalogCopy(locale), content = game.content[contentLocale(locale)], summary = referenceSummary(game, locale)
   const comparisons = REFERENCE_COMPARISONS.filter(item => item.a === game.slug || item.b === game.slug)
   const readingList = getReferenceReadingList(game.slug)
   return <DiscoveryEvents surface="reference" slug={game.slug}><div data-reference-detail={game.slug}>
@@ -72,8 +73,8 @@ export function ReferenceComparisonView({ comparison, locale }: { comparison: Re
   const c = catalogCopy(locale), a = getReferenceGame(comparison.a)!, b = getReferenceGame(comparison.b)!
   return <div data-reference-comparison={comparison.slug}>
     <PageHero eyebrow={c.comparisons} title={`${a.title} vs ${b.title}`} description={c.comparisonIntro} breadcrumbs={[{ label: c.home, href: '/' }, { label: c.games, href: '/games' }, { label: `${a.title} vs ${b.title}` }]} sponsor={<BetssonSponsoredBanner surface="comparison" layout="compact-header" />} />
-    <article className={`${styles.article} ${styles.prose}`}><EditorialByline path={`/compare/${comparison.slug}`} locale={locale} /><h2>{c.shared}</h2><p>{comparison.shared[locale]}</p><h2>{c.contrast}</h2>
-      <div className={styles.comparison}>{[a, b].map((game, index) => <section key={game.id} className={styles.compareCell}><h3>{game.title}</h3><p>{comparison.difference[locale][index]}</p><ul className={`${styles.features} mt-4`}>{game.content[locale].features.map(feature => <li key={feature}>{feature}</li>)}</ul><div className={styles.links}><LocaleLink href={`/games/${game.slug}`}>{c.read} →</LocaleLink></div></section>)}</div>
+    <article className={`${styles.article} ${styles.prose}`}><EditorialByline path={`/compare/${comparison.slug}`} locale={locale} /><h2>{c.shared}</h2><p>{comparison.shared[contentLocale(locale)]}</p><h2>{c.contrast}</h2>
+      <div className={styles.comparison}>{[a, b].map((game, index) => <section key={game.id} className={styles.compareCell}><h3>{game.title}</h3><p>{comparison.difference[contentLocale(locale)][index]}</p><ul className={`${styles.features} mt-4`}>{game.content[contentLocale(locale)].features.map(feature => <li key={feature}>{feature}</li>)}</ul><div className={styles.links}><LocaleLink href={`/games/${game.slug}`}>{c.read} →</LocaleLink></div></section>)}</div>
       <Evidence games={[a, b]} locale={locale} />
     </article>
   </div>
@@ -81,14 +82,14 @@ export function ReferenceComparisonView({ comparison, locale }: { comparison: Re
 
 export function ReferenceReadingView({ list, locale }: { list: ReferenceReadingList; locale: Locale }) {
   const c = catalogCopy(locale), game = getReferenceGame(list.slug)!
-  return <div data-reference-reading={list.slug}><PageHero eyebrow={c.related} title={`${c.similar} ${game.title}`} description={list.intro[locale]} breadcrumbs={[{ label: c.home, href: '/' }, { label: game.title, href: `/games/${game.slug}` }, { label: `${c.similar} ${game.title}` }]} sponsor={<BetssonSponsoredBanner surface="games-like" layout="compact-header" />} />
-    <article className={`${styles.article} ${styles.prose}`}><EditorialByline path={`/games-like/${list.slug}`} locale={locale} /><p>{c.similarIntro}</p><div className="mt-6 grid gap-5 md:grid-cols-3">{list.alternatives.map(item => <ContentCard key={item.slug}><h2>{getReferenceGame(item.slug)!.title}</h2><p>{item.reason[locale]}</p><div className={styles.links}><LocaleLink href={`/games/${item.slug}`}>{c.read} →</LocaleLink></div></ContentCard>)}</div><Evidence games={[game]} locale={locale} /></article>
+  return <div data-reference-reading={list.slug}><PageHero eyebrow={c.related} title={`${c.similar} ${game.title}`} description={list.intro[contentLocale(locale)]} breadcrumbs={[{ label: c.home, href: '/' }, { label: game.title, href: `/games/${game.slug}` }, { label: `${c.similar} ${game.title}` }]} sponsor={<BetssonSponsoredBanner surface="games-like" layout="compact-header" />} />
+    <article className={`${styles.article} ${styles.prose}`}><EditorialByline path={`/games-like/${list.slug}`} locale={locale} /><p>{c.similarIntro}</p><div className="mt-6 grid gap-5 md:grid-cols-3">{list.alternatives.map(item => <ContentCard key={item.slug}><h2>{getReferenceGame(item.slug)!.title}</h2><p>{item.reason[contentLocale(locale)]}</p><div className={styles.links}><LocaleLink href={`/games/${item.slug}`}>{c.read} →</LocaleLink></div></ContentCard>)}</div><Evidence games={[game]} locale={locale} /></article>
   </div>
 }
 
 export function ProviderIndexView({ locale }: { locale: Locale }) {
   const c = catalogCopy(locale)
-  return <><PageHero eyebrow={c.reference} title={c.providers} description={c.providersIntro} breadcrumbs={[{ label: c.home, href: '/' }, { label: c.games, href: '/games' }, { label: c.providers }]} sponsor={<BetssonSponsoredBanner surface="providers" layout="compact-header" />} /><Section><div className="grid gap-5 md:grid-cols-2">{PROVIDERS.map(provider => <ContentCard key={provider.id}><h2 className="text-xl font-bold">{provider.name}</h2><p className="mt-3 text-muted-foreground leading-relaxed">{provider.overview[locale]}</p><div className={styles.links}><LocaleLink href={`/providers/${provider.id}`}>{catalogSummaries(locale).filter(g => g.providerId === provider.id).length} {c.catalogCount} →</LocaleLink></div></ContentCard>)}</div></Section></>
+  return <><PageHero eyebrow={c.reference} title={c.providers} description={c.providersIntro} breadcrumbs={[{ label: c.home, href: '/' }, { label: c.games, href: '/games' }, { label: c.providers }]} sponsor={<BetssonSponsoredBanner surface="providers" layout="compact-header" />} /><Section><div className="grid gap-5 md:grid-cols-2">{PROVIDERS.map(provider => <ContentCard key={provider.id}><h2 className="text-xl font-bold">{provider.name}</h2><p className="mt-3 text-muted-foreground leading-relaxed">{provider.overview[contentLocale(locale)]}</p><div className={styles.links}><LocaleLink href={`/providers/${provider.id}`}>{catalogSummaries(locale).filter(g => g.providerId === provider.id).length} {c.catalogCount} →</LocaleLink></div></ContentCard>)}</div></Section></>
 }
 
 export function ProviderView({ providerId, locale }: { providerId: string; locale: Locale }) {
@@ -100,7 +101,7 @@ export function ProviderView({ providerId, locale }: { providerId: string; local
       ? 'Jogos da Evolution: cassino ao vivo e game shows'
     : provider.name
   return <DiscoveryEvents surface="provider" slug={provider.id}><div data-reference-provider={provider.id}>
-    <PageHero eyebrow={c.providers} title={title} description={provider.overview[locale]} breadcrumbs={[{ label: c.home, href: '/' }, { label: c.providers, href: '/providers' }, { label: provider.name }]} sponsor={<BetssonSponsoredBanner surface="provider" layout="compact-header" />}>
+    <PageHero eyebrow={c.providers} title={title} description={provider.overview[contentLocale(locale)]} breadcrumbs={[{ label: c.home, href: '/' }, { label: c.providers, href: '/providers' }, { label: provider.name }]} sponsor={<BetssonSponsoredBanner surface="provider" layout="compact-header" />}>
       <div className={styles.links}>
         {categories.map(category => <LocaleLink key={category} href={`/${category}`}>{getCategoryName(category, locale)}</LocaleLink>)}
         {provider.id === 'pragmatic-play' && locale === 'pt-BR' && <><LocaleLink href="/games/gates-of-olympus">Gates of Olympus</LocaleLink><LocaleLink href="/games/sweet-bonanza">Sweet Bonanza</LocaleLink><LocaleLink href="/games/big-bass-bonanza">Big Bass Bonanza</LocaleLink></>}

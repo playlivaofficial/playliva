@@ -1,3 +1,4 @@
+import { contentLocale } from '@/lib/locale'
 import type { Locale } from '@/lib/types'
 
 const copy = {
@@ -86,4 +87,4 @@ const copy = {
     ],
   },
 }
-export const aviaCopy = (locale: Locale) => copy[locale]
+export const aviaCopy = (locale: Locale) => copy[contentLocale(locale)]

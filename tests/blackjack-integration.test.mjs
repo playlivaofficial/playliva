@@ -1,3 +1,4 @@
+import { commercialFixture } from './fixtures/promo-commercial.mjs'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFile, stat } from 'node:fs/promises'
@@ -22,30 +23,29 @@ test('Blackjack: localized rules, action labels, safe SEO and its three Original
     const metadata = seoModule.pageMetadata({ title: LIVA_BLACKJACK.title[locale], description: copy.description, path: '/play/blackjack', localeSegment: segment })
     assert.ok(metadata.alternates.canonical.endsWith(`/${segment}/play/blackjack`))
     for (const s of ['en', 'pt-br', 'es-mx']) assert.ok(metadata.alternates.languages[s].endsWith(`/${s}/play/blackjack`))
-    assert.ok(metadata.alternates.languages['x-default'].endsWith('/pt-br/play/blackjack'))
+    assert.ok(metadata.alternates.languages['x-default'].endsWith('/en/play/blackjack'))
   }
   assert.equal(sitemapModule.default().filter(e => /\/play\/blackjack$/.test(e.url)).length, 3)
 })
-test('Blackjack: exact verified external referral, never an Original availability claim or blanket category approval', () => {
-  const partner = dataModule.getOperator('betsson-group-affiliates')
-  for (const locale of ['en', 'pt-BR', 'es-MX']) {
-    const referrals = getVerifiedBlackjackReferrals('BR', locale)
-    assert.equal(referrals.length, 1)
-    const url = new URL(referrals[0].href, 'https://example.invalid')
-    assert.equal(url.searchParams.get('game'), 'blackjack-live')
-    assert.equal(url.searchParams.get('category'), 'table-games')
-    assert.equal(url.searchParams.get('language'), locale)
-    assert.equal(url.searchParams.get('placement'), 'originals_play_real')
-    assert.equal(affiliateModule.resolveDestination({ operatorSlug: partner.slug, country: 'BR', category: 'table-games', gameSlug: 'blackjack-live' }).url, partner.categoryAffiliateUrl['live-casino'].BR)
-    for (const geo of ['MX', 'PT', 'unknown']) assert.deepEqual(getVerifiedBlackjackReferrals(geo, locale), [])
+test('blackjack: exact verified external listing and GEO approval required; no Original availability claim', () => {
+  for (const geo of ['MX','CO','PE']) {
+    const locale=`es-${geo}`,snapshot=commercialFixture(geo),partner=snapshot.operators[0]
+    const options=getVerifiedBlackjackReferrals(geo,locale,snapshot)
+    assert.equal(options.length,1)
+    const query=new URL(options[0].href,'https://www.playliva.com').searchParams
+    assert.equal(query.get('game'),'blackjack-live')
+    assert.equal(query.get('category'),'table-games')
+    assert.equal(query.get('language'),locale)
+    assert.equal(query.get('country'),geo)
+    assert.equal(query.get('placement'),'originals_play_real')
+    assert.equal(affiliateModule.resolveDestination({operatorSlug:partner.slug,country:geo,category:'table-games',gameSlug:'blackjack-live'},snapshot)?.url,partner.affiliateUrl[geo])
+    for(const other of ['BR','GE','MX','CO','PE'])if(other!==geo)assert.deepEqual(getVerifiedBlackjackReferrals(other,locale,snapshot),[])
+    const none=commercialFixture(geo,{verifiedGames:[]})
+    assert.deepEqual(getVerifiedBlackjackReferrals(geo,locale,none),[],'category approval cannot substitute exact-game evidence')
+    for(const field of ['approved','active']){const blocked=structuredClone(snapshot);blocked.operators[0][field]=false;assert.deepEqual(getVerifiedBlackjackReferrals(geo,locale,blocked),[])}
   }
-  const verified = partner.verifiedGames
-  try { partner.verifiedGames = { BR: verified.BR.filter(id => id !== 'g12') }; assert.deepEqual(getVerifiedBlackjackReferrals('BR', 'en'), []) }
-  finally { partner.verifiedGames = verified }
-  const status = partner.affiliateStatus
-  try { for (const value of ['pending', 'paused']) { partner.affiliateStatus = value; assert.deepEqual(getVerifiedBlackjackReferrals('BR', 'en'), []) } }
-  finally { partner.affiliateStatus = status }
 })
+
 test('Blackjack: discovery stays lightweight and does not register a provider game or unfinished placeholder', async () => {
   assert.ok(dataModule.GAMES.every(g => g.slug !== 'liva-blackjack' && g.id !== LIVA_BLACKJACK.id))
   const feature = await source('components/originals/blackjack-feature.tsx')

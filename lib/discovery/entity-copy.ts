@@ -1,8 +1,10 @@
+import { contentLocale } from '@/lib/locale'
+import type { ContentLocale } from '@/lib/types'
 import type {Locale} from '@/lib/types'
 // Targeted gaps only. Sources checked 2026-09-27; no odds, popularity or availability claims.
 type Supplement={whatIsIt:string;howItWorks:string[];description?:string;shortDescription?:string;mechanics?:string[]}
 export const ENTITY_SOURCES:Record<string,string>={spaceman:'https://www.pragmaticplay.com/en/games/spaceman/','gates-of-olympus':'https://www.pragmaticplay.com/en/games/gates-of-olympus/','sweet-bonanza':'https://www.pragmaticplay.com/en/games/sweet-bonanza-slot/','crazy-time':'https://games.evolution.com/live-casino/game-shows/crazy-time/',plinko:'https://spribe.co/games/plinko'}
-const copy:Partial<Record<Locale,Record<string,Supplement>>>={
+const copy:Partial<Record<ContentLocale,Record<string,Supplement>>>={
  en:{
  g3:{whatIsIt:'Spaceman is a Pragmatic Play crash game built around a rising multiplier and an astronaut flight. It supports a partial cash-out, which separates part of a position from the amount left in the round.',howItWorks:['The multiplier rises while the flight continues; cashing out applies the current multiplier.','A partial cash-out closes half of the position. The remaining part stays exposed until it is cashed out or the flight ends.']},
  g5:{whatIsIt:'Gates of Olympus is a Pragmatic Play slot with a mythology theme and pay-anywhere symbols. It combines tumbling wins with multiplier symbols; it does not require matching symbols to connect.',howItWorks:['Matching symbols can form wins anywhere on the grid, then disappear in a tumble.','Scatter symbols activate free spins. Qualifying multipliers contribute to a running bonus multiplier.'],description:'A mythology-themed slot with pay-anywhere symbols, tumbles and a running bonus multiplier.',shortDescription:'Pay-anywhere tumbles and an accumulating bonus multiplier.'},
@@ -18,4 +20,4 @@ const copy:Partial<Record<Locale,Record<string,Supplement>>>={
  g10:{whatIsIt:'Plinko da SPRIBE é um jogo instantâneo em que uma bolinha atravessa fileiras de pinos até uma posição multiplicadora. As opções de risco e fileiras pertencem a esta edição, não a todo jogo que usa o nome Plinko.',howItWorks:['Escolha entre as opções disponíveis de risco e fileiras antes de soltar a bolinha.','A bolinha desce pelo tabuleiro até um multiplicador. A animação não permite prever o resultado.']},
  },
 }
-export const entitySupplement=(id:string,locale:Locale)=>copy[locale]?.[id]
+export const entitySupplement=(id:string,locale:Locale)=>copy[contentLocale(locale)]?.[id]

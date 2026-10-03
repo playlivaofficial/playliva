@@ -1,3 +1,5 @@
+import { contentLocale } from '@/lib/locale'
+import type { ContentLocale } from '@/lib/types'
 import type { Locale } from '@/lib/types'
 
 // Discovery metadata only: never import the renderer, wallet or asset loader.
@@ -14,7 +16,7 @@ type DiscoveryCopy = {
   discoverDescription: string; discoverLink: string; seoTitle: string; seoDescription: string; newBadge: string
 }
 
-const COPY: Record<Locale, DiscoveryCopy> = {
+const COPY: Record<ContentLocale, DiscoveryCopy> = {
   en: {
     originals: 'PlayLiva Originals', freePlay: 'FREE PLAY', playFree: 'Play Free',
     demoGames: 'Demo Games', category: 'Crash', title: 'PlayLiva Island Crash',
@@ -80,16 +82,16 @@ const COPY: Record<Locale, DiscoveryCopy> = {
   },
 }
 
-export const originalsDiscoveryCopy = (locale: Locale): DiscoveryCopy => COPY[locale]
+export const originalsDiscoveryCopy = (locale: Locale): DiscoveryCopy => COPY[contentLocale(locale)]
 
-const LINK_LABELS: Record<Locale, { hub: string; crash: string; slots: string }> = {
+const LINK_LABELS: Record<ContentLocale, { hub: string; crash: string; slots: string }> = {
   en: { hub: 'All PlayLiva Originals', crash: 'Crash games', slots: 'Slot games' },
   'pt-BR': { hub: 'Todos os PlayLiva Originals', crash: 'Jogos crash', slots: 'Jogos de slot' },
   'es-MX': { hub: 'Todos los PlayLiva Originals', crash: 'Juegos crash', slots: 'Juegos de slots' },
 }
 /** Internal links shown under an Original's play page (never the current page). */
 export function originalsLinks(locale: Locale, currentSlug: string): { href: string; label: string }[] {
-  const labels = LINK_LABELS[locale]
+  const labels = LINK_LABELS[contentLocale(locale)]
   return [
     { href: '/play/avia-de-janeiro', label: 'Avia de Janeiro' },
     { href: '/play/samba-drop', label: 'Liva Samba Drop' },

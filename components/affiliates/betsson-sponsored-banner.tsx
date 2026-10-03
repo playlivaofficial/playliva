@@ -8,26 +8,27 @@ import { AffiliateDisclosureLine } from '@/components/notices'
 import { Button } from '@/components/ui/button'
 import { useCountry } from '@/components/country-context'
 import {
-  getBetssonSponsoredBanner,
-  resolveBetssonBannerLayout,
-  type BetssonBannerCta,
-  type BetssonBannerLayout,
-  type BetssonBannerSurface,
-  type BetssonSponsoredBannerModel,
-} from '@/lib/affiliates/betsson'
+  getSponsoredBanner,
+  resolveBannerLayout,
+  type BannerLayout,
+  type BannerSurface,
+  type SponsoredBannerModel,
+} from '@/lib/affiliates/promotion'
 import { track, type TrackPayload } from '@/lib/tracking'
 import { useCommercialImpression } from '@/components/analytics/use-commercial-impression'
 import styles from './betsson-banner.module.css'
-import { BrazilAdWarning } from './brazil-ad-warning'
+import { CommercialAdDisclosure } from './commercial-ad-disclosure'
+import type { CommercialSnapshot } from '@/lib/commercial/types'
+import { useCampaignExpiry } from './use-campaign-expiry'
 
-/** Homepage wrapper so existing homepage tests keep `data-betsson-banner="homepage"`. */
+/** Compatibility wrapper for the shared compact homepage placement. */
 export function BetssonHomeBanner() {
   return <BetssonSponsoredBanner surface="homepage" layout="compact-header" cta="explore" />
 }
 
-function promoPayload(banner: BetssonSponsoredBannerModel, route: string): TrackPayload {
+function promoPayload(banner: SponsoredBannerModel, route: string, commercial: CommercialSnapshot): TrackPayload {
   return {
-    campaignKey: campaignForGoHref(banner.href),
+    campaignKey: campaignForGoHref(banner.href, commercial),
     promoId: banner.promo?.promoId,
     brand: banner.promo?.brand,
     offerId: banner.promo?.offerId,
@@ -50,44 +51,45 @@ export function BetssonSponsoredBanner({
   cta = 'explore',
   lazy = false,
 }: {
-  surface: BetssonBannerSurface
-  layout?: BetssonBannerLayout
-  cta?: BetssonBannerCta
+  surface: BannerSurface
+  layout?: BannerLayout
+  cta?: 'explore' | 'visit'
   lazy?: boolean
 }) {
-  const { marketCode, locale, t } = useCountry()
+  const { marketCode, locale, t, commercial } = useCountry()
   const route = usePathname()
-  const banner = marketCode ? getBetssonSponsoredBanner(marketCode, locale, surface) : null
+  const banner = marketCode ? getSponsoredBanner(commercial, marketCode, locale, surface) : null
+  useCampaignExpiry(banner?.promo?.expiresAt)
   const root = useRef<HTMLElement>(null)
   useCommercialImpression(root, `${route}:${marketCode}:${locale}:${surface}`, () => {
-    if (banner) track(banner.promo ? 'offer_impression' : 'affiliate_impression', promoPayload(banner, route))
+    if (banner) track(banner.promo ? 'offer_impression' : 'affiliate_impression', promoPayload(banner, route, commercial))
   })
   if (!banner) return null
-  const variant = resolveBetssonBannerLayout(layout)
+  const variant = resolveBannerLayout(layout)
   const compact = variant === 'compact-header'
   const { creative, promo } = banner
-  const alt = creative.alt[locale]
+  const alt = creative.alt[locale] ?? banner.operatorName
   const genericLabel = cta === 'visit'
     ? t('affiliate.visitNamed', { name: banner.operatorName })
     : t('affiliate.exploreNamed', { name: banner.operatorName })
   // Originals header: the campaign CTA. Other surfaces keep their existing localized label.
   const label = promo && surface === 'originals'
-    ? (locale === 'pt-BR' ? promo.ctaLabel : t('affiliate.playAtNamed', { name: banner.operatorName }))
-    : genericLabel
+    ? promo.ctaLabel
+    : banner.ctaLabel || genericLabel
   const showArt = !compact && creative.kind === 'banner'
   return (
     <section
       ref={root}
       className={`${styles.banner} ${compact ? styles.compactHeader : styles.fullSupport}${surface === 'originals' ? ` ${styles.originalsHeader}` : ''}`}
-      data-betsson-banner={banner.surface}
+      data-sponsored-banner={banner.surface}
       data-operator-cta-mode={banner.mode}
       data-creative-id={creative.id}
-      data-creative-language={creative.language}
+      data-creative-language={locale}
       data-banner-layout={variant}
       data-promo-id={promo?.promoId}
       aria-label={`${t('affiliate.sponsored')}: ${banner.operatorName}`}
     >
-      <div className={styles.card} data-betting-ad="" data-evidence-state="pending">
+      <div className={styles.card} data-commercial-ad="">
         {showArt ? (
           <div className={styles.art}>
             <Image
@@ -112,7 +114,7 @@ export function BetssonSponsoredBanner({
         <div className={styles.copy}>
           <p className={styles.eyebrow}>{t('affiliate.sponsored')}{promo ? ` · ${banner.operatorName}` : ''}</p>
           {promo
-            ? <p className={`${styles.title} ${styles.promoTitle}`} lang="pt-BR">{promo.headline}</p>
+            ? <p className={`${styles.title} ${styles.promoTitle}`} lang={locale}>{promo.headline}</p>
             : <p className={styles.title}>{banner.operatorName}</p>}
           <p className={styles.body}>{t('affiliate.homeBannerBody')}</p>
         </div>
@@ -120,14 +122,14 @@ export function BetssonSponsoredBanner({
           size="lg"
           className={`${styles.cta} min-h-11 min-w-11 whitespace-normal px-4 ${surface === 'originals' ? 'w-auto max-w-full' : 'w-full sm:w-auto'}`}
           render={<a href={banner.href} target="_blank" rel="sponsored noopener noreferrer" data-promo-cta={promo ? '' : undefined}
-            onClick={() => track('affiliate_click', promoPayload(banner, route))} />}
+            onClick={() => track('affiliate_click', promoPayload(banner, route, commercial))} />}
         >
           {label}
         </Button>
         <div className={styles.meta}>
           <AffiliateDisclosureLine className={styles.disclosure} />
         </div>
-        <BrazilAdWarning operatorId="op-betsson" />
+        <CommercialAdDisclosure operatorId={banner.operatorId} />
       </div>
     </section>
   )

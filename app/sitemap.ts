@@ -4,15 +4,17 @@ import {
   GAMES,
   COMPARISONS,
   GAME_LISTS,
-  getPublicOperators,
 } from '@/lib/data'
 import { absoluteUrl } from '@/lib/seo'
 import { REFERENCE_PATHS } from '@/lib/catalog/paths'
-import { DEFAULT_LOCALE_SEGMENT, LOCALE_SEGMENTS, type LocaleSegment } from '@/lib/locale'
+import { LOCALE_SEGMENTS, type LocaleSegment } from '@/lib/locale'
 import { editorialRecord } from '@/lib/editorial'
+import { X_DEFAULT_LOCALE_SEGMENT } from '@/lib/regional-seo-policy'
+import { commercialSnapshot } from '@/lib/commercial/server'
+import { publishedWhereToPlayLocales, publishedOperatorLocales, publishedCommercialDirectoryLocales } from '@/lib/commercial/seo'
+import { TARGET_GEOS } from '@/lib/geo'
 import {
   isGameListIndexableForLocale,
-  whereToPlayLocaleSegments,
 } from '@/lib/seo-market'
 
 /**
@@ -31,15 +33,16 @@ function localizedEntry(
   changeFrequency: MetadataRoute.Sitemap[number]['changeFrequency'],
   priority: number,
   segments: readonly LocaleSegment[] = LOCALE_SEGMENTS,
+  commercialChecked = false,
 ): MetadataRoute.Sitemap {
   const localizedPath = (segment: LocaleSegment) =>
     `/${segment}${path === '/' ? '' : path}`
 
-  segments = segments.filter(segment => discoveryIndexability(path, segment).index)
+  segments = segments.filter(segment => commercialChecked || discoveryIndexability(path, segment).index)
   const languages = Object.fromEntries([
     ...segments.map((s) => [s, absoluteUrl(localizedPath(s))]),
-    ...(segments.includes(DEFAULT_LOCALE_SEGMENT)
-      ? [['x-default', absoluteUrl(localizedPath(DEFAULT_LOCALE_SEGMENT))]]
+    ...(segments.includes(X_DEFAULT_LOCALE_SEGMENT)
+      ? [['x-default', absoluteUrl(localizedPath(X_DEFAULT_LOCALE_SEGMENT))]]
       : []),
   ])
 
@@ -72,8 +75,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/play/liva-raio', priority: 0.8 },
     { path: '/play/liva-21-brasil', priority: 0.8 },
     { path: '/play/mines', priority: 0.8 },
-    { path: '/offers', priority: 0.7 },
-    { path: '/operators', priority: 0.6 },
     { path: '/crash', priority: 0.7 },
     { path: '/best/crash-games', priority: 0.7 },
     { path: '/slots', priority: 0.7 },
@@ -94,6 +95,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const entries: MetadataRoute.Sitemap = staticPaths.flatMap((p) =>
     localizedEntry(p.path, 'weekly', p.priority),
   )
+  for (const kind of ['offers', 'operators'] as const) {
+    entries.push(...localizedEntry(`/${kind}`, 'weekly', 0.6, publishedCommercialDirectoryLocales(kind), true))
+  }
 
   for (const game of GAMES) {
     entries.push(...localizedEntry(`/games/${game.slug}`, 'weekly', 0.8))
@@ -102,7 +106,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
       `/where-to-play/${game.slug}`,
       'weekly',
       0.6,
-      whereToPlayLocaleSegments(game),
+      publishedWhereToPlayLocales(game),
+      true,
     ))
   }
 
@@ -118,8 +123,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }
 
   // Only verified (non-mock) operator profiles are indexable.
-  for (const operator of getPublicOperators()) {
-    entries.push(...localizedEntry(`/operators/${operator.slug}`, 'monthly', 0.5))
+  const operatorSlugs = new Set(TARGET_GEOS.flatMap(geo => commercialSnapshot(geo).operators.map(operator => operator.slug)))
+  for (const slug of operatorSlugs) {
+    entries.push(...localizedEntry(`/operators/${slug}`, 'monthly', 0.5, publishedOperatorLocales(slug), true))
   }
 
   // M11 neutral reference pages do not extend commercial availability routes.

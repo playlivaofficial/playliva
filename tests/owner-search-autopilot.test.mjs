@@ -99,7 +99,7 @@ test('owner kill switch restores active titles and retains audit/history',async(
   const state=await store.state();assert.equal(state.enabled,false);assert.equal(state.experiments[0].status,'rolled_back');assert.equal(state.experiments[0].previous,'old');assert.equal(state.audit.length,2)
 })
 test('additive migration matches runtime bootstrap; SEO scheduling cannot wake video production',async()=>{
-  const migration=(await readFile('scripts/owner/migrations/003-search-console.sql','utf8')).replace(/^--.*$/gm,'').split(';').map(s=>s.trim()).filter(Boolean)
+  const migration=(await readFile('scripts/owner/migrations/003-search-console.sql','utf8')).replace(/\r\n/g,'\n').replace(/^--.*$/gm,'').split(';').map(s=>s.trim()).filter(Boolean)
   assert.deepEqual(migration,schema.SEARCH_SCHEMA)
   assert.equal(video.VIDEO_PRODUCTION_ENABLED,false)
   const config=JSON.parse(await readFile('vercel.json','utf8'));assert.deepEqual(config.crons,[{path:'/api/cron/seo',schedule:'17 9 * * *'}])

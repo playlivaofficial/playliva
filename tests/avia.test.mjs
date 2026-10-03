@@ -1,3 +1,4 @@
+import { commercialFixture } from './fixtures/promo-commercial.mjs'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
@@ -103,7 +104,8 @@ test('existing offer holds only settled 3/6/9 boundaries; dismissal resumes with
   }
   assert.deepEqual(opens, [3, 6, 9])
   for (const country of ['GE', 'MX', 'US']) assert.equal(promo.getBetssonPromo(country, 'pt-BR', promo.BETSSON_PROMO_PLACEMENTS.originalsEngagement, { pageSlug: 'avia-de-janeiro' }), null)
-  assert.ok(promo.getBetssonPromo('BR', 'pt-BR', promo.BETSSON_PROMO_PLACEMENTS.originalsEngagement, { pageSlug: 'avia-de-janeiro' }))
+  assert.equal(promo.getBetssonPromo('BR','pt-BR',promo.BETSSON_PROMO_PLACEMENTS.originalsEngagement),null)
+  assert.ok(promo.getBetssonPromo('MX','es-MX',promo.BETSSON_PROMO_PLACEMENTS.originalsEngagement,{pageSlug:'avia-de-janeiro',snapshot:commercialFixture('MX')}))
 })
 test('instant 1.00x flights count once at the same shared offer cadence, including spectators', () => {
   const opens = [], timers = []

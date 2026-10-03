@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import {
   DEFAULT_LOCALE_SEGMENT,
-  detectLocaleSegmentFromAcceptLanguage,
+  detectRootLocaleSegment,
   isLocaleSegment,
 } from '@/lib/locale'
 
@@ -24,7 +24,7 @@ export function middleware(request: NextRequest) {
 
   // Liva Ginga migration: exact legacy game path only, preserving locale and
   // the original query (including social UTMs), without a duplicate index page.
-  const legacyFootball = pathname.match(/^\/(?:(en|pt-br|es-mx)\/)?play\/embaixadinha\/?$/)
+  const legacyFootball = pathname.match(/^\/(?:(en|pt-br|es-mx|es-co|es-pe)\/)?play\/embaixadinha\/?$/)
   if (legacyFootball) {
     const url = request.nextUrl.clone()
     url.pathname = `/${legacyFootball[1] ?? DEFAULT_LOCALE_SEGMENT}/play/liva-ginga`
@@ -35,23 +35,29 @@ export function middleware(request: NextRequest) {
   // request header so `app/[locale]/layout.tsx` can set `<html lang>`
   // server-side without re-deriving it from params in every consumer.
   if (isLocaleSegment(firstSegment)) {
-    const response = NextResponse.next()
+    const requestHeaders = new Headers(request.headers)
+    requestHeaders.set('x-locale', firstSegment)
+    const response = NextResponse.next({ request: { headers: requestHeaders } })
     response.headers.set('x-locale', firstSegment)
     return response
   }
 
-  // Bare root: redirect to a *detected* locale (cookie → Accept-Language →
-  // default). This is the only visitor-dependent redirect — it only ever
+  // Bare root: honor an explicit language preference, then seed regional
+  // Spanish from trusted request GEO. This is the only visitor-dependent redirect — it only ever
   // targets locale-prefixed URLs, which short-circuit above, so it cannot
   // loop.
   if (pathname === '/') {
-    const cookieLocale = request.cookies.get(LOCALE_COOKIE)?.value
-    const target = isLocaleSegment(cookieLocale ?? '')
-      ? (cookieLocale as string)
-      : detectLocaleSegmentFromAcceptLanguage(request.headers.get('accept-language'))
+    const target = detectRootLocaleSegment({
+      cookieLocale: request.cookies.get(LOCALE_COOKIE)?.value,
+      acceptLanguage: request.headers.get('accept-language'),
+      country: request.headers.get('x-vercel-ip-country'),
+    })
     const url = request.nextUrl.clone()
     url.pathname = `/${target}`
-    return NextResponse.redirect(url, 302)
+    const response = NextResponse.redirect(url, 302)
+    response.headers.set('Cache-Control', 'private, no-store')
+    response.headers.set('Vary', 'Accept-Language, Cookie, X-Vercel-IP-Country')
+    return response
   }
 
   // Any other non-locale path is a legacy URL (old bookmarks/links, e.g.

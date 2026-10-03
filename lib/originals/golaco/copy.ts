@@ -1,3 +1,5 @@
+import { contentLocale } from '@/lib/locale'
+import type { ContentLocale } from '@/lib/types'
 import type { Locale } from '@/lib/types'
 import { FOOTBALL_CARDS } from '../football-cards'
 import type { GolacoSymbol } from './config'
@@ -120,5 +122,5 @@ const esMX: GolacoCopy = {
   breadcrumbOriginals: 'PlayLiva Originals',
 }
 
-const COPY: Record<Locale, GolacoCopy> = { 'pt-BR': ptBR, en, 'es-MX': esMX }
-export const golacoCopy = (locale: Locale): GolacoCopy => COPY[locale]
+const COPY: Record<ContentLocale, GolacoCopy> = { 'pt-BR': ptBR, en, 'es-MX': esMX }
+export const golacoCopy = (locale: Locale): GolacoCopy => COPY[contentLocale(locale)]

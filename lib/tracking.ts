@@ -153,7 +153,7 @@ export function sanitizeTrackPayload(payload: TrackPayload, currentPath: string)
       : /^[a-zA-Z0-9][a-zA-Z0-9_-]{0,99}$/
     if (typeof value === 'string' && pattern.test(value)) safe[key] = value
   }
-  if (!safe.language && typeof payload.locale === 'string' && ['en', 'pt-BR', 'es-MX'].includes(payload.locale)) safe.language = payload.locale
+  if (!safe.language && typeof payload.locale === 'string' && ['en', 'pt-BR', 'es-MX', 'es-CO', 'es-PE'].includes(payload.locale)) safe.language = payload.locale
   const path = analyticsPath(payload.url) ?? analyticsPath(currentPath)
   if (path) safe.url = path
   return safe
@@ -179,12 +179,10 @@ export function track(event: TrackEventName, payload: TrackPayload = {}): void {
 
   // One activation, one random event receipt. A transport retry reuses its ID.
   // No visitor ID, query string, partner URL, IP or referrer is sent.
-  // The first-party feed accepts the canonical discovery inventory only. Legal
-  // templates, archive pages and other noindex documents are outside that feed.
-  const noindex = typeof document !== 'undefined' && /\bnoindex\b/i.test(document.querySelector('meta[name="robots"]')?.getAttribute('content') ?? '')
-  // Filtered Games views still belong to the same canonical Games route.
-  const canonicalGamesView = /^\/(en|pt-br|es-mx)\/games$/.test(window.location.pathname)
-  if ((!noindex || canonicalGamesView) && ['page_view', 'content_view', 'demo_round_start', 'demo_round_complete', 'affiliate_impression', 'offer_impression', 'affiliate_click'].includes(event) && typeof window.fetch === 'function') {
+  // A useful regional page can be intentionally noindex during the SEO rollout.
+  // The server validates actual route existence independently of indexability.
+  const publicLocalePath = /^\/(en|pt-br|es-mx|es-co|es-pe)(\/|$)/.test(window.location.pathname)
+  if (publicLocalePath && ['page_view', 'content_view', 'demo_round_start', 'demo_round_complete', 'affiliate_impression', 'offer_impression', 'affiliate_click'].includes(event) && typeof window.fetch === 'function') {
     const body = JSON.stringify({ id: window.crypto.randomUUID(), ...data, event: event === 'offer_impression' ? 'affiliate_impression' : event })
     const send = () => window.fetch('/api/events', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body, keepalive: true, credentials: 'same-origin' })
     void send().then(response => { if (response.status >= 500 && hasAnalyticsConsent()) return send(); return response }).catch(() => { /* Measurement never interrupts navigation. */ })

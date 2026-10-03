@@ -7,32 +7,14 @@ import {
   type LocaleSegment,
 } from './locale'
 import { seoImagesForPath } from './seo-images'
+import { regionalEditorialIndexable, X_DEFAULT_LOCALE_SEGMENT } from './regional-seo-policy'
+import { geoEditorialMetadata } from './geo-editorial'
+import { segmentToLocale } from './locale'
 
-/**
- * Central SEO configuration.
- *
- * LANGUAGE and GEO/MARKET are independent concepts and must be modeled
- * separately here — the same language can serve several distinct markets
- * (e.g. Spanish serves Mexico, Argentina, Colombia, Peru, Chile and Ecuador
- * as separate markets, not one merged "Spanish" SEO surface), and the same
- * market only ever has one primary language today, but that may change.
- *
- * The app now serves real, crawlable locale-prefixed URLs (`/en/...`,
- * `/pt-br/...`, `/es-mx/...` — see `lib/locale.ts`), so every page emits a
- * self-referencing canonical for its own locale plus a fully reciprocal
- * `hreflang` cluster (one entry per supported locale, plus `x-default`
- * pointing at the default locale). GEO/market stays independent of this —
- * it is not part of the URL and never changes what hreflang is emitted.
- *
- * Scaling to dedicated per-MARKET URLs later (e.g. distinguishing `es-mx`
- * from `es-ar`) is a further routing change, not a content change —
- * MARKET_LOCALES below documents the intended language+market pairs so that
- * future routing can key hreflang off of it directly, without ever merging
- * two markets that merely share a language.
- *
- * The site base URL can be overridden with NEXT_PUBLIC_SITE_URL so preview and
- * production deployments produce correct absolute URLs.
- */
+/** Canonicals describe URL content, independently of trusted commercial GEO.
+ * Five locale routes share catalog/game strings. Only distinct regional intent
+ * enters reciprocal hreflang/sitemap clusters; pending commercial pages stay
+ * noindex. Historical PT-BR content remains available, with English x-default. */
 export const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.playliva.com'
 ).replace(/\/$/, '')
@@ -41,21 +23,15 @@ export const SITE_NAME = 'PlayLiva'
 
 /** Primary document language + every language locale the interface supports. */
 export const PRIMARY_LOCALE = 'pt-BR'
-export const SUPPORTED_LOCALES = ['pt-BR', 'es-MX', 'en'] as const
+export const SUPPORTED_LOCALES = ['pt-BR', 'es-MX', 'es-CO', 'es-PE', 'en'] as const
 
 /**
- * Future language x market pairs, kept distinct even when they share a
- * language, for scalable hreflang once per-market URLs exist. Not consumed
- * by routing yet — documentation for the next iteration.
+ * Current commercial target locales. This list never grants affiliate eligibility.
  */
 export const MARKET_LOCALES = [
-  { market: 'BR', language: 'pt-BR', hreflang: 'pt-BR' },
   { market: 'MX', language: 'es-MX', hreflang: 'es-MX' },
-  { market: 'AR', language: 'es-MX', hreflang: 'es-AR' },
-  { market: 'CO', language: 'es-MX', hreflang: 'es-CO' },
-  { market: 'PE', language: 'es-MX', hreflang: 'es-PE' },
-  { market: 'CL', language: 'es-MX', hreflang: 'es-CL' },
-  { market: 'EC', language: 'es-MX', hreflang: 'es-EC' },
+  { market: 'CO', language: 'es-CO', hreflang: 'es-CO' },
+  { market: 'PE', language: 'es-PE', hreflang: 'es-PE' },
 ] as const
 
 /** Neutral, market-agnostic default copy (English fallback for crawlers). */
@@ -97,27 +73,32 @@ export function pageMetadata(opts: {
   includeXDefault?: boolean
 }): Metadata {
   const {
-    title,
-    description = DEFAULT_DESCRIPTION,
+    title: inputTitle,
+    description: inputDescription = DEFAULT_DESCRIPTION,
     path,
     localeSegment,
     images,
-    index = true,
-    alternateLocaleSegments = LOCALE_SEGMENTS,
+    index: inputIndex = true,
+    alternateLocaleSegments: inputAlternates = LOCALE_SEGMENTS,
     includeXDefault = true,
   } = opts
 
   const segment: LocaleSegment = isLocaleSegment(localeSegment)
     ? localeSegment
     : DEFAULT_LOCALE_SEGMENT
+  const index = inputIndex && regionalEditorialIndexable(path, segment)
+  const alternateLocaleSegments = index ? inputAlternates.filter(s => regionalEditorialIndexable(path, s)) : []
+  const regionalCopy = geoEditorialMetadata(path, segmentToLocale(segment))
+  const title = regionalCopy?.title ?? inputTitle
+  const description = regionalCopy?.description ?? inputDescription
 
   const localizedPath = (forSegment: LocaleSegment) =>
     `/${forSegment}${path === '/' ? '' : path}`
 
   const languages = Object.fromEntries([
     ...alternateLocaleSegments.map((s) => [s, absoluteUrl(localizedPath(s))]),
-    ...(includeXDefault && alternateLocaleSegments.includes(DEFAULT_LOCALE_SEGMENT)
-      ? [['x-default', absoluteUrl(localizedPath(DEFAULT_LOCALE_SEGMENT))]]
+    ...(includeXDefault && alternateLocaleSegments.includes(X_DEFAULT_LOCALE_SEGMENT)
+      ? [['x-default', absoluteUrl(localizedPath(X_DEFAULT_LOCALE_SEGMENT))]]
       : []),
   ])
 

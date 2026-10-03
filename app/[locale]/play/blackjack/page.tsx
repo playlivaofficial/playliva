@@ -1,3 +1,4 @@
+import { contentLocale } from '@/lib/locale'
 import { notFound } from 'next/navigation'
 import { isLocaleSegment, segmentToLocale } from '@/lib/locale'
 import { pageMetadata } from '@/lib/seo'
@@ -8,7 +9,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale: segment } = await params
   if (!isLocaleSegment(segment)) notFound()
   const locale = segmentToLocale(segment)
-  return pageMetadata({ title: LIVA_BLACKJACK.title[locale], description: blackjackCopy(locale).description,
+  return pageMetadata({ title: LIVA_BLACKJACK.title[contentLocale(locale)], description: blackjackCopy(locale).description,
     path: '/play/blackjack', localeSegment: segment })
 }
 export default function BlackjackPage() { return <BlackjackEntry /> }

@@ -1,4 +1,6 @@
 'use client'
+
+import { contentLocale } from '@/lib/locale'
 import Image from 'next/image'
 import { ThreeGameFeature } from './three-game-feature'
 import { ArrowRight, Play } from 'lucide-react'
@@ -11,7 +13,7 @@ import styles from './originals-discovery.module.css'
 /** Discovery stays lightweight: owned SVG, copy and links, no game renderer. */
 export function MinesFeature({ surface }: { surface: 'home' | 'hub' | 'category' }) {
   const { locale } = useCountry(), copy = minesCopy(locale), shared = originalsDiscoveryCopy(locale)
-  const Heading = surface === 'hub' ? 'h2' : 'h3', title = LIVA_MINES.title[locale]
+  const Heading = surface === 'hub' ? 'h2' : 'h3', title = LIVA_MINES.title[contentLocale(locale)]
   return <article className={styles.card} data-original-card="mines" data-surface={surface}>
     <LocaleLink href="/play/mines" prefetch={false} className={styles.posterLink} aria-label={`${shared.playFree}: ${title}`}>
       <Image src="/originals/mines/jungle-poster.svg" alt={copy.posterAlt} fill sizes="(max-width:767px) 100vw,700px" className={styles.poster}/>

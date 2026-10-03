@@ -1,6 +1,6 @@
 import type { Locale } from './types'
 
-export const LOCALES: Locale[] = ['pt-BR', 'es-MX', 'en']
+export const LOCALES: Locale[] = ['pt-BR', 'es-MX', 'es-CO', 'es-PE', 'en']
 export const DEFAULT_LOCALE: Locale = 'pt-BR'
 
 /**
@@ -188,7 +188,7 @@ const ptBR: Dict = {
   'game.whatIsTitle': 'O que é o {game}?',
   'game.whyPopularTitle': 'Por que o {game} ficou tão conhecido?',
   'game.ownershipNote':
-    'A PlayLiva não possui nem opera {game}. A disponibilidade do jogo é definida por operadores licenciados e pode variar por país.',
+    'A PlayLiva não possui nem opera {game}. A disponibilidade do jogo é definida por operadores com disponibilidade verificada e pode variar por país.',
   'game.howItWorksTitle': 'Como funciona',
   'game.step1': 'Escolha um operador disponível no seu mercado.',
   'game.step2': 'Abra o jogo pelo lobby do operador.',
@@ -371,7 +371,7 @@ const ptBR: Dict = {
   'operators.filterLabel': 'Filtrar operadores',
   'operators.emptyTitle': 'Diretório de operadores em breve.',
   'operators.emptyBody':
-    'Estamos verificando operadores licenciados para os seus mercados antes de listá-los. Enquanto isso, explore os jogos e descubra o que jogar.',
+    'Estamos verificando operadores com disponibilidade verificada para os seus mercados antes de listá-los. Enquanto isso, explore os jogos e descubra o que jogar.',
   'operators.backToAll': 'Todos os operadores',
   'operators.verifiedBadge': 'Verificado',
   'operators.detailsTitle': 'Detalhes',
@@ -523,7 +523,7 @@ const ptBR: Dict = {
     "Explore jogos de crash, slots, cassino ao vivo, jogos de mesa e jogos instantâneos e descubra sua disponibilidade no seu mercado.",
   'seo.operatorsPageTitle': 'Operadores',
   'seo.operatorsPageDescription':
-    'Navegue e compare operadores licenciados por país e categoria. A PlayLiva pode receber comissão de parceiros selecionados.',
+    'Navegue e compare operadores com disponibilidade verificada por país e categoria. A PlayLiva pode receber comissão de parceiros selecionados.',
   'seo.offersPageTitle': 'Ofertas',
   'seo.offersPageDescription':
     'Explore ofertas verificadas disponíveis no seu mercado. Aplicam-se termos, 18+, disponibilidade varia por localização.',
@@ -722,7 +722,7 @@ const esMX: Dict = {
   'game.whatIsTitle': '¿Qué es {game}?',
   'game.whyPopularTitle': '¿Por qué {game} se volvió tan conocido?',
   'game.ownershipNote':
-    'PlayLiva no posee ni opera {game}. La disponibilidad del juego la definen operadores con licencia y puede variar según el país.',
+    'PlayLiva no posee ni opera {game}. La disponibilidad del juego la definen operadores con disponibilidad verificada y puede variar según el país.',
   'game.howItWorksTitle': 'Cómo funciona',
   'game.step1': 'Elige un operador disponible en tu mercado.',
   'game.step2': 'Abre el juego desde el lobby del operador.',
@@ -888,7 +888,7 @@ const esMX: Dict = {
   'operators.count': '{count} operador(es) encontrado(s)',
   'operators.emptyTitle': 'Directorio de operadores próximamente.',
   'operators.emptyBody':
-    'Estamos verificando operadores con licencia para tus mercados antes de listarlos. Mientras tanto, explora los juegos y descubre qué jugar.',
+    'Estamos verificando operadores con disponibilidad verificada para tus mercados antes de listarlos. Mientras tanto, explora los juegos y descubre qué jugar.',
   'operators.gamesHere': 'Juegos disponibles aquí',
   'operators.gamesHereSub': 'Títulos populares que puedes descubrir con este operador.',
   'operators.paymentMethods': 'Métodos de pago',
@@ -1037,7 +1037,7 @@ const esMX: Dict = {
     "Explora juegos crash, slots, casino en vivo, juegos de mesa e instantáneos y descubre su disponibilidad en tu mercado.",
   'seo.operatorsPageTitle': 'Operadores',
   'seo.operatorsPageDescription':
-    'Explora y compara operadores con licencia por país y categoría. PlayLiva puede recibir una comisión de socios seleccionados.',
+    'Explora y compara operadores con disponibilidad verificada por país y categoría. PlayLiva puede recibir una comisión de socios seleccionados.',
   'seo.offersPageTitle': 'Ofertas',
   'seo.offersPageDescription':
     'Explora ofertas verificadas disponibles en tu mercado. Aplican términos, 18+, la disponibilidad varía según la ubicación.',
@@ -1237,7 +1237,7 @@ const en: Dict = {
   'game.whatIsTitle': 'What is {game}?',
   'game.whyPopularTitle': 'Why did {game} become so well known?',
   'game.ownershipNote':
-    "PlayLiva doesn't own or operate {game}. Game availability is set by licensed operators and may vary by country.",
+    "PlayLiva doesn't own or operate {game}. Game availability is set by operators with verified availability and may vary by country.",
   'game.howItWorksTitle': 'How it works',
   'game.step1': 'Choose an operator available in your market.',
   'game.step2': "Open the game from the operator's lobby.",
@@ -1419,7 +1419,7 @@ const en: Dict = {
   'operators.filterLabel': 'Filter operators',
   'operators.emptyTitle': 'Operator directory coming soon.',
   'operators.emptyBody':
-    "We're verifying licensed operators for your markets before listing them. In the meantime, explore the games and discover what to play.",
+    "We're verifying operators with verified availability for your markets before listing them. In the meantime, explore the games and discover what to play.",
   'operators.backToAll': 'All operators',
   'operators.verifiedBadge': 'Verified',
   'operators.detailsTitle': 'Details',
@@ -1571,7 +1571,7 @@ const en: Dict = {
     "Browse crash, slots, live casino, table games and instant games, and discover their availability in your market.",
   'seo.operatorsPageTitle': 'Operators',
   'seo.operatorsPageDescription':
-    'Browse and compare licensed operators by country and category. PlayLiva may receive commission from selected partners.',
+    'Browse and compare operators with verified availability by country and category. PlayLiva may receive commission from selected partners.',
   'seo.offersPageTitle': 'Offers',
   'seo.offersPageDescription':
     'Explore verified offers available in your market. Terms apply, 18+, availability varies by location.',
@@ -1603,6 +1603,8 @@ const en: Dict = {
 const DICTS: Record<Locale, Dict> = {
   'pt-BR': ptBR,
   'es-MX': esMX,
+  'es-CO': esMX,
+  'es-PE': esMX,
   en,
 }
 

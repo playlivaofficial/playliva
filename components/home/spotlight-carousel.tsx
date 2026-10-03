@@ -1,5 +1,7 @@
 'use client'
 
+import { contentLocale } from '@/lib/locale'
+
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type PointerEvent as ReactPointerEvent } from 'react'
 import Image from 'next/image'
 import { ArrowUpRight, ChevronLeft, ChevronRight } from 'lucide-react'
@@ -118,21 +120,21 @@ export function SpotlightCarousel({ games = SPOTLIGHT_GAMES }: { games?: readonl
       <div ref={track} className={styles.track} onPointerDown={onPointerDown} onPointerMove={onPointerMove}
         onPointerUp={endDrag} onPointerCancel={endDrag} onClickCapture={onClickCapture} tabIndex={0}>
         {games.map((game, position) => {
-          const title = game.title[locale]
+          const title = game.title[contentLocale(locale)]
           return (
             <div key={game.id} className={styles.slide} role="group" aria-roledescription="slide"
               aria-label={copy.spotlightSlide.replace('{index}', String(position + 1)).replace('{total}', String(total))}
               data-spotlight-slide={game.slug} aria-current={position === index ? 'true' : undefined}>
               <LocaleLink href={withCampaignParams(game.playPath, search)} prefetch={false} className={styles.card}
                 aria-label={`${copy.play}: ${title}`} data-spotlight-game={game.id} draggable={false}>
-                <Image src={game.poster} alt={game.posterAlt[locale]} fill priority={position === 0}
+                <Image src={game.poster} alt={game.posterAlt[contentLocale(locale)]} fill priority={position === 0}
                   sizes="(max-width: 639px) 100vw, (max-width: 1023px) 80vw, 540px" draggable={false} />
                 <div className={styles.top}>
                   <span>{copy.featured}</span>
                   <span className={styles.indicator} aria-hidden="true">{spotlightIndicator(position + 1, total)}</span>
                 </div>
                 <div className={styles.bottom}>
-                  <p>{copy.original} · {game.category[locale]}</p>
+                  <p>{copy.original} · {game.category[contentLocale(locale)]}</p>
                   <strong>{title}</strong>
                   <small>{copy.play}<ArrowUpRight size={20} aria-hidden="true" /></small>
                 </div>

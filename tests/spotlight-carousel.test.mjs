@@ -1,3 +1,4 @@
+import { commercialFixture } from './fixtures/promo-commercial.mjs'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { registerHooks } from 'node:module'
@@ -11,7 +12,6 @@ import { PathnameContext } from 'next/dist/shared/lib/hooks-client-context.share
 import spotlightModule from '../lib/home/spotlight.ts'
 import countryModule from '../components/country-context.tsx'
 import productModule from '../lib/product-discovery.ts'
-import promoConfig from '../lib/affiliates/betsson-promo-config.ts'
 import promoModule from '../lib/affiliates/betsson-promo.ts'
 import sessionModule from '../lib/originals/session.ts'
 import providerModule from '../components/originals/demo-session.tsx'
@@ -37,7 +37,7 @@ const locales = [['pt-BR', 'pt-br'], ['en', 'en'], ['es-MX', 'es-mx']]
 function wrap(locale, path, child) {
   return React.createElement(AppRouterContext.Provider, { value: { push() {}, prefetch() {} } },
     React.createElement(PathnameContext.Provider, { value: path },
-      React.createElement(CountryProvider, { initialLocale: locale, visitorCountryCode: 'BR' }, child)))
+      React.createElement(CountryProvider, { initialLocale: locale, visitorCountryCode: 'MX', commercial: commercialFixture('MX') }, child)))
 }
 const render = (locale, path, child) => new JSDOM(renderToStaticMarkup(wrap(locale, path, child))).window.document
 
@@ -157,13 +157,13 @@ test('spotlight carousel adapts to a different catalog length and preserves inbo
   }
 })
 
-test('engagement popup carries the localized R$20 condition for every UI language of an eligible BR visitor', async () => {
-  const { BETSSON_PROMO } = promoConfig
+test('engagement popup uses configured copy while compact header omits detailed terms', async () => {
+  const fixture=commercialFixture('MX')
   for (const [locale, segment] of locales) {
-    const expected = BETSSON_PROMO.engagement.copy[locale]
-    const model = promoModule.getBetssonPromo('BR', locale, 'originals_engagement_offer', { pageSlug: 'mines' })
+    const expected = fixture.campaigns[0].copy[locale]
+    const model = promoModule.getBetssonPromo('MX', locale, 'originals_engagement_offer', { pageSlug: 'mines', snapshot:fixture })
     assert.deepEqual(model.engagementCopy, expected)
-    assert.equal(model.headline, 'Ganhe 100 Giros!', 'compact headline untouched by the popup copy')
+    assert.equal(model.headline,expected.headline)
     const dom = new JSDOM('<div id="root"></div>', { url: `https://www.playliva.com/${segment}/play/mines`, virtualConsole: new VirtualConsole() })
     const saved = new Map()
     for (const key of ['window', 'self', 'document', 'location', 'navigator', 'Event', 'HTMLElement', 'Node', 'KeyboardEvent']) {
@@ -181,18 +181,18 @@ test('engagement popup carries the localized R$20 condition for every UI languag
     try {
       await mount(false)
       for (let cycle = 1; cycle <= 3; cycle += 1) { await mount(true); await mount(false) }
-      await act(() => new Promise(resolve => setTimeout(resolve, BETSSON_PROMO.engagement.delayMs + 80)))
-      const dialog = document.querySelector('[data-betsson-engagement-offer] [role="dialog"]')
+      await act(() => new Promise(resolve => setTimeout(resolve, fixture.campaigns[0].cadence.delayMs + 80)))
+      const dialog = document.querySelector('[data-engagement-offer] [role="dialog"]')
       assert.ok(dialog, locale)
       assert.equal(dialog.querySelector('h2').textContent, expected.headline)
       assert.equal(dialog.querySelector('[data-promo-condition]').textContent, expected.condition)
       assert.equal(dialog.querySelector('a[data-promo-cta]').textContent, expected.cta)
-      assert.match(dialog.querySelector('a[data-promo-cta]').getAttribute('href'), /^\/go\?.*offer=of-br-betsson-100-giros/)
-      assert.ok(dialog.querySelector('[data-brazil-ad-warning]'))
+      assert.match(dialog.querySelector('a[data-promo-cta]').getAttribute('href'), /^\/go\?.*offer=test-offer-mx/)
+      assert.ok(dialog.querySelector('[data-commercial-disclosure]'))
       assert.equal(dialog.getAttribute('aria-describedby'), dialog.querySelector('[data-promo-condition]').id)
-      const header = document.querySelector('[data-betsson-banner="originals"]')
-      assert.ok(header.textContent.includes('Ganhe 100 Giros!'))
-      assert.equal(header.textContent.includes('R$20'), false, `${locale}: R$20 condition only inside the popup`)
+      const header = document.querySelector('[data-sponsored-banner="originals"]')
+      assert.ok(header.textContent.includes(expected.headline))
+      assert.equal(header.textContent.includes(expected.condition), false, `${locale}: detailed terms only inside popup`)
     } finally {
       await act(() => root.unmount())
       dom.window.close()

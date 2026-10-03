@@ -14,13 +14,15 @@ import { AffiliateDisclosureLine, ResponsibleGamingNotice } from '@/components/n
 import { Button } from '@/components/ui/button'
 import { track } from '@/lib/tracking'
 import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsored-banner'
+import { isWhereToPlayIndexable } from '@/lib/seo-market'
+import { localeToSegment } from '@/lib/locale'
 
 // The three crash games that get a dedicated editorial H2 section. Order is
 // intentional (Aviator first, matching the featured grid).
 const SPOTLIGHT_SLUGS = ['aviator', 'jetx', 'spaceman']
 
 export function CrashGamesHubView() {
-  const { marketCode: countryCode, locale, t } = useCountry()
+  const { commercial, marketCode: countryCode, locale, t } = useCountry()
   const content = getCrashHubContent(locale)
   const categoryName = getCategoryName('crash', locale)
 
@@ -71,7 +73,7 @@ export function CrashGamesHubView() {
           <Button variant="outline" render={<LocaleLink href="/crash" />}>
             {categoryName}
           </Button>
-          {countryCode === 'BR' && (
+          {locale === 'pt-BR' && (
             <Button variant="ghost" render={<LocaleLink href="/best/best-crash-games-brazil" />}>
               {t('category.viewRanking')}
             </Button>
@@ -122,7 +124,8 @@ export function CrashGamesHubView() {
       {/* Dedicated sections for Aviator, JetX and Spaceman */}
       {spotlightGames.map((game) => {
         const gc = getGameContent(game, locale)
-        const hasWhereToPlay = countryCode ? getOperatorsForGame(game, countryCode).length > 0 : false
+        const hasWhereToPlay = isWhereToPlayIndexable(game, localeToSegment(locale)) ||
+          (countryCode ? getOperatorsForGame(game, countryCode, commercial.operators).length > 0 : false)
         return (
           <Section key={game.id} className="border-t border-border bg-card/30">
             <SectionHeading
@@ -168,7 +171,7 @@ export function CrashGamesHubView() {
             <Button variant="outline" render={<LocaleLink href="/games-like/aviator" />}>Jogos como Aviator</Button>
             <Button variant="outline" render={<LocaleLink href="/compare/aviator-vs-jetx" />}>Aviator vs JetX</Button>
             <Button variant="outline" render={<LocaleLink href="/compare/aviator-vs-spaceman" />}>Aviator vs Spaceman</Button>
-            {countryCode === 'BR' && (
+            {locale === 'pt-BR' && (
               <Button variant="ghost" render={<LocaleLink href="/best/best-crash-games-brazil" />}>Seleção editorial para o Brasil</Button>
             )}
           </div>

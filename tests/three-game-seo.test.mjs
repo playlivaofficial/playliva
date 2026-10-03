@@ -14,7 +14,7 @@ for (const segment of ['pt-br', 'en', 'es-mx']) test(`Three-game SEO: unique loc
     const metadata = seo.threeGameMetadata(game.slug, segment), schema = seo.threeGameJsonLd(game.slug, segment), article = seo.threeSeoCopy(game.slug, locale)
     const canonical = `https://www.playliva.com/${segment}/play/${game.slug}`
     assert.equal(metadata.alternates.canonical, canonical)
-    assert.equal(metadata.alternates.languages['x-default'], `https://www.playliva.com/pt-br/play/${game.slug}`)
+    assert.equal(metadata.alternates.languages['x-default'], `https://www.playliva.com/en/play/${game.slug}`)
     for (const other of ['pt-br', 'en', 'es-mx']) assert.equal(metadata.alternates.languages[other], `https://www.playliva.com/${other}/play/${game.slug}`)
     assert.equal(metadata.robots.index, true); assert.equal(metadata.openGraph.url, canonical)
     assert.deepEqual(metadata.twitter.images, metadata.openGraph.images)

@@ -37,7 +37,7 @@ export interface BetssonPromoCreative {
   assetPath: string
   width: number
   height: number
-  alt: Record<Locale, string>
+  alt: Partial<Record<Locale, string>>
   /** UI locales allowed to render this artwork. Portuguese promo art never renders on EN / ES-MX. */
   languages: readonly Locale[]
   /** Where the file came from, for the audit trail. */
@@ -89,7 +89,7 @@ export interface BetssonPromoConfig {
      * the short `headline`; this is the single place that states the verified
      * R$20 selected-games condition.
      */
-    copy: Record<Locale, { headline: string; condition: string; cta: string }>
+    copy: Partial<Record<Locale, { headline: string; condition: string; cta: string }>>
   }
   /** Only conditions that were read on the official campaign material. */
   verifiedTerms: readonly string[]
@@ -116,7 +116,8 @@ export const BETSSON_PROMO_LOGO: BetssonPromoCreative = {
 }
 
 export const BETSSON_PROMO: BetssonPromoConfig = {
-  enabled: true,
+  // Retired commercial market. Historical evidence only; never a runtime fallback.
+  enabled: false,
   promoId: BETSSON_PROMO_ID,
   brand: 'betsson',
   operatorId: 'op-betsson',

@@ -7,7 +7,7 @@ import { socialLibrary } from './social'
 import { searchSource, indexingAudit, searchAudit, seoOpportunities } from './seo'
 import { analyticsSource } from './analytics'
 import { contentPipeline } from './content'
-import { operatorOverview, ownerGames } from './catalog'
+import { operatorOverview, ownerGames, commercialReadiness } from './catalog'
 import { youtubeReadiness } from './youtube'
 import { aggregateEvents } from '../metrics'
 import { affiliateReport, conversionSource } from './affiliate'
@@ -44,7 +44,7 @@ export async function growthData(params: URLSearchParams) {
     automation: await generationSummary(state), privateMedia: privateStorageConfigured(),
     metrics: measured ? aggregateEvents(analytics.data.events, filters) : null,
     groups: affiliateReport(analytics.data.events, filters).groups, conversions: conversionSource(),
-    operators: operatorOverview(), content: contentPipeline(state, social.data, opportunities), activity: state.activity.slice(-25).reverse(), jobs: state.jobs.slice(-25).reverse(),
+    operators: operatorOverview(), commercialReadiness: commercialReadiness(), content: contentPipeline(state, social.data, opportunities), activity: state.activity.slice(-25).reverse(), jobs: state.jobs.slice(-25).reverse(),
     trafficSnapshot, searchSnapshot, persistence: persistenceMode(), persistenceError, mediaMode: privateStorageConfigured() ? 'Private Vercel Blob; authenticated access' : localEnabled() ? 'Local filesystem; protected access' : 'Production object storage not connected' }
 }
 export type GrowthData = Awaited<ReturnType<typeof growthData>>

@@ -1,3 +1,4 @@
+import { contentLocale } from '@/lib/locale'
 import { existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { GAMES, CATEGORIES, COMPARISONS, GAME_LISTS, OPERATORS, offersByCountry } from '@/lib/data'
@@ -35,7 +36,7 @@ export function validateCatalog(games: ReferenceGame[] = REFERENCE_GAMES): strin
     const provider = legacy?.provider ?? PROVIDERS.find(item => item.id === reference?.providerId)?.name ?? ''
     check(Boolean(legacy || reference) && validRtpEvidence(evidence, slug, provider), `${slug}: invalid RTP provenance or edition`)
   }
-  for (const provider of PROVIDERS) for (const locale of locales) check(provider.overview[locale]?.trim(), `${provider.id}: missing ${locale} overview`)
+  for (const provider of PROVIDERS) for (const locale of locales) check(provider.overview[contentLocale(locale)]?.trim(), `${provider.id}: missing ${locale} overview`)
   for (const game of games) {
     const label = game.slug || game.id
     check(/^m11-\d{2}$/.test(game.id), `${label}: invalid stable ID`)
@@ -52,7 +53,7 @@ export function validateCatalog(games: ReferenceGame[] = REFERENCE_GAMES): strin
       catch { errors.push(`${label}: invalid source URL`) }
     }
     for (const locale of locales) {
-      const content = game.content?.[locale]
+      const content = game.content?.[contentLocale(locale)]
       check(content?.summary?.trim() && content?.overview?.trim() && content?.howItWorks?.trim(), `${label}: missing ${locale} localization`)
       check(content?.features?.length >= 2 && content?.features.every(item => item.trim()), `${label}: missing ${locale} mechanics`)
       check(!JSON.stringify(content ?? '').includes('\uFFFD'), `${label}: ${locale} encoding`)
@@ -65,14 +66,14 @@ export function validateCatalog(games: ReferenceGame[] = REFERENCE_GAMES): strin
   for (const item of REFERENCE_COMPARISONS) {
     check(!comparisonSlugs.has(item.slug), `Duplicate comparison ${item.slug}`); comparisonSlugs.add(item.slug)
     check(slugs.has(item.a) && slugs.has(item.b) && item.a !== item.b, `${item.slug}: broken comparison references`)
-    for (const locale of locales) check(item.shared[locale]?.trim() && item.difference[locale]?.length === 2 && item.difference[locale].every(value => value.trim()), `${item.slug}: missing comparison localization ${locale}`)
+    for (const locale of locales) check(item.shared[contentLocale(locale)]?.trim() && item.difference[contentLocale(locale)]?.length === 2 && item.difference[contentLocale(locale)].every(value => value.trim()), `${item.slug}: missing comparison localization ${locale}`)
   }
   unique(REFERENCE_READING_LISTS.map(item => item.slug), 'Games Like slugs')
   for (const list of REFERENCE_READING_LISTS) {
     check(slugs.has(list.slug) && list.alternatives.length >= 3, `${list.slug}: broken Games Like source`)
     for (const item of list.alternatives) {
       check(slugs.has(item.slug) && item.slug !== list.slug, `${list.slug}: broken Games Like reference ${item.slug}`)
-      for (const locale of locales) check(item.reason[locale]?.trim() && list.intro[locale]?.trim(), `${list.slug}: missing Games Like localization ${locale}`)
+      for (const locale of locales) check(item.reason[contentLocale(locale)]?.trim() && list.intro[contentLocale(locale)]?.trim(), `${list.slug}: missing Games Like localization ${locale}`)
     }
   }
   const legacyProviders = new Set(['Spribe', 'SmartSoft', 'Pragmatic Play', 'Evolution'])

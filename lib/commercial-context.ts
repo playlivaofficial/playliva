@@ -1,9 +1,10 @@
 import type { PageType } from './tracking'
+import { isLocaleSegment, segmentToLocale } from './locale'
 
 /** Public editorial context only; never an affiliate destination or private ID. */
 export function commercialContext(path: string, placement = '') {
   const [segment, family, slug] = path.split('?')[0].split('/').filter(Boolean)
-  const language = segment === 'pt-br' ? 'pt-BR' : segment === 'es-mx' ? 'es-MX' : 'en'
+  const language = isLocaleSegment(segment) ? segmentToLocale(segment) : 'en'
   const pageType: PageType = !family ? 'home' : family === 'play' ? 'play' : family === 'games' ? slug ? 'game' : 'games'
     : family === 'providers' ? 'provider' : family === 'games-like' ? 'games_like'
       : family === 'compare' ? 'comparison' : family === 'where-to-play' ? 'where_to_play'

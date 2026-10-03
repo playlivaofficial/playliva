@@ -18,8 +18,8 @@ const STATIC_IMAGES: Record<string, string> = {
   '/live-casino': '/games/blackjack-live.webp',
   '/table-games': '/games/lightning-roulette.jpg',
   '/instant-games': '/games/mines.jpeg',
-  '/offers': '/operators/betsson.png',
-  '/operators': '/operators/betsson.png',
+  '/offers': '/icon-512.png',
+  '/operators': '/icon-512.png',
   '/operators/betsson-group-affiliates': '/operators/betsson.png',
 }
 

@@ -42,7 +42,7 @@ test('market lists and Where-to-Play indexability are derived from verified data
 
 test('sitemap excludes empty and wrong-market SEO routes', () => {
   const paths = sitemap().map((entry) => new URL(entry.url).pathname)
-  assert.equal(paths.length, 322) // Rio Drift and Arcade add six indexable locale routes.
+  assert.equal(paths.length, 317) // Regional hubs added; deprecated empty commercial pages removed.
   assert.ok(paths.includes('/pt-br/where-to-play/aviator'))
   assert.ok(!paths.includes('/en/where-to-play/aviator'))
   assert.ok(!paths.some((path) => path.includes('/where-to-play/mines')))
@@ -72,7 +72,7 @@ test('PT-BR shared generators avoid audited copy leakage', () => {
 
 test('priority pages receive approved social artwork', () => {
   assert.deepEqual(pageMetadata({ path: '/play/crash', localeSegment: 'pt-br' }).openGraph.images, ['/originals/crash/island-crash-poster.webp'])
-  assert.deepEqual(pageMetadata({ path: '/offers', localeSegment: 'pt-br' }).openGraph.images, ['/operators/betsson.png'])
+  assert.deepEqual(pageMetadata({ path: '/offers', localeSegment: 'pt-br' }).openGraph.images, ['/icon-512.png'])
   assert.deepEqual(pageMetadata({ path: '/crash', localeSegment: 'pt-br' }).openGraph.images, ['/games/aviator.png'])
 })
 

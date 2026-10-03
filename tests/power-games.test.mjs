@@ -1,3 +1,4 @@
+import { commercialFixture } from './fixtures/promo-commercial.mjs'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import math from '../lib/originals/raio/math.ts'
@@ -82,11 +83,11 @@ for(const kind of ['raio','brasil21'])test(`${kind}: existing engagement trigger
   engine.dispose();trigger.dispose()
 })
 test('new slugs retain shared promo GEO suppression, attribution route and third-cycle configuration',()=>{
-  for(const slug of ['liva-raio','liva-21-brasil'])for(const locale of ['en','pt-BR','es-MX']){
-    const placement=promo.BETSSON_PROMO_PLACEMENTS.originalsEngagement
-    const br=promo.getBetssonPromo('BR',locale,placement,{pageSlug:slug,now:Date.UTC(2026,8,26)})
-    assert.ok(br);assert.equal(br.engagement.cycleMultiple,3);assert.equal(br.pageSlug,slug)
-    for(const geo of ['MX','US','GB','PT'])assert.equal(promo.getBetssonPromo(geo,locale,placement,{pageSlug:slug,now:Date.UTC(2026,8,26)}),null)
+  for(const slug of ['liva-raio','liva-21-brasil'])for(const geo of ['MX','CO','PE']) {
+    const placement=promo.BETSSON_PROMO_PLACEMENTS.originalsEngagement,snapshot=commercialFixture(geo)
+    const model=promo.getBetssonPromo(geo,`es-${geo}`,placement,{pageSlug:slug,snapshot})
+    assert.ok(model);assert.equal(model.engagement.cycleMultiple,3);assert.equal(model.pageSlug,slug)
+    for(const other of ['BR','US','GB','PT'])assert.equal(promo.getBetssonPromo(other,`es-${geo}`,placement,{pageSlug:slug,snapshot}),null)
   }
 })
 

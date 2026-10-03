@@ -1,6 +1,6 @@
 import { getOperatorsForGame } from './data'
-import type { Game, GameList, CountryCode } from './types'
-import type { LocaleSegment } from './locale'
+import type { Game, GameList, CountryCode, Operator } from './types'
+import { LOCALE_SEGMENTS, type LocaleSegment } from './locale'
 
 /**
  * Market represented by a crawlable editorial route. This controls SEO policy
@@ -12,6 +12,8 @@ export function seoMarketForLocaleSegment(
 ): CountryCode | null {
   if (segment === 'pt-br') return 'BR'
   if (segment === 'es-mx') return 'MX'
+  if (segment === 'es-co') return 'CO'
+  if (segment === 'es-pe') return 'PE'
   return null
 }
 
@@ -25,15 +27,19 @@ export function isGameListIndexableForLocale(
 export function isWhereToPlayIndexable(
   game: Game,
   segment: LocaleSegment,
+  operators: Operator[] = [],
 ): boolean {
   const market = seoMarketForLocaleSegment(segment)
-  return market !== null && getOperatorsForGame(game, market).length > 0
+  // Previously published BR guides retain their useful factual game content.
+  // This explicit editorial inventory is independent of deprecated promotion.
+  if (segment === 'pt-br' && ['aviator', 'jetx', 'spaceman', 'gates-of-olympus', 'sweet-bonanza', 'big-bass-bonanza', 'crazy-time', 'lightning-roulette', 'blackjack-live'].includes(game.slug)) return true
+  return market !== null && getOperatorsForGame(game, market, operators).length > 0
 }
 
 export function whereToPlayLocaleSegments(
   game: Game,
 ): LocaleSegment[] {
-  return (['pt-br', 'es-mx', 'en'] as const).filter((segment) =>
+  return LOCALE_SEGMENTS.filter((segment) =>
     isWhereToPlayIndexable(game, segment),
   )
 }

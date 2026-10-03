@@ -18,7 +18,7 @@ test('Mines integration: complete locale copy, canonical/hreflang, three URLs an
     const meta=seoModule.pageMetadata({title:configModule.LIVA_MINES.title[locale],description:copy.description,path:'/play/mines',localeSegment:segment})
     assert.ok(meta.alternates.canonical.endsWith(`/${segment}/play/mines`))
     for(const s of ['en','pt-br','es-mx']) assert.ok(meta.alternates.languages[s].endsWith(`/${s}/play/mines`))
-    assert.ok(meta.alternates.languages['x-default'].endsWith('/pt-br/play/mines'))
+    assert.ok(meta.alternates.languages['x-default'].endsWith('/en/play/mines'))
     for(const geo of ['BR','MX','PT','unknown']) assert.deepEqual(referralModule.getPlayRealOptions(geo,configModule.LIVA_MINES.category,locale),[])
   }
   assert.equal(sitemapModule.default().filter(e=>e.url.endsWith('/play/mines')).length,3)

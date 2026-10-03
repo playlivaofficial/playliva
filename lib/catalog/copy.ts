@@ -1,3 +1,4 @@
+import { contentLocale } from '@/lib/locale'
 import type { Locale } from '@/lib/types'
 
 const COPY = {
@@ -11,7 +12,7 @@ const COPY = {
     chance: 'Random outcomes cannot be predicted from animations or previous results. This page is a description of game design, not a winning strategy.',
     similar: 'Games like', similarIntro: 'A focused reading list connected by the mechanics below. Similarity does not imply equal rules, odds or availability.',
     contrast: 'What changes', shared: 'What they share', comparisonIntro: 'A factual comparison of format and feature structure. Neither game is ranked as a better bet.',
-    back: 'All game references', catalogCount: 'games indexed', home: 'Home', games: 'Games', details: 'Mechanics and features', collection: 'In this collection', providerNote: 'Only games currently documented by PlayLiva appear here. Inclusion is not a claim of distribution in Brazil or Mexico.',
+    back: 'All game references', catalogCount: 'games indexed', home: 'Home', games: 'Games', details: 'Mechanics and features', collection: 'In this collection', providerNote: 'Only games currently documented by PlayLiva appear here. Inclusion is not a claim of distribution in any particular country.',
   },
   'pt-BR': {
     directoryIntro: 'Explore formatos, provedores e mecânicas documentadas. A presença no catálogo, por si só, não comprova disponibilidade no seu mercado.',
@@ -23,7 +24,7 @@ const COPY = {
     chance: 'Animações e resultados anteriores não permitem prever resultados aleatórios. Esta página descreve o design do jogo; não apresenta uma estratégia para ganhar.',
     similar: 'Jogos como', similarIntro: 'Uma seleção de leituras conectadas pelas mecânicas abaixo. Semelhança não significa regras, probabilidades ou disponibilidade iguais.',
     contrast: 'O que muda', shared: 'O que têm em comum', comparisonIntro: 'Comparação factual de formato e estrutura de recursos. Nenhum jogo é classificado como uma aposta melhor.',
-    back: 'Todas as fichas de jogos', catalogCount: 'jogos no índice', home: 'Início', games: 'Jogos', details: 'Mecânicas e recursos', collection: 'Nesta coleção', providerNote: 'Esta página reúne apenas jogos documentados pela PlayLiva. A inclusão não comprova distribuição no Brasil ou no México.',
+    back: 'Todas as fichas de jogos', catalogCount: 'jogos no índice', home: 'Início', games: 'Jogos', details: 'Mecânicas e recursos', collection: 'Nesta coleção', providerNote: 'Esta página reúne apenas jogos documentados pela PlayLiva. A inclusão não comprova distribuição em um país específico.',
   },
   'es-MX': {
     directoryIntro: 'Explora formatos, proveedores y mecánicas documentadas. Aparecer en el catálogo, por sí solo, no demuestra disponibilidad en tu mercado.',
@@ -35,7 +36,7 @@ const COPY = {
     chance: 'Las animaciones y los resultados anteriores no permiten predecir resultados aleatorios. Esta página describe el diseño del juego; no presenta una estrategia para ganar.',
     similar: 'Juegos como', similarIntro: 'Una selección de lecturas conectadas por las mecánicas siguientes. La semejanza no implica reglas, probabilidades o disponibilidad iguales.',
     contrast: 'Qué cambia', shared: 'Qué comparten', comparisonIntro: 'Comparación factual del formato y la estructura de funciones. Ningún juego se clasifica como una mejor apuesta.',
-    back: 'Todas las fichas de juegos', catalogCount: 'juegos en el índice', home: 'Inicio', games: 'Juegos', details: 'Mecánicas y funciones', collection: 'En esta colección', providerNote: 'Esta página reúne solo juegos documentados por PlayLiva. La inclusión no demuestra distribución en Brasil o México.',
+    back: 'Todas las fichas de juegos', catalogCount: 'juegos en el índice', home: 'Inicio', games: 'Juegos', details: 'Mecánicas y funciones', collection: 'En esta colección', providerNote: 'Esta página reúne solo juegos documentados por PlayLiva. La inclusión no demuestra distribución en un país concreto.',
   },
 }
-export const catalogCopy = (locale: Locale) => COPY[locale]
+export const catalogCopy = (locale: Locale) => COPY[contentLocale(locale)]

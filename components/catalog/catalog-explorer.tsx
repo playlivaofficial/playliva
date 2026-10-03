@@ -39,7 +39,7 @@ export function CatalogExplorer({ entries, compact = false }: { entries: Catalog
     </div>
     {!compact && <ThreeGameSearch games={originals} locale={locale} />}
     <div className={styles.resultLine}>
-      <p role="status" aria-live="polite">{!compact && `${locale === 'pt-BR' ? 'Catálogo de provedores' : locale === 'es-MX' ? 'Catálogo de proveedores' : 'Provider catalog'}: `}{results.length} {c.results} · {c.sort}</p>
+      <p role="status" aria-live="polite">{!compact && `${locale === 'pt-BR' ? 'Catálogo de provedores' : locale.startsWith('es-') ? 'Catálogo de proveedores' : 'Provider catalog'}: `}{results.length} {c.results} · {c.sort}</p>
       {(query || category !== 'all' || provider !== 'all') && <button onClick={clear}>{c.clear}</button>}
       {!compact && <LocaleLink href="/providers">{c.providers} →</LocaleLink>}
     </div>

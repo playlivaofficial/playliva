@@ -11,23 +11,27 @@ import button from '../components/affiliate-button.tsx'
 import capture from '../components/analytics/attribution-capture.tsx'
 import consent from '../lib/consent.ts'
 import tracking from '../lib/tracking.ts'
+import commercial from '../lib/commercial/server.ts'
+import { registration } from './fixtures/commercial.mjs'
+
+const approvedMx = commercial.snapshotFromRegistry('MX', [registration('MX')])
 
 const h = React.createElement
-function tree(path, visitor = 'BR') {
+function tree(path, visitor = 'MX') {
   return h(AppRouterContext.Provider, { value: { push() {}, prefetch() {} } },
     h(PathnameContext.Provider, { value: path }, h(SearchParamsContext.Provider, { value: new URLSearchParams(globalThis.window?.location.search) },
-      h(country.CountryProvider, { key: visitor ?? 'unknown', initialLocale: 'pt-BR', initialCountryCode: 'BR', visitorCountryCode: visitor },
-        h(button.AffiliateButton, { operatorSlug: 'betsson-group-affiliates', gameSlug: 'aviator', pageType: 'game', ctaLocation: 'game_detail_play_real' }, 'Explore'),
+      h(country.CountryProvider, { key: visitor ?? 'unknown', initialLocale: 'es-MX', initialCountryCode: 'MX', visitorCountryCode: visitor, commercial: approvedMx },
+        h(button.AffiliateButton, { operatorSlug: 'test-partner', gameSlug: 'aviator', pageType: 'game', ctaLocation: 'game_detail_play_real' }, 'Explore'),
         h(capture.AttributionCapture)))))
 }
 
 test('unknown/Georgia request GEO omits commercial anchors from server HTML', () => {
-  for (const visitor of [null]) assert.doesNotMatch(renderToStaticMarkup(tree('/pt-br/games/aviator', visitor)), /href="\/go\?/)
-  assert.match(renderToStaticMarkup(tree('/pt-br/games/aviator', 'BR')), /href="\/go\?/)
+  for (const visitor of [null, 'BR', 'CO', 'PE']) assert.doesNotMatch(renderToStaticMarkup(tree('/es-mx/games/aviator', visitor)), /href="\/go\?/)
+  assert.match(renderToStaticMarkup(tree('/es-mx/games/aviator', 'MX')), /href="\/go\?/)
 })
 
 test('late consent, SPA context, retry idempotency and saved-market bypass protection', async () => {
-  const dom = new JSDOM('<div id="root"></div>', { url: 'https://www.playliva.com/pt-br/games/aviator?utm_source=tiktok&utm_content=creative-1', virtualConsole: new VirtualConsole() })
+  const dom = new JSDOM('<div id="root"></div>', { url: 'https://www.playliva.com/es-mx/games/aviator?utm_source=tiktok&utm_content=creative-1', virtualConsole: new VirtualConsole() })
   const saved = new Map(), observers = [], requests = []
   for (const key of ['window', 'self', 'document', 'location', 'navigator', 'Event', 'MouseEvent', 'HTMLElement', 'Node', 'IntersectionObserver', 'IS_REACT_ACT_ENVIRONMENT']) {
     saved.set(key, Object.getOwnPropertyDescriptor(globalThis, key))
@@ -44,7 +48,7 @@ test('late consent, SPA context, retry idempotency and saved-market bypass prote
     return new Response(null, { status: body.event === 'affiliate_click' && requests.filter(r => r.id === body.id).length === 1 ? 503 : 202 })
   }
   const root = createRoot(document.getElementById('root'))
-  const mount = (visitor = 'BR') => act(() => root.render(tree(window.location.pathname, visitor)))
+  const mount = (visitor = 'MX') => act(() => root.render(tree(window.location.pathname, visitor)))
   try {
     consent.saveConsent({ necessary: true, analytics: false, marketing: false })
     await mount()
@@ -60,10 +64,10 @@ test('late consent, SPA context, retry idempotency and saved-market bypass prote
     assert.equal(clicks.length, 1)
     assert.equal(clicks[0].trafficSource, 'tiktok'); assert.equal(clicks[0].utmContent, 'creative-1')
     assert.equal(clicks[0].taxonomy, 'playliva_real_game')
-    assert.equal(clicks[0].campaignKey, 'betsson-br-crash')
+    assert.equal(clicks[0].campaignKey, 'test-mx-campaign')
     const attempts = requests.filter(r => r.event === 'affiliate_click')
     assert.equal(attempts.length, 2); assert.equal(attempts[0].id, attempts[1].id, 'retry uses the same receipt')
-    window.history.pushState({}, '', '/pt-br/where-to-play/aviator')
+    window.history.pushState({}, '', '/es-mx/where-to-play/aviator')
     await mount(); await act(() => observers.forEach(observer => observer.visible()))
     assert.equal(requests.filter(r => r.event === 'page_view').length, 2)
     assert.equal(requests.at(-1).taxonomy, 'playliva_where_to_play')
@@ -71,18 +75,18 @@ test('late consent, SPA context, retry idempotency and saved-market bypass prote
     const noindex = document.createElement('meta'); noindex.name = 'robots'; noindex.content = 'noindex, follow'; document.head.append(noindex)
     const beforeNoindex = requests.length
     tracking.track('page_view')
-    assert.equal(requests.length, beforeNoindex, 'noindex pages do not send rejected canonical-feed requests')
-    window.history.pushState({}, '', '/pt-br/games?provider=spribe')
+    assert.equal(requests.length, beforeNoindex + 1, 'usable noindex regional pages are measured independently of indexing')
+    window.history.pushState({}, '', '/es-mx/games?provider=spribe')
     tracking.track('page_view')
-    assert.equal(requests.length, beforeNoindex + 1, 'Games facets still measure the canonical Games route')
-    window.history.pushState({}, '', '/pt-br/where-to-play/aviator')
+    assert.equal(requests.length, beforeNoindex + 2, 'Games facets still measure the canonical Games route')
+    window.history.pushState({}, '', '/es-mx/where-to-play/aviator')
     noindex.remove()
-    window.localStorage.setItem('playliva.country', 'BR')
+    window.localStorage.setItem('playliva.country', 'MX')
     await mount(null)
-    assert.equal(document.querySelectorAll('a[href^="/go?"]').length, 0, 'saved Brazil cannot override noneligible request GEO')
+    assert.equal(document.querySelectorAll('a[href^="/go?"]').length, 0, 'saved Mexico cannot override noneligible request GEO')
     const count = requests.length
     await act(() => consent.saveConsent({ necessary: true, analytics: false, marketing: false }))
-    window.history.pushState({}, '', '/pt-br/games')
+    window.history.pushState({}, '', '/es-mx/games')
     await mount(null)
     assert.equal(requests.length, count)
     assert.equal(window.sessionStorage.getItem('playliva.attribution'), null)

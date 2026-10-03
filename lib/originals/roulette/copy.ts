@@ -1,3 +1,5 @@
+import { contentLocale } from '@/lib/locale'
+import type { ContentLocale } from '@/lib/types'
 import type { Locale } from '@/lib/types'
 import type { RouletteBet } from './bets'
 
@@ -29,7 +31,7 @@ const en = {
   verifiedReferral: 'The link below is for the separately verified external Lightning Roulette listing. It is not Liva Roulette and its rules and payouts differ.',
 }
 type RouletteCopy = { [K in keyof typeof en]: string }
-const copy: Record<Locale, RouletteCopy> = {
+const copy: Record<ContentLocale, RouletteCopy> = {
   en,
   'pt-BR': {
     description: 'Jogue Liva Roulette: Golden Orbit grátis. Roleta europeia com zero único, roda dourada e apostas virtuais precisas. Só Liva Credits; sem depósitos ou saques.',
@@ -86,7 +88,7 @@ const copy: Record<Locale, RouletteCopy> = {
     verifiedReferral: 'El enlace de abajo es para el juego externo Lightning Roulette, verificado por separado. No es Liva Roulette; sus reglas y pagos son distintos.',
   },
 }
-export const rouletteCopy = (locale: Locale): RouletteCopy => copy[locale]
+export const rouletteCopy = (locale: Locale): RouletteCopy => copy[contentLocale(locale)]
 export function rouletteBetLabel(bet: RouletteBet, locale: Locale) {
   const c = rouletteCopy(locale)
   if (bet.type === 'dozen') return [c.dozen1, c.dozen2, c.dozen3][Number(bet.id.split(':')[1]) - 1]

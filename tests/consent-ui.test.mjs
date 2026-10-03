@@ -15,7 +15,9 @@ const cssHooks = registerHooks({ load(url, context, next) {
 const profileImport = await import('../components/operator-profile-view.tsx')
 const profileModule = profileImport.default ?? profileImport
 cssHooks.deregister()
-import dataModule from '../lib/data.ts'
+import commercial from '../lib/commercial/server.ts'
+import { registration } from './fixtures/commercial.mjs'
+const approvedMx = commercial.snapshotFromRegistry('MX', [registration('MX')])
 const { OperatorProfileView } = profileModule
 import countryContextModule from '../components/country-context.tsx'
 const { CountryProvider, useCountry } = countryContextModule
@@ -40,7 +42,7 @@ const { track } = trackingModule
 
 function TestMarketControl() {
   const { setCountryCode } = useCountry()
-  return React.createElement('button', { onClick: () => setCountryCode('MX') }, 'Test MX')
+  return React.createElement('button', { onClick: () => setCountryCode('CO') }, 'Test CO')
 }
 
 test('consent UI gates loaders/events, supports revocation/revisit, and preserves navigation/contact truth', async () => {
@@ -75,11 +77,11 @@ test('consent UI gates loaders/events, supports revocation/revisit, and preserve
     await act(async () => {
       root.render(React.createElement(AppRouterContext.Provider, { value: { push() {} } },
         React.createElement(PathnameContext.Provider, { value: '/en' },
-          React.createElement(CountryProvider, { initialLocale: 'en', visitorCountryCode: 'BR' },
+          React.createElement(CountryProvider, { initialLocale: 'en', visitorCountryCode: 'MX', commercial: approvedMx },
             React.createElement(CookieBanner), React.createElement(SiteHeader), React.createElement(SiteFooter),
             React.createElement(ContactForm), React.createElement(ConsentedAnalytics),
-            React.createElement(AffiliateButton, { operatorSlug: 'betsson-group-affiliates', category: 'crash' }, 'Partner link'),
-            React.createElement(OperatorProfileView, { operator: dataModule.getOperator('betsson-group-affiliates') }),
+            React.createElement(AffiliateButton, { operatorSlug: 'test-partner', category: 'crash' }, 'Partner link'),
+            React.createElement(OperatorProfileView, { operator: approvedMx.operators[0] }),
             React.createElement(TestMarketControl)))))
     })
     const desktopSports = document.querySelector('header nav[aria-label="Primary"] a[href="https://livasports.com"]')
@@ -105,7 +107,7 @@ test('consent UI gates loaders/events, supports revocation/revisit, and preserve
     const link = document.querySelector('a[href^="/go?"]')
     assert.ok(link)
     const href = link.getAttribute('href')
-    assert.equal(new URL(href, location.href).searchParams.get('country'), 'BR')
+    assert.equal(new URL(href, location.href).searchParams.get('country'), 'MX')
     assert.equal(document.querySelector('script[src*="insights"]'), null)
     await click(button('Cookie preferences')) // persistent footer control
     await click(button('Reject optional'))
@@ -158,8 +160,8 @@ test('consent UI gates loaders/events, supports revocation/revisit, and preserve
     assert.equal(window[`ga-disable-${measurement}`], true)
     assert.equal(beforeSend(pageEvent), null)
 
-    await click(button('Test MX'))
-    assert.equal(document.querySelector('a[href^="/go?"]'), null, 'MX must not inherit BR profile or CTA destinations')
+    await click(button('Test CO'))
+    assert.equal(document.querySelector('a[href^="/go?"]'), null, 'CO selection must not inherit MX profile or CTA destinations')
 
     const form = document.querySelector('form')
     form.elements.name.value = 'Unit Test'

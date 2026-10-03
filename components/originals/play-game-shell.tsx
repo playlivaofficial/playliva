@@ -1,5 +1,7 @@
 'use client'
 
+import { contentLocale } from '@/lib/locale'
+
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react'
 import { GameSettings } from './game-settings'
 import settingsStyles from './game-settings.module.css'
@@ -66,7 +68,7 @@ export function PlayGameShell({ game, children, controls, roundActive = false, c
     <header className={`originals-shell-header${compact ? ' originals-shell-header-compact' : ''}`}>
       <div className="originals-shell-identity" data-originals-identity="">
         <p className="text-sm font-semibold text-primary"><LocaleLink href="/play" aria-label={productCopy(locale).lobbyBack} className="hover:underline">‹ PlayLiva Originals</LocaleLink></p>
-        <h1 className={`font-display font-bold ${compact ? 'text-lg leading-tight sm:text-2xl' : 'text-2xl sm:text-3xl'}`}>{game.title[locale]}</h1>
+        <h1 className={`font-display font-bold ${compact ? 'text-lg leading-tight sm:text-2xl' : 'text-2xl sm:text-3xl'}`}>{game.title[contentLocale(locale)]}</h1>
         <p className={`${compact ? 'mt-1' : 'mt-2'} text-xs font-semibold tracking-wide`}>{copy.freePlay} · {copy.demo}</p>
       </div>
       <div className="originals-shell-sponsor" data-originals-sponsor="" data-sponsor-slot="originals-header">

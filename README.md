@@ -388,3 +388,65 @@ Both games use original procedural Web Audio from the shared
   poster) serve local-only deterministic scenarios. No public overrides exist.
 
 Owner Search Console setup, daily cost bounds, evidence rules and rollback controls: [SEO Autopilot](docs/owner-search-autopilot.md).
+
+## MX / CO / PE commercial activation
+
+The shared product supports `es-MX` / MXN, `es-CO` / COP and `es-PE` / PEN.
+`lib/geo.ts` defines the supported commercial markets. Language selection never
+grants commercial eligibility: Vercel request GEO (or an authenticated Owner GEO
+preview) determines the eligible market. Brazil and Rest of World receive neutral
+discovery without affiliate promotion. Historical PT-BR editorial content remains.
+
+The private **PlayLiva-only** Vercel secret `PLAYLIVA_COMMERCIAL_REGISTRY` contains
+a JSON array conforming to `OperatorRegistration` in `lib/commercial/types.ts`.
+Its missing/empty default is `[]`: no partners are approved for these markets yet.
+Do not put this secret, partner URLs, partner campaign IDs or offer evidence in
+Git, `NEXT_PUBLIC_*` variables, analytics payloads or `.env.example`.
+
+Activation is a commercial-data update, followed by a normal PlayLiva redeploy:
+
+1. Add a separate record for each approved GEO, with the real operator identity,
+   approved local logo, supported products, correct currency, priority and a unique
+   public `campaignKey`. Keep `approved` and `active` false until approval is real.
+2. Enter the issued HTTPS `affiliateUrl`, private `campaignId` if supplied, and
+   the partner's actual query template. `trackingTemplate` supports `{campaignId}`,
+   `{geo}`, `{language}`, `{pageType}`, `{pageSlug}`, `{gameSlug}`, `{matchSlug}` and
+   `{placement}`; it preserves functional partner attribution without analytics
+   consent. Optional measurement belongs in `analyticsTrackingTemplate`.
+3. Set `approved: true` and `active: true` only for the approved regional record.
+   Missing destinations, invalid currency, duplicate identities and blocked legal
+   status remain hidden. The public UI receives opaque references, never URLs or
+   private campaign IDs. `/go` revalidates current approval and exact request GEO.
+4. Add `verifiedGames` using real catalog IDs only after confirming availability
+   for that exact operator/GEO. Category support alone cannot create a game claim.
+   This supplies Where to Play without a new component or route implementation.
+5. Configure an `offer` only with verified terms, localized headline/condition/CTA,
+   validity dates, placement allow-list, cadence and dated market-specific
+   publication evidence. Commercial approval does not establish legal approval.
+   Offers retain the existing 30-day evidence review limit. Missing/stale evidence
+   suppresses the offer and popup while separately approved brand discovery may
+   remain available. No licence, bonus or authorization claim is inferred.
+6. Verify Owner preview for Mexico, Colombia and Peru, then Reset to Real GEO.
+   Check currency, directory, Offers, Where to Play, compact banners, pre-round
+   popup cadence and the approved destination. Preview is session-authenticated,
+   excluded from analytics and cannot be enabled by public query/cookie values.
+
+`legal.status: "unknown"` publishes no legal claim. A verified legal statement or
+disclosure requires its configured HTTPS source, verification date and future
+review deadline. Approval never inherits from another country. Revoke a record by
+setting `active: false` and redeploying; stale rendered buttons cannot bypass the
+server redirect gate. Deprecated `PLAYLIVA_AFFILIATE_DESTINATIONS` BR values do not
+activate anything.
+
+CO/PE home and Games pages have substantive regional context and unique metadata.
+Shared Spanish long-tail pages remain usable with self-canonicals and `noindex`
+until they have distinct regional value. Qualified regional commercial guides
+enter the controlled sitemap/hreflang inventory from verified registry data.
+Empty Offers/operator directories stay out. Existing useful PT-BR Where to Play
+articles retain their factual content and indexability without retired referrals.
+
+Meaningful synthetic approval fixtures live only under `tests/fixtures/`; they
+must never be installed in production or used to fill pending public placements.
+Use frozen install, lint, typecheck, full tests, production build, route crawl,
+SEO audit and secret scan before release. Engine math, settlement and audio are
+outside this migration; all 42 provider games and 14 current Originals remain.

@@ -4,7 +4,7 @@ import { ANALYTICS_COOKIE } from '@/lib/consent'
 import { COUNTRIES } from '@/lib/data'
 import type { CountryCode } from '@/lib/types'
 import { commercialMarket } from '@/lib/owner/server/geo-preview'
-import { serverDestination } from '@/lib/affiliates/server-destinations'
+import { commercialSnapshot, privateCommercialDestination } from '@/lib/commercial/server'
 
 /**
  * `/go` is disallowed in `robots.ts`, but that only stops crawling — a
@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
     placement,
     category,
     analyticsAllowed: request.cookies.get(ANALYTICS_COOKIE)?.value === 'granted',
-  })
+  }, commercialSnapshot(validCountry))
 
   if (!destination) {
     return redirect(fallback)
@@ -77,6 +77,6 @@ export async function GET(request: NextRequest) {
 
   // Partner attribution is functional without analytics. Optional measurement
   // requires consent; do not duplicate client events in unconditional server logs.
-  const target = serverDestination(destination.url)
+  const target = privateCommercialDestination(destination.url, { language, pageType, pageSlug, gameSlug, matchSlug, placement }, request.cookies.get(ANALYTICS_COOKIE)?.value === 'granted')
   return redirect(target ?? fallback)
 }

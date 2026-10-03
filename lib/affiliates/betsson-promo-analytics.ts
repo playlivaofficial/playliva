@@ -1,5 +1,5 @@
 /**
- * Funnel events for the central Betsson BR campaign.
+ * Funnel events for GEO-scoped approved campaigns. Legacy export names retain callsite compatibility.
  *
  * `offer_impression` → `offer_dismiss` / `affiliate_click`, each carrying the
  * promo id, brand, placement, surface family, route, game slug (Originals and
@@ -8,7 +8,6 @@
  * `track()` layer; no wallet, identifier or free-text data is attached.
  */
 
-import { campaignForGoHref } from './click-context'
 import { track, type TrackPayload } from '../tracking'
 import type { BetssonPromoModel } from './betsson-promo'
 
@@ -29,7 +28,7 @@ export interface BetssonPromoEventContext {
 
 export function betssonPromoPayload(model: BetssonPromoModel, context: BetssonPromoEventContext = {}): TrackPayload {
   return {
-    campaignKey: campaignForGoHref(model.href),
+    campaignKey: model.campaignKey,
     promoId: model.promoId,
     brand: model.brand,
     placement: model.placement,

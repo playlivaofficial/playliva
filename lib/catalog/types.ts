@@ -1,7 +1,8 @@
-import type { CategorySlug, DiscoveryCategorySlug, Locale } from '@/lib/types'
+import type { ContentLocale } from '@/lib/types'
+import type { CategorySlug, DiscoveryCategorySlug } from '@/lib/types'
 
 export type ProviderId = 'pragmatic-play' | 'play-n-go' | 'evolution' | 'smartsoft' | 'spribe'
-export type Localized<T> = Record<Locale, T>
+export type Localized<T> = Record<ContentLocale, T>
 export interface ReferenceCopy {
   summary: string
   overview: string

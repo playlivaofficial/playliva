@@ -1,3 +1,6 @@
+import { geoEditorial } from './geo-editorial'
+import { contentLocale } from '@/lib/locale'
+import type { ContentLocale } from '@/lib/types'
 import type { Locale } from './types'
 
 /**
@@ -45,7 +48,7 @@ interface LegalPage {
   buttons?: { label: string; href: string; variant?: 'primary' | 'outline' }[]
 }
 
-type LegalContent = Record<Locale, Record<LegalPageKey, LegalPage>>
+type LegalContent = Record<ContentLocale, Record<LegalPageKey, LegalPage>>
 
 export const LEGAL_CONTENT: LegalContent = {
   'pt-BR': {
@@ -76,7 +79,7 @@ export const LEGAL_CONTENT: LegalContent = {
         {
           h: 'O que a PlayLiva faz',
           body: [
-            'A PlayLiva ajuda jogadores adultos a descobrir jogos, comparar operadores licenciados e explorar onde jogar no seu mercado. Focamos em uma experiência de descoberta limpa e moderna, e não na promoção agressiva de apostas.',
+            'A PlayLiva ajuda jogadores adultos a descobrir jogos, comparar operadores com disponibilidade verificada e explorar onde jogar no seu mercado. Focamos em uma experiência de descoberta limpa e moderna, e não na promoção agressiva de apostas.',
             'Nossa plataforma foi construída para ser multimercado desde a base. Jogadores em diferentes países podem ver operadores e ofertas relevantes para sua localização enquanto permanecem no mesmo site da PlayLiva.',
           ],
         },
@@ -139,7 +142,7 @@ export const LEGAL_CONTENT: LegalContent = {
         {
           h: 'Como obter ajuda',
           body: [
-            'Se o jogo deixar de ser divertido, ou se você estiver preocupado com o seu jogo ou o de outra pessoa, procure ajuda. Utilize os recursos oficiais de jogo responsável e autoexclusão disponíveis no seu país. Operadores licenciados também são obrigados a oferecer ferramentas como limites de depósito, pausas e autoexclusão.',
+            'Se o jogo deixar de ser divertido, ou se você estiver preocupado com o seu jogo ou o de outra pessoa, procure ajuda. Utilize os recursos oficiais de jogo responsável e autoexclusão disponíveis no seu país. Antes de escolher um operador, confira as ferramentas disponíveis para limites, pausas e autoexclusão; não pressuponha que os recursos sejam iguais em todos os países.',
             'A PlayLiva não aceita apostas nem depósitos e não pode aplicar limites ou autoexclusão em seu nome. Essas ferramentas são fornecidas diretamente pelos operadores e por organizações nacionais de apoio na sua jurisdição.',
           ],
         },
@@ -378,7 +381,7 @@ export const LEGAL_CONTENT: LegalContent = {
         {
           h: 'Qué hace PlayLiva',
           body: [
-            'PlayLiva ayuda a jugadores adultos a descubrir juegos, comparar operadores con licencia y explorar dónde jugar en su mercado. Nos enfocamos en una experiencia de descubrimiento limpia y moderna, no en la promoción agresiva de apuestas.',
+            'PlayLiva ayuda a jugadores adultos a descubrir juegos, comparar operadores con disponibilidad verificada y explorar dónde jugar en su mercado. Nos enfocamos en una experiencia de descubrimiento limpia y moderna, no en la promoción agresiva de apuestas.',
             'Nuestra plataforma está construida para ser multimercado desde la base. Los jugadores de distintos países pueden ver operadores y ofertas relevantes para su ubicación sin salir del mismo sitio de PlayLiva.',
           ],
         },
@@ -441,7 +444,7 @@ export const LEGAL_CONTENT: LegalContent = {
         {
           h: 'Cómo obtener apoyo',
           body: [
-            'Si el juego deja de ser divertido, o si te preocupa tu juego o el de otra persona, busca ayuda. Utiliza los recursos oficiales de juego responsable y autoexclusión disponibles en tu país. Los operadores con licencia también están obligados a ofrecer herramientas como límites de depósito, pausas y autoexclusión.',
+            'Si el juego deja de ser divertido, o si te preocupa tu juego o el de otra persona, busca ayuda. Utiliza los recursos oficiales de juego responsable y autoexclusión disponibles en tu país. Antes de elegir un operador, comprueba sus herramientas de límites, pausas y autoexclusión; no supongas que sean iguales en todos los países.',
             'PlayLiva no acepta apuestas ni depósitos y no puede aplicar límites ni autoexclusión en tu nombre. Estas herramientas las proporcionan directamente los operadores y las organizaciones nacionales de apoyo en tu jurisdicción.',
           ],
         },
@@ -680,7 +683,7 @@ export const LEGAL_CONTENT: LegalContent = {
         {
           h: 'What PlayLiva does',
           body: [
-            "PlayLiva helps adult players discover games, compare licensed operators and explore where to play in their market. We focus on a clean, modern discovery experience rather than aggressive betting promotion.",
+            "PlayLiva helps adult players discover games, compare operators with verified availability and explore where to play in their market. We focus on a clean, modern discovery experience rather than aggressive betting promotion.",
             'Our platform was built to be multi-market from the ground up. Players in different countries can see operators and offers relevant to their location while staying on the same PlayLiva site.',
           ],
         },
@@ -743,7 +746,7 @@ export const LEGAL_CONTENT: LegalContent = {
         {
           h: 'How to get support',
           body: [
-            "If gaming stops being fun, or you're worried about your own play or someone else's, seek help. Use the official responsible gaming and self-exclusion resources available in your country. Licensed operators are also required to offer tools such as deposit limits, timeouts and self-exclusion.",
+            "If gaming stops being fun, or you're worried about your own play or someone else's, seek help. Use the official responsible gaming and self-exclusion resources available in your country. Before choosing an operator, check its deposit limits, timeouts and self-exclusion tools; do not assume the same tools are available in every country.",
             "PlayLiva doesn't accept bets or deposits and cannot apply limits or self-exclusion on your behalf. These tools are provided directly by operators and by national support organizations in your jurisdiction.",
           ],
         },
@@ -955,5 +958,11 @@ export const LEGAL_CONTENT: LegalContent = {
 }
 
 export function getLegalPage(key: LegalPageKey, locale: Locale): LegalPage {
-  return LEGAL_CONTENT[locale][key]
+  const page = LEGAL_CONTENT[contentLocale(locale)][key]
+  const country = geoEditorial(locale)
+  if (!country || !['responsible-gaming', 'affiliate-disclosure'].includes(key)) return page
+  return { ...page, sections: [...(page.sections ?? []), {
+    h: `Información para ${country.name}`,
+    body: [country.responsible, country.money, 'La disponibilidad comercial depende de la ubicación de la visita y de la aprobación del operador para ese país. Una relación de afiliación no acredita por sí sola una autorización legal; PlayLiva no publica afirmaciones de licencia sin una fuente verificada.'],
+  }] }
 }

@@ -14,8 +14,7 @@ import { LIVA_BLACKJACK } from '@/lib/originals/blackjack/definition'
 import { LIVA_ROULETTE } from '@/lib/originals/roulette/config'
 import { rouletteCopy } from '@/lib/originals/roulette/copy'
 import { minesCopy } from '@/lib/originals/mines/copy'
-import { getOperator } from '@/lib/data'
-import { BrazilAdWarning } from '@/components/affiliates/brazil-ad-warning'
+import { CommercialAdDisclosure } from '@/components/affiliates/commercial-ad-disclosure'
 
 function OperatorLink({ option, context, label }: {
   option: OperatorCtaOption
@@ -43,11 +42,11 @@ function OperatorLink({ option, context, label }: {
 }
 
 export function PlayRealCTA({ game }: { game: OriginalGameDefinition }) {
-  const { countryCode, locale, t } = useCountry()
+  const { countryCode, marketCode, locale, t, commercial } = useCountry()
   const copy = originalsCopy(locale)
   const blackjack = game.id === LIVA_BLACKJACK.id
   const roulette = game.id === LIVA_ROULETTE.id
-  const options = getOriginalOperatorCtas(game, countryCode, locale)
+  const options = marketCode ? getOriginalOperatorCtas(game, marketCode, locale, commercial) : []
   const mode = options[0]?.mode ?? 'none'
   const context = { originalId: game.id, originalSlug: game.slug, category: game.category, country: countryCode, locale }
   const generic = mode === 'generic-brand'
@@ -59,16 +58,16 @@ export function PlayRealCTA({ game }: { game: OriginalGameDefinition }) {
     : game.id === 'liva-mines' ? minesCopy(locale).realBoundary
     : copy.realBoundary
   const heading = generic ? t('affiliate.exploreNamed', { name: options[0].name }) : copy.playReal
-  const logo = options[0] ? getOperator(options[0].operatorSlug)?.logo : undefined
+  const logo = options[0] ? commercial.operators.find(item => item.slug === options[0].operatorSlug)?.logo : undefined
   return <aside className="space-y-2 rounded-2xl border border-border bg-card p-3 sm:p-4" aria-label={heading}
     data-operator-cta="play-real" data-operator-cta-mode={mode}
-    data-betting-ad={options.length && countryCode === 'BR' ? '' : undefined} data-evidence-state="pending">
+    data-commercial-ad={options.length ? "" : undefined}>
     <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center">
       {logo ? <div className="relative size-10 shrink-0 overflow-hidden rounded-lg border border-border bg-secondary">
         <Image src={logo} alt="" width={40} height={40} className="size-10 object-cover" />
       </div> : null}
       <div className="min-w-0 flex-1">
-        <p className="text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-primary">{t('affiliate.sponsored')}</p>
+        {options.length > 0 && <p className="text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-primary">{t('affiliate.sponsored')}</p>}
         <h2 className="font-display text-base font-semibold leading-tight sm:text-lg">{heading}</h2>
       </div>
       {options.length ? <div className="flex w-full min-w-0 flex-wrap gap-3 sm:w-auto">{options.map(option =>
@@ -81,6 +80,6 @@ export function PlayRealCTA({ game }: { game: OriginalGameDefinition }) {
     {blackjack && options.length > 0 && <p className="text-xs leading-relaxed text-muted-foreground sm:text-sm">{blackjackCopy(locale).verifiedReferral}</p>}
     {options.length === 0 && <p className="text-xs leading-relaxed text-muted-foreground sm:text-sm">{copy.noOperators}</p>}
     {options.length > 0 && <AffiliateDisclosureLine />}
-    {options.length > 0 && countryCode === 'BR' && <BrazilAdWarning operatorId={getOperator(options[0].operatorSlug)?.id ?? ''} />}
+    {options.length > 0 && <CommercialAdDisclosure operatorId={commercial.operators.find(item => item.slug === options[0].operatorSlug)?.id ?? ''} />}
   </aside>
 }

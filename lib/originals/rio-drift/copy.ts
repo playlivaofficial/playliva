@@ -1,3 +1,4 @@
+import { contentLocale } from '@/lib/locale'
 import type { Locale } from '@/lib/types'
 
 const copy = {
@@ -98,4 +99,4 @@ const copy = {
     arcadeDetails: 'El cupé acelera solo para que puedas concentrarte en tu línea. Arrastra o mantén las flechas en celular; usa ←/→ o A/D en computadora. Las curvas siguen una secuencia determinística, la velocidad sube poco a poco y una colisión termina el intento. Compara lo aprendido entre carreras, sin inventar una clasificación global.',
   },
 }
-export const driftCopy = (locale: Locale) => copy[locale]
+export const driftCopy = (locale: Locale) => copy[contentLocale(locale)]

@@ -7,18 +7,19 @@ import { Button } from '@/components/ui/button'
 import { AffiliateDisclosureLine } from '@/components/notices'
 import { useCountry } from '@/components/country-context'
 import { localeToSegment } from '@/lib/locale'
-import { BETSSON_PROMO_PLACEMENTS, betssonPromoExpiresAt, getBetssonPromo, type BetssonPromoModel } from '@/lib/affiliates/betsson-promo'
+import { PROMO_PLACEMENTS, getPromotion, type PromotionModel } from '@/lib/affiliates/promotion'
 import { createEngagementTrigger, type EngagementMilestone } from '@/lib/affiliates/betsson-engagement'
 import { trackBetssonPromo, type BetssonPromoEventContext } from '@/lib/affiliates/betsson-promo-analytics'
 import type { OriginalGameDefinition } from '@/lib/originals/definition'
 import styles from './betsson-engagement-offer.module.css'
 import { useCommercialImpression } from '@/components/analytics/use-commercial-impression'
-import { BrazilAdWarning } from './brazil-ad-warning'
+import { CommercialAdDisclosure } from './commercial-ad-disclosure'
+import { useCampaignExpiry } from './use-campaign-expiry'
 
 const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
 
 /**
- * Recurring contextual Betsson offer for Original gameplay routes. Opens only
+ * Recurring contextual approved partner offer for Original gameplay routes. Opens only
  * at a natural cycle boundary after every third completed cycle (3, 6, 9 …),
  * once per milestone, never over live gameplay, and dismissing never cancels
  * the next milestone. Rendered outside the game unit as a fixed overlay, so
@@ -26,11 +27,12 @@ const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1
  * Mobile: bottom sheet with the game still visible behind it.
  */
 export function BetssonEngagementOffer({ game, roundActive, onHold }: { game: OriginalGameDefinition; roundActive: boolean; onHold?: (held: boolean) => void }) {
-  const { marketCode, locale, t } = useCountry()
-  const [milestone, setMilestone] = useState<EngagementMilestone | null>(null)
-  const model = marketCode ? getBetssonPromo(marketCode, locale, BETSSON_PROMO_PLACEMENTS.originalsEngagement, { pageSlug: game.slug }) : null
+  const { marketCode, locale, t, commercial } = useCountry()
+  const [milestone, setMilestone] = useState<(EngagementMilestone & { campaignIdentity: string }) | null>(null)
+  const model = marketCode ? getPromotion(commercial, marketCode, locale, PROMO_PLACEMENTS.originalsEngagement, { pageSlug: game.slug }) : null
+  useCampaignExpiry(model?.expiresAt)
   const trigger = useRef<ReturnType<typeof createEngagementTrigger> | null>(null)
-  const promoId = model?.promoId
+  const promoId = model ? `${model.market}:${model.promoId}` : undefined
   const every = model?.engagement.cycleMultiple
   const delay = model?.engagement.delayMs
 
@@ -38,7 +40,7 @@ export function BetssonEngagementOffer({ game, roundActive, onHold }: { game: Or
     if (!promoId || every === undefined || delay === undefined) { trigger.current = null; return }
     const instance = createEngagementTrigger({
       cycleMultiple: every, delayMs: delay,
-      open: (next) => setMilestone(next),
+      open: (next) => setMilestone({ ...next, campaignIdentity: promoId }),
       close: () => setMilestone(null),
       hold: onHold,
       schedule: (fn, ms) => window.setTimeout(fn, ms),
@@ -55,13 +57,13 @@ export function BetssonEngagementOffer({ game, roundActive, onHold }: { game: Or
     setMilestone(null)
   }, [])
 
-  if (!milestone || !model) return null
+  if (!milestone || !model || roundActive || milestone.campaignIdentity !== promoId) return null
   return <EngagementDialog key={milestone.completedCycleNumber} model={model} game={game} milestone={milestone} onDismiss={dismiss} t={t}
     route={`/${localeToSegment(locale)}/play/${game.slug}`} />
 }
 
 function EngagementDialog({ model, game, milestone, onDismiss, t, route }: {
-  model: BetssonPromoModel
+  model: PromotionModel
   game: OriginalGameDefinition
   milestone: EngagementMilestone
   onDismiss: () => void
@@ -100,12 +102,12 @@ function EngagementDialog({ model, game, milestone, onDismiss, t, route }: {
   }, [])
 
   const copy = model.engagementCopy
-  const titleId = `betsson-engagement-title-${milestone.completedCycleNumber}`
-  return <div className={styles.overlay} data-betsson-engagement-offer="" data-promo-id={model.promoId} data-placement={model.placement}
+  const titleId = `engagement-title-${milestone.completedCycleNumber}`
+  return <div className={styles.overlay} data-engagement-offer="" data-promo-id={model.promoId} data-placement={model.placement}
     data-completed-cycle={milestone.completedCycleNumber} data-exposure={milestone.exposureNumber}>
     <div className={styles.backdrop} onClick={dismiss} aria-hidden="true" />
     <div ref={dialog} role="dialog" aria-modal="true" aria-labelledby={titleId} aria-describedby={`${titleId}-condition`}
-      className={styles.sheet} data-betting-ad="" data-evidence-state="pending">
+      className={styles.sheet} data-commercial-ad="">
       <button ref={closeButton} type="button" className={styles.close} onClick={dismiss} aria-label={t('promo.close')}>
         <X className="size-5" aria-hidden="true" />
       </button>
@@ -130,7 +132,7 @@ function EngagementDialog({ model, game, milestone, onDismiss, t, route }: {
           onClick={() => trackBetssonPromo('affiliate_click', model, context)}>{t('promo.terms')}</a>
       </div>
       <AffiliateDisclosureLine className={styles.disclosure} />
-      <BrazilAdWarning operatorId={model.operatorId} expiresAt={betssonPromoExpiresAt()} />
+      <CommercialAdDisclosure operatorId={model.operatorId} />
     </div>
   </div>
 }

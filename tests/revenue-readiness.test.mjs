@@ -10,37 +10,37 @@ import metrics from '../lib/owner/metrics.ts'
 import social from '../lib/social/manual-links.ts'
 import spotlight from '../lib/home/spotlight.ts'
 import destinations from '../lib/affiliates/server-destinations.ts'
-import campaignReferences from '../lib/affiliates/campaign-references.ts'
-import { testDestinations } from './fixtures/affiliate-destinations.mjs'
+import { registration } from './fixtures/commercial.mjs'
+import registry from '../lib/commercial/server.ts'
+const { snapshotFromRegistry } = registry
 import { readFile } from 'node:fs/promises'
 import clickContext from '../lib/affiliates/click-context.ts'
 
-test('campaign attribution follows the actual redirect context, including generic versus category destinations', () => {
-  assert.equal(clickContext.campaignForGoHref('/go?country=BR&operator=betsson-group-affiliates&page=content'), 'betsson-br-brand')
-  assert.equal(clickContext.campaignForGoHref('/go?country=BR&operator=betsson-group-affiliates&page=game&game=aviator'), 'betsson-br-crash')
-  assert.equal(clickContext.campaignForGoHref('/go?country=BR&operator=betsson-group-affiliates&page=content&offer=of-br-betsson-100-giros'), 'betsson-br-promo')
+test('campaign attribution follows the approved regional redirect context and rejects retired Brazil campaigns', () => {
+  const snapshot = snapshotFromRegistry('MX', [registration()])
+  assert.equal(clickContext.campaignForGoHref('/go?country=MX&operator=test-partner&page=content', snapshot), 'test-mx-campaign')
+  assert.equal(clickContext.campaignForGoHref('/go?country=MX&operator=test-partner&page=game&game=aviator', snapshot), 'test-mx-campaign')
+  assert.equal(clickContext.campaignForGoHref('/go?country=BR&operator=betsson-group-affiliates&page=content', snapshot), undefined)
   assert.equal(clickContext.campaignForGoHref('/go?country=GE&operator=betsson-group-affiliates'), undefined)
   assert.equal(clickContext.campaignForGoHref('https://outside.invalid/'), undefined)
 })
 
 test('private destinations resolve only from server configuration, preserve templates and fail closed', () => {
-  const saved = process.env.PLAYLIVA_AFFILIATE_DESTINATIONS
+  const saved = process.env.PLAYLIVA_COMMERCIAL_REGISTRY
   try {
-    delete process.env.PLAYLIVA_AFFILIATE_DESTINATIONS
+    delete process.env.PLAYLIVA_COMMERCIAL_REGISTRY
     assert.equal(destinations.serverDestination('playliva-affiliate:betsson-br-brand'), null)
-    process.env.PLAYLIVA_AFFILIATE_DESTINATIONS = JSON.stringify(testDestinations)
-    for (const key of Object.keys(campaignReferences.PRIVATE_CAMPAIGNS)) {
-      assert.equal(destinations.serverDestination('playliva-affiliate:' + key), testDestinations[key])
-    }
-    const url = new URL(destinations.serverDestination('playliva-affiliate:betsson-br-brand?placement=homepage_banner'))
-    assert.equal(url.searchParams.get('fixture'), 'brand')
-    assert.equal(url.searchParams.get('placement'), 'homepage_banner')
-    for (const value of ['https://attacker.invalid/', 'http://record.betsson.bet.br/', 'https://user:password@record.betsson.bet.br/']) {
-      process.env.PLAYLIVA_AFFILIATE_DESTINATIONS = JSON.stringify({ 'betsson-br-brand': value })
+    process.env.PLAYLIVA_COMMERCIAL_REGISTRY = JSON.stringify([registration()])
+    const url = new URL(destinations.serverDestination('playliva-affiliate:MX:test-mx:test-mx-campaign'))
+    assert.equal(url.searchParams.get('campaign'), 'private-test-id')
+    assert.equal(url.searchParams.get('market'), 'MX')
+    for (const value of ['', 'http://partner.test/', 'https://user:password@partner.test/']) {
+      process.env.PLAYLIVA_COMMERCIAL_REGISTRY = JSON.stringify([registration('MX', { affiliateUrl: value })])
+      assert.equal(destinations.serverDestination('playliva-affiliate:MX:test-mx:test-mx-campaign'), null)
       assert.equal(destinations.serverDestination('playliva-affiliate:betsson-br-brand'), null)
     }
     assert.equal(destinations.serverDestination('playliva-affiliate:unknown'), null)
-  } finally { if (saved === undefined) delete process.env.PLAYLIVA_AFFILIATE_DESTINATIONS; else process.env.PLAYLIVA_AFFILIATE_DESTINATIONS = saved }
+  } finally { if (saved === undefined) delete process.env.PLAYLIVA_COMMERCIAL_REGISTRY; else process.env.PLAYLIVA_COMMERCIAL_REGISTRY = saved }
 })
 
 test('public campaign records contain references, not raw partner identifiers', async () => {
@@ -67,31 +67,22 @@ test('commercial taxonomy separates all requested surfaces without changing redi
 
 test('trusted visitor market fails closed independent of locale, query or saved selection', () => {
   for (const value of ['GE', 'US', '', 'BR,GE', 'unknown']) assert.equal(geo.visitorMarket(new Headers({ 'x-vercel-ip-country': value })), null)
-  assert.equal(geo.visitorMarket(new Headers({ 'x-vercel-ip-country': 'BR' })), 'BR')
-  assert.equal(geo.visitorMarket(new Headers({ 'x-vercel-ip-country': 'MX' })), 'MX')
+  assert.equal(geo.visitorMarket(new Headers({ 'x-vercel-ip-country': 'BR' })), null)
+  for (const value of ['MX', 'CO', 'PE']) assert.equal(geo.visitorMarket(new Headers({ 'x-vercel-ip-country': value })), value)
 })
 
-test('event intake uses canonical registry/context, verified operator and request GEO; rejects sensitive or stale submissions', () => {
+test('deprecated BR event attribution cannot authorize new affiliate events', () => {
   const row = { id: randomUUID(), event: 'affiliate_click', timestamp: new Date().toISOString(), url: '/pt-br/games/aviator',
     placement: 'game_detail_play_real', operatorSlug: 'betsson-group-affiliates', trafficSource: 'youtube', utmSource: 'youtube', utmContent: 'creative-1',
     provider: 'invented', country: 'BR', language: 'en', destination: 'https://partner.invalid/?secret=hidden', email: 'private@example.org' }
   const br = new Headers({ 'x-vercel-ip-country': 'BR' }), ge = new Headers({ 'x-vercel-ip-country': 'GE' })
-  const event = input.eventInput(row, br)
-  assert.equal(event.dimensions.provider, 'spribe')
-  assert.equal(event.dimensions.locale, 'pt-BR')
-  assert.equal(event.dimensions.platform, 'youtube')
-  assert.equal(event.dimensions.game, 'aviator')
-  assert.equal(event.dimensions.category, 'crash')
-  const comparison = input.eventInput({ ...row, url: '/pt-br/compare/aviator-vs-jetx', gameSlug: 'aviator' }, br)
-  assert.equal(comparison.dimensions.game, 'aviator', 'specific CTA game is retained on a comparison')
-  assert.equal(comparison.dimensions.taxonomy, 'playliva_comparison')
-  assert.doesNotMatch(JSON.stringify(event), /secret|private@example|partner.invalid|invented/)
+  assert.equal(input.eventInput(row, br), null)
   assert.equal(input.eventInput(row, ge), null)
-  for (const patch of [{ url: '/owner/growth' }, { url: '/pt-br/games/aviator?secret=hidden' }, { id: 'invalid' },
-    { timestamp: 'invalid' }, { timestamp: new Date(Date.now() - 301000).toISOString() }, { operatorSlug: 'invented' }, { event: 'deposit' }]) {
-    assert.equal(input.eventInput({ ...row, ...patch }, br), null)
-  }
-  assert.equal(input.eventInput({ ...row, event: 'page_view' }, ge).dimensions.geo, 'GE')
+  const event = input.eventInput({ ...row, event: 'page_view' }, ge)
+  assert.equal(event.dimensions.geo, 'GE')
+  assert.equal(event.dimensions.locale, 'pt-BR')
+  assert.equal(event.dimensions.provider, 'spribe')
+  assert.doesNotMatch(JSON.stringify(event), /secret|private@example|partner.invalid|invented/)
 })
 
 test('attribution survives internal navigation, accepts a new campaign, expires idle tabs and clears on withdrawal', () => {

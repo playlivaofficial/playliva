@@ -1,16 +1,9 @@
-import type { Locale } from './types'
+import type { ContentLocale, Locale } from './types'
+import { getGeoConfig } from './geo'
 
-/**
- * URL path segments for the locales the site serves at real, crawlable
- * locale-prefixed URLs (`/en/...`, `/pt-br/...`, `/es-mx/...`).
- *
- * Future GEO-only locales (e.g. `es-ar`, `es-co`, `pt-pt`) are intentionally
- * NOT added here — GEO/market selection stays independent of language and
- * continues to work across all three URL locales, matching the doc-only
- * `MARKET_LOCALES` pattern in `lib/seo.ts`. Only add a new segment here once
- * that language actually ships its own dictionary in `lib/i18n.ts`.
- */
-export const LOCALE_SEGMENTS = ['en', 'pt-br', 'es-mx'] as const
+/** Actual locale routes. Regional Spanish reuses shared strings, with explicit
+ * country editorial/monetary context. A locale never grants commercial GEO. */
+export const LOCALE_SEGMENTS = ['en', 'pt-br', 'es-mx', 'es-co', 'es-pe'] as const
 
 export type LocaleSegment = (typeof LOCALE_SEGMENTS)[number]
 
@@ -21,12 +14,16 @@ export const SEGMENT_TO_LOCALE: Record<LocaleSegment, Locale> = {
   en: 'en',
   'pt-br': 'pt-BR',
   'es-mx': 'es-MX',
+  'es-co': 'es-CO',
+  'es-pe': 'es-PE',
 }
 
 export const LOCALE_TO_SEGMENT: Record<Locale, LocaleSegment> = {
   en: 'en',
   'pt-BR': 'pt-br',
   'es-MX': 'es-mx',
+  'es-CO': 'es-co',
+  'es-PE': 'es-pe',
 }
 
 /** Open Graph locale identifiers (underscore-separated) per URL segment. */
@@ -34,6 +31,13 @@ const SEGMENT_TO_OG_LOCALE: Record<LocaleSegment, string> = {
   en: 'en_US',
   'pt-br': 'pt_BR',
   'es-mx': 'es_MX',
+  'es-co': 'es_CO',
+  'es-pe': 'es_PE',
+}
+
+/** Shared editorial/game strings; the actual URL locale and request GEO stay distinct. */
+export function contentLocale(locale: Locale): ContentLocale {
+  return locale === 'es-CO' || locale === 'es-PE' ? 'es-MX' : locale
 }
 
 export function isLocaleSegment(value: string): value is LocaleSegment {
@@ -93,16 +97,41 @@ export function localizedPath(path: string, segment: LocaleSegment): string {
 /** Best-effort Accept-Language header parsing → nearest supported segment. */
 export function detectLocaleSegmentFromAcceptLanguage(
   acceptLanguage: string | null,
+  fallback: LocaleSegment = DEFAULT_LOCALE_SEGMENT,
+  regionalSpanish: LocaleSegment = 'es-mx',
 ): LocaleSegment {
-  if (!acceptLanguage) return DEFAULT_LOCALE_SEGMENT
+  if (!acceptLanguage) return fallback
   const preferred = acceptLanguage
     .split(',')
-    .map((part) => part.split(';')[0].trim().toLowerCase())
+    .map((part, index) => {
+      const [language, ...parameters] = part.trim().toLowerCase().split(';')
+      const quality = parameters.find(parameter => parameter.trim().startsWith('q='))
+      return { language, weight: quality ? Number(quality.trim().slice(2)) : 1, index }
+    })
+    .filter(({ weight }) => Number.isFinite(weight) && weight > 0 && weight <= 1)
+    .sort((a, b) => b.weight - a.weight || a.index - b.index)
 
-  for (const lang of preferred) {
-    if (lang.startsWith('en')) return 'en'
-    if (lang.startsWith('pt')) return 'pt-br'
-    if (lang.startsWith('es')) return 'es-mx'
+  for (const { language: lang } of preferred) {
+    if (lang === 'es-mx' || lang.startsWith('es-mx-')) return 'es-mx'
+    if (lang === 'es-co' || lang.startsWith('es-co-')) return 'es-co'
+    if (lang === 'es-pe' || lang.startsWith('es-pe-')) return 'es-pe'
+    if (lang === 'en' || lang.startsWith('en-')) return 'en'
+    if (lang === 'pt' || lang.startsWith('pt-')) return 'pt-br'
+    if (lang === 'es' || lang.startsWith('es-')) return regionalSpanish
   }
-  return DEFAULT_LOCALE_SEGMENT
+  return fallback
+}
+
+/** First-visit presentation only. GEO remains independently verified by the
+ * commercial layer; a language preference never enables a market or operator. */
+export function detectRootLocaleSegment({ cookieLocale, acceptLanguage, country }: {
+  cookieLocale?: string | null
+  acceptLanguage: string | null
+  country: string | null
+}): LocaleSegment {
+  if (cookieLocale && isLocaleSegment(cookieLocale)) return cookieLocale
+  const normalizedCountry = country?.trim().toUpperCase()
+  const market = getGeoConfig(normalizedCountry)
+  const fallback = market ? localeToSegment(market.locale) : normalizedCountry === 'BR' ? 'pt-br' : 'en'
+  return detectLocaleSegmentFromAcceptLanguage(acceptLanguage, fallback, market ? fallback : 'es-mx')
 }

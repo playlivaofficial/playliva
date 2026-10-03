@@ -1,3 +1,4 @@
+import { commercialFixture } from './fixtures/promo-commercial.mjs'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { registerHooks } from 'node:module'
@@ -37,7 +38,7 @@ async function mounted(geo,verify){
  const key=async(type,k)=>act(()=>document.activeElement.dispatchEvent(new window.KeyboardEvent(type,{key:k,bubbles:true})))
  const pointer=async(selector,type,pointerId=1,clientX=100)=>{const e=new window.MouseEvent(type,{bubbles:true,clientX});Object.defineProperty(e,'pointerId',{value:pointerId});await act(()=>document.querySelector(selector).dispatchEvent(e))}
  try{
-  await act(()=>root.render(React.createElement(AppRouterContext.Provider,{value:{push(){},prefetch(){}}},React.createElement(PathnameContext.Provider,{value:'/pt-br/play/rio-drift'},React.createElement(country.CountryProvider,{initialLocale:'pt-BR',visitorCountryCode:geo},React.createElement(Game))))))
+  await act(()=>root.render(React.createElement(AppRouterContext.Provider,{value:{push(){},prefetch(){}}},React.createElement(PathnameContext.Provider,{value:'/pt-br/play/rio-drift'},React.createElement(country.CountryProvider,{initialLocale:'pt-BR',visitorCountryCode:geo,commercial:geo==='MX'?commercialFixture('MX'):undefined},React.createElement(Game))))))
   await frame();await verify({click,frame,key,pointer,dom,raf})
   assert.deepEqual(errors,[])
  }finally{await act(()=>root.unmount());assert.equal(raf.size,0);dom.window.close();for(const [k,d]of saved)if(d)Object.defineProperty(globalThis,k,d);else delete globalThis[k];delete globalThis.IS_REACT_ACT_ENVIRONMENT}
@@ -69,21 +70,21 @@ test('Rio actual UI: arrows, touch cancellation, Settings pause/resume, reload-s
   assert.equal(balance(),originalBalance)
  })
 })
-for(const geo of ['BR','GE'])test(`Rio actual UI: ${geo} run cadence uses the shared offer, with no active/impact interruption`,async()=>{
+for(const geo of ['MX','BR','GE'])test(`Rio actual UI: ${geo} run cadence uses the shared offer, with no active/impact interruption`,async()=>{
  await mounted(geo,async({click,frame,key})=>{
-  assert.equal(Boolean(document.querySelector('[data-betsson-banner]')),geo==='BR')
+  assert.equal(Boolean(document.querySelector('[data-sponsored-banner]')),geo==='MX')
   for(let cycle=1;cycle<=9;cycle++){
    await click('[data-drift-phase] button:not([aria-label])')
    await key('keydown','d')
-   for(let n=0;n<360;n++){await frame();if(document.querySelector('[data-drift-phase]').dataset.driftPhase==='result')break;assert.equal(document.querySelector('[data-betsson-engagement-offer]'),null)}
+   for(let n=0;n<360;n++){await frame();if(document.querySelector('[data-drift-phase]').dataset.driftPhase==='result')break;assert.equal(document.querySelector('[data-engagement-offer]'),null)}
    await key('keyup','d');assert.equal(document.querySelector('[data-drift-phase]').dataset.driftPhase,'result')
    await act(()=>new Promise(r=>setTimeout(r,700)))
-   const offer=document.querySelector('[data-betsson-engagement-offer]')
-   assert.equal(Boolean(offer),geo==='BR'&&cycle%3===0)
+   const offer=document.querySelector('[data-engagement-offer]')
+   assert.equal(Boolean(offer),geo==='MX'&&cycle%3===0)
    if(offer){const close=offer.querySelector('button');assert.ok(close);await act(()=>close.click())}
   }
   const exposures=window.dataLayer.filter(e=>e.event==='offer_impression'&&e.placement==='originals_engagement_offer')
-  assert.deepEqual(exposures.map(e=>e.completedCycleNumber),geo==='BR'?['3','6','9']:[])
+  assert.deepEqual(exposures.map(e=>e.completedCycleNumber),geo==='MX'?['3','6','9']:[])
   assert.equal(window.dataLayer.filter(e=>e.event==='demo_round_complete').length,9)
  })
 })

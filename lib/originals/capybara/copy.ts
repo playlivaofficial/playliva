@@ -1,3 +1,5 @@
+import { contentLocale } from '@/lib/locale'
+import type { ContentLocale } from '@/lib/types'
 import type { Locale } from '@/lib/types'
 import type { SlotSymbol } from './config'
 export interface SlotCopy {
@@ -9,7 +11,7 @@ export interface SlotCopy {
   reel: string; row: string; result: string; symbols: Record<SlotSymbol, string>; notice: string
   discovery: string; posterAlt: string; categoryTitle: string; categoryDescription: string; category: string
 }
-const COPY: Record<Locale, SlotCopy> = {
+const COPY: Record<ContentLocale, SlotCopy> = {
   en: {
     description: 'Meet your golden river companion. Play an original tropical slot with Capybara Wilds, growing multipliers and eight Jungle Bonus free spins. Virtual credits only.',
     spin: 'Spin', spinning: 'Spinning…', bet: 'Bet', win: 'Win', ready: 'The river is yours', noWin: 'No win this spin',
@@ -68,4 +70,4 @@ const COPY: Record<Locale, SlotCopy> = {
     categoryDescription: 'Juega Liva Capybara Gold con créditos virtuales. Un PlayLiva Original independiente, no un juego de proveedor u operador.', category: 'Slots',
   },
 }
-export const capybaraCopy = (locale: Locale): SlotCopy => COPY[locale]
+export const capybaraCopy = (locale: Locale): SlotCopy => COPY[contentLocale(locale)]

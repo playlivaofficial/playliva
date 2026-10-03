@@ -1,3 +1,4 @@
+import { contentLocale } from '@/lib/locale'
 import { notFound } from 'next/navigation'
 import { isLocaleSegment, segmentToLocale } from '@/lib/locale'
 import { pageMetadata } from '@/lib/seo'
@@ -8,7 +9,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale: segment } = await params
   if (!isLocaleSegment(segment)) notFound()
   const locale = segmentToLocale(segment)
-  return pageMetadata({ title: LIVA_ROULETTE.title[locale], description: rouletteCopy(locale).description,
+  return pageMetadata({ title: LIVA_ROULETTE.title[contentLocale(locale)], description: rouletteCopy(locale).description,
     path: '/play/roulette', localeSegment: segment })
 }
 export default function RoulettePage() { return <RouletteEntry /> }

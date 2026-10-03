@@ -25,9 +25,10 @@ import { track } from '@/lib/tracking'
 import type { GameList } from '@/lib/types'
 import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsored-banner'
 import { EditorialByline } from '@/components/editorial-byline'
+import { isWhereToPlayIndexable } from '@/lib/seo-market'
 
 export function BestListView({ list }: { list: GameList }) {
-  const { locale, marketCode: countryCode } = useCountry()
+  const { commercial, locale, marketCode: countryCode } = useCountry()
   const { t } = useTranslation()
 
   const countryName = getCountryName(list.country, locale)
@@ -35,7 +36,7 @@ export function BestListView({ list }: { list: GameList }) {
   const categoryName = getCategoryName(list.category, locale)
   const games = getGamesByIds(list.gameIds)
   const listContent = getGameListContent(list, locale)
-  const operators = (countryCode ? getOperatorsForCountry(countryCode) : []).filter((o) =>
+  const operators = (countryCode ? getOperatorsForCountry(countryCode, commercial.operators) : []).filter((o) =>
     countryCode === list.country &&
     o.categories.includes(list.category),
   )
@@ -137,7 +138,8 @@ export function BestListView({ list }: { list: GameList }) {
                     >
                       {t('cta.viewGame')}
                     </Button>
-                    {getOperatorsForGame(game, list.country).length > 0 && (
+                    {(getOperatorsForGame(game, list.country, commercial.operators).length > 0 ||
+                      (locale === 'pt-BR' && isWhereToPlayIndexable(game, 'pt-br'))) && (
                       <Button
                         size="lg"
                         variant="outline"

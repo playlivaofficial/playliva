@@ -9,6 +9,7 @@ import { CountrySelector } from '@/components/geo-selectors'
 import { AffiliateDisclosureLine } from '@/components/notices'
 import type { Offer } from '@/lib/types'
 import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsored-banner'
+import { getSponsoredBanner } from '@/lib/affiliates/promotion'
 
 function OfferGrid({ offers }: { offers: Offer[] }) {
   return (
@@ -21,11 +22,11 @@ function OfferGrid({ offers }: { offers: Offer[] }) {
 }
 
 export function OffersView() {
-  const { marketCode, locale, t } = useCountry()
+  const { marketCode, locale, t, commercial } = useCountry()
   // Verified-only: empty until real approved offers exist for this market.
   const offers = useMemo(
-    () => marketCode ? getPublicOffers(marketCode) : [],
-    [marketCode],
+    () => marketCode ? getPublicOffers(marketCode, commercial.offers, commercial.operators) : [],
+    [marketCode, commercial],
   )
   const countryName = marketCode ? getCountryName(marketCode, locale) : t('geo.marketLabel')
 
@@ -60,7 +61,7 @@ export function OffersView() {
                 {t('offers.heroTitle', { market: countryName })}
               </h1>
             </div>
-            <div
+            {marketCode && getSponsoredBanner(commercial, marketCode, locale, 'offers') && <div
               className="page-hero-sponsor"
               data-offers-sponsored=""
               data-page-hero-sponsor=""
@@ -70,7 +71,7 @@ export function OffersView() {
                 {t('affiliate.sponsoredPartner')}
               </p>
               <BetssonSponsoredBanner surface="offers" layout="compact-header" cta="visit" />
-            </div>
+            </div>}
             <div className="page-hero-lede">
               <p className="max-w-2xl text-pretty text-lg leading-relaxed text-muted-foreground">
                 {t('offers.heroSub')}

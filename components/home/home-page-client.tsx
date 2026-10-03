@@ -1,6 +1,7 @@
 'use client'
 
 import { ArrowRight, Compass, Layers3, Gamepad2 } from 'lucide-react'
+import { GeoEditorialGuide } from '@/components/geo-editorial-guide'
 import { Hero } from '@/components/home/hero'
 import { OriginalsDiscoverySection } from '@/components/originals/island-crash-feature'
 import { Section, SectionHeading } from '@/components/section'
@@ -140,6 +141,8 @@ export function HomePageClient() {
         <FeaturedOperators limit={3} />
         <AffiliateDisclosureLine className="mt-6" />
       </Section>
+
+      <GeoEditorialGuide surface="home" />
 
       {/* Responsible gambling block */}
       <Section className="py-8">

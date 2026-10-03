@@ -1,3 +1,5 @@
+import { contentLocale } from '@/lib/locale'
+import type { ContentLocale } from '@/lib/types'
 import type { Locale } from '@/lib/types'
 import { FOOTBALL_CARDS } from '../football-cards'
 
@@ -140,8 +142,8 @@ const esMX: EmbaixadinhaCopy = {
   },
 }
 
-const COPY: Record<Locale, EmbaixadinhaCopy> = { 'pt-BR': ptBR, en, 'es-MX': esMX }
-export const embaixadinhaCopy = (locale: Locale): EmbaixadinhaCopy => COPY[locale]
+const COPY: Record<ContentLocale, EmbaixadinhaCopy> = { 'pt-BR': ptBR, en, 'es-MX': esMX }
+export const embaixadinhaCopy = (locale: Locale): EmbaixadinhaCopy => COPY[contentLocale(locale)]
 export type EmbaixadinhaErrors = keyof EmbaixadinhaCopy['errors']
 
 /** UI-boundary parse of an auto target like "2.00" / "2,00" into hundredths. */

@@ -1,12 +1,13 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { createHash } from 'node:crypto'
+import registry from '../lib/commercial/server.ts'
+import { registration } from './fixtures/commercial.mjs'
 import dataModule from '../lib/data.ts'
 import affiliateModule from '../lib/affiliate.ts'
 import contentModule from '../lib/content.ts'
 import sportsCtaModule from '../components/sports/affiliate-cta.tsx'
-const { GAMES, CATEGORIES, GAME_LISTS, OPERATORS, offersByCountry, getGame, getGamesByIds,
-  getRelatedGames, getOperator, getOperatorsForGame, isAffiliateEligible } = dataModule
+const { GAMES, CATEGORIES, GAME_LISTS, OPERATORS, getGame, getGamesByIds,
+  getRelatedGames, getOperatorsForGame, isAffiliateEligible } = dataModule
 const { resolveDestination } = affiliateModule
 
 test('canonical categories and existing game identities remain consistent', () => {
@@ -40,25 +41,24 @@ test('rankings and related games respect discovery categories', () => {
   }
 })
 
-test('Blackjack discovery changes preserve verified commercial routing without extending approvals', () => {
-  const partner = getOperator('betsson-group-affiliates')
+test('Blackjack discovery preserves explicit game availability while retiring Brazil approvals', () => {
   const game = getGame('blackjack-live')
-  assert.ok(getOperatorsForGame(game, 'BR').includes(partner))
+  const snapshot = registry.snapshotFromRegistry('MX', [registration('MX', { verifiedGames: [game.id], productTypes: ['live-casino'] })])
+  const partner = snapshot.operators[0]
+  assert.ok(getOperatorsForGame(game, 'MX', snapshot.operators).includes(partner))
   for (const analyticsAllowed of [undefined, false, true]) {
     for (const extra of [{}, { category: 'table-games' }, { category: 'live-casino' }, { pageType: 'game', pageSlug: game.slug }]) {
-      assert.equal(resolveDestination({ operatorSlug: partner.slug, country: 'BR', gameSlug: game.slug, analyticsAllowed, ...extra })?.url,
-        partner.categoryAffiliateUrl['live-casino'].BR)
+      assert.equal(resolveDestination({ operatorSlug: partner.slug, country: 'MX', gameSlug: game.slug, analyticsAllowed, ...extra }, snapshot)?.url,
+        partner.affiliateUrl.MX)
     }
   }
-  for (const extra of [{ country: 'MX', gameSlug: game.slug }, { category: 'table-games' },
+  for (const extra of [{ country: 'BR', gameSlug: game.slug }, { category: 'table-games' },
     { category: 'instant-games' }, { gameSlug: 'mines' }, { gameSlug: 'plinko' },
     { category: 'slots', gameSlug: game.slug }, { category: 'sports' }]) {
-    assert.equal(resolveDestination({ operatorSlug: partner.slug, country: 'BR', ...extra }), null)
+    assert.equal(resolveDestination({ operatorSlug: partner.slug, country: 'MX', ...extra }, snapshot), null)
   }
   assert.equal(isAffiliateEligible({ ...partner, categories: ['sports'] }, 'BR'), false)
-  // Fingerprint of ALL operator and offer records at e7a8218, not inferred approvals.
-  assert.equal(createHash('sha256').update(JSON.stringify([OPERATORS, offersByCountry])).digest('hex'),
-    '5f09461318335fccd2b77af528ce85d3cf722682a8f8078b06993bdec3e494b8')
+  assert.ok(OPERATORS.every(operator => !isAffiliateEligible(operator, 'BR')), 'no historical BR record can promote')
 })
 
 test('archived sportsbook component cannot render a betting action', () => {
