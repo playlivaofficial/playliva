@@ -19,9 +19,11 @@ import { discoveryCategory } from '@/lib/product-discovery'
 import styles from '@/components/editorial-design.module.css'
 import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsored-banner'
 import { EditorialByline } from '@/components/editorial-byline'
+import { isWhereToPlayIndexable } from '@/lib/seo-market'
+import { localeToSegment } from '@/lib/locale'
 
 export function ComparisonView({ comparison }: { comparison: Comparison }) {
-  const { marketCode: countryCode, t, locale } = useCountry()
+  const { commercial, marketCode: countryCode, t, locale } = useCountry()
   const a = getGameById(comparison.gameAId)
   const b = getGameById(comparison.gameBId)
 
@@ -39,8 +41,8 @@ export function ComparisonView({ comparison }: { comparison: Comparison }) {
 
   const content = getComparisonContent(comparison, locale)
   const marketName = countryCode ? getCountryName(countryCode, locale) : t('geo.marketLabel')
-  const operators = countryCode ? getOperatorsForGame(a, countryCode) : []
-  const secondOperators = countryCode ? getOperatorsForGame(b, countryCode) : []
+  const operators = countryCode ? getOperatorsForGame(a, countryCode, commercial.operators) : []
+  const secondOperators = countryCode ? getOperatorsForGame(b, countryCode, commercial.operators) : []
 
   return (
     <div>
@@ -244,7 +246,7 @@ export function ComparisonView({ comparison }: { comparison: Comparison }) {
           eyebrow={t('geo.whereToPlay')}
           title={t('compare.whereToPlayTitle', { market: marketName })}
           description={t('compare.whereToPlaySub')}
-          action={operators.length > 0 ? (
+          action={operators.length > 0 || isWhereToPlayIndexable(a, localeToSegment(locale)) ? (
             <Button
               variant="outline"
               size="lg"
@@ -269,7 +271,7 @@ export function ComparisonView({ comparison }: { comparison: Comparison }) {
             </p>
           </div>
         )}
-        {secondOperators.length > 0 && (
+        {(secondOperators.length > 0 || isWhereToPlayIndexable(b, localeToSegment(locale))) && (
           <div className="mt-4">
             <Button
               variant="ghost"

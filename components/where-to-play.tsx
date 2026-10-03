@@ -6,9 +6,9 @@ import { WhereToPlayOperatorCard } from '@/components/where-to-play-operator-car
 import type { CategorySlug } from '@/lib/types'
 
 export function WhereToPlay({ category }: { category?: CategorySlug }) {
-  const { marketCode: countryCode, t, locale } = useCountry()
+  const { marketCode: countryCode, t, locale, commercial } = useCountry()
   const marketName = countryCode ? getCountryName(countryCode, locale) : t('geo.marketLabel')
-  const operators = (countryCode ? getOperatorsForCountry(countryCode) : []).filter((o) =>
+  const operators = (countryCode ? getOperatorsForCountry(countryCode, commercial.operators) : []).filter((o) =>
     category ? o.categories.includes(category) : true,
   )
 

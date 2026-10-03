@@ -1,10 +1,12 @@
+import { contentLocale } from '@/lib/locale'
+import type { ContentLocale } from '@/lib/types'
 import { absoluteUrl, pageMetadata } from '../seo'
 import { segmentToLocale, type LocaleSegment } from '../locale'
 import type { Locale } from '../types'
 import { THREE_GAMES, gamePoster, type ThreeGameKind } from './three-game-definitions'
 import { threeDescription } from './three-game-copy'
 
-const content: Record<Locale, Record<ThreeGameKind, { title: string; paragraphs: string[] }>> = {
+const content: Record<ContentLocale, Record<ThreeGameKind, { title: string; paragraphs: string[] }>> = {
   'pt-BR': {
     'samba-drop': {
       title: 'Liva Samba Drop — Plinko grátis com multiplicadores',
@@ -58,11 +60,11 @@ const content: Record<Locale, Record<ThreeGameKind, { title: string; paragraphs:
   },
 }
 
-export const threeSeoCopy = (kind: ThreeGameKind, locale: Locale) => content[locale][kind]
+export const threeSeoCopy = (kind: ThreeGameKind, locale: Locale) => content[contentLocale(locale)][kind]
 
 export function threeGameMetadata(kind: ThreeGameKind, segment: LocaleSegment) {
   const locale = segmentToLocale(segment)
-  return pageMetadata({ title: content[locale][kind].title, description: threeDescription(kind, locale), path: `/play/${kind}`, localeSegment: segment, images: [gamePoster(kind)] })
+  return pageMetadata({ title: content[contentLocale(locale)][kind].title, description: threeDescription(kind, locale), path: `/play/${kind}`, localeSegment: segment, images: [gamePoster(kind)] })
 }
 
 /** Factual game entity, using the site's existing JsonLd renderer. No ratings or invented reviews. */
@@ -71,7 +73,7 @@ export function threeGameJsonLd(kind: ThreeGameKind, segment: LocaleSegment) {
   const url = absoluteUrl(`/${segment}/play/${kind}`)
   return {
     '@context': 'https://schema.org', '@type': 'VideoGame', '@id': `${url}#game`,
-    name: game.title[locale], description: threeDescription(kind, locale), url,
+    name: game.title[contentLocale(locale)], description: threeDescription(kind, locale), url,
     image: absoluteUrl(gamePoster(kind)), inLanguage: locale, isAccessibleForFree: true,
     applicationCategory: 'GameApplication', gamePlatform: 'Web browser',
     playMode: 'https://schema.org/SinglePlayer',

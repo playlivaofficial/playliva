@@ -13,7 +13,9 @@ import type { Locale } from '@/lib/types'
  */
 const LANGUAGES: { code: Locale; flag: string; label: string }[] = [
   { code: 'en', flag: '🇬🇧', label: 'English' },
-  { code: 'es-MX', flag: '🇪🇸', label: 'Español' },
+  { code: 'es-MX', flag: '🇲🇽', label: 'Español · México' },
+  { code: 'es-CO', flag: '🇨🇴', label: 'Español · Colombia' },
+  { code: 'es-PE', flag: '🇵🇪', label: 'Español · Perú' },
   { code: 'pt-BR', flag: '🇧🇷', label: 'Português' },
 ]
 

@@ -1,3 +1,4 @@
+import { contentLocale } from '@/lib/locale'
 import { notFound } from 'next/navigation'
 import { isLocaleSegment, segmentToLocale } from '@/lib/locale'
 import { pageMetadata } from '@/lib/seo'
@@ -21,7 +22,7 @@ export default async function GolacoPage({ params }: { params: Promise<{ locale:
   const locale = segmentToLocale(segment), copy = golacoCopy(locale)
   return <>
     <GolacoEntry />
-    <OriginalSeoArticle crumbs={{ originals: copy.breadcrumbOriginals, game: GOLACO.title[locale], path: `/play/${GOLACO.slug}` }}
+    <OriginalSeoArticle crumbs={{ originals: copy.breadcrumbOriginals, game: GOLACO.title[contentLocale(locale)], path: `/play/${GOLACO.slug}` }}
       title={copy.articleTitle} paragraphs={[copy.articleIntro, copy.articleBonus]} rulesTitle={copy.rulesTitle} rules={copy.ruleList}
       creditsTitle={copy.creditsTitle} credits={copy.credits} links={originalsLinks(locale, GOLACO.slug)} />
   </>

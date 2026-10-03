@@ -5,8 +5,8 @@ import { getOperatorsForCountry, getCountryName } from '@/lib/data'
 import { OperatorCard } from '@/components/operator-card'
 
 export function FeaturedOperators({ limit }: { limit?: number }) {
-  const { marketCode, locale, t } = useCountry()
-  const operators = marketCode ? getOperatorsForCountry(marketCode) : []
+  const { marketCode, locale, t, commercial } = useCountry()
+  const operators = marketCode ? getOperatorsForCountry(marketCode, commercial.operators) : []
   const shown = limit ? operators.slice(0, limit) : operators
   const countryName = marketCode ? getCountryName(marketCode, locale) : t('geo.marketLabel')
 

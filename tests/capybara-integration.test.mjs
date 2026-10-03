@@ -1,3 +1,4 @@
+import { commercialFixture } from './fixtures/promo-commercial.mjs'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFile, readdir, stat } from 'node:fs/promises'
@@ -21,7 +22,7 @@ test('Capybara: complete EN/PT/ES functional copy, truthful SEO and reciprocal a
     const metadata = seoModule.pageMetadata({ title: CAPYBARA_GOLD.title[locale], description: copy.description, path: '/play/capybara-gold', localeSegment: segment })
     assert.ok(metadata.alternates.canonical.endsWith(`/${segment}/play/capybara-gold`))
     for (const s of ['en', 'pt-br', 'es-mx']) assert.ok(metadata.alternates.languages[s].endsWith(`/${s}/play/capybara-gold`))
-    assert.ok(metadata.alternates.languages['x-default'].endsWith('/pt-br/play/capybara-gold'))
+    assert.ok(metadata.alternates.languages['x-default'].endsWith('/en/play/capybara-gold'))
     assert.ok(sitemapModule.default().some(e => e.url.endsWith(`/${segment}/play/capybara-gold`)))
   }
 })
@@ -39,18 +40,19 @@ test('Capybara: Originals discovery stays separate, lightweight and never import
   assert.doesNotMatch(await source('components/originals/capybara/capybara-game.tsx'), /Math\.random|simulation|URLSearchParams|searchParams|wallet\.credit|wallet\.debit/)
 })
 test('Capybara: approved Slots/GEO affiliate routing never claims a provider mapping', () => {
-  assert.equal(CAPYBARA_GOLD.category, 'slots')
-  for (const locale of ['en', 'pt-BR', 'es-MX']) {
-    const options = realModule.getPlayRealOptions('BR', CAPYBARA_GOLD.category, locale)
-    assert.ok(options.length > 0)
-    for (const option of options) {
-      const url = new URL(option.href, 'https://www.playliva.com')
-      assert.equal(url.pathname, '/go'); assert.equal(url.searchParams.get('category'), 'slots')
-      assert.equal(url.searchParams.has('game'), false); assert.equal(url.searchParams.get('country'), 'BR')
-    }
-    assert.equal(realModule.getPlayRealOptions('MX', 'slots', locale).length, 0)
+  assert.equal(CAPYBARA_GOLD.category,'slots')
+  for(const geo of ['MX','CO','PE']) {
+    const locale=`es-${geo}`,snapshot=commercialFixture(geo)
+    const options=realModule.getPlayRealOptions(geo,'slots',locale,snapshot)
+    assert.equal(options.length,1)
+    const query=new URL(options[0].href,'https://www.playliva.com').searchParams
+    assert.equal(query.get('category'),'slots')
+    assert.equal(query.get('country'),geo)
+    assert.equal(query.get('game'),null)
+    assert.deepEqual(realModule.getPlayRealOptions('BR','slots',locale,snapshot),[])
   }
 })
+
 test('Capybara: original alpha assets stay small and sources remain non-public', async () => {
   const dir = new URL('../public/originals/capybara-gold/', import.meta.url), names = await readdir(dir)
   assert.equal(names.length, 11)

@@ -1,8 +1,9 @@
 import { authorizedSession, hashToken, ownerCookie, passwordConfig } from './auth'
 import { updateOwnerState } from './store'
 import { visitorMarket } from '../../visitor-market'
+import { isCommercialGeo, type CommercialGeo } from '../../geo'
 
-export type PreviewGeo = 'BR' | 'MX' | null
+export type PreviewGeo = CommercialGeo | null
 export interface OwnerGeoStatus { authorized: boolean; previewGeo: PreviewGeo; realCountry: string | null }
 
 /** Only the existing opaque owner credential is accepted; duplicate cookies fail closed. */
@@ -17,7 +18,7 @@ export async function ownerGeoStatus(headers: Pick<Headers, 'get'>): Promise<Own
   const country = headers.get('x-vercel-ip-country')?.toUpperCase() ?? ''
   return {
     authorized: Boolean(session),
-    previewGeo: session?.previewGeo === 'BR' || session?.previewGeo === 'MX' ? session.previewGeo : null,
+    previewGeo: isCommercialGeo(session?.previewGeo) ? session.previewGeo : null,
     realCountry: /^[A-Z]{2}$/.test(country) ? country : null,
   }
 }
@@ -29,7 +30,7 @@ export async function commercialMarket(headers: Pick<Headers, 'get'>) {
 }
 
 export async function setOwnerPreviewGeo(token: string | undefined, geo: unknown) {
-  if (geo !== null && geo !== 'BR' && geo !== 'MX') throw new Error('Invalid preview GEO.')
+  if (geo !== null && !isCommercialGeo(geo)) throw new Error('Invalid preview GEO.')
   if (!token || !await authorizedSession(token)) return false
   const config = await passwordConfig()
   if (!config) return false

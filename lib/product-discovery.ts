@@ -1,3 +1,5 @@
+import { contentLocale } from '@/lib/locale'
+import type { ContentLocale } from '@/lib/types'
 import type { CategorySlug, Game, Locale } from '@/lib/types'
 
 /** Presentation taxonomy only. Never pass this override to affiliate routing. */
@@ -31,7 +33,7 @@ const en = {
   trustCompare: 'See the differences', trustCompareBody: 'Read reviews and comparisons. Find similar games without starting your search over.',
   trustPlay: 'Try something of our own', trustPlayBody: 'PlayLiva Originals run in your browser, using virtual credits with no monetary value.',
   hubEyebrow: 'The free-play lobby', hubTitle: 'Your next play starts here.',
-  hubSub: 'Twelve Originals. Twelve different moods. Pick an adventure and make it yours—only virtual credits, always free.',
+  hubSub: 'Originals for every mood. Pick an adventure and make it yours—only virtual credits, always free.',
   all: 'All Originals', crash: 'Crash', slots: 'Slots', cards: 'Cards & roulette', instant: 'Instant Games',
   resultCount: '{count} games ready to play', navPrimary: 'Primary', navMobile: 'Quick navigation',
   lobbyBack: 'All Originals', settings: 'Session & activity', noLiveDealer: 'Free-play demo · No live dealer',
@@ -43,7 +45,7 @@ const en = {
   spotlightSlide: 'Game {index} of {total}',
 }
 type Copy = { [K in keyof typeof en]: string }
-const COPY: Record<Locale, Copy> = {
+const COPY: Record<ContentLocale, Copy> = {
   en,
   'pt-BR': {
     eyebrow: 'Seu próximo jogo começa aqui', heroLead: 'Descubra sua', heroAccent: 'próxima aventura.',
@@ -59,7 +61,7 @@ const COPY: Record<Locale, Copy> = {
     trustCompare: 'Entenda as diferenças', trustCompareBody: 'Leia análises e comparações. Encontre jogos parecidos sem começar a busca do zero.',
     trustPlay: 'Experimente nossos Originals', trustPlayBody: 'Os PlayLiva Originals rodam no navegador e usam créditos virtuais, sem valor monetário.',
     hubEyebrow: 'Sua área de jogos grátis', hubTitle: 'Qual vai ser o próximo?',
-    hubSub: 'Doze Originals. Doze jeitos de se divertir. Escolha sua aventura: só créditos virtuais, sempre grátis.',
+    hubSub: 'Originals para descobrir novos jeitos de se divertir. Escolha sua aventura: só créditos virtuais, sempre grátis.',
     all: 'Todos os Originals', crash: 'Crash', slots: 'Slots', cards: 'Cartas e roleta', instant: 'Jogos instantâneos',
     resultCount: '{count} jogos para explorar', navPrimary: 'Principal', navMobile: 'Navegação rápida',
     lobbyBack: 'Todos os Originals', settings: 'Sessão e atividade', noLiveDealer: 'Demo grátis · Sem croupier ao vivo',
@@ -84,7 +86,7 @@ const COPY: Record<Locale, Copy> = {
     trustCompare: 'Entiende las diferencias', trustCompareBody: 'Lee reseñas y comparaciones. Encuentra juegos similares sin empezar de cero.',
     trustPlay: 'Prueba nuestros Originals', trustPlayBody: 'Los PlayLiva Originals funcionan en tu navegador con créditos virtuales sin valor monetario.',
     hubEyebrow: 'Tu sala de juegos gratis', hubTitle: '¿Cuál será el siguiente?',
-    hubSub: 'Doce Originals. Doce formas de divertirte. Elige tu aventura: solo créditos virtuales, siempre gratis.',
+    hubSub: 'Originals para descubrir nuevas formas de divertirte. Elige tu aventura: solo créditos virtuales, siempre gratis.',
     all: 'Todos los Originals', crash: 'Crash', slots: 'Slots', cards: 'Cartas y ruleta', instant: 'Juegos instantáneos',
     resultCount: '{count} juegos por explorar', navPrimary: 'Principal', navMobile: 'Navegación rápida',
     lobbyBack: 'Todos los Originals', settings: 'Sesión y actividad', noLiveDealer: 'Demo gratis · Sin crupier en vivo',
@@ -96,4 +98,4 @@ const COPY: Record<Locale, Copy> = {
     spotlightSlide: 'Juego {index} de {total}',
   },
 }
-export const productCopy = (locale: Locale): Copy => COPY[locale]
+export const productCopy = (locale: Locale): Copy => COPY[contentLocale(locale)]

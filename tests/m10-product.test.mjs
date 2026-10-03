@@ -13,6 +13,7 @@ import data from '../lib/data.ts'
 import content from '../lib/content.ts'
 import product from '../lib/product-discovery.ts'
 import i18n from '../lib/i18n.ts'
+import seoMarket from '../lib/seo-market.ts'
 
 const hooks = registerHooks({ load(url, context, next) {
   if (url.endsWith('.module.css')) return { format: 'commonjs', shortCircuit: true, source: 'module.exports = {}' }
@@ -22,15 +23,65 @@ const unwrap = module => module.default ?? module
 const { GameDetailView } = unwrap(await import('../components/game-detail-view.tsx'))
 const { ComparisonCard } = unwrap(await import('../components/comparison-card.tsx'))
 const { ComparisonView } = unwrap(await import('../components/comparison-view.tsx'))
+const { CrashGamesHubView } = unwrap(await import('../components/crash-games-hub-view.tsx'))
+const { BestListView } = unwrap(await import('../components/best-list-view.tsx'))
+const { GamesLikeView } = unwrap(await import('../components/games-like-view.tsx'))
+const { CategoryPageView } = unwrap(await import('../components/category-page-view.tsx'))
 const { SiteFooter } = unwrap(await import('../components/site-footer.tsx'))
 hooks.deregister()
-const locales = [['en', 'en'], ['pt-BR', 'pt-br'], ['es-MX', 'es-mx']]
-function render(locale, segment, child) {
+const locales = [['en', 'en'], ['pt-BR', 'pt-br'], ['es-MX', 'es-mx'], ['es-CO', 'es-co'], ['es-PE', 'es-pe']]
+function render(locale, segment, child, country = 'BR') {
   const tree = React.createElement(AppRouterContext.Provider, { value: { push() {}, prefetch() {} } },
     React.createElement(PathnameContext.Provider, { value: `/${segment}` },
-      React.createElement(countryModule.CountryProvider, { initialLocale: locale, visitorCountryCode: 'BR' }, child)))
+      React.createElement(countryModule.CountryProvider, { initialLocale: locale, visitorCountryCode: country }, child)))
   return new JSDOM(renderToStaticMarkup(tree))
 }
+
+test('M10: sparse regional ordering never removes games from a category', () => {
+  for (const [locale, segment, country] of [['es-MX','es-mx','MX'], ['es-CO','es-co','CO'], ['es-PE','es-pe','PE'], ['pt-BR','pt-br','BR'], ['en','en','GE']]) {
+    for (const { slug } of data.CATEGORIES) {
+      const dom = render(locale, segment, React.createElement(CategoryPageView, { slug }), country)
+      const actual = [...dom.window.document.querySelectorAll('[data-provider-card]')].map(card => card.dataset.providerCard).sort()
+      const expected = data.GAMES.filter(game => product.discoveryCategory(game) === slug || slug === 'table-games' && game.category === slug).map(game => game.slug).sort()
+      assert.deepEqual(actual, expected, `${country}/${slug}: complete category membership`)
+      assert.equal(dom.window.document.querySelector('a[href^="/go"]'), null)
+      dom.window.close()
+    }
+  }
+})
+
+test('M10: historical PT-BR editorial links survive the retirement of Brazil affiliates', () => {
+  const hub = render('pt-BR', 'pt-br', React.createElement(CrashGamesHubView))
+  assert.ok(hub.window.document.querySelector('a[href="/pt-br/best/best-crash-games-brazil"]'))
+  assert.equal(hub.window.document.querySelector('a[href^="/go"]'), null)
+  hub.window.close()
+  for (const slug of ['best-crash-games-brazil', 'best-slots-brazil']) {
+    const list = data.getGameList(slug)
+    const dom = render('pt-BR', 'pt-br', React.createElement(BestListView, { list }))
+    for (const game of data.getGamesByIds(list.gameIds)) {
+      assert.ok(dom.window.document.querySelector(`a[href="/pt-br/where-to-play/${game.slug}"]`), `${slug}: preserved informational guide`)
+    }
+    assert.equal(dom.window.document.querySelector('a[href^="/go"]'), null)
+    dom.window.close()
+  }
+})
+
+test('M10: comparisons and alternatives retain every published PT-BR guide without affiliate promotions', () => {
+  for (const game of data.GAMES.filter(game => seoMarket.isWhereToPlayIndexable(game, 'pt-br'))) {
+    const dom = render('pt-BR', 'pt-br', React.createElement(GamesLikeView, { game }))
+    assert.ok(dom.window.document.querySelector(`a[href="/pt-br/where-to-play/${game.slug}"]`), `${game.slug}: original informational guide`)
+    assert.equal(dom.window.document.querySelector('a[href^="/go"]'), null)
+    dom.window.close()
+  }
+  for (const comparison of data.COMPARISONS) {
+    const dom = render('pt-BR', 'pt-br', React.createElement(ComparisonView, { comparison }))
+    for (const game of data.getGamesByIds([comparison.gameAId, comparison.gameBId])) {
+      if (seoMarket.isWhereToPlayIndexable(game, 'pt-br')) assert.ok(dom.window.document.querySelector(`a[href="/pt-br/where-to-play/${game.slug}"]`), `${comparison.slug}: ${game.slug} informational guide`)
+    }
+    assert.equal(dom.window.document.querySelector('a[href^="/go"]'), null)
+    dom.window.close()
+  }
+})
 
 test('M10: provider identity, editorial facts, guide anchors and indexed internal URLs survive the redesign', () => {
   for (const [locale, segment] of locales) for (const slug of ['aviator', 'gates-of-olympus', 'blackjack-live', 'lightning-roulette']) {
@@ -42,9 +93,9 @@ test('M10: provider identity, editorial facts, guide anchors and indexed interna
     assert.ok(doc.querySelector('#overview').textContent.includes(copy.whatIsIt ?? copy.about))
     for (const step of copy.howItWorks ?? []) assert.ok(doc.querySelector('#overview').textContent.includes(step))
     assert.ok(doc.querySelector(`a[href="/${segment}/games-like/${slug}"]`))
-    assert.equal(Boolean(doc.querySelector(`a[href="/${segment}/where-to-play/${slug}"]`)), segment === 'pt-br', 'Only published locale guides are linked')
+    assert.equal(Boolean(doc.querySelector(`a[href="/${segment}/where-to-play/${slug}"]`)), segment !== 'en', 'Regional guides remain accessible while commercial eligibility is pending')
     for (const link of doc.querySelectorAll('nav[aria-label] a[href^="#"]')) assert.ok(doc.querySelector(link.getAttribute('href')))
-    assert.ok(doc.querySelector('a[href="#where-to-play"]'))
+    assert.equal(doc.querySelector('a[href="#where-to-play"]'), null, 'No promotional hero action without an approved GEO operator')
     assert.ok(doc.querySelector('#where-to-play'))
     assert.equal(doc.querySelector('[data-original-card], [data-game-shell]'), null)
     dom.window.close()
@@ -64,31 +115,13 @@ test('M10: detail metadata uses the existing localized game type/mechanics witho
   }
 })
 
-test('M10: existing provider outbound actions keep exact context, new-tab isolation and attribution', () => {
+test('M10: deprecated Brazil promotion is suppressed without losing informational discovery', () => {
   for (const [locale, segment] of locales) for (const slug of ['aviator', 'blackjack-live', 'lightning-roulette']) {
-    const game = data.getGame(slug)
-    const dom = render(locale, segment, React.createElement(GameDetailView, { game })), doc = dom.window.document
-    // The Betsson Where-to-Play card is the central campaign card (CTA + terms link);
-    // the verified exact-game deep link stays on the hero Play Real CTA.
-    const links = [...doc.querySelectorAll('#where-to-play a[href^="/go?"]')]
-    assert.equal(links.length, 2)
-    for (const item of links) {
-      const query = new URL(item.getAttribute('href'), 'https://example.invalid').searchParams
-      assert.equal(query.get('operator'), 'betsson-group-affiliates')
-      assert.equal(query.get('offer'), 'of-br-betsson-100-giros')
-      assert.equal(query.get('country'), 'BR')
-      assert.equal(query.get('language'), locale)
-      assert.equal(query.get('category'), null, 'the campaign card never claims a game/category deep link')
-      assert.equal(query.get('game'), null)
-      assert.equal(query.get('page'), 'content')
-      assert.equal(query.get('pageSlug'), game.slug)
-      assert.equal(query.get('placement'), 'discovery_game_offer')
-    }
-    const hero = new URL(doc.querySelector('[data-betsson-game-cta] a[href^="/go?"]').getAttribute('href'), 'https://example.invalid').searchParams
-    assert.equal(hero.get('category'), game.affiliateCategory ?? game.category, 'verified deep link stays on the hero CTA')
-    const link = links[0]
-    assert.equal(link.getAttribute('target'), '_blank')
-    for (const rel of ['sponsored', 'noopener', 'noreferrer']) assert.ok(link.rel.split(' ').includes(rel))
+    const dom = render(locale, segment, React.createElement(GameDetailView, { game: data.getGame(slug) })), doc = dom.window.document
+    assert.equal(doc.querySelector('a[href^="/go"]'), null)
+    assert.equal(doc.querySelector('[data-betsson-game-cta]'), null)
+    assert.ok(doc.querySelector('#where-to-play'))
+    assert.ok(doc.querySelector(`a[href="/${segment}/games-like/${slug}"]`))
     dom.window.close()
   }
 })
@@ -145,6 +178,8 @@ test('M10: footer and trust display have no replacement characters in any suppor
 // Existing crash/table math remains covered by the unchanged Casino UX V2 math fixture.
 // Rio Drift adds five isolated skill-game modules; shared definition gains an
 // editorial-only arcade category, help/analytics/CTA guard are explicitly scoped.
+// GEO migration changes shared Spanish accessors and generic referral adapters only.
+// Existing engine/outcome files remain unchanged and retain their separate math checks.
 test('Originals: three-game additions and existing Casino UX V2 snapshot', async () => {
   const roots = ['lib/originals', 'components/originals/crash', 'components/originals/capybara', 'components/originals/blackjack', 'components/originals/roulette', 'components/originals/mines']
   const paths = []
@@ -159,5 +194,5 @@ test('Originals: three-game additions and existing Casino UX V2 snapshot', async
   const hash = createHash('sha256')
   for (const path of paths.sort()) hash.update(path + '\0' + (await readFile(new URL('../' + path, import.meta.url), 'utf8')).replace(/\r\n/g, '\n') + '\0')
   assert.equal(paths.length, 109)
-  assert.equal(hash.digest('hex'), '8046a956723650b7cd0e2ea3c9743343cecc8e4b27971e7ffc74af156badbfc8')
+  assert.equal(hash.digest('hex'), '7d9f05574b236cdc2d3493b29d16f1b8c95b421ad0695a497e9a2eb7a8f0261f')
 })

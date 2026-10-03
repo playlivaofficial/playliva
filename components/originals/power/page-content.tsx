@@ -1,3 +1,4 @@
+import { contentLocale } from '@/lib/locale'
 import { notFound } from 'next/navigation'
 import { isLocaleSegment, segmentToLocale } from '@/lib/locale'
 import { pageMetadata } from '@/lib/seo'
@@ -15,5 +16,5 @@ export function powerMetadata(kind:'raio'|'brasil21',segment:string){
 export function PowerPage({kind,segment}:{kind:'raio'|'brasil21';segment:string}){
   if(!isLocaleSegment(segment))notFound()
   const locale=segmentToLocale(segment),copy=powerCopy(locale),raio=kind==='raio',game=raio?RAIO:BRASIL21
-  return <><PowerEntry kind={kind}/><OriginalSeoArticle crumbs={{originals:copy.originals,game:game.title[locale],path:`/play/${game.slug}`}} title={raio?copy.raioTitle:copy.brasilTitle} paragraphs={[raio?copy.raioIntro:copy.brasilIntro]} rulesTitle={copy.rules} rules={raio?copy.raioRules:copy.brasilRules} creditsTitle={copy.creditsTitle} credits={copy.credits} links={originalsLinks(locale,game.slug)}/></>
+  return <><PowerEntry kind={kind}/><OriginalSeoArticle crumbs={{originals:copy.originals,game:game.title[contentLocale(locale)],path:`/play/${game.slug}`}} title={raio?copy.raioTitle:copy.brasilTitle} paragraphs={[raio?copy.raioIntro:copy.brasilIntro]} rulesTitle={copy.rules} rules={raio?copy.raioRules:copy.brasilRules} creditsTitle={copy.creditsTitle} credits={copy.credits} links={originalsLinks(locale,game.slug)}/></>
 }

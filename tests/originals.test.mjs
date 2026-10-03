@@ -1,13 +1,12 @@
+import { commercialFixture } from './fixtures/promo-commercial.mjs'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import sessionModule from '../lib/originals/session.ts'
 import realModule from '../lib/originals/play-real.ts'
 import affiliateModule from '../lib/affiliate.ts'
-import dataModule from '../lib/data.ts'
 import copyModule from '../lib/originals/copy.ts'
 const { createDemoSessionStore, decodeSession, DEMO_STORAGE_KEY, INITIAL_CREDIT_UNITS: INITIAL_CREDITS, MAX_CREDIT_UNITS: MAX_CREDITS, HISTORY_LIMIT } = sessionModule
 const { getPlayRealOptions } = realModule
-const { getOperator } = dataModule
 const memory = () => {
   const data = new Map()
   return { getItem: key => data.get(key) ?? null, setItem: (key, value) => data.set(key, value) }
@@ -105,50 +104,30 @@ test('storage access/read/write errors keep a usable in-memory wallet', () => {
   }
 })
 
-test('Play Real uses existing approved category/GEO links without mapping Originals to provider games', () => {
-  const partner = getOperator('betsson-group-affiliates')
-  for (const locale of ['en', 'pt-BR', 'es-MX']) {
-    for (const category of ['crash', 'slots', 'live-casino']) {
-      const options = getPlayRealOptions('BR', category, locale)
-      assert.ok(options.some(option => option.operatorSlug === partner.slug))
-      const query = new URL(options.find(option => option.operatorSlug === partner.slug).href, 'https://site.example.invalid').searchParams
-      assert.equal(query.get('game'), null)
-      assert.equal(query.get('category'), category)
-      assert.equal(query.get('country'), 'BR')
-      assert.equal(query.get('language'), locale)
-      for (const analyticsAllowed of [false, true]) {
-        assert.equal(affiliateModule.resolveDestination({ operatorSlug: query.get('operator'), category,
-          country: 'BR', pageType: query.get('page'), placement: query.get('placement'), analyticsAllowed })?.url,
-        partner.categoryAffiliateUrl?.[category]?.BR ?? partner.affiliateUrl.BR)
-      }
+test('Play Real uses approved category/GEO links without mapping Originals to provider games',()=>{
+  for(const geo of ['MX','CO','PE']) {
+    const locale=`es-${geo}`,snapshot=commercialFixture(geo),partner=snapshot.operators[0]
+    for(const category of ['crash','slots','live-casino','table-games','instant-games']) {
+      const options=getPlayRealOptions(geo,category,locale,snapshot)
+      assert.equal(options.length,1)
+      const query=new URL(options[0].href,'https://www.playliva.com').searchParams
+      assert.equal(query.get('game'),null)
+      assert.equal(query.get('country'),geo)
+      assert.equal(query.get('category'),category)
+      assert.equal(affiliateModule.resolveDestination({operatorSlug:partner.slug,country:geo,category},snapshot)?.url,partner.affiliateUrl[geo])
+    }
+    for(const category of ['sports','unknown',undefined])assert.deepEqual(getPlayRealOptions(geo,category,locale,snapshot),[])
+    const generic=realModule.getGenericApprovedOperatorCtas(geo,locale,snapshot)
+    assert.equal(generic.length,1);assert.equal(generic[0].mode,'generic-brand')
+    const query=new URL(generic[0].href,'https://www.playliva.com').searchParams
+    assert.equal(query.get('game'),null);assert.equal(query.get('category'),null)
+    assert.equal(query.get('placement'),'originals_generic_operator')
+    for(const other of ['BR','GE','MX','CO','PE'])if(other!==geo)assert.deepEqual(getPlayRealOptions(other,'crash',locale,snapshot),[])
+    for(const patch of [{approved:false},{active:false},{affiliateStatus:'pending'},{verified:false},{isMock:true},{destinationReady:false}]) {
+      const blocked=structuredClone(snapshot);Object.assign(blocked.operators[0],patch)
+      assert.deepEqual(getPlayRealOptions(geo,'crash',locale,blocked),[])
     }
   }
-  for (const category of ['table-games', 'instant-games', 'sports', 'unknown', undefined]) {
-    assert.deepEqual(getPlayRealOptions('BR', category, 'en'), [])
-  }
-  const generic = realModule.getGenericApprovedOperatorCtas('BR', 'en')
-  assert.equal(generic.length, 1)
-  assert.equal(generic[0].mode, 'generic-brand')
-  assert.equal(generic[0].operatorSlug, partner.slug)
-  const genericQuery = new URL(generic[0].href, 'https://site.example.invalid').searchParams
-  assert.equal(genericQuery.get('category'), null)
-  assert.equal(genericQuery.get('game'), null)
-  assert.equal(genericQuery.get('language'), 'en')
-  assert.equal(genericQuery.get('placement'), 'originals_generic_operator')
-  assert.equal(affiliateModule.resolveDestination({
-    operatorSlug: genericQuery.get('operator'), country: 'BR', pageType: 'play',
-    placement: genericQuery.get('placement'), analyticsAllowed: false,
-  })?.url, partner.affiliateUrl.BR)
-  assert.notEqual(partner.affiliateUrl.BR, partner.categoryAffiliateUrl.crash.BR)
-  assert.deepEqual(realModule.getGenericApprovedOperatorCtas('MX', 'en'), [])
-  for (const country of ['MX', 'PT', 'unknown']) assert.deepEqual(getPlayRealOptions(country, 'crash', 'en'), [])
-  const saved = { ...partner }
-  try {
-    for (const patch of [{ affiliateStatus: 'pending' }, { affiliateStatus: 'paused' }, { verified: false }, { isMock: true }, { active: false }]) {
-      Object.assign(partner, saved, patch)
-      assert.equal(getPlayRealOptions('BR', 'crash', 'en').some(option => option.operatorSlug === partner.slug), false)
-    }
-  } finally { Object.assign(partner, saved) }
 })
 
 test('shared terminology is complete in all three locales, without currency symbols', () => {

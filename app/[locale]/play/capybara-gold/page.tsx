@@ -1,3 +1,4 @@
+import { contentLocale } from '@/lib/locale'
 import { notFound } from 'next/navigation'
 import { isLocaleSegment, segmentToLocale } from '@/lib/locale'
 import { pageMetadata } from '@/lib/seo'
@@ -8,7 +9,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale: segment } = await params
   if (!isLocaleSegment(segment)) notFound()
   const locale = segmentToLocale(segment)
-  return pageMetadata({ title: CAPYBARA_GOLD.title[locale], description: capybaraCopy(locale).description,
+  return pageMetadata({ title: CAPYBARA_GOLD.title[contentLocale(locale)], description: capybaraCopy(locale).description,
     path: '/play/capybara-gold', localeSegment: segment })
 }
 export default function CapybaraPage() { return <CapybaraEntry /> }

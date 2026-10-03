@@ -1,5 +1,7 @@
-import { privateCampaign } from './affiliates/campaign-references'
-import { BRAZIL_AD_RULES, isAuthorizedBrazilDestination } from './compliance/brazil'
+import { BRAZIL_AD_RULES } from './compliance/brazil'
+import { parseCommercialReference } from './commercial/references'
+import { GEO_CONFIG, isCommercialGeo, TARGET_GEOS } from './geo'
+import { contentLocale } from './locale'
 import { hasCurrentOfferEvidence } from './compliance/offers'
 import { BETSSON_PROMO, BETSSON_PROMO_OFFER_ID } from './affiliates/betsson-promo-config'
 import type {
@@ -11,6 +13,7 @@ import type {
   Game,
   GameList,
   Locale,
+  ContentLocale,
   MarketContent,
   Offer,
   Operator,
@@ -18,7 +21,7 @@ import type {
 
 // Localized market display names. Keyed by LANGUAGE (locale), never by GEO —
 // e.g. an English-speaking visitor physically in Brazil still sees "Brazil".
-const COUNTRY_NAMES: Record<CountryCode, Record<Locale, string>> = {
+const COUNTRY_NAMES: Record<CountryCode, Record<ContentLocale, string>> = {
   BR: { 'pt-BR': 'Brasil', 'es-MX': 'Brasil', en: 'Brazil' },
   MX: { 'pt-BR': 'México', 'es-MX': 'México', en: 'Mexico' },
   PT: { 'pt-BR': 'Portugal', 'es-MX': 'Portugal', en: 'Portugal' },
@@ -35,25 +38,24 @@ const COUNTRY_NAMES: Record<CountryCode, Record<Locale, string>> = {
  * be switched on later without re-architecting.
  */
 export const COUNTRIES: Country[] = [
-  { code: 'BR', name: 'Brasil', flag: '🇧🇷', language: 'PT', locale: 'pt-BR', enabledForLaunch: true },
-  { code: 'MX', name: 'México', flag: '🇲🇽', language: 'ES', locale: 'es-MX', enabledForLaunch: true },
+  ...TARGET_GEOS.map(code => ({ code, name: GEO_CONFIG[code].name, flag: GEO_CONFIG[code].flag,
+    language: 'ES' as const, locale: GEO_CONFIG[code].locale, enabledForLaunch: true })),
+  { code: 'BR', name: 'Brasil', flag: '🇧🇷', language: 'PT', locale: 'pt-BR', enabledForLaunch: false },
   { code: 'PT', name: 'Portugal', flag: '🇵🇹', language: 'PT', locale: 'pt-BR', enabledForLaunch: false },
-  { code: 'CO', name: 'Colombia', flag: '🇨🇴', language: 'ES', locale: 'es-MX', enabledForLaunch: false },
-  { code: 'PE', name: 'Perú', flag: '🇵🇪', language: 'ES', locale: 'es-MX', enabledForLaunch: false },
   { code: 'AR', name: 'Argentina', flag: '🇦🇷', language: 'ES', locale: 'es-MX', enabledForLaunch: false },
   { code: 'EC', name: 'Ecuador', flag: '🇪🇨', language: 'ES', locale: 'es-MX', enabledForLaunch: false },
   { code: 'CL', name: 'Chile', flag: '🇨🇱', language: 'ES', locale: 'es-MX', enabledForLaunch: false },
 ]
 
-/** Markets shown in public country selectors (Brazil + Mexico for launch). */
+/** Editorial market choices; actual commercial permission always uses request GEO. */
 export const PUBLIC_COUNTRIES: Country[] = COUNTRIES.filter(
   (c) => c.enabledForLaunch,
 )
 
-export const DEFAULT_COUNTRY: CountryCode = 'BR'
+export const DEFAULT_COUNTRY: CountryCode = 'MX'
 
 /** Priority launch markets — richer content and internal linking. */
-export const LAUNCH_MARKETS: CountryCode[] = ['BR', 'MX']
+export const LAUNCH_MARKETS: CountryCode[] = [...TARGET_GEOS]
 
 export function getCountry(code: CountryCode): Country {
   return COUNTRIES.find((c) => c.code === code) ?? COUNTRIES[0]
@@ -61,13 +63,7 @@ export function getCountry(code: CountryCode): Country {
 
 /** Language-aware market display name (GEO name, rendered in the current UI language). */
 export function getCountryName(code: CountryCode, locale: Locale): string {
-  return COUNTRY_NAMES[code]?.[locale] ?? getCountry(code).name
-}
-
-const LANGUAGE_TO_LOCALE: Record<'PT' | 'ES' | 'EN', Locale> = {
-  PT: 'pt-BR',
-  ES: 'es-MX',
-  EN: 'en',
+  return COUNTRY_NAMES[code]?.[contentLocale(locale)] ?? getCountry(code).name
 }
 
 /**
@@ -78,12 +74,12 @@ const LANGUAGE_TO_LOCALE: Record<'PT' | 'ES' | 'EN', Locale> = {
  * call this to override an existing language choice.
  */
 export function getDefaultLocaleForCountry(code: CountryCode): Locale {
-  return LANGUAGE_TO_LOCALE[getCountry(code).language] ?? 'en'
+  return getCountry(code).locale
 }
 
 /**
  * Narrow a list of market codes to the ones that are publicly live for launch
- * (Brazil + Mexico). Future GEOs stay in the data model for later activation
+ * (Mexico, Colombia and Peru). Archived GEOs stay in the historical data model
  * but must never surface on public pages as if they were active markets.
  */
 export function getPublicMarkets(codes: CountryCode[]): CountryCode[] {
@@ -925,12 +921,12 @@ export const OPERATORS: Operator[] = [
   },
 ]
 
-export function getOperator(slug: string): Operator | undefined {
-  return OPERATORS.find((o) => o.slug === slug)
+export function getOperator(slug: string, operators: Operator[] = OPERATORS): Operator | undefined {
+  return operators.find((o) => o.slug === slug)
 }
 
-export function getOperatorById(id: string): Operator | undefined {
-  return OPERATORS.find((o) => o.id === id)
+export function getOperatorById(id: string, operators: Operator[] = OPERATORS): Operator | undefined {
+  return operators.find((o) => o.id === id)
 }
 
 /**
@@ -956,15 +952,15 @@ export function isOperatorRecommendable(
  * currently being activated) must not leak into the public directory,
  * sitemap, or search index ahead of approval.
  */
-export function getPublicOperators(): Operator[] {
-  return OPERATORS.filter(
+export function getPublicOperators(operators: Operator[] = []): Operator[] {
+  return operators.filter(
     (o) => PUBLIC_COUNTRIES.some((c) => isAffiliateEligible(o, c.code)),
   )
 }
 
 /** Recommendable operators in a market (commercial CTAs allowed). */
-export function getOperatorsForCountry(country: CountryCode): Operator[] {
-  return OPERATORS.filter((o) => isOperatorRecommendable(o, country))
+export function getOperatorsForCountry(country: CountryCode, operators: Operator[] = []): Operator[] {
+  return operators.filter((o) => isOperatorRecommendable(o, country))
 }
 
 /**
@@ -989,8 +985,9 @@ export function isGameVerifiedAtOperator(
 export function getOperatorsForGame(
   game: Game,
   country: CountryCode,
+  operators: Operator[] = [],
 ): Operator[] {
-  return OPERATORS.filter(
+  return operators.filter(
     (o) =>
       isAffiliateEligible(o, country, { category: game.category, gameSlug: game.slug }),
   )
@@ -1061,7 +1058,7 @@ export function isCategorySlug(value: string): value is CategorySlug {
 /** Only configured HTTPS destinations, never placeholders or executable URLs. */
 export function isAffiliateUrl(value: string | undefined): boolean {
   if (!value) return false
-  if (privateCampaign(value)) return true
+  if (parseCommercialReference(value)) return true
   try {
     const url = new URL(value)
     return url.protocol === 'https:' && !url.username && !url.password &&
@@ -1089,12 +1086,15 @@ export function isAffiliateEligible(
   country: CountryCode,
   context: AffiliateContext = {},
 ): boolean {
-  if (!operator || !operator.active || !operator.verified || operator.isMock ||
+  if (!isCommercialGeo(country) || !operator || operator.approved !== true || operator.destinationReady !== true || operator.active !== true || !operator.verified || operator.isMock ||
     operator.affiliateStatus !== 'approved' ||
+    operator.currency !== GEO_CONFIG[country].currency ||
     !operator.categories.some(isCategorySlug) ||
     !PUBLIC_COUNTRIES.some((c) => c.code === country) ||
     !operator.countries.includes(country) ||
     !isAffiliateUrl(operator.affiliateUrl[country])) return false
+  const ref = parseCommercialReference(operator.affiliateUrl[country])
+  if (!ref || ref.geo !== country || ref.operatorId !== operator.id || ref.campaignKey !== operator.campaignKey) return false
 
   // Sports fixtures have no verified operator availability model yet.
   if (context.matchSlug || context.placement === 'sports_odds') return false
@@ -1119,25 +1119,24 @@ export function isAffiliateEligible(
   const destination = category && isCategorySlug(category)
     ? operator.categoryAffiliateUrl?.[category]?.[country] ?? operator.affiliateUrl[country]
     : operator.affiliateUrl[country]
-  return isAffiliateUrl(destination) && (country !== 'BR' ||
-    (isAuthorizedBrazilDestination(operator, operator.affiliateUrl[country]) &&
-      isAuthorizedBrazilDestination(operator, destination)))
+  return destination === operator.affiliateUrl[country]
 }
 
 export function isOfferEligible(
   offer: Offer,
   country: CountryCode,
   context: AffiliateContext = {},
+  operators: Operator[] = [],
+  now = Date.now(),
 ): boolean {
-  const operator = getOperatorById(offer.operatorId)
-  if (!offer.active || offer.status !== 'verified' || offer.country !== country || !hasCurrentOfferEvidence(offer) ||
+  const operator = getOperatorById(offer.operatorId, operators)
+  if (!offer.active || offer.status !== 'verified' || offer.country !== country || !hasCurrentOfferEvidence(offer, now) ||
     !isAffiliateUrl(offer.affiliateUrl) || !isAffiliateEligible(operator, country, context)) return false
   if (offer.category !== 'welcome' &&
     (!isAffiliateEligible(operator, country, { ...context, category: offer.category }) ||
       (context.category && context.category !== offer.category))) return false
   if (operator?.verifiedOffers && !operator.verifiedOffers.includes(offer.id)) return false
-  if (country === 'BR' && (!operator || !isAuthorizedBrazilDestination(operator, offer.affiliateUrl))) return false
-  const now = Date.now()
+  if (offer.affiliateUrl !== operator?.affiliateUrl[country]) return false
   if (offer.validFrom && !(Date.parse(offer.validFrom) <= now)) return false
   if (offer.validUntil && !(Date.parse(offer.validUntil) >= now)) return false
   return true
@@ -1330,8 +1329,8 @@ export const offersByCountry: Record<CountryCode, Offer[]> = {
 }
 
 /** Raw offers (internal / development). */
-export function getOffers(country: CountryCode): Offer[] {
-  return offersByCountry[country] ?? []
+export function getOffers(country: CountryCode, offers: Offer[] = []): Offer[] {
+  return offers.filter(offer => offer.country === country)
 }
 
 /**
@@ -1348,6 +1347,6 @@ export function getOffers(country: CountryCode): Offer[] {
  * don't define `verifiedOffers` still require both offer verification and
  * operator eligibility, a valid destination, GEO/category and date validity.
  */
-export function getPublicOffers(country: CountryCode): Offer[] {
-  return getOffers(country).filter((offer) => isOfferEligible(offer, country))
+export function getPublicOffers(country: CountryCode, offers: Offer[] = [], operators: Operator[] = []): Offer[] {
+  return getOffers(country, offers).filter((offer) => isOfferEligible(offer, country, {}, operators))
 }

@@ -1,3 +1,5 @@
+import { contentLocale } from '@/lib/locale'
+import type { ContentLocale } from '@/lib/types'
 import { entitySupplement } from './discovery/entity-copy'
 import type {
   CategorySlug,
@@ -55,7 +57,7 @@ interface GameContent {
   }
 }
 
-const GAME_CONTENT: Record<Locale, Record<string, GameContent>> = {
+const GAME_CONTENT: Record<ContentLocale, Record<string, GameContent>> = {
   'pt-BR': {
     g1: {
       description:
@@ -577,14 +579,14 @@ const GAME_CONTENT: Record<Locale, Record<string, GameContent>> = {
 }
 
 export function getGameContent(game: Game, locale: Locale) {
-  const c = { ...GAME_CONTENT[locale]?.[game.id], ...entitySupplement(game.id, locale) }
+  const c = { ...GAME_CONTENT[contentLocale(locale)]?.[game.id], ...entitySupplement(game.id, locale) }
   const description = c?.description ?? game.description
   const categoryName = getCategoryContent(game.category, locale).name
   const about =
     c?.about ??
     (locale === 'pt-BR'
       ? `${game.title} é um título de ${categoryName.toLowerCase()} da ${game.provider}. ${description} É um dos jogos que os jogadores descobrem pela PlayLiva ao explorar o que jogar no seu mercado.`
-      : locale === 'es-MX'
+      : locale.startsWith('es-')
         ? `${game.title} es un título de ${categoryName.toLowerCase()} de ${game.provider}. ${description} Es uno de los juegos que los jugadores descubren a través de PlayLiva al explorar qué jugar en su mercado.`
         : `${game.title} is a ${categoryName.toLowerCase()} title from ${game.provider}. ${description} It's one of the games players discover through PlayLiva while exploring what to play in their market.`)
   return {
@@ -617,7 +619,7 @@ export function getGameContent(game: Game, locale: Locale) {
  * populated where real editorial notes exist; absent pairs simply render
  * without an individual write-up.
  */
-const ALTERNATIVE_NOTES: Record<Locale, Record<string, string>> = {
+const ALTERNATIVE_NOTES: Record<ContentLocale, Record<string, string>> = {
   'pt-BR': {
     'g1:g2':
       'O JetX é um jogo de crash da SmartSoft com o mesmo núcleo do Aviator — um multiplicador que sobe até quebrar — mas com tema de jato de combate e uma apresentação visual diferente. É uma alternativa direta para quem já conhece o formato crash e quer conhecer outro provedor.',
@@ -671,7 +673,7 @@ export function getAlternativeNote(
   alternativeGameId: string,
   locale: Locale,
 ): string | undefined {
-  return ALTERNATIVE_NOTES[locale]?.[`${baseGameId}:${alternativeGameId}`]
+  return ALTERNATIVE_NOTES[contentLocale(locale)]?.[`${baseGameId}:${alternativeGameId}`]
 }
 
 /* ------------------------------------------------------------------ */
@@ -687,7 +689,7 @@ interface CategoryContent {
   seoDescription?: string
 }
 
-const CATEGORY_CONTENT: Record<Locale, Record<CategorySlug | 'sports', CategoryContent>> = {
+const CATEGORY_CONTENT: Record<ContentLocale, Record<CategorySlug | 'sports', CategoryContent>> = {
   'pt-BR': {
     crash: {
       name: 'Crash',
@@ -777,7 +779,7 @@ const CATEGORY_CONTENT: Record<Locale, Record<CategorySlug | 'sports', CategoryC
 
 export function getCategoryContent(slug: CategorySlug | 'sports', locale: Locale): CategoryContent {
   return (
-    CATEGORY_CONTENT[locale]?.[slug] ?? {
+    CATEGORY_CONTENT[contentLocale(locale)]?.[slug] ?? {
       name: slug,
       description: '',
       cta: '',
@@ -806,7 +808,7 @@ interface ComparisonContent {
   }
 }
 
-const COMPARISON_CONTENT: Record<Locale, Record<string, ComparisonContent>> = {
+const COMPARISON_CONTENT: Record<ContentLocale, Record<string, ComparisonContent>> = {
   'pt-BR': {
     'aviator-vs-jetx': {
       intro:
@@ -1065,7 +1067,7 @@ const COMPARISON_CONTENT: Record<Locale, Record<string, ComparisonContent>> = {
 }
 
 export function getComparisonContent(comparison: Comparison, locale: Locale) {
-  const c = COMPARISON_CONTENT[locale]?.[comparison.slug]
+  const c = COMPARISON_CONTENT[contentLocale(locale)]?.[comparison.slug]
   return {
     intro: c?.intro ?? comparison.intro,
     similarities: c?.similarities ?? comparison.similarities,
@@ -1089,7 +1091,7 @@ interface ListContent {
   selectionReasons?: Record<string, string>
 }
 
-const LIST_CONTENT: Record<Locale, Record<string, ListContent>> = {
+const LIST_CONTENT: Record<ContentLocale, Record<string, ListContent>> = {
   'pt-BR': {
     'best-crash-games-brazil': {
       title: 'Seleção editorial de crash games no Brasil',
@@ -1243,7 +1245,7 @@ const LIST_CONTENT: Record<Locale, Record<string, ListContent>> = {
 }
 
 export function getListContent(list: GameList, locale: Locale) {
-  const c = LIST_CONTENT[locale]?.[list.slug]
+  const c = LIST_CONTENT[contentLocale(locale)]?.[list.slug]
   return {
     title: c?.title ?? list.title,
     intro: c?.intro ?? list.intro,
@@ -1272,12 +1274,12 @@ export function getTagLabel(
   tag: 'Popular' | 'Trending' | 'New',
   locale: Locale,
 ): string {
-  const labels: Record<Locale, Record<typeof tag, string>> = {
+  const labels: Record<ContentLocale, Record<typeof tag, string>> = {
     'pt-BR': { Popular: 'Popular', Trending: 'Em alta', New: 'Novo' },
     'es-MX': { Popular: 'Popular', Trending: 'En tendencia', New: 'Nuevo' },
     en: { Popular: 'Popular', Trending: 'Trending', New: 'New' },
   }
-  return labels[locale]?.[tag] ?? tag
+  return labels[contentLocale(locale)]?.[tag] ?? tag
 }
 
 /* ------------------------------------------------------------------ */
@@ -1304,7 +1306,7 @@ interface CrashHubContent {
   whereToPlaySub: string
 }
 
-const CRASH_HUB_CONTENT: Record<Locale, CrashHubContent> = {
+const CRASH_HUB_CONTENT: Record<ContentLocale, CrashHubContent> = {
   'pt-BR': {
     seoTitle: 'Como Escolher Crash Games: Guia de Comparação | PlayLiva',
     seoDescription:
@@ -1440,5 +1442,5 @@ const CRASH_HUB_CONTENT: Record<Locale, CrashHubContent> = {
 }
 
 export function getCrashHubContent(locale: Locale): CrashHubContent {
-  return CRASH_HUB_CONTENT[locale]
+  return CRASH_HUB_CONTENT[contentLocale(locale)]
 }

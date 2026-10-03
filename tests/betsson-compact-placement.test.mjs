@@ -1,3 +1,4 @@
+import { commercialFixture } from './fixtures/promo-commercial.mjs'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { registerHooks } from 'node:module'
@@ -37,13 +38,13 @@ cssHooks.deregister()
 const { getBetssonSponsoredBanner, resolveBetssonBannerLayout } = betssonModule
 const ORIGINALS_GAME_SLUGS = ['crash', 'capybara-gold', 'blackjack', 'roulette', 'mines']
 const { CountryProvider } = countryModule
-const locales = [['pt-BR', 'pt-br'], ['en', 'en'], ['es-MX', 'es-mx']]
+const locales = [['pt-BR','pt-br'],['en','en'],['es-MX','es-mx'],['es-CO','es-co'],['es-PE','es-pe']]
 const FOLLOWING = 4
 
 function wrap(locale, path, child) {
   return React.createElement(AppRouterContext.Provider, { value: { push() {}, prefetch() {} } },
     React.createElement(PathnameContext.Provider, { value: path },
-      React.createElement(CountryProvider, { initialLocale: locale, visitorCountryCode: 'BR' }, child)))
+      React.createElement(CountryProvider, { initialLocale: locale, visitorCountryCode: 'MX', commercial: commercialFixture('MX') }, child)))
 }
 
 function render(locale, path, child) {
@@ -52,7 +53,7 @@ function render(locale, path, child) {
 
 function assertCompactHeroPlacement(doc, surface) {
   const title = doc.querySelector('h1')
-  const banner = doc.querySelector(`[data-betsson-banner="${surface}"]`)
+  const banner = doc.querySelector(`[data-sponsored-banner="${surface}"]`)
   assert.ok(title, `${surface}: page title`)
   assert.ok(banner, `${surface}: sponsored banner`)
   assert.equal(banner.getAttribute('data-banner-layout'), 'compact-header', surface)
@@ -63,7 +64,7 @@ function assertCompactHeroPlacement(doc, surface) {
     `${surface}: sponsor sits in a header slot`,
   )
   assert.ok(banner.querySelector('a[href^="/go?"]'))
-  assert.ok(banner.querySelector('[data-brazil-ad-warning]'))
+  assert.ok(banner.querySelector('[data-commercial-disclosure]'))
   assert.ok(banner.textContent.includes('18+'))
   assert.doesNotMatch(banner.innerHTML, /https?:\/\/betsson/i)
 }
@@ -79,7 +80,7 @@ test('legacy banner layouts resolve to compact-header or full-support', () => {
 
 test('standalone banners default to compact-header without hardcoded outbound URLs', () => {
   const markup = render('en', '/en', React.createElement(bannerModule.BetssonSponsoredBanner, { surface: 'homepage' }))
-  const root = markup.querySelector('[data-betsson-banner="homepage"]')
+  const root = markup.querySelector('[data-sponsored-banner="homepage"]')
   assert.equal(root.getAttribute('data-banner-layout'), 'compact-header')
   assert.ok(root.querySelector('a[href^="/go?"]'))
   assert.doesNotMatch(root.innerHTML, /https?:\/\/betsson/i)
@@ -87,7 +88,7 @@ test('standalone banners default to compact-header without hardcoded outbound UR
     surface: 'homepage',
     layout: 'full-support',
   }))
-  assert.equal(full.querySelector('[data-betsson-banner="homepage"]').getAttribute('data-banner-layout'), 'full-support')
+  assert.equal(full.querySelector('[data-sponsored-banner="homepage"]').getAttribute('data-banner-layout'), 'full-support')
 })
 
 test('commercial surfaces keep page identity first and a compact header sponsor', () => {
@@ -119,38 +120,38 @@ test('commercial surfaces keep page identity first and a compact header sponsor'
       const doc = render(locale, `/${segment}`, factory())
       assertCompactHeroPlacement(doc, surface)
       if (locale === 'en') {
-        assert.match(doc.querySelector(`[data-betsson-banner="${surface}"]`).textContent, /Sponsored/)
-        assert.doesNotMatch(doc.querySelector(`[data-betsson-banner="${surface}"]`).textContent, /Patrocinado|Conheça cassino/)
+        assert.match(doc.querySelector(`[data-sponsored-banner="${surface}"]`).textContent, /Sponsored/)
+        assert.doesNotMatch(doc.querySelector(`[data-sponsored-banner="${surface}"]`).textContent, /Patrocinado|Conheça cassino/)
       }
       if (locale === 'pt-BR') {
-        assert.match(doc.querySelector(`[data-betsson-banner="${surface}"]`).textContent, /Patrocinado/)
-        assert.doesNotMatch(doc.querySelector(`[data-betsson-banner="${surface}"]`).textContent, /Sponsored|Explore Betsson|Visit Betsson/)
+        assert.match(doc.querySelector(`[data-sponsored-banner="${surface}"]`).textContent, /Patrocinado/)
+        assert.doesNotMatch(doc.querySelector(`[data-sponsored-banner="${surface}"]`).textContent, /Sponsored|Explore Betsson|Visit Betsson/)
       }
       if (locale === 'es-MX') {
-        assert.match(doc.querySelector(`[data-betsson-banner="${surface}"]`).textContent, /Patrocinado/)
-        assert.doesNotMatch(doc.querySelector(`[data-betsson-banner="${surface}"]`).textContent, /Sponsored|Explore Betsson|Visit Betsson|Conheça cassino/)
+        assert.match(doc.querySelector(`[data-sponsored-banner="${surface}"]`).textContent, /Patrocinado/)
+        assert.doesNotMatch(doc.querySelector(`[data-sponsored-banner="${surface}"]`).textContent, /Sponsored|Explore Betsson|Visit Betsson|Conheça cassino/)
       }
       if (name === 'homepage') {
-        assert.ok(doc.querySelector('[data-hero-sponsor] [data-betsson-banner="homepage"]'))
+        assert.ok(doc.querySelector('[data-hero-sponsor] [data-sponsored-banner="homepage"]'))
       }
       if (name === 'play') {
-        assert.ok(doc.querySelector('[data-hub-sponsor] [data-betsson-banner="play"]'))
-        assert.ok(doc.querySelector('header [data-betsson-banner="play"]'))
+        assert.ok(doc.querySelector('[data-hub-sponsor] [data-sponsored-banner="play"]'))
+        assert.ok(doc.querySelector('header [data-sponsored-banner="play"]'))
       }
     }
   }
 })
 
-test('Originals banner surface stays GEO-gated and resolves only through /go', () => {
-  const banner = getBetssonSponsoredBanner('BR', 'en', 'originals')
-  assert.ok(banner)
-  assert.equal(banner.surface, 'originals')
-  assert.match(banner.href, /^\/go\?/)
-  assert.equal(new URL(banner.href, 'https://www.playliva.com').searchParams.get('placement'), 'originals_header')
-  assert.doesNotMatch(banner.href, /https?:\/\//)
-  assert.equal(getBetssonSponsoredBanner('MX', 'en', 'originals'), null)
-  assert.equal(getBetssonSponsoredBanner('PT', 'pt-BR', 'originals'), null)
-  assert.equal(getBetssonSponsoredBanner('MX', 'es-MX', 'originals'), null)
+test('Originals header banner resolves only for its approved runtime market', () => {
+  for(const geo of ['MX','CO','PE']) {
+    const snapshot=commercialFixture(geo)
+    const banner=getBetssonSponsoredBanner(geo,`es-${geo}`,'originals',snapshot)
+    assert.ok(banner)
+    assert.equal(banner.surface,'originals')
+    assert.match(banner.href,/^\/go\?/)
+    assert.equal(new URL(banner.href,'https://www.playliva.com').searchParams.get('placement'),'originals_header')
+    for(const other of ['BR','GE','MX','CO','PE'])if(other!==geo)assert.equal(getBetssonSponsoredBanner(other,`es-${geo}`,'originals',snapshot),null)
+  }
 })
 
 test('Originals header compact sponsor sits above the viewport on all five routes', async () => {
@@ -167,7 +168,7 @@ test('Originals header compact sponsor sits above the viewport on all five route
   const controls = shell.indexOf('data-game-controls')
   assert.ok(header > 0 && unit > header && viewport > unit && controls > viewport)
   const between = shell.slice(viewport, controls)
-  assert.doesNotMatch(between, /BetssonSponsoredBanner|PlayRealCTA|data-betting-ad|data-betsson-banner/)
+  assert.doesNotMatch(between, /BetssonSponsoredBanner|PlayRealCTA|data-betting-ad|data-sponsored-banner/)
 
   const gameFiles = {
     crash: '../components/originals/crash/crash-game.tsx',

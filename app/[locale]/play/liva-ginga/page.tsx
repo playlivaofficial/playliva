@@ -1,3 +1,4 @@
+import { contentLocale } from '@/lib/locale'
 import { notFound } from 'next/navigation'
 import { isLocaleSegment, segmentToLocale } from '@/lib/locale'
 import { pageMetadata } from '@/lib/seo'
@@ -21,7 +22,7 @@ export default async function LivaGingaPage({ params }: { params: Promise<{ loca
   const locale = segmentToLocale(segment), copy = embaixadinhaCopy(locale)
   return <>
     <EmbaixadinhaEntry />
-    <OriginalSeoArticle crumbs={{ originals: copy.breadcrumbOriginals, game: EMBAIXADINHA.title[locale], path: `/play/${EMBAIXADINHA.slug}` }}
+    <OriginalSeoArticle crumbs={{ originals: copy.breadcrumbOriginals, game: EMBAIXADINHA.title[contentLocale(locale)], path: `/play/${EMBAIXADINHA.slug}` }}
       title={copy.articleTitle} paragraphs={[copy.articleIntro, copy.articleCrash]} rulesTitle={copy.rulesTitle} rules={copy.rules}
       creditsTitle={copy.creditsTitle} credits={copy.credits} links={originalsLinks(locale, EMBAIXADINHA.slug)} />
   </>

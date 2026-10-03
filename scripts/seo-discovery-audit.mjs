@@ -19,7 +19,7 @@ await Promise.all(Array.from({length:4},async()=>{while(cursor<urls.length){cons
 }}))
 rows.sort((a,b)=>a.path.localeCompare(b.path))
 for(const row of rows){row.inbound=rows.filter(other=>other.path!==row.path&&other.links.includes(row.path)).map(other=>other.path);row.outbound=row.links.filter(path=>rows.some(other=>other.path===path)&&path!==row.path)}
-const duplicates=[];for(const locale of ['pt-br','en','es-mx'])for(const field of ['title','description','h1']){const groups=new Map();for(const row of rows.filter(r=>r.path.startsWith('/'+locale+'/'))){const value=field==='h1'?row.h1.join(' '):row[field];if(value)groups.set(value,[...(groups.get(value)||[]),row.path])}for(const [value,paths]of groups)if(paths.length>1)duplicates.push({locale,field,value,paths})}
+const duplicates=[];for(const locale of ['pt-br','en','es-mx','es-co','es-pe'])for(const field of ['title','description','h1']){const groups=new Map();for(const row of rows.filter(r=>r.path.startsWith('/'+locale+'/'))){const value=field==='h1'?row.h1.join(' '):row[field];if(value)groups.set(value,[...(groups.get(value)||[]),row.path])}for(const [value,paths]of groups)if(paths.length>1)duplicates.push({locale,field,value,paths})}
 const report={observedAt:new Date().toISOString(),base,sitemapCount:urls.length,rows,failures,duplicates,orphans:rows.filter(r=>!r.inbound.length).map(r=>r.path),weak:rows.filter(r=>r.inbound.length===1).map(r=>r.path)}
 await writeFile(`${out}/${name}-audit.json`,JSON.stringify(report,null,2))
 console.log(JSON.stringify({base,sitemap:urls.length,crawled:rows.length,failures:failures.length,duplicates:duplicates.length,orphans:report.orphans,weak:report.weak}))

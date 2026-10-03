@@ -1,3 +1,4 @@
+import { contentLocale } from '@/lib/locale'
 // Server projection: full editorial copy never crosses the directory client boundary.
 import { catalogSummaries, getReferenceGame } from '@/lib/catalog'
 import { GAMES } from '@/lib/data'
@@ -33,7 +34,7 @@ export function discoveryEntries(locale: Locale): DiscoveryEntry[] {
     aliases: game.slug === 'book-of-dead' ? ['Book of Dead'] : game.providerId === 'play-n-go' ? ['Play n GO', 'Playngo'] : [], format: gameFormat(game.slug, game.category) }))
   const originals = SPOTLIGHT_GAMES.map(game => {
     const slug=game.playPath.split('/').at(-1)!,category=originalCategory(slug),categoryLabel=category==='arcade'?driftCopy(locale).category:getCategoryName(category,locale)
-    const title=game.title[locale],summary=slug==='rio-drift'?driftCopy(locale).actionHint:locale==='pt-BR'?'Jogue grátis com créditos virtuais, sem depósitos ou valor monetário.':locale==='es-MX'?'Juega gratis con créditos virtuales, sin depósitos ni valor monetario.':'Play free with virtual credits, no deposits or monetary value.'
+    const title=game.title[contentLocale(locale)],summary=slug==='rio-drift'?driftCopy(locale).actionHint:locale==='pt-BR'?'Jogue grátis com créditos virtuais, sem depósitos ou valor monetário.':locale.startsWith('es-')?'Juega gratis con créditos virtuales, sin depósitos ni valor monetario.':'Play free with virtual credits, no deposits or monetary value.'
     return {id:game.id,slug,title,provider:'PlayLiva Original',providerId:'playliva',category,categoryLabel,summary,image:game.poster,artworkLabel:'',reference:false,kind:'original' as const,href:game.playPath,
       aliases:[title.replace(/^Liva /,''),...(slug==='rio-drift'?['Drift','Rio','Racing','Skill','Corrida','Habilidade','Carreras']:slug==='roulette'?['Golden Orbit']:slug==='mines'?['Jungle Gold']:slug==='crash'?['PlayLiva Island Crash']:[])],format:gameFormat(slug,category),searchText:normalizeSearch([title,'PlayLiva Original',category,categoryLabel].join(' '))}
   })
@@ -41,7 +42,7 @@ export function discoveryEntries(locale: Locale): DiscoveryEntry[] {
 }
 export function entityContent(slug: string, locale: Locale) {
   const reference=getReferenceGame(slug)
-  if(reference){const c=reference.content[locale];return {overview:c.overview,mechanics:c.howItWorks,features:c.features,sources:reference.sources}}
+  if(reference){const c=reference.content[contentLocale(locale)];return {overview:c.overview,mechanics:c.howItWorks,features:c.features,sources:reference.sources}}
   const game=GAMES.find(g=>g.slug===slug)
   if(!game)return null
   const c=getGameContent(game,locale)

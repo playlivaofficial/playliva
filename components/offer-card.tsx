@@ -1,23 +1,28 @@
 import Image from 'next/image'
 import { Gift } from 'lucide-react'
 import type { Offer } from '@/lib/types'
-import { getOperatorById, getCountry, getCountryName, isOfferEligible } from '@/lib/data'
+import { getCountry, getCountryName, isOfferEligible } from '@/lib/data'
 import { getCategoryName } from '@/lib/content'
 import { AffiliateButton } from '@/components/affiliate-button'
 import { buildGoHref } from '@/lib/affiliate'
-import { useTranslation } from '@/components/country-context'
-import { BrazilAdWarning } from '@/components/affiliates/brazil-ad-warning'
+import { useCountry } from '@/components/country-context'
+import { CommercialAdDisclosure } from '@/components/affiliates/commercial-ad-disclosure'
 import { AffiliateDisclosureLine } from '@/components/notices'
+import { useCampaignExpiry } from '@/components/affiliates/use-campaign-expiry'
 
 export function OfferCard({ offer }: { offer: Offer }) {
-  const { t, locale } = useTranslation()
-  const operator = getOperatorById(offer.operatorId)
+  const { t, locale, marketCode, commercial } = useCountry()
+  const operator = commercial.operators.find(item => item.id === offer.operatorId)
+  useCampaignExpiry(Math.min(Date.parse(offer.validUntil ?? ''), Date.parse(offer.complianceReview?.reviewBy ?? ''),
+    Date.parse(offer.lastVerifiedAt ?? '') + 30 * 86_400_000))
   const country = getCountry(offer.country)
   // GEO name is language-aware (not GEO-aware) — an offer for MX must say
   // "Mexico" in English, "México" in Português/Español, never mixed with
   // the visitor's own selected GEO.
   const countryName = getCountryName(offer.country, locale)
-  if (!isOfferEligible(offer, offer.country)) return null
+  if (!marketCode || marketCode !== offer.country || commercial.geo !== marketCode ||
+    !commercial.offers.some(item => item.id === offer.id) ||
+    !isOfferEligible(offer, marketCode, {}, commercial.operators)) return null
   const categoryLabel =
     offer.category === 'welcome'
       ? t('label.welcomeCategory')
@@ -26,11 +31,11 @@ export function OfferCard({ offer }: { offer: Offer }) {
   const creative = offer.creative?.languages.includes(locale) ? offer.creative : undefined
   const campaign = Boolean(offer.promoId)
   // Terms live on the official campaign landing page, reached through the same tracked redirect.
-  const termsHref = offer.termsUrl ? buildGoHref({ offer: offer.id, country: offer.country, language: locale, page: 'offers', placement: 'offers_page_terms', cta: 'offers_page_terms' }) : undefined
+  const termsHref = offer.termsUrl ? buildGoHref({ offer: offer.id, operator: operator?.slug, country: offer.country, language: locale, page: 'offers', placement: 'offers_page_terms', cta: 'offers_page_terms' }) : undefined
 
   return (
     <div className="flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:glow-primary"
-      data-betting-ad={offer.country === 'BR' ? '' : undefined} data-evidence-state="pending"
+      data-commercial-ad=""
       data-offer-id={offer.id} data-promo-id={offer.promoId}>
       <div className="flex items-center justify-between border-b border-border bg-secondary/40 px-5 py-3">
         <span className="flex items-center gap-2 text-sm font-semibold text-foreground">
@@ -50,12 +55,12 @@ export function OfferCard({ offer }: { offer: Offer }) {
       {creative && (
         <div className="relative w-full overflow-hidden border-b border-border bg-secondary/40"
           style={{ aspectRatio: `${creative.width} / ${creative.height}` }}>
-          <Image src={creative.assetPath} alt={creative.alt[locale]} fill sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 400px" className="object-cover" />
+          <Image src={creative.assetPath} alt={creative.alt[locale] ?? operator?.name ?? offer.title} fill sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 400px" className="object-cover" />
         </div>
       )}
       <div className="flex flex-1 flex-col p-5">
         <h3 className={`font-display font-bold text-foreground ${campaign ? 'text-2xl leading-tight' : 'text-lg'}`}
-          lang={campaign && offer.country === 'BR' ? 'pt-BR' : undefined}>
+          lang={locale}>
           {offer.title}
         </h3>
         <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
@@ -67,6 +72,7 @@ export function OfferCard({ offer }: { offer: Offer }) {
         </p>
         <AffiliateButton
           offerId={offer.id}
+          operatorSlug={operator?.slug}
           operatorId={offer.operatorId}
           country={offer.country}
           category={offer.category === 'welcome' ? undefined : offer.category}
@@ -90,10 +96,7 @@ export function OfferCard({ offer }: { offer: Offer }) {
           )}
         </p>
         <AffiliateDisclosureLine />
-        {offer.country === 'BR' && <BrazilAdWarning operatorId={offer.operatorId} expiresAt={Math.min(
-          Date.parse(offer.validUntil ?? ''), Date.parse(offer.complianceReview?.reviewBy ?? ''),
-          Date.parse(offer.lastVerifiedAt ?? '') + 30 * 86_400_000,
-        )} />}
+        <CommercialAdDisclosure operatorId={offer.operatorId} />
       </div>
     </div>
   )

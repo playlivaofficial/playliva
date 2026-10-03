@@ -1,4 +1,6 @@
 'use client'
+
+import { contentLocale } from '@/lib/locale'
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { useTableAudio } from '../power/use-table-audio'
 import { useCountry } from '@/components/country-context'
@@ -72,7 +74,7 @@ export function RouletteGame({ suppliedEngine, presentationNow }: { suppliedEngi
     <PlayGameShell game={LIVA_ROULETTE} compact controls={controls} roundActive={!ready && round.phase !== 'error'}>
       <div className={styles.stage} data-roulette-phase={round.phase} data-airing={!ready || undefined}>
         <div className={styles.orbitZone}>
-          <div className={styles.brand}><span>PLAYLIVA ORIGINALS</span><b>{LIVA_ROULETTE.title[locale].split(': ')[1]}</b><small>{copy.wheel} · 0–36</small></div>
+          <div className={styles.brand}><span>PLAYLIVA ORIGINALS</span><b>{LIVA_ROULETTE.title[contentLocale(locale)].split(': ')[1]}</b><small>{copy.wheel} · 0–36</small></div>
           <RouletteWheel round={round} locale={locale} now={presentationNow}/>
           <div className={styles.reveal} role="status" data-roulette-reveal data-big-win={strongWin || undefined}>
             {result ? <><span className={styles.resultNumber} data-result-number data-color={pocketColor(result.number)}>{result.number}</span>

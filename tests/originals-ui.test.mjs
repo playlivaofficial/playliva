@@ -1,3 +1,4 @@
+import { commercialFixture } from './fixtures/promo-commercial.mjs'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { registerHooks } from 'node:module'
@@ -32,7 +33,7 @@ const game = { id: 'test-only', slug: 'test-only', category: 'crash',
 const context = { originalId: game.id, originalSlug: game.slug, category: game.category, country: 'BR', locale: 'en' }
 function MarketControl() {
   const { setCountryCode } = useCountry()
-  return React.createElement('button', { onClick: () => setCountryCode('MX') }, 'Test MX')
+  return React.createElement('button', { onClick: () => setCountryCode('CO') }, 'Test CO')
 }
 
 test('test-only shell: wallet/settings/reset, consent-aware events, header sponsor, and GEO gating', async () => {
@@ -53,7 +54,7 @@ test('test-only shell: wallet/settings/reset, consent-aware events, header spons
   const render = async (roundActive = false) => act(() => root.render(
     React.createElement(AppRouterContext.Provider, { value: { push() {} } },
       React.createElement(PathnameContext.Provider, { value: '/en/play/test-only' },
-        React.createElement(CountryProvider, { initialLocale: 'en', visitorCountryCode: 'BR' },
+        React.createElement(CountryProvider, { initialLocale: 'en', visitorCountryCode: 'MX', commercial: commercialFixture('MX') },
           React.createElement(DemoSessionProvider, { store },
             React.createElement(PlayGameShell, { game, roundActive, controls: React.createElement('button', {}, 'Test control') },
               React.createElement('div', {}, 'Test viewport only')),
@@ -102,7 +103,7 @@ test('test-only shell: wallet/settings/reset, consent-aware events, header spons
     await render(false)
 
     assert.equal(document.querySelector('[data-operator-cta="play-real"]'), null)
-    const banner = document.querySelector('[data-betsson-banner="originals"]')
+    const banner = document.querySelector('[data-sponsored-banner="originals"]')
     assert.ok(banner, 'compact Betsson placement lives in the Originals header')
     assert.ok(banner.closest('[data-originals-sponsor]'))
     assert.ok(banner.closest('[data-sponsor-slot="originals-header"]'))
@@ -118,7 +119,7 @@ test('test-only shell: wallet/settings/reset, consent-aware events, header spons
     assert.ok(viewport && controls && unit)
     assert.equal(Boolean(banner.compareDocumentPosition(viewport) & 4), true)
     assert.equal(Boolean(viewport.compareDocumentPosition(controls) & 4), true)
-    assert.equal(unit.querySelector('[data-operator-cta], [data-betsson-banner], a[href^="/go"]'), null)
+    assert.equal(unit.querySelector('[data-operator-cta], [data-sponsored-banner], a[href^="/go"]'), null)
 
     const events = ['free_play_open', 'demo_round_start', 'demo_round_complete', 'demo_balance_reset', 'play_real_view', 'play_real_click']
     for (const event of events) trackFreePlay(event, context)
@@ -132,9 +133,9 @@ test('test-only shell: wallet/settings/reset, consent-aware events, header spons
     saveConsent({ necessary: true, analytics: false, marketing: false })
     for (const event of events) trackFreePlay(event, context)
     assert.equal(window.dataLayer.length, count, 'revocation blocks subsequent events')
-    await click(button('Test MX'))
+    await click(button('Test CO'))
     assert.equal(document.querySelector('a[href^="/go?"]'), null)
-    assert.equal(document.querySelector('[data-betsson-banner]'), null)
+    assert.equal(document.querySelector('[data-sponsored-banner]'), null)
     assert.equal(document.querySelector('[data-operator-cta="play-real"]'), null)
   } finally {
     await act(() => root.unmount())

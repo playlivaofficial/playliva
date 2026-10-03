@@ -94,10 +94,10 @@ test('Traffic Sprint 3: Evolution cluster remains sourced and keeps entities dis
   assert.doesNotMatch(`${dream.content['pt-BR'].overview} ${monopoly.content['pt-BR'].overview}`, /RTP|mais popular|melhor/i)
 })
 
-test('Traffic Sprint 3: existing verified affiliate availability is preserved without new destinations', async () => {
+test('Traffic Sprint 3: retired affiliate availability is suppressed while game discovery survives', async () => {
   const partner = getOperator('betsson-group-affiliates')
   for (const slug of ['crazy-time', 'lightning-roulette', 'blackjack-live']) {
-    assert.ok(getOperatorsForGame(getGame(slug), 'BR').includes(partner), slug)
+    assert.equal(getOperatorsForGame(getGame(slug), 'BR').includes(partner), false, slug)
   }
 
   const sources = await Promise.all([

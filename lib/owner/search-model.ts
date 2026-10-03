@@ -1,4 +1,11 @@
 /** Pure Search Console evidence and experiment rules. No network, media or secrets. */
+import { isLocaleSegment } from '../locale'
+import { getGeoConfig } from '../geo'
+
+/** Reporting defaults are display filters; they never grant commercial GEO. */
+export function evidenceLocale(country: string, locale: string) {
+  return locale || getGeoConfig(country.toUpperCase())?.locale.toLowerCase() || 'es-mx'
+}
 export const SEARCH_PROPERTY = 'sc-domain:playliva.com'
 export const SEARCH_WINDOWS = [7, 14, 28] as const
 export type Grain = 'total' | 'page' | 'query'
@@ -21,7 +28,7 @@ export function canonicalPage(value: string): string | null {
     // Only recognized tracking parameters are safe to collapse. Facets are not new entities.
     if ([...url.searchParams.keys()].some(key => !/^(utm_[a-z_]+|gclid|fbclid|msclkid)$/i.test(key))) return null
     const path = url.pathname.replace(/\/+$/, '') || '/'
-    if (!/^\/(en|pt-br|es-mx)(\/|$)/.test(path) || /%|\/\//.test(path)) return null
+    if (!isLocaleSegment(path.split('/')[1]) || /%|\/\//.test(path)) return null
     return 'https://www.playliva.com' + path
   } catch { return null }
 }

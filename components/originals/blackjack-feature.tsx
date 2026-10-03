@@ -1,4 +1,6 @@
 'use client'
+
+import { contentLocale } from '@/lib/locale'
 import Image from 'next/image'
 import { PowerFeature } from './power-feature'
 import { ArrowRight, Play } from 'lucide-react'
@@ -14,7 +16,7 @@ import { getCategoryContent } from '@/lib/content'
 /** Original vector poster only. No game code or hidden-card imports. */
 export function BlackjackFeature({ surface }: { surface: 'home' | 'hub' | 'category' }) {
   const { locale } = useCountry(), copy = blackjackCopy(locale), shared = originalsDiscoveryCopy(locale)
-  const Heading = surface === 'hub' ? 'h2' : 'h3', title = LIVA_BLACKJACK.title[locale]
+  const Heading = surface === 'hub' ? 'h2' : 'h3', title = LIVA_BLACKJACK.title[contentLocale(locale)]
   return <article className={styles.card} data-original-card="blackjack" data-surface={surface}>
     <LocaleLink href="/play/blackjack" prefetch={false} className={styles.posterLink} aria-label={`${shared.playFree}: ${title}`}>
       <Image src="/originals/blackjack/table-poster.svg" alt={copy.posterAlt} fill sizes="(max-width:767px) 100vw,700px" className={styles.poster} />

@@ -1,3 +1,4 @@
+import { commercialFixture } from './fixtures/promo-commercial.mjs'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFile, stat } from 'node:fs/promises'
@@ -131,9 +132,10 @@ test('shared offer appears at settled runs 3/6/9 only, never driving or reacting
   assert.deepEqual(opened.map(m=>m.exposureNumber),[1,2,3])
   t.dispose()
 })
-test('BR eligibility is inherited; no operator-equivalent arcade claim or non-BR commercial leakage',()=>{
+test('Target GEO eligibility is inherited; no operator-equivalent arcade claim or non-BR commercial leakage',()=>{
   const place=promo.BETSSON_PROMO_PLACEMENTS.originalsEngagement
-  assert.ok(promo.getBetssonPromo('BR','pt-BR',place,{pageSlug:'rio-drift'}))
+  assert.equal(promo.getBetssonPromo('BR','pt-BR',place,{pageSlug:'rio-drift'}),null)
+  for(const geo of ['MX','CO','PE']){const snapshot=commercialFixture(geo);assert.ok(promo.getBetssonPromo(geo,`es-${geo}`,place,{pageSlug:'rio-drift',snapshot}));assert.deepEqual(real.getOriginalOperatorCtas(definition.RIO_DRIFT,geo,`es-${geo}`,snapshot),[])}
   for(const geo of ['GE','US','MX','PT'])for(const locale of ['pt-BR','en','es-MX'])assert.equal(promo.getBetssonPromo(geo,locale,place,{pageSlug:'rio-drift'}),null)
   assert.deepEqual(real.getOriginalOperatorCtas(definition.RIO_DRIFT,'BR','pt-BR'),[])
 })

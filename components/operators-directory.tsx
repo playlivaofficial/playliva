@@ -17,7 +17,7 @@ function matchesFilter(categories: OperatorCategorySlug[], filter: Filter) {
 }
 
 export function OperatorsDirectory() {
-  const { locale, t } = useCountry()
+  const { locale, t, commercial } = useCountry()
   const [filter, setFilter] = useState<Filter>('all')
   const [countryFilter, setCountryFilter] = useState<CountryCode | 'all'>('all')
 
@@ -28,7 +28,7 @@ export function OperatorsDirectory() {
   ]
 
   // Only non-mock, verified operators reach the public directory.
-  const publicOperators = getPublicOperators()
+  const publicOperators = getPublicOperators(commercial.operators)
 
   const operators = useMemo(() => {
     return publicOperators

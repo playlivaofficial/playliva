@@ -42,7 +42,7 @@ test('V2 quality gates agree with metadata, reciprocal alternates and sitemap; m
   assert.equal(meta.robots.index,false);assert.equal(meta.alternates.languages,undefined)
   assert.ok(!sitemap.default().some(g=>g.url.endsWith('/games/'+slug)))
  }finally{references.REFERENCE_GAMES[0].artwork=original}
- const rows=sitemap.default();assert.equal(rows.length,322);assert.equal(new Set(rows.map(r=>r.url)).size,322)
+ const rows=sitemap.default();assert.equal(rows.length,317);assert.equal(new Set(rows.map(r=>r.url)).size,317)
  for(const row of rows){const [,seg,...parts]=new URL(row.url).pathname.split('/');assert.equal(policy.discoveryIndexability('/'+parts.join('/'),seg).index,true)}
  assert.ok(!rows.some(r=>/owner|\?/.test(r.url)))
  assert.equal(policy.discoveryIndexability('/owner/growth','pt-br').index,false)

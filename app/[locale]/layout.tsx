@@ -15,6 +15,7 @@ import { getWebsiteJsonLd, getOrganizationJsonLd } from '@/lib/structured-data'
 import { LOCALE_SEGMENTS, isLocaleSegment, segmentToLocale } from '@/lib/locale'
 import { productCopy } from '@/lib/product-discovery'
 import { seoMarketForLocaleSegment } from '@/lib/seo-market'
+import { commercialSnapshot } from '@/lib/commercial/server'
 
 export function generateStaticParams() {
   return LOCALE_SEGMENTS.map((locale) => ({ locale }))
@@ -42,6 +43,7 @@ export default async function LocaleLayout({
         initialCountryCode={seoMarketForLocaleSegment(localeSegment)}
         visitorCountryCode={ownerGeo.previewGeo ?? visitorMarket(requestHeaders)}
         previewCountryCode={ownerGeo.previewGeo}
+        commercial={commercialSnapshot(ownerGeo.previewGeo ?? visitorMarket(requestHeaders))}
       >
         {ownerGeo.authorized && <OwnerGeoPreview status={ownerGeo} />}
         <a href="#main-content" className="sr-only fixed left-4 top-3 z-[100] rounded-lg bg-foreground px-4 py-3 text-background focus:not-sr-only">{productCopy(locale).skipContent}</a>

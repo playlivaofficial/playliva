@@ -84,7 +84,7 @@ test('M12 warning area formula accounts for padded ads and responsive width', ()
   }
 })
 
-for (const locale of ['en', 'pt-BR', 'es-MX']) test(`M12 every existing promotional component carries one horizontal BR warning: ${locale}`, () => {
+for (const locale of ['en', 'pt-BR', 'es-MX', 'es-CO', 'es-PE']) test(`BR retirement suppresses every legacy promotional component: ${locale}`, () => {
   const render = child => new JSDOM(renderToStaticMarkup(React.createElement(AppRouterContext.Provider, { value: { push() {}, prefetch() {} } },
     React.createElement(PathnameContext.Provider, { value: '/en' }, React.createElement(country.CountryProvider, { initialLocale: locale, visitorCountryCode: 'BR' }, child)))))
   for (const child of [
@@ -95,7 +95,7 @@ for (const locale of ['en', 'pt-BR', 'es-MX']) test(`M12 every existing promotio
     React.createElement(operatorProfile.OperatorProfileView, { operator: partner }),
   ]) {
     const dom = render(child), doc = dom.window.document
-    assert.ok(doc.querySelectorAll('a[href^="/go?"]').length)
+    assert.equal(doc.querySelectorAll('a[href^="/go?"]').length, 0)
     for (const link of doc.querySelectorAll('a[href^="/go?"]')) {
       const ad = link.closest('[data-betting-ad]')
       assert.ok(ad)
@@ -143,8 +143,8 @@ test('M12 offer publication requires source, dated terms, expiry and market-spec
   }
   assert.equal(offerEvidence.hasCurrentOfferEvidence({ ...offer, complianceReview: { ...offer.complianceReview, market: 'MX' } }, checked), false)
   assert.equal(offerEvidence.hasCurrentOfferEvidence(offer, Date.parse('2026-09-21')), false)
-  assert.deepEqual(data.getPublicOffers('BR').map(item => item.id), [data.BETSSON_PROMO_OFFER.id], 'only the verified central Betsson campaign is published')
-  assert.equal(offerEvidence.hasCurrentOfferEvidence(data.BETSSON_PROMO_OFFER), true)
+  assert.deepEqual(data.getPublicOffers('BR'), [], 'retired Brazil offer stays suppressed even with historical evidence')
+  assert.equal(data.BETSSON_PROMO_OFFER.active, false)
 })
 
 test('M12 analytics allowlist strips search, contact details, wallet data and event overrides', () => {

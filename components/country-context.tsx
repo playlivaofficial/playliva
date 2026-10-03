@@ -18,6 +18,8 @@ import {
 } from '@/lib/data'
 import { LOCALES, createTranslator, type Translator } from '@/lib/i18n'
 import type { Country, CountryCode, Locale } from '@/lib/types'
+import { isCommercialGeo, type CommercialCurrency } from '@/lib/geo'
+import { emptyCommercialSnapshot, type CommercialSnapshot } from '@/lib/commercial/types'
 import {
   isLocaleSegment,
   localeToSegment,
@@ -31,6 +33,8 @@ interface CountryContextValue {
   countryCode: CountryCode
   /** Eligible commercial market from trusted request GEO and selected preference. */
   marketCode: CountryCode | null
+  commercial: CommercialSnapshot
+  currency: CommercialCurrency | null
   setCountryCode: (code: CountryCode) => void
   /**
    * LANGUAGE — completely independent from GEO. A visitor's GEO never
@@ -44,7 +48,7 @@ interface CountryContextValue {
   countryName: string
   /** Localized display name for any market, in the current language. */
   nameOf: (code: CountryCode) => string
-  /** Public launch markets only (Brazil + Mexico). */
+  /** Public target markets only (Mexico, Colombia and Peru). */
   countries: Country[]
 }
 
@@ -69,6 +73,7 @@ export function CountryProvider({
   initialCountryCode = DEFAULT_COUNTRY,
   visitorCountryCode = null,
   previewCountryCode = null,
+  commercial = emptyCommercialSnapshot(),
 }: {
   children: ReactNode
   /**
@@ -85,6 +90,7 @@ export function CountryProvider({
   visitorCountryCode?: CountryCode | null
   /** Server-authorized owner preview only; never read from browser storage. */
   previewCountryCode?: CountryCode | null
+  commercial?: CommercialSnapshot
 }) {
   const pathname = usePathname()
   const router = useRouter()
@@ -154,10 +160,14 @@ export function CountryProvider({
     const effectiveCountryCode = previewCountryCode ?? countryCode
     const country = getCountry(effectiveCountryCode)
     const t = createTranslator(locale)
+    const marketCode = marketReady && effectiveCountryCode === visitorCountryCode && isCommercialGeo(effectiveCountryCode) ? effectiveCountryCode : null
+    const visibleCommercial = marketCode && commercial.geo === marketCode ? commercial : emptyCommercialSnapshot()
     return {
       country,
       countryCode: effectiveCountryCode,
-      marketCode: marketReady && effectiveCountryCode === visitorCountryCode ? effectiveCountryCode : null,
+      marketCode,
+      commercial: visibleCommercial,
+      currency: visibleCommercial.currency,
       setCountryCode,
       locale,
       setLocale,
@@ -166,7 +176,7 @@ export function CountryProvider({
       nameOf: (code: CountryCode) => getCountryName(code, locale),
       countries: PUBLIC_COUNTRIES,
     }
-  }, [countryCode, previewCountryCode, marketReady, visitorCountryCode, setCountryCode, locale, setLocale])
+  }, [countryCode, previewCountryCode, marketReady, visitorCountryCode, commercial, setCountryCode, locale, setLocale])
 
   return (
     <CountryContext.Provider value={value}>{children}</CountryContext.Provider>

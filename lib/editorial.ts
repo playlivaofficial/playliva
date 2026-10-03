@@ -1,3 +1,5 @@
+import { contentLocale } from '@/lib/locale'
+import type { ContentLocale } from '@/lib/types'
 import type { Locale } from './types'
 import { REFERENCE_PATHS } from './catalog/paths'
 
@@ -31,9 +33,9 @@ export const editorialCopy = (locale: Locale) => ({
   en: { policy: 'Editorial policy', research: 'How PlayLiva researches games', published: 'Published', updated: 'Last updated', archive: 'Editorial archive', unknown: 'Original publication date not independently recorded.', sources: 'Sources and corrections' },
   'pt-BR': { policy: 'Política editorial', research: 'Como a PlayLiva pesquisa jogos', published: 'Publicado em', updated: 'Última atualização', archive: 'Arquivo editorial', unknown: 'A data de publicação original não foi registrada de forma independente.', sources: 'Fontes e correções' },
   'es-MX': { policy: 'Política editorial', research: 'Cómo investiga juegos PlayLiva', published: 'Publicado el', updated: 'Última actualización', archive: 'Archivo editorial', unknown: 'La fecha de publicación original no se registró de forma independiente.', sources: 'Fuentes y correcciones' },
-})[locale]
+})[contentLocale(locale)]
 
-export const RESEARCH_POLICY: Record<Locale, string[]> = {
+export const RESEARCH_POLICY: Record<ContentLocale, string[]> = {
   en: [
     'We identify each game by provider and edition, then consult the provider’s public product documentation. Similar names do not establish the same rules, artwork rights or RTP. Sources and verification dates are retained with the reference records; unknown values are omitted.',
     'Artwork records identify the source and local derivative. Public access to an image is not, by itself, a licence to redistribute it. Rights evidence must be reviewed separately from factual game documentation; a source citation does not resolve a rights dispute.',

@@ -7,6 +7,9 @@ import golacoDef from '../lib/originals/golaco/definition.ts'
 import threeDef from '../lib/originals/three-game-definitions.ts'
 import raioDef from '../lib/originals/raio/definition.ts'
 import brasilDef from '../lib/originals/brasil21/definition.ts'
+import aviaDef from '../lib/originals/avia/definition.ts'
+import driftDef from '../lib/originals/rio-drift/definition.ts'
+import crashDef from '../lib/originals/crash/definition.ts'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { registerHooks } from 'node:module'
@@ -17,145 +20,115 @@ import { createRoot } from 'react-dom/client'
 import { JSDOM, VirtualConsole } from 'jsdom'
 import { AppRouterContext } from 'next/dist/shared/lib/app-router-context.shared-runtime.js'
 import { PathnameContext } from 'next/dist/shared/lib/hooks-client-context.shared-runtime.js'
-import promoConfig from '../lib/affiliates/betsson-promo-config.ts'
-import promoModule from '../lib/affiliates/betsson-promo.ts'
+import promotion from '../lib/affiliates/promotion.ts'
+import legacy from '../lib/affiliates/betsson-promo.ts'
 import engagement from '../lib/affiliates/betsson-engagement.ts'
 import cycleModule from '../lib/engagement/gameplay-cycle.ts'
-import attribution from '../lib/attribution.ts'
-import tracking from '../lib/tracking.ts'
-import consent from '../lib/consent.ts'
-import affiliate from '../lib/affiliate.ts'
-import data from '../lib/data.ts'
-import brazil from '../lib/compliance/brazil.ts'
-import betssonModule from '../lib/affiliates/betsson.ts'
 import countryModule from '../components/country-context.tsx'
 import providerModule from '../components/originals/demo-session.tsx'
 import sessionModule from '../lib/originals/session.ts'
-import crashDef from '../lib/originals/crash/definition.ts'
-import i18nModule from '../lib/i18n.ts'
+import consent from '../lib/consent.ts'
+import commercialTypes from '../lib/commercial/types.ts'
+import commercialRegistry from '../lib/commercial/server.ts'
+import { registration } from './fixtures/commercial.mjs'
+import { commercialFixture } from './fixtures/promo-commercial.mjs'
 
-const cssHooks = registerHooks({ load(url, context, next) {
-  if (String(url).includes('.module.css')) {
-    return { format: 'module', shortCircuit: true, source: 'const s = new Proxy({}, { get: (_, k) => String(k) }); export default s;' }
-  }
+const hooks = registerHooks({ load(url, context, next) {
+  if (String(url).includes('.module.css')) return { format: 'module', shortCircuit: true, source: 'export default new Proxy({}, {get: (_,k)=>String(k)});' }
   return next(url, context)
 } })
 const unwrap = module => module.default ?? module
-const shellModule = unwrap(await import('../components/originals/play-game-shell.tsx'))
-const discoveryModule = unwrap(await import('../components/affiliates/betsson-discovery-offer.tsx'))
-const gameDetailModule = unwrap(await import('../components/game-detail-view.tsx'))
-const offersModule = unwrap(await import('../components/offers-view.tsx'))
-cssHooks.deregister()
-
-const { BETSSON_PROMO, BETSSON_PROMO_PLACEMENTS, BETSSON_PROMO_OFFER_ID, isBetssonPromoLive } = promoConfig
-const { getBetssonPromo, betssonPromoExpiresAt } = promoModule
+const { PlayGameShell } = unwrap(await import('../components/originals/play-game-shell.tsx'))
+const { BetssonDiscoveryOffer } = unwrap(await import('../components/affiliates/betsson-discovery-offer.tsx'))
+const { OffersView } = unwrap(await import('../components/offers-view.tsx'))
+const { OfferCard } = unwrap(await import('../components/offer-card.tsx'))
+hooks.deregister()
+const { CountryProvider } = countryModule
+const { getPromotion, PROMO_PLACEMENTS } = promotion
 const { createEngagementTrigger } = engagement
 const { createGameplayCycleObserver, isCycleMilestone } = cycleModule
-const { CountryProvider } = countryModule
-const { createTranslator } = i18nModule
-const partner = data.getOperator(BETSSON_PROMO.operatorSlug)
-const locales = [['pt-BR', 'pt-br'], ['en', 'en'], ['es-MX', 'es-mx']]
-const PLACEMENTS = Object.values(BETSSON_PROMO_PLACEMENTS)
-const allOriginals = [crashDef.ISLAND_CRASH, raioDef.RAIO, brasilDef.BRASIL21, blackjackDef.LIVA_BLACKJACK, rouletteDef.LIVA_ROULETTE, minesDef.LIVA_MINES, capybaraDef.CAPYBARA_GOLD, gingaDef.EMBAIXADINHA, golacoDef.GOLACO, ...threeDef.THREE_GAMES]
-
-function wrap(locale, path, child) {
+const allOriginals = [crashDef.ISLAND_CRASH, raioDef.RAIO, brasilDef.BRASIL21, blackjackDef.LIVA_BLACKJACK, rouletteDef.LIVA_ROULETTE, minesDef.LIVA_MINES, capybaraDef.CAPYBARA_GOLD, gingaDef.EMBAIXADINHA, golacoDef.GOLACO, ...threeDef.THREE_GAMES, aviaDef.AVIA, driftDef.RIO_DRIFT]
+function wrap(geo, locale, path, child, commercial = commercialFixture(geo)) {
   return React.createElement(AppRouterContext.Provider, { value: { push() {}, prefetch() {} } },
     React.createElement(PathnameContext.Provider, { value: path },
-      React.createElement(CountryProvider, { initialLocale: locale, visitorCountryCode: 'BR' }, child)))
+      React.createElement(CountryProvider, { initialLocale: locale, visitorCountryCode: geo, commercial }, child)))
 }
-const render = (locale, path, child) => new JSDOM(renderToStaticMarkup(wrap(locale, path, child))).window.document
+function render(geo, locale, child, snapshot = commercialFixture(geo)) {
+  return new JSDOM(renderToStaticMarkup(wrap(geo, locale, `/${locale.toLowerCase()}/offers`, child, snapshot))).window.document
+}
 
-test('central Betsson BR campaign config: verified wording only, licensed tracked link, dated evidence', () => {
-  assert.equal(BETSSON_PROMO.promoId, 'betsson-br-casino-100-giros')
-  assert.equal(BETSSON_PROMO.brand, 'betsson')
-  assert.equal(BETSSON_PROMO.market, 'BR')
-  assert.equal(BETSSON_PROMO.campaignName, 'Betsson BR | Ganhe 100 Giros!')
-  assert.equal(BETSSON_PROMO.headline, 'Ganhe 100 Giros!')
-  assert.equal(BETSSON_PROMO.subheadline, undefined, 'no unverified secondary claim')
-  assert.equal(BETSSON_PROMO.ctaLabel, 'Jogar na Betsson')
-  assert.equal(BETSSON_PROMO.affiliateUrl, 'playliva-affiliate:betsson-br-promo')
-  assert.equal(betssonModule.netreferTrackingKey(BETSSON_PROMO.affiliateUrl), null)
-  assert.notEqual(BETSSON_PROMO.affiliateUrl, partner.affiliateUrl.BR, 'campaign link is the dedicated Direct Link, not the brand link')
-  assert.equal(brazil.isAuthorizedBrazilDestination(partner, BETSSON_PROMO.affiliateUrl), true)
-  assert.match(BETSSON_PROMO.landingPageUrl, /^https:\/\/ofertas\.betsson\.bet\.br\//)
-  assert.deepEqual([...BETSSON_PROMO.verifiedTerms], [], 'landing-page terms were not readable outside Brazil; nothing is claimed')
-  assert.match(BETSSON_PROMO.source, /Media Gallery.*Direct Link "Betsson BR \| Ganhe 100 Giros!"/)
-  assert.equal(BETSSON_PROMO.creative.kind, 'logo', 'no static official banner file exists; the native card uses the approved logo')
-  assert.deepEqual([...BETSSON_PROMO.placements], PLACEMENTS)
-  assert.deepEqual(BETSSON_PROMO.frequencyCap, { scope: 'milestone', max: 1 })
-  assert.equal(BETSSON_PROMO.engagement.cycleMultiple, 3)
-  assert.deepEqual(BETSSON_PROMO.engagement.copy, {
-    'pt-BR': { headline: 'Ganhe 100 Giros!', condition: 'Aposte R$20 em jogos selecionados e ganhe 100 giros no Tigre Sortudo.', cta: 'Jogar na Betsson' },
-    en: { headline: 'Get 100 Spins!', condition: 'Bet R$20 on selected games and get 100 spins on Tigre Sortudo.', cta: 'Play at Betsson' },
-    'es-MX': { headline: '¡Consigue 100 giros!', condition: 'Apuesta R$20 en juegos seleccionados y consigue 100 giros en Tigre Sortudo.', cta: 'Jugar en Betsson' },
-  })
-  for (const locale of Object.keys(BETSSON_PROMO.engagement.copy)) {
-    const text = Object.values(BETSSON_PROMO.engagement.copy[locale]).join(' ')
-    assert.doesNotMatch(text, /grátis|gratis|free|registr|sem depósito|no deposit|sin depósito|depósito mínimo|rollover|expira|termina|últim|last chance/i, locale)
+for (const geo of ['MX','CO','PE']) test(`${geo}: campaign publication and suppression use exact GEO/currency, approved operator and valid campaign`, () => {
+  const locale = `es-${geo}`, fixture = commercialFixture(geo)
+  assert.equal(fixture.operators.length, 1)
+  assert.equal(fixture.offers.length, 1)
+  for (const placement of Object.values(PROMO_PLACEMENTS)) {
+    const model = getPromotion(fixture, geo, locale, placement, { pageSlug:'crash' })
+    assert.ok(model)
+    assert.equal(model.market, geo)
+    assert.equal(model.locale, locale)
+    assert.match(model.engagementCopy.condition, new RegExp(fixture.currency))
+    const params = new URL(model.href, 'https://www.playliva.com').searchParams
+    assert.equal(params.get('country'), geo)
+    assert.equal(params.get('offer'), fixture.offers[0].id)
+    assert.equal(params.get('placement'), placement)
+    assert.doesNotMatch(model.href, /https?:|betsson|R%24/)
+    for (const other of ['MX','CO','PE','BR','PT','GE']) if (other !== geo) assert.equal(getPromotion(fixture, other, locale, placement), null)
+    for (const field of ['approved','active']) {
+      const bad=structuredClone(fixture); bad.campaigns[0][field]=false
+      assert.equal(getPromotion(bad,geo,locale,placement),null)
+      const operator=structuredClone(fixture);operator.operators[0][field]=false
+      assert.equal(getPromotion(operator,geo,locale,placement),null)
+    }
+    const noLink=structuredClone(fixture);noLink.operators[0].affiliateUrl={}
+    assert.equal(getPromotion(noLink,geo,locale,placement),null)
+    const noCopy=structuredClone(fixture);noCopy.campaigns[0].copy={en:fixture.campaigns[0].copy.en}
+    assert.equal(getPromotion(noCopy,geo,locale,placement),null,'Spanish never falls back to English promotion copy')
+    const currency=structuredClone(fixture);currency.campaigns[0].currency='BRL'
+    assert.equal(getPromotion(currency,geo,locale,placement),null)
+    assert.equal(getPromotion(fixture,geo,locale,placement,{now:Date.parse(fixture.campaigns[0].validUntil)}),null)
+    const noPlacement=structuredClone(fixture);noPlacement.campaigns[0].placements=[]
+    assert.equal(getPromotion(noPlacement,geo,locale,placement),null)
   }
-  const live = Date.parse('2026-09-22T12:00:00Z')
-  assert.equal(isBetssonPromoLive(BETSSON_PROMO, live), true)
-  assert.equal(isBetssonPromoLive(BETSSON_PROMO, Date.parse('2026-09-20T23:59:59Z')), false)
-  assert.equal(isBetssonPromoLive(BETSSON_PROMO, Date.parse('2026-10-14T00:00:00Z')), false)
-  assert.equal(isBetssonPromoLive({ ...BETSSON_PROMO, enabled: false }, live), false)
-  assert.ok(betssonPromoExpiresAt() <= Date.parse('2026-10-14T00:00:00Z'))
-  const compactConfig = Object.fromEntries(Object.entries(BETSSON_PROMO).filter(([key]) => key !== 'engagement'))
-  for (const text of JSON.stringify(compactConfig).match(/"[^"]*"/g)) {
-    assert.doesNotMatch(text, /depósito|rollover|apost(a|e) mínim|válido até|R\$|bônus|bonus/i, `compact placements carry no condition: ${text}`)
-  }
-  assert.equal(BETSSON_PROMO.headline, 'Ganhe 100 Giros!', 'compact headline unchanged')
 })
 
-test('the Offers page record is derived from the config and passes every existing publication gate', () => {
-  const offer = data.BETSSON_PROMO_OFFER
-  assert.equal(offer.id, BETSSON_PROMO_OFFER_ID)
-  assert.equal(offer.title, BETSSON_PROMO.headline)
-  assert.equal(offer.affiliateUrl, BETSSON_PROMO.affiliateUrl)
-  assert.equal(offer.promoId, BETSSON_PROMO.promoId)
-  assert.equal(offer.status, 'verified')
-  assert.equal(offer.complianceReview.market, 'BR')
-  assert.equal(offer.complianceReview.reviewBy, BETSSON_PROMO.validUntil)
-  assert.equal(data.isOfferEligible(offer, 'BR'), true)
-  assert.equal(data.isOfferEligible(offer, 'MX'), false)
-  assert.deepEqual(data.getPublicOffers('BR'), [offer])
-  assert.deepEqual(data.getPublicOffers('MX'), [])
-  const resolved = affiliate.resolveDestination({ offerId: offer.id, operatorSlug: partner.slug, country: 'BR', pageType: 'offers', placement: 'offers_page' })
-  assert.equal(resolved?.url, BETSSON_PROMO.affiliateUrl)
-  assert.equal(affiliate.resolveDestination({ offerId: offer.id, country: 'MX' }), null)
-  assert.equal(affiliate.resolveDestination({ offerId: offer.id, operatorSlug: 'kto', country: 'BR' }), null)
+test('retired BR configuration and every default market are promotion-free', () => {
+  assert.equal(legacy.BETSSON_PROMO.enabled,false)
+  for(const geo of ['BR','MX','CO','PE','GE','PT']) {
+    assert.equal(legacy.getBetssonPromo(geo,'pt-BR',PROMO_PLACEMENTS.originalsEngagement),null)
+    assert.equal(promotion.getSponsoredBanner(undefined,geo,'pt-BR','originals'),null)
+  }
 })
 
-test('promo resolver is GEO-gated, placement-scoped and only ever links through /go?offer=', () => {
-  for (const placement of PLACEMENTS) for (const [locale] of locales) {
-    const model = getBetssonPromo('BR', locale, placement, { pageSlug: 'crash' })
-    assert.ok(model, `${placement} ${locale}`)
-    assert.equal(model.headline, 'Ganhe 100 Giros!')
-    assert.equal(model.ctaLabel, locale === 'pt-BR' ? 'Jogar na Betsson' : locale === 'en' ? 'Play at Betsson' : 'Jugar en Betsson')
-    assert.equal(model.creative.kind, 'logo')
-    const query = new URL(model.href, 'https://www.playliva.com').searchParams
-    assert.match(model.href, /^\/go\?/)
-    assert.equal(query.get('offer'), BETSSON_PROMO_OFFER_ID)
-    assert.equal(query.get('operator'), partner.slug)
-    assert.equal(query.get('country'), 'BR')
-    assert.equal(query.get('language'), locale)
-    assert.equal(query.get('placement'), placement)
-    assert.equal(query.get('pageSlug'), 'crash')
-    assert.equal(query.get('category'), null)
-    assert.equal(query.get('game'), null)
-    assert.doesNotMatch(model.href, /betsson\.bet\.br/)
-    assert.equal(getBetssonPromo('MX', locale, placement), null)
-    assert.equal(getBetssonPromo('PT', locale, placement), null)
-    assert.equal(getBetssonPromo('BR', locale, placement, { now: Date.parse('2026-12-01T00:00:00Z') }), null)
-    assert.equal(getBetssonPromo('BR', locale, placement, { config: { ...BETSSON_PROMO, enabled: false } }), null)
-    assert.equal(getBetssonPromo('BR', locale, placement, { config: { ...BETSSON_PROMO, placements: [] } }), null)
-    assert.equal(getBetssonPromo('BR', locale, placement, { config: { ...BETSSON_PROMO, affiliateUrl: 'https://betsson.com/x' } }), null,
-      'a config link that does not match the eligible offer destination fails closed')
+test('ambiguous campaign and offer identifiers suppress both otherwise approved operators in one GEO',()=>{
+  const template=commercialFixture('MX').campaigns[0]
+  for(const collision of ['campaign','offer']) {
+    const first=registration('MX',{offer:structuredClone(template)})
+    const second=registration('MX',{id:'second-mx',slug:'second-partner',campaignKey:'second-mx-campaign',offer:structuredClone(template)})
+    if(collision==='campaign')second.offer.offer.id='second-offer'
+    else second.offer.id='second-campaign'
+    assert.equal(commercialRegistry.snapshotFromRegistry('MX',[first]).operators.length,1)
+    assert.equal(commercialRegistry.snapshotFromRegistry('MX',[second]).operators.length,1)
+    const snapshot=commercialRegistry.snapshotFromRegistry('MX',[first,second])
+    assert.equal(snapshot.operators.length,0,`${collision} collision cannot select an arbitrary operator`)
+    assert.equal(snapshot.offers.length,0)
+    assert.equal(snapshot.campaigns.length,0)
+    assert.equal(getPromotion(snapshot,'MX','es-MX',PROMO_PLACEMENTS.originalsEngagement),null)
   }
-  const original = brazil.BRAZIL_AUTHORIZATIONS[partner.id].status
-  try {
-    brazil.BRAZIL_AUTHORIZATIONS[partner.id].status = 'suspended'
-    assert.equal(getBetssonPromo('BR', 'pt-BR', BETSSON_PROMO_PLACEMENTS.offersPage), null, 'stale BR authorization closes the promo')
-  } finally { brazil.BRAZIL_AUTHORIZATIONS[partner.id].status = original }
+})
+
+test('Colombia rejects foreign-currency offer copy and publishes only configured localized artwork',()=>{
+  const base=commercialFixture('CO'),campaign=base.campaigns[0]
+  for(const condition of ['Condición incorrecta: MXN 100','Condición incorrecta: R$20']) {
+    const blocked=commercialFixture('CO',{offer:{...campaign,copy:{'es-CO':{headline:'Oferta de prueba',condition,cta:'Consultar condiciones'}}}})
+    assert.equal(blocked.offers.length,0)
+    assert.equal(getPromotion(blocked,'CO','es-CO',PROMO_PLACEMENTS.originalsEngagement),null)
+  }
+  const creative={id:'test-co-art',assetPath:'/placeholder.svg',width:600,height:200,alt:{'es-CO':'Arte de prueba'},languages:['es-CO']}
+  const configured=commercialFixture('CO',{offer:{...campaign,offer:{...campaign.offer,creative,currency:'COP'}}})
+  assert.deepEqual(configured.offers[0].creative,creative)
+  assert.equal(configured.offers[0].currency,'COP')
+  assert.equal(getPromotion(configured,'CO','es-CO',PROMO_PLACEMENTS.originalsHeader).creative.id,'test-co-art')
+  assert.equal(getPromotion(configured,'CO','en',PROMO_PLACEMENTS.originalsHeader).creative.kind,'logo')
 })
 
 test('shared gameplay-cycle observer counts only settled true→false edges', () => {
@@ -230,248 +203,126 @@ test('engagement trigger: every third settled cycle (3, 6, 9 …), one offer per
   assert.equal(opened.length, 4, 'exactly one offer per milestone')
 })
 
-test('attribution: UTMs and known social referrers are preserved per session; free text is rejected', () => {
-  const { parseAttribution, classifyReferrer, sanitizeAttributionValue, attributionPayload } = attribution
-  assert.deepEqual(parseAttribution('?utm_source=TikTok&utm_medium=social&utm_campaign=island-crash_v2&utm_content=reel.1&x=1', 'https://www.tiktok.com/@x'),
-    { trafficSource: 'tiktok', utm: { utm_source: 'tiktok', utm_medium: 'social', utm_campaign: 'island-crash_v2', utm_content: 'reel.1' } })
-  assert.deepEqual(parseAttribution('', 'https://www.instagram.com/reel/abc'), { trafficSource: 'instagram', utm: {} })
-  assert.deepEqual(parseAttribution('', 'https://youtube.com/shorts/x'), { trafficSource: 'youtube', utm: {} })
-  assert.deepEqual(parseAttribution('', 'https://unknown.example/path'), { trafficSource: 'referral', utm: {} })
-  assert.equal(parseAttribution('', ''), null)
-  assert.equal(parseAttribution('', 'https://www.playliva.com/pt-br', 'www.playliva.com'), null)
-  assert.equal(classifyReferrer('not a url'), undefined)
-  assert.equal(sanitizeAttributionValue('email=person@example.com'), undefined)
-  assert.equal(sanitizeAttributionValue('a'.repeat(101)), undefined)
-  assert.equal(sanitizeAttributionValue(' Reels_BR.2 '), 'reels_br.2')
-  assert.deepEqual(attributionPayload({ trafficSource: 'tiktok', utm: { utm_source: 'tiktok', utm_term: 'crash' } }),
-    { trafficSource: 'tiktok', utmSource: 'tiktok', utmMedium: undefined, utmCampaign: undefined, utmContent: undefined, utmTerm: 'crash' })
-  const safe = tracking.sanitizeTrackPayload({ promoId: BETSSON_PROMO.promoId, brand: 'betsson', surface: 'originals', placement: 'originals_engagement_offer',
-    trafficSource: 'tiktok', utmSource: 'tiktok', utmCampaign: 'reel.1', utmContent: 'has space', email: 'x@y.z', country: 'BR' }, '/pt-br/play/crash?utm_source=tiktok')
-  assert.deepEqual(safe, { country: 'BR', placement: 'originals_engagement_offer', promoId: BETSSON_PROMO.promoId, brand: 'betsson', surface: 'originals',
-    trafficSource: 'tiktok', utmSource: 'tiktok', utmCampaign: 'reel.1', url: '/pt-br/play/crash' })
-  assert.equal(consent.parseConsent(null), null)
-})
 
-for(const game of allOriginals) test(`${game.slug}: Originals shell offers after cycles 3, 6 and 9 with milestone analytics`, async () => {
-  const dom = new JSDOM('<div id="root"></div>', { url: `https://www.playliva.com/pt-br/play/${game.slug}?utm_source=tiktok&utm_campaign=reel.1`, virtualConsole: new VirtualConsole() })
-  const saved = new Map()
-  for (const key of ['window', 'self', 'document', 'location', 'navigator', 'Event', 'KeyboardEvent', 'HTMLElement', 'Node', 'IntersectionObserver']) {
-    saved.set(key, Object.getOwnPropertyDescriptor(globalThis, key))
-    Object.defineProperty(globalThis, key, { configurable: true, value: dom.window[key] })
+for (const [index,game] of allOriginals.entries()) test(`${game.slug}: exact settled 3/6/9 cadence and continuous hold remain intact`, async () => {
+  const geo=['MX','CO','PE'][index%3],locale=`es-${geo}`,route=`/${locale.toLowerCase()}/play/${game.slug}`
+  const fixture=commercialFixture(geo),dom=new JSDOM('<div id="root"></div>',{url:`https://www.playliva.com${route}`,virtualConsole:new VirtualConsole()})
+  const saved=new Map()
+  for(const key of ['window','self','document','location','navigator','Event','KeyboardEvent','HTMLElement','Node','IntersectionObserver']) {
+    saved.set(key,Object.getOwnPropertyDescriptor(globalThis,key));Object.defineProperty(globalThis,key,{configurable:true,value:dom.window[key]})
   }
-  Object.defineProperty(globalThis, 'IntersectionObserver', { configurable: true, value: class {
-    constructor(callback) { this.callback = callback }
-    observe(target) { this.callback([{ target, isIntersecting: true, intersectionRatio: 1 }]) }
-    disconnect() {}
-  } })
-  globalThis.IS_REACT_ACT_ENVIRONMENT = true
-  const root = createRoot(document.getElementById('root'))
-  const store = sessionModule.createDemoSessionStore(() => window.localStorage, () => 1)
-  const events = []
-  window.dataLayer = { push: item => events.push(item) }
-  window.localStorage.setItem(consent.CONSENT_STORAGE_KEY, JSON.stringify({ necessary: true, analytics: true, marketing: false }))
-  attribution.captureAttribution()
-
-  const mount = roundActive => act(() => root.render(wrap('pt-BR', `/pt-br/play/${game.slug}`,
-    React.createElement(providerModule.DemoSessionProvider, { store },
-      React.createElement(shellModule.PlayGameShell, { game, roundActive, controls: React.createElement('button', {}, 'Start') },
-        React.createElement('div', {}, 'viewport'))))))
-  const sleep = ms => act(() => new Promise(resolve => setTimeout(resolve, ms)))
+  Object.defineProperty(globalThis,'IntersectionObserver',{configurable:true,value:class {constructor(cb){this.cb=cb}observe(target){this.cb([{target,isIntersecting:true,intersectionRatio:1}])}disconnect(){}}})
+  globalThis.IS_REACT_ACT_ENVIRONMENT=true
+  window.localStorage.setItem(consent.CONSENT_STORAGE_KEY,JSON.stringify({necessary:true,analytics:true,marketing:false}))
+  const events=[],holds=[];window.dataLayer={push:item=>events.push(item)}
+  const root=createRoot(document.getElementById('root')),store=sessionModule.createDemoSessionStore(()=>window.localStorage,()=>1)
+  const hold=on=>holds.push(on)
+  const mount=active=>act(()=>root.render(wrap(geo,locale,route,
+    React.createElement(providerModule.DemoSessionProvider,{store},React.createElement(PlayGameShell,{game,roundActive:active,onEngagementHold:hold,controls:React.createElement('button',{},'Start')},React.createElement('div',{},'viewport'))),fixture)))
+  const flush=()=>act(()=>new Promise(resolve=>setTimeout(resolve,35)))
   try {
     await mount(false)
-    assert.equal(document.querySelector('[data-betsson-engagement-offer]'), null)
-    const header = document.querySelector('[data-betsson-banner="originals"]')
-    assert.ok(header.textContent.includes('Ganhe 100 Giros!'))
-    assert.ok(header.textContent.includes('Jogar na Betsson'))
-    assert.match(header.querySelector('a[href^="/go?"]').getAttribute('href'), /offer=of-br-betsson-100-giros.*placement=originals_header/)
-    for (let round = 1; round <= 3; round += 1) {
+    assert.ok(document.querySelector('[data-sponsored-banner="originals"]'))
+    for(let round=1;round<=9;round++) {
       await mount(true)
-      assert.equal(document.querySelector('[data-betsson-engagement-offer]'), null, 'never during an active round')
-      await mount(false)
+      assert.equal(document.querySelector('[data-engagement-offer]'),null,'no live-round interruption')
+      assert.equal(holds.at(-1),false)
+      await mount(false);await flush()
+      const popup=document.querySelector('[data-engagement-offer]')
+      assert.equal(Boolean(popup),round%3===0,`settled round ${round}`)
+      if(!popup)continue
+      assert.equal(holds.at(-1),true,'continuous game waits at settled offer boundary')
+      assert.equal(popup.closest('[data-game-unit]'),null)
+      assert.equal(popup.dataset.completedCycle,String(round))
+      assert.equal(popup.dataset.exposure,String(round/3))
+      const dialog=popup.querySelector('[role="dialog"]')
+      assert.equal(dialog.getAttribute('aria-modal'),'true')
+      assert.ok(dialog.querySelector('[data-commercial-disclosure]'))
+      assert.equal(dialog.querySelector('[data-brazil-ad-warning]'),null)
+      assert.match(dialog.textContent,new RegExp(fixture.currency))
+      assert.doesNotMatch(dialog.textContent,/Betsson|R\$20|Ganhe/)
+      const link=dialog.querySelector('[data-promo-cta]')
+      assert.equal(new URL(link.href).searchParams.get('country'),geo)
+      if(round===3)await act(()=>link.dispatchEvent(new window.MouseEvent('click',{bubbles:true,cancelable:true})))
+      await act(()=>document.dispatchEvent(new window.KeyboardEvent('keydown',{key:'Escape',bubbles:true})))
+      assert.equal(document.querySelector('[data-engagement-offer]'),null)
+      assert.equal(holds.at(-1),false,'dismissal releases continuous game')
     }
-    assert.equal(document.querySelector('[data-betsson-engagement-offer]'), null, 'settle delay before opening')
-    await sleep(BETSSON_PROMO.engagement.delayMs + 80)
-    const offer = document.querySelector('[data-betsson-engagement-offer]')
-    assert.ok(offer, 'opens after the third settled round')
-    assert.equal(offer.closest('[data-game-unit]'), null, 'rendered outside the game unit')
-    assert.equal(document.querySelector('[data-game-unit] [data-betting-ad]'), null)
-    const dialog = offer.querySelector('[role="dialog"]')
-    assert.equal(dialog.getAttribute('aria-modal'), 'true')
-    assert.ok(dialog.hasAttribute('data-betting-ad'))
-    assert.equal(dialog.querySelectorAll('[data-brazil-ad-warning]').length, 1)
-    assert.ok(dialog.textContent.includes('18+'))
-    assert.equal(dialog.querySelector('h2').textContent, 'Ganhe 100 Giros!')
-    assert.equal(dialog.querySelector('[data-promo-condition]').textContent, 'Aposte R$20 em jogos selecionados e ganhe 100 giros no Tigre Sortudo.')
-    assert.equal(offer.getAttribute('data-completed-cycle'), '3')
-    assert.equal(offer.getAttribute('data-exposure'), '1')
-    assert.equal(document.querySelector('[data-betsson-banner="originals"]').textContent.includes('R$20'), false, 'compact header stays short-form')
-    const cta = dialog.querySelector('a[data-promo-cta]')
-    assert.equal(cta.textContent, 'Jogar na Betsson')
-    assert.equal(cta.getAttribute('target'), '_blank')
-    assert.ok(cta.rel.split(' ').includes('sponsored'))
-    const query = new URL(cta.getAttribute('href'), 'https://www.playliva.com').searchParams
-    assert.equal(query.get('offer'), BETSSON_PROMO_OFFER_ID)
-    assert.equal(query.get('placement'), 'originals_engagement_offer')
-    assert.equal(query.get('pageSlug'), game.slug)
-    assert.doesNotMatch(dialog.innerHTML, /betsson\.bet\.br|bannerflow/)
-    assert.equal(dialog.querySelector('audio, video, [autoplay]'), null, 'no autoplay media')
-    assert.doesNotMatch(dialog.textContent, /\d+:\d\d|termina em|expira/i, 'no countdown or fake urgency')
-    assert.ok(dialog.querySelector('button[aria-label]'), 'explicit close control')
-    const impression = events.find(item => item.event === 'offer_impression' && item.placement === 'originals_engagement_offer')
-    assert.ok(impression)
-    assert.equal(impression.promoId, BETSSON_PROMO.promoId)
-    assert.equal(impression.brand, 'betsson')
-    assert.equal(impression.placement, 'originals_engagement_offer')
-    assert.equal(impression.surface, 'originals')
-    assert.equal(impression.gameSlug, game.slug)
-    assert.equal(impression.originalId, game.id)
-    assert.equal(impression.country, 'BR')
-    assert.equal(impression.language, 'pt-BR')
-    assert.equal(impression.url, `/pt-br/play/${game.slug}`)
-    assert.equal(impression.trafficSource, 'tiktok')
-    assert.equal(impression.utmCampaign, 'reel.1')
-    assert.equal(impression.category, game.category)
-    assert.equal(impression.completedCycleNumber, '3')
-    assert.equal(impression.triggerMultiple, '3')
-    assert.equal(impression.exposureNumber, '1')
-    assert.ok(['mobile', 'desktop'].includes(impression.device))
-    assert.equal(impression.email, undefined)
-    await act(() => { cta.dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true })) })
-    assert.equal(events.filter(item => item.event === 'affiliate_click').length,1)
-    const click = events.find(item => item.event === 'affiliate_click')
-    assert.equal(click?.promoId, BETSSON_PROMO.promoId)
-    assert.equal(click?.trafficSource, 'tiktok')
-    assert.equal(click?.completedCycleNumber, '3')
-    await act(() => { dialog.querySelector('button[aria-label]').click() })
-    assert.equal(document.querySelector('[data-betsson-engagement-offer]'), null)
-    assert.equal(events.filter(item => item.event === 'offer_dismiss').length, 1)
-    assert.equal(events.find(item => item.event === 'offer_dismiss').exposureNumber, '1')
-    for (let round = 4; round <= 5; round += 1) {
-      await mount(true); await mount(false)
-      await sleep(BETSSON_PROMO.engagement.delayMs + 80)
-      assert.equal(document.querySelector('[data-betsson-engagement-offer]'), null, `cycle ${round} shows nothing`)
-    }
-    await mount(true); await mount(false)
-    await sleep(BETSSON_PROMO.engagement.delayMs + 80)
-    const second = document.querySelector('[data-betsson-engagement-offer]')
-    assert.ok(second, 'cycle 6 reopens the offer after a dismissal')
-    assert.equal(second.getAttribute('data-completed-cycle'), '6')
-    assert.equal(second.getAttribute('data-exposure'), '2')
-    assert.equal(events.filter(item => item.event === 'offer_impression' && item.placement === 'originals_engagement_offer').length, 2)
-    assert.equal(events.filter(item => item.event === 'offer_impression' && item.placement === 'originals_engagement_offer')[1].completedCycleNumber, '6')
-    assert.equal(events.filter(item => item.event === 'offer_impression' && item.placement === 'originals_engagement_offer')[1].exposureNumber, '2')
-    await act(() => { document.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Escape', bubbles: true })) })
-    assert.equal(document.querySelector('[data-betsson-engagement-offer]'), null, 'Escape dismisses')
-    for (let round = 7; round <= 9; round += 1) { await mount(true); await mount(false) }
-    await sleep(BETSSON_PROMO.engagement.delayMs + 80)
-    const third = document.querySelector('[data-betsson-engagement-offer]')
-    assert.equal(third?.getAttribute('data-completed-cycle'), '9')
-    assert.equal(third?.getAttribute('data-exposure'), '3')
-    assert.equal(events.filter(item => item.event === 'offer_impression' && item.placement === 'originals_engagement_offer').length, 3, 'one impression per milestone')
-    assert.equal(window.sessionStorage.getItem('playliva.betsson.engagement.betsson-br-casino-100-giros'), null, 'no session cap is written')
+    const impressions=events.filter(item=>item.event==='offer_impression'&&item.placement===PROMO_PLACEMENTS.originalsEngagement)
+    assert.deepEqual(impressions.map(item=>item.completedCycleNumber),['3','6','9'])
+    assert.ok(impressions.every(item=>item.country===geo&&item.language===locale&&item.originalId===game.id))
+    assert.equal(events.filter(item=>item.event==='affiliate_click').length,1)
   } finally {
-    await act(() => root.unmount())
-    dom.window.close()
-    for (const [key, descriptor] of saved) { if (descriptor) Object.defineProperty(globalThis, key, descriptor); else delete globalThis[key] }
+    await act(()=>root.unmount());dom.window.close()
+    for(const[key,value]of saved){if(value)Object.defineProperty(globalThis,key,value);else delete globalThis[key]}
     delete globalThis.IS_REACT_ACT_ENVIRONMENT
   }
 })
 
-for(const game of allOriginals) test(`${game.slug}: non-Brazil suppresses every campaign surface`, async () => {
-  const dom = new JSDOM('<div id="root"></div>', { url: `https://www.playliva.com/es-mx/play/${game.slug}`, virtualConsole: new VirtualConsole() })
-  const saved = new Map()
-  for (const key of ['window', 'self', 'document', 'location', 'navigator', 'Event', 'HTMLElement', 'Node']) {
-    saved.set(key, Object.getOwnPropertyDescriptor(globalThis, key))
-    Object.defineProperty(globalThis, key, { configurable: true, value: dom.window[key] })
+for(const geo of ['MX','CO','PE','BR'])test(`${geo}: pending/default production registry leaves all14 Originals unpromoted`,()=>{
+  for(const game of allOriginals) {
+    const snapshot=commercialTypes.emptyCommercialSnapshot(['MX','CO','PE'].includes(geo)?geo:null)
+    const doc=render(geo,geo==='BR'?'pt-BR':`es-${geo}`,React.createElement(providerModule.DemoSessionProvider,{},React.createElement(PlayGameShell,{game,controls:null},null)),snapshot)
+    assert.equal(doc.querySelector('[data-sponsored-banner], [data-engagement-offer], a[href^="/go?"]'),null)
+    assert.ok(doc.querySelector('[data-game-viewport]'))
   }
-  window.localStorage.setItem('playliva.country', 'MX')
-  Object.defineProperty(globalThis, 'IntersectionObserver', { configurable: true, value: class {
-    constructor(callback) { this.callback = callback }
-    observe(target) { this.callback([{ target, isIntersecting: true, intersectionRatio: 1 }]) }
-    disconnect() {}
-  } })
-  globalThis.IS_REACT_ACT_ENVIRONMENT = true
-  const root = createRoot(document.getElementById('root'))
-  const store = sessionModule.createDemoSessionStore(() => window.localStorage, () => 1)
+})
 
-  const mount = roundActive => act(() => root.render(wrap('es-MX', `/es-mx/play/${game.slug}`,
-    React.createElement(providerModule.DemoSessionProvider, { store },
-      React.createElement(shellModule.PlayGameShell, { game, roundActive, controls: React.createElement('button', {}, 'Start') },
-        React.createElement('div', {}, 'viewport'))))))
+for(const geo of ['MX','CO','PE'])test(`${geo}: discovery and Offers render only this market's configured offer`,()=>{
+  const locale=`es-${geo}`,snapshot=commercialFixture(geo)
+  const doc=render(geo,locale,React.createElement(OffersView),snapshot)
+  assert.equal(doc.querySelectorAll('[data-offer-id]').length,1)
+  assert.equal(doc.querySelector('[data-offer-id]').dataset.offerId,snapshot.offers[0].id)
+  assert.ok(doc.querySelector('[data-commercial-disclosure]'))
+  assert.equal(doc.querySelector('[data-brazil-ad-warning]'),null)
+  const discovery=render(geo,locale,React.createElement(BetssonDiscoveryOffer,{gameSlug:'aviator',operatorId:snapshot.operators[0].id}),snapshot)
+  assert.ok(discovery.querySelector('[data-discovery-offer]'))
+  assert.equal(discovery.querySelector('h3').getAttribute('lang'),locale)
+  const other=commercialFixture(geo==='MX'?'CO':'MX')
+  const wrong=render(geo,locale,React.createElement(OfferCard,{offer:other.offers[0]}),snapshot)
+  assert.equal(wrong.querySelector('[data-offer-id]'),null,'passing another country offer cannot reveal its card or terms')
+  const pending=render(geo,locale,React.createElement(OffersView),commercialTypes.emptyCommercialSnapshot(geo))
+  assert.equal(pending.querySelector('[data-offer-id], [data-offers-sponsored], a[href^="/go?"]'),null)
+})
+
+test('promo UI remains outside game viewport and no engine imports campaign configuration',async()=>{
+  assert.equal(allOriginals.length,14)
+  const shell=await readFile(new URL('../components/originals/play-game-shell.tsx',import.meta.url),'utf8')
+  assert.ok(shell.indexOf('<BetssonEngagementOffer')>shell.indexOf('data-game-controls'))
+  assert.match(shell,/onHold=\{engagementHold\}/)
+  for(const path of ['crash/crash-game.tsx','capybara/capybara-game.tsx','blackjack/blackjack-game.tsx','roulette/roulette-game.tsx','mines/mines-game.tsx','avia/game.tsx','rio-drift/game.tsx']) {
+    const source=await readFile(new URL(`../components/originals/${path}`,import.meta.url),'utf8')
+    assert.doesNotMatch(source,/affiliates\/betsson|affiliates\/promotion|commercial\/server/)
+  }
+})
+
+test('an open campaign expires without another gameplay action and releases the held game',{timeout:15000},async()=>{
+  const dom=new JSDOM('<div id="root"></div>',{url:'https://www.playliva.com/es-mx/play/crash',virtualConsole:new VirtualConsole()})
+  const saved=new Map()
+  for(const key of ['window','self','document','location','navigator','Event','HTMLElement','Node']) {
+    saved.set(key,Object.getOwnPropertyDescriptor(globalThis,key));Object.defineProperty(globalThis,key,{configurable:true,value:dom.window[key]})
+  }
+  globalThis.IS_REACT_ACT_ENVIRONMENT=true
+  const snapshot=commercialFixture('MX'),holds=[],hold=value=>holds.push(value)
+  const expiresAt=Date.now()+2500
+  snapshot.campaigns[0].validUntil=new Date(expiresAt).toISOString()
+  snapshot.offers[0].validUntil=new Date(expiresAt).toISOString()
+  const root=createRoot(document.getElementById('root')),store=sessionModule.createDemoSessionStore(()=>window.localStorage,()=>1)
+  const mount=active=>act(()=>root.render(wrap('MX','es-MX','/es-mx/play/crash',
+    React.createElement(providerModule.DemoSessionProvider,{store},React.createElement(PlayGameShell,{game:crashDef.ISLAND_CRASH,roundActive:active,onEngagementHold:hold,controls:null},null)),snapshot)))
   try {
     await mount(false)
-    assert.equal(document.querySelector('[data-betsson-banner]'), null)
-    for (let round = 0; round < 4; round += 1) { await mount(true); await mount(false) }
-    await act(() => new Promise(resolve => setTimeout(resolve, BETSSON_PROMO.engagement.delayMs + 80)))
-    assert.equal(document.querySelector('[data-betsson-engagement-offer]'), null)
-    assert.equal(document.querySelector('a[href^="/go"]'), null)
+    for(let cycle=0;cycle<3;cycle++){await mount(true);await mount(false)}
+    await act(()=>new Promise(resolve=>setTimeout(resolve,35)))
+    assert.ok(document.querySelector('[data-engagement-offer]'))
+    assert.equal(holds.at(-1),true)
+    await act(()=>new Promise(resolve=>setTimeout(resolve,Math.max(0,expiresAt-Date.now())+80)))
+    assert.equal(document.querySelector('[data-engagement-offer]'),null)
+    assert.equal(holds.at(-1),false,'expiry releases the continuous game without another round or manual dismissal')
+    assert.equal(document.querySelector('[data-sponsored-banner]')?.hasAttribute('data-promo-id'),false,'approved operator may remain but expired offer copy disappears')
   } finally {
-    await act(() => root.unmount())
-    dom.window.close()
-    for (const [key, descriptor] of saved) { if (descriptor) Object.defineProperty(globalThis, key, descriptor); else delete globalThis[key] }
+    await act(()=>root.unmount());dom.window.close()
+    for(const[key,value]of saved){if(value)Object.defineProperty(globalThis,key,value);else delete globalThis[key]}
     delete globalThis.IS_REACT_ACT_ENVIRONMENT
   }
-})
-
-test('discovery Where-to-Play swaps only the Betsson card for the campaign card and keeps the multi-operator grid', () => {
-  for (const [locale, segment] of locales) {
-    const t = createTranslator(locale)
-    const doc = render(locale, `/${segment}/games/aviator`, React.createElement(gameDetailModule.GameDetailView, { game: data.getGame('aviator') }))
-    const card = doc.querySelector('#where-to-play [data-betsson-discovery-offer]')
-    assert.ok(card, locale)
-    assert.equal(card.getAttribute('data-game-slug'), 'aviator')
-    assert.ok(card.hasAttribute('data-betting-ad'))
-    assert.equal(card.getAttribute('data-evidence-state'), 'pending')
-    assert.equal(card.querySelectorAll('[data-brazil-ad-warning]').length, 1)
-    assert.ok(card.querySelector('h3').textContent.includes('Ganhe 100 Giros!'))
-    assert.ok(card.textContent.includes(t('promo.casinoBoundary')))
-    assert.doesNotMatch(card.textContent, /Aviator/, 'never claims the spins are for the game being viewed')
-    assert.ok(card.textContent.includes(t('notice.affiliateShort')))
-    assert.ok(card.textContent.includes('18+'))
-    const links = [...card.querySelectorAll('a[href^="/go?"]')]
-    assert.equal(links.length, 2)
-    assert.equal(links[0].textContent.includes(locale === 'pt-BR' ? 'Jogar na Betsson' : t('affiliate.playAtNamed', { name: 'Betsson' })), true)
-    assert.equal(doc.querySelectorAll('#where-to-play [data-betsson-discovery-offer]').length, 1)
-    assert.doesNotMatch(card.innerHTML, /betsson\.bet\.br/)
-    const standalone = render(locale, `/${segment}/games/aviator`, React.createElement(discoveryModule.BetssonDiscoveryOffer, { gameSlug: 'aviator' }))
-    assert.ok(standalone.querySelector('[data-betsson-discovery-offer]'))
-  }
-})
-
-test('Offers page renders the campaign as a verified offer card with tracked CTA, terms access and BR warning', () => {
-  for (const [locale, segment] of locales) {
-    const t = createTranslator(locale)
-    const doc = render(locale, `/${segment}/offers`, React.createElement(offersModule.OffersView))
-    const card = doc.querySelector(`[data-offer-id="${BETSSON_PROMO_OFFER_ID}"]`)
-    assert.ok(card, locale)
-    assert.equal(doc.querySelectorAll(`[data-offer-id="${BETSSON_PROMO_OFFER_ID}"]`).length, 1, 'no duplicate card across sections')
-    assert.equal(card.getAttribute('data-promo-id'), BETSSON_PROMO.promoId)
-    assert.ok(doc.querySelector('[data-offers-verified]').textContent.includes(t('affiliate.verifiedOffers')))
-    assert.equal(card.querySelector('h3').textContent, 'Ganhe 100 Giros!')
-    assert.equal(card.querySelector('h3').getAttribute('lang'), 'pt-BR')
-    assert.ok(card.textContent.includes(t('promo.offerBoundary')))
-    assert.ok(card.textContent.includes(t('promo.terms')))
-    assert.ok(card.textContent.includes('18+'))
-    assert.equal(card.querySelectorAll('[data-brazil-ad-warning]').length, 1)
-    const links = [...card.querySelectorAll('a[href^="/go?"]')]
-    assert.equal(links.length, 2, 'CTA plus terms access')
-    const cta = new URL(links[0].getAttribute('href'), 'https://www.playliva.com').searchParams
-    assert.equal(cta.get('offer'), BETSSON_PROMO_OFFER_ID)
-    assert.equal(cta.get('placement'), 'offers_page')
-    assert.equal(cta.get('page'), 'offers')
-    assert.equal(links[0].textContent.includes(locale === 'pt-BR' ? 'Jogar na Betsson' : locale === 'en' ? 'Play at Betsson' : 'Jugar en Betsson'), true)
-    assert.doesNotMatch(card.innerHTML, /betsson\.bet\.br/)
-    assert.ok(card.querySelector('img[alt=""]'), 'operator logo as the approved brand mark')
-  }
-})
-
-test('no Original game file or engine imports the campaign; the shell owns the offer mount', async () => {
-  for (const path of ['crash/crash-game.tsx', 'capybara/capybara-game.tsx', 'blackjack/blackjack-game.tsx', 'roulette/roulette-game.tsx', 'mines/mines-game.tsx']) {
-    const source = await readFile(new URL(`../components/originals/${path}`, import.meta.url), 'utf8')
-    assert.doesNotMatch(source, /betsson|promo|offer/i, path)
-  }
-  const shell = await readFile(new URL('../components/originals/play-game-shell.tsx', import.meta.url), 'utf8')
-  assert.ok(shell.includes('BetssonEngagementOffer'))
-  const viewport = shell.indexOf('data-game-viewport'), controls = shell.indexOf('data-game-controls'), offer = shell.indexOf('<BetssonEngagementOffer')
-  assert.ok(viewport > 0 && controls > viewport && offer > controls, 'offer mounts after the game unit')
 })

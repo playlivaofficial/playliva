@@ -1,3 +1,4 @@
+import { contentLocale } from '@/lib/locale'
 import { DEFAULT_LOCALE_SEGMENT, isLocaleSegment, segmentToLocale } from '@/lib/locale'
 import { pageMetadata } from '@/lib/discovery/seo'
 import { catalogCopy } from './copy'
@@ -25,16 +26,16 @@ export function referenceMetadata(kind: 'games' | 'games-like' | 'compare' | 'pr
         },
       }
       const override = locale === 'pt-BR' ? ptBrSeo[slug] : undefined
-      return pageMetadata({ title: override?.title ?? `${game.title} — ${c.details}`, description: game.content[locale].summary, path: `/games/${slug}`, localeSegment: segment, images: referenceImage(slug) })
+      return pageMetadata({ title: override?.title ?? `${game.title} — ${c.details}`, description: game.content[contentLocale(locale)].summary, path: `/games/${slug}`, localeSegment: segment, images: referenceImage(slug) })
     }
   }
   if (kind === 'games-like') {
     const list = getReferenceReadingList(slug), game = getReferenceGame(slug)
-    if (list && game) return pageMetadata({ title: `${c.similar} ${game.title} — ${c.related}`, description: list.intro[locale], path: `/games-like/${slug}`, localeSegment: segment, images: referenceImage(slug) })
+    if (list && game) return pageMetadata({ title: `${c.similar} ${game.title} — ${c.related}`, description: list.intro[contentLocale(locale)], path: `/games-like/${slug}`, localeSegment: segment, images: referenceImage(slug) })
   }
   if (kind === 'compare') {
     const item = getReferenceComparison(slug)
-    if (item) return pageMetadata({ title: `${getReferenceGame(item.a)!.title} vs ${getReferenceGame(item.b)!.title} — ${c.features}`, description: item.shared[locale], path: `/compare/${slug}`, localeSegment: segment, images: referenceImage(item.a) })
+    if (item) return pageMetadata({ title: `${getReferenceGame(item.a)!.title} vs ${getReferenceGame(item.b)!.title} — ${c.features}`, description: item.shared[contentLocale(locale)], path: `/compare/${slug}`, localeSegment: segment, images: referenceImage(item.a) })
   }
   if (kind === 'providers') {
     const provider = getReferenceProvider(slug)
@@ -45,7 +46,7 @@ export function referenceMetadata(kind: 'games' | 'games-like' | 'compare' | 'pr
         : locale === 'pt-BR' && provider.id === 'evolution'
           ? 'Jogos da Evolution: Cassino ao Vivo e Game Shows | PlayLiva'
           : `${provider.name} — ${c.collection}`
-      return pageMetadata({ title, description: provider.overview[locale], path: `/providers/${slug}`, localeSegment: segment, images: firstGame ? referenceImage(firstGame.slug) : undefined })
+      return pageMetadata({ title, description: provider.overview[contentLocale(locale)], path: `/providers/${slug}`, localeSegment: segment, images: firstGame ? referenceImage(firstGame.slug) : undefined })
     }
   }
   return undefined

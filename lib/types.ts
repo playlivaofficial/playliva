@@ -20,7 +20,8 @@ export type LanguageCode = 'PT' | 'ES' | 'EN'
  * BCP-47 locales the interface can render in. Locale tracks the visitor's
  * LANGUAGE choice — it must never be inferred from, or used to change, GEO.
  */
-export type Locale = 'pt-BR' | 'es-MX' | 'en'
+export type ContentLocale = 'pt-BR' | 'es-MX' | 'en'
+export type Locale = ContentLocale | 'es-CO' | 'es-PE'
 
 export type CategorySlug = 'crash' | 'slots' | 'live-casino' | 'table-games' | 'instant-games'
 /** Editorial arcade discovery does not grant operator/category eligibility. */
@@ -158,6 +159,14 @@ export type AffiliateStatus = 'pending' | 'approved' | 'paused' | 'rejected'
 export type OfferStatus = 'pending' | 'verified' | 'expired' | 'rejected'
 
 export interface Operator {
+  /** Populated only by the server-validated regional commercial registry. */
+  approved?: boolean
+  destinationReady?: boolean
+  currency?: 'MXN' | 'COP' | 'PEN'
+  campaignKey?: string
+  priority?: number
+  ctaText?: Partial<Record<Locale, string>>
+  commercialLegal?: { status: 'verified'; statement?: string; responsibleGambling?: string; disclosure?: string }
   id: string
   slug: string
   name: string
@@ -228,6 +237,7 @@ export interface Operator {
 }
 
 export interface Offer {
+  currency?: 'MXN' | 'COP' | 'PEN'
   id: string
   operatorId: string
   country: CountryCode
@@ -259,7 +269,7 @@ export interface Offer {
     assetPath: string
     width: number
     height: number
-    alt: Record<Locale, string>
+    alt: Partial<Record<Locale, string>>
     languages: readonly Locale[]
   }
   /** ISO date this offer's terms/link were last checked against the operator. */

@@ -1,3 +1,5 @@
+import { contentLocale } from '@/lib/locale'
+import type { ContentLocale } from '@/lib/types'
 import type { Locale } from '@/lib/types'
 const en = {
   description: 'Play Liva Mines: Jungle Gold free. Reveal treasure on a 5×5 jungle board, grow your golden trail and cash out virtual Liva Credits. No deposits or withdrawals.',
@@ -19,7 +21,7 @@ const en = {
   realBoundary: 'Explore real-money instant games at approved operators eligible for your selected market. Liva Mines is our free-play Original, not a game offered by these operators.',
 }
 type MinesCopy = { [K in keyof typeof en]: string }
-const copy: Record<Locale, MinesCopy> = {
+const copy: Record<ContentLocale, MinesCopy> = {
   en,
   'pt-BR': {
     description: 'Jogue Liva Mines: Jungle Gold grátis. Encontre tesouros em um tabuleiro 5×5 na selva, crie sua trilha dourada e resgate Liva Credits virtuais. Sem depósitos ou saques.',
@@ -60,4 +62,4 @@ const copy: Record<Locale, MinesCopy> = {
     realBoundary: 'Explora juegos instantáneos con dinero real en operadores aprobados y elegibles para el mercado seleccionado. Liva Mines es nuestro Original gratuito, no un juego ofrecido por estos operadores.',
   },
 }
-export const minesCopy = (locale: Locale): MinesCopy => copy[locale]
+export const minesCopy = (locale: Locale): MinesCopy => copy[contentLocale(locale)]

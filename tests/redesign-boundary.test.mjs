@@ -34,7 +34,10 @@ import { createHash } from 'node:crypto'
 // Rio Drift adds one consented best-score event/coarse label and six sitemap URLs.
 // Only tracking.ts, sitemap.ts and play-real.ts's arcade exclusion are rebased;
 // commercial records, partner destinations and existing category eligibility remain frozen.
-test('redesign: protected outbound infrastructure remains unchanged except authorized Betsson play-real files', async () => {
+// MX/CO/PE migration explicitly authorizes these commercial/routing/SEO adapters.
+// Their new snapshot is paired with positive activation, strict GEO suppression,
+// privacy, expiry and localized inventory tests; consent and engines stay fixed.
+test('GEO migration: reviewed outbound, SEO and privacy infrastructure snapshot', async () => {
   const expected = JSON.parse(await readFile(new URL('./fixtures/redesign-protected.json', import.meta.url), 'utf8'))
   for (const [path, hash] of Object.entries(expected)) {
     const source = (await readFile(new URL('../' + path, import.meta.url), 'utf8')).replace(/\r\n/g, '\n')

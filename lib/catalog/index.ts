@@ -1,3 +1,4 @@
+import { contentLocale } from '@/lib/locale'
 // Server-only catalog projection. Client components import types/query/copy only.
 import { GAMES } from '@/lib/data'
 import { getGameContent, getCategoryName } from '@/lib/content'
@@ -15,7 +16,7 @@ export const getReferenceGame = (slug: string) => REFERENCE_GAMES.find(game => g
 export function referenceSummary(game: ReferenceGame, locale: Locale): CatalogSummary<CategorySlug> {
   const provider = getReferenceProvider(game.providerId)!.name
   const categoryLabel = getCategoryName(game.category, locale)
-  const summary = game.content[locale].summary
+  const summary = game.content[contentLocale(locale)].summary
   return { id: game.id, slug: game.slug, title: game.title, provider, providerId: game.providerId, category: game.category,
     categoryLabel, summary, image: game.artwork.status === 'fallback' ? null : game.artwork.assetPath, artworkLabel: catalogCopy(locale).fallback, reference: true,
     searchText: normalizeSearch([game.title, provider, game.category, categoryLabel, summary, ...game.tags].join(' ')),

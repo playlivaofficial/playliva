@@ -60,20 +60,21 @@ export function AffiliateButton({
   /** Central campaign context: adds public campaign fields. */
   promo?: Pick<TrackPayload, 'promoId' | 'brand' | 'surface'>
 } & Omit<ComponentProps<typeof Button>, 'onClick' | 'render'>) {
-  const { marketCode, locale } = useCountry()
+  const { marketCode, locale, commercial } = useCountry()
   const country = countryProp ?? marketCode
   const buttonRef = useRef<HTMLAnchorElement>(null)
   const route = usePathname()
   const resolvedGame = gameSlug ?? (gameId ? getGameById(gameId)?.slug : undefined)
-  const eligible = country !== null && country === marketCode && Boolean(resolveDestination({
+  const destination = country !== null && country === marketCode ? resolveDestination({
     operatorSlug, offerId, country, category, gameSlug: resolvedGame,
     matchSlug: matchId, pageType, pageSlug, placement: ctaLocation,
-  })) && (!gameId || Boolean(resolvedGame))
+  }, commercial) : null
+  const eligible = Boolean(destination && (!operatorId || destination.operatorId === operatorId)) && (!gameId || Boolean(resolvedGame))
 
   const href = buildGoHref({
     operator: operatorSlug,
     offer: offerId,
-    country: country ?? 'BR',
+    country: country ?? 'MX',
     language: locale,
     game: resolvedGame,
     match: matchId,
@@ -86,7 +87,7 @@ export function AffiliateButton({
 
   useCommercialImpression(buttonRef, `${route}:${country}:${locale}:${operatorSlug}:${offerId}:${ctaLocation}`, () => {
     track('affiliate_impression', {
-      campaignKey: campaignForGoHref(href),
+      campaignKey: campaignForGoHref(href, commercial),
       country: country ?? undefined, language: locale, pageType, pageSlug,
       gameId, gameSlug: resolvedGame, matchId, category, operatorId, operatorSlug,
       offerId, placement: ctaLocation, ...promo,
@@ -95,7 +96,7 @@ export function AffiliateButton({
 
   const handleClick = () => {
     track('affiliate_click', {
-      campaignKey: campaignForGoHref(href),
+      campaignKey: campaignForGoHref(href, commercial),
       country: country ?? undefined,
       language: locale,
       pageType,

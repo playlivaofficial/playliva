@@ -8,7 +8,7 @@ import localeModule from '../lib/locale.ts'
 import sitemapModule from '../app/sitemap.ts'
 const { crashCopy, parseAutoInput } = copyModule
 const { ISLAND_CRASH } = definitionModule
-const { LOCALE_SEGMENTS, segmentToLocale } = localeModule
+const { LOCALE_SEGMENTS, segmentToLocale, contentLocale } = localeModule
 
 test('Crash has complete original copy and reciprocal canonical/hreflang for all locales', () => {
   for (const segment of LOCALE_SEGMENTS) {
@@ -16,10 +16,15 @@ test('Crash has complete original copy and reciprocal canonical/hreflang for all
     assert.deepEqual(Object.keys(copy), Object.keys(crashCopy('en')))
     assert.deepEqual(Object.keys(copy.errors), Object.keys(crashCopy('en').errors))
     assert.doesNotMatch(JSON.stringify(copy), /JetX|Aviator|SmartSoft|SPRIBE|Robinson Crusoe|\bFriday\b/i)
-    const metadata = seoModule.pageMetadata({ title: ISLAND_CRASH.title[locale], description: copy.description, path: '/play/crash', localeSegment: segment })
+    const metadata = seoModule.pageMetadata({ title: ISLAND_CRASH.title[contentLocale(locale)], description: copy.description, path: '/play/crash', localeSegment: segment })
     assert.ok(metadata.alternates.canonical.endsWith(`/${segment}/play/crash`))
-    for (const alternate of LOCALE_SEGMENTS) assert.ok(metadata.alternates.languages[alternate].endsWith(`/${alternate}/play/crash`))
-    assert.ok(metadata.alternates.languages['x-default'].endsWith('/pt-br/play/crash'))
+    if (['es-co','es-pe'].includes(segment)) {
+      assert.equal(metadata.robots.index, false)
+      assert.equal(metadata.alternates.languages, undefined)
+    } else {
+      for (const alternate of ['en','pt-br','es-mx']) assert.ok(metadata.alternates.languages[alternate].endsWith(`/${alternate}/play/crash`))
+      assert.ok(metadata.alternates.languages['x-default'].endsWith('/en/play/crash'))
+    }
   }
 })
 test('only the fourteen implemented Originals subroutes enter the sitemap', () => {

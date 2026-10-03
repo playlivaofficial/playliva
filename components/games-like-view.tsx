@@ -25,16 +25,19 @@ import { discoveryCategory } from '@/lib/product-discovery'
 import { ContentCard } from '@/components/content-card'
 import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsored-banner'
 import { EditorialByline } from '@/components/editorial-byline'
+import { isWhereToPlayIndexable } from '@/lib/seo-market'
+import { localeToSegment } from '@/lib/locale'
 
 export function GamesLikeView({ game }: { game: Game }) {
-  const { marketCode: countryCode, t, locale } = useCountry()
+  const { commercial, marketCode: countryCode, t, locale } = useCountry()
   const categoryName = getCategoryName(discoveryCategory(game), locale)
   const categoryLower = categoryName.toLowerCase()
   const marketName = countryCode ? getCountryName(countryCode, locale) : t('geo.marketLabel')
   const content = getGameContent(game, locale)
   const alternatives = getRelatedGames(game, undefined, 8)
   const comparisons = getComparisonsForGame(game.id)
-  const operators = countryCode ? getOperatorsForGame(game, countryCode) : []
+  const operators = countryCode ? getOperatorsForGame(game, countryCode, commercial.operators) : []
+  const hasPublishedGuide = isWhereToPlayIndexable(game, localeToSegment(locale))
   // Individual editorial write-ups per alternative, only where a real note
   // exists (sparse by design — see `getAlternativeNote`).
   const alternativeDetails = alternatives
@@ -174,7 +177,8 @@ export function GamesLikeView({ game }: { game: Game }) {
                         <ArrowRight className="size-4" />
                       </Button>
                     )}
-                    {countryCode && getOperatorsForGame(alt, countryCode).length > 0 && (
+                    {((countryCode && getOperatorsForGame(alt, countryCode, commercial.operators).length > 0) ||
+                      isWhereToPlayIndexable(alt, localeToSegment(locale))) && (
                       <Button
                         size="sm"
                         variant="ghost"
@@ -244,7 +248,7 @@ export function GamesLikeView({ game }: { game: Game }) {
           eyebrow={t('geo.whereToPlay')}
           title={t('compare.whereToPlayTitle', { market: marketName })}
           description={t('game.whereToPlaySub')}
-          action={operators.length > 0 ? (
+          action={operators.length > 0 || hasPublishedGuide ? (
             <Button
               variant="outline"
               size="lg"

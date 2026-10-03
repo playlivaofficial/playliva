@@ -10,10 +10,10 @@ import { PathnameContext } from 'next/dist/shared/lib/hooks-client-context.share
 import country from '../components/country-context.tsx'
 import button from '../components/affiliate-button.tsx'
 import crash from '../lib/originals/crash/definition.ts'
-import config from '../lib/affiliates/betsson-promo-config.ts'
 import owner from '../components/owner/geo-preview.tsx'
 import consent from '../lib/consent.ts'
 import tracking from '../lib/tracking.ts'
+import commercial from '../lib/commercial/types.ts'
 
 const hooks = registerHooks({ load(url, context, next) {
   if (String(url).includes('.module.css')) return { format: 'module', shortCircuit: true, source: 'export default new Proxy({}, { get: (_, key) => String(key) });' }
@@ -34,57 +34,50 @@ function tree(geo, active = false, preview = geo, locale = 'pt-BR') {
         h(popup.BetssonEngagementOffer, { game: crash.ISLAND_CRASH, roundActive: active })) ))
 }
 
-test('server HTML gates banners, Originals sponsor, Offers and affiliate links by GEO, never PT-BR locale', () => {
-  for (const geo of [null, 'MX']) assert.doesNotMatch(renderToStaticMarkup(tree(geo)), /href="\/go\?/)
-  for (const locale of ['pt-BR', 'en']) {
-    const html = renderToStaticMarkup(tree('BR', false, 'BR', locale))
-    assert.match(html, /data-betsson-banner="homepage"/)
-    assert.match(html, /data-betsson-banner="originals"/)
-    assert.match(html, /href="\/go\?/)
-    assert.match(html, /offers_page/)
-  }
+function MarketProbe() {
+  const {countryCode,marketCode,locale,currency} = country.useCountry()
+  return h('output', { 'data-market': marketCode, 'data-selected': countryCode, 'data-locale': locale }, currency)
+}
+function probeTree(geo, preview = geo) {
+  const locale = geo ? 'es-' + geo : 'en', path = geo ? '/es-' + geo.toLowerCase() + '/games' : '/en/games'
+  return h(AppRouterContext.Provider, { value: { push() {}, prefetch() {} } },
+    h(PathnameContext.Provider, { value: path }, h(country.CountryProvider, { key: String(geo)+String(preview), initialLocale: locale, initialCountryCode: 'MX', visitorCountryCode: geo, previewCountryCode: preview, commercial: commercial.emptyCommercialSnapshot(geo) }, h(MarketProbe))))
+}
+
+test('pending GEOs never invent commercial surfaces; owner selectors show only Real/MX/CO/PE', () => {
+  for (const geo of [null, 'BR', 'MX', 'CO', 'PE']) assert.doesNotMatch(renderToStaticMarkup(tree(geo)), /href="\/go\?/)
   assert.equal(renderToStaticMarkup(h(owner.OwnerGeoPreview, { status: { authorized: false, previewGeo: null, realCountry: 'GE' } })), '')
-  const html = renderToStaticMarkup(h(owner.OwnerGeoPreview, { status: { authorized: true, previewGeo: 'BR', realCountry: 'GE' } }))
-  assert.match(html, /BR preview/); assert.match(html, /Reset to Real GEO/); assert.match(html, /Real country: GE/)
+  for (const [geo, currency] of [['MX','MXN'],['CO','COP'],['PE','PEN']]) {
+    const html = renderToStaticMarkup(h(owner.OwnerGeoPreview, { status: { authorized: true, previewGeo: geo, realCountry: 'GE' } }))
+    assert.match(html, new RegExp(geo+' preview')); assert.match(html, /Reset to Real GEO/); assert.match(html, /Real country: GE/)
+    assert.match(html, new RegExp('es-'+geo+' · '+currency))
+    assert.doesNotMatch(html, /option value="(?:BR|ES|PT|ZA)"/)
+  }
 })
 
-test('saved MX cannot hide owner BR preview; popup recurs at 3 and 6, reset/MX/PT-BR suppress it and QA tracking', async () => {
-  const dom = new JSDOM('<div id="root"></div>', { url: 'https://www.playliva.com/pt-br/play/crash', virtualConsole: new VirtualConsole() })
+test('owner MX/CO/PE selection overrides saved preferences, reset restores real GEO and previews never record analytics', async () => {
+  const dom = new JSDOM('<div id="root"></div>', { url: 'https://www.playliva.com/es-co/games', virtualConsole: new VirtualConsole() })
   const saved = new Map()
   for (const key of ['window', 'self', 'document', 'location', 'navigator', 'Event', 'HTMLElement', 'Node', 'IS_REACT_ACT_ENVIRONMENT']) {
     saved.set(key, Object.getOwnPropertyDescriptor(globalThis, key))
     Object.defineProperty(globalThis, key, { configurable: true, writable: true, value: key === 'IS_REACT_ACT_ENVIRONMENT' ? true : dom.window[key] })
   }
   const root = createRoot(document.getElementById('root'))
-  const pending = new Map(); let timer = 0
-  const originalTimeout = window.setTimeout.bind(window), originalClear = window.clearTimeout.bind(window)
-  window.setTimeout = (fn, ms, ...args) => ms === config.BETSSON_PROMO.engagement.delayMs ? (pending.set(++timer, fn), timer) : originalTimeout(fn, ms, ...args)
-  window.clearTimeout = id => pending.has(id) ? pending.delete(id) : originalClear(id)
-  const mount = (geo, active = false, preview = geo) => act(() => root.render(tree(geo, active, preview)))
-  const settle = () => act(() => { for (const [id, fn] of pending) { pending.delete(id); fn() } })
   try {
     window.localStorage.setItem('playliva.country', 'MX')
-    await mount('BR')
-    assert.ok(document.querySelector('[data-betsson-banner="homepage"]'))
-    assert.equal(window.localStorage.getItem('playliva.country'), 'MX', 'preview never overwrites public preference')
-    for (let cycle = 1; cycle <= 6; cycle++) {
-      await mount('BR', true); assert.equal(document.querySelector('[role="dialog"]'), null, 'never mid-round')
-      await mount('BR'); await settle()
-      assert.equal(Boolean(document.querySelector('[role="dialog"]')), cycle % 3 === 0)
-      if (cycle % 3 === 0) assert.equal(document.querySelector('[data-betsson-engagement-offer]').getAttribute('data-completed-cycle'), String(cycle))
+    for (const [geo,currency] of [['MX','MXN'],['CO','COP'],['PE','PEN']]) {
+      await act(() => root.render(probeTree(geo)))
+      const output = document.querySelector('output')
+      assert.equal(output.dataset.market, geo); assert.equal(output.dataset.selected, geo)
+      assert.equal(output.dataset.locale, 'es-'+geo); assert.equal(output.textContent, currency)
+      assert.equal(window.localStorage.getItem('playliva.country'), 'MX', 'preview never overwrites public preference')
     }
-    for (const geo of [null, 'MX']) {
-      await mount(geo)
-      for (let cycle = 1; cycle <= 3; cycle++) { await mount(geo, true); await mount(geo); await settle() }
-      assert.equal(document.querySelector('[role="dialog"]'), null)
-      assert.equal(document.querySelector('a[href^="/go?"]'), null)
-    }
-    await mount('BR', false, null)
-    assert.equal(document.querySelector('a[href^="/go?"]'), null, 'Real GEO restores saved MX selection')
+    await act(() => root.render(probeTree(null)))
+    assert.equal(document.querySelector('output').dataset.market, undefined, 'reset cannot turn editorial preference into real GEO')
     consent.saveConsent({ necessary: true, analytics: true, marketing: false })
-    const marker = document.createElement('section'); marker.dataset.ownerGeoPreview = 'BR'; document.body.append(marker)
+    const marker = document.createElement('section'); marker.dataset.ownerGeoPreview = 'CO'; document.body.append(marker)
     const count = window.dataLayer?.length ?? 0
-    tracking.track('affiliate_click', { country: 'BR' })
+    tracking.track('page_view', { country: 'CO' })
     assert.equal(window.dataLayer?.length ?? 0, count)
   } finally {
     await act(() => root.unmount()); dom.window.close()

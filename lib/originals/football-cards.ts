@@ -1,4 +1,4 @@
-import type { Locale } from '@/lib/types'
+import type { ContentLocale } from '@/lib/types'
 
 /**
  * Discovery-card strings for the football Originals. Kept apart from the full
@@ -6,7 +6,7 @@ import type { Locale } from '@/lib/types'
  * and article paragraph in three languages. The game copy spreads these in.
  */
 type Card = { readonly category: string; readonly posterAlt: string; readonly discovery: string }
-export const FOOTBALL_CARDS: Record<'embaixadinha' | 'golaco', Record<Locale, Card>> = {
+export const FOOTBALL_CARDS: Record<'embaixadinha' | 'golaco', Record<ContentLocale, Card>> = {
   embaixadinha: {
     'pt-BR': {
       category: 'Crash',

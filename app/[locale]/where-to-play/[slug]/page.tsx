@@ -4,17 +4,15 @@ import { GAMES, getGame } from '@/lib/data'
 import { getGameContent } from '@/lib/content'
 import { WhereToPlayView } from '@/components/where-to-play-view'
 import { getGameOgImage } from '@/lib/game-artwork'
-import { pageMetadata } from '@/lib/discovery/seo'
+import { pageMetadata } from '@/lib/seo'
+import { publishedWhereToPlayLocales } from '@/lib/commercial/seo'
+import { geoEditorial } from '@/lib/geo-editorial'
 import {
   DEFAULT_LOCALE_SEGMENT,
   isLocaleSegment,
   segmentToLocale,
 } from '@/lib/locale'
 import { createTranslator } from '@/lib/i18n'
-import {
-  isWhereToPlayIndexable,
-  whereToPlayLocaleSegments,
-} from '@/lib/seo-market'
 
 export function generateStaticParams() {
   return GAMES.map((g) => ({ slug: g.slug }))
@@ -34,17 +32,18 @@ export async function generateMetadata({
   const segment = isLocaleSegment(localeSegment)
     ? localeSegment
     : DEFAULT_LOCALE_SEGMENT
-  const eligibleSegments = whereToPlayLocaleSegments(game)
-  const indexable = isWhereToPlayIndexable(game, segment)
+  const eligibleSegments = publishedWhereToPlayLocales(game)
+  const indexable = eligibleSegments.includes(segment)
+  const country = geoEditorial(locale)
   const t = createTranslator(locale)
   const gc = getGameContent(game, locale)
   // gameType is a localized editorial label (e.g. "crash"), not the GEO.
   const gameType = gc.gameType
   const seoOverride = gc.seo?.whereToPlay
   return pageMetadata({
-    title: seoOverride?.title ?? t('seo.whereToPlayTitle', { game: game.title }),
+    title: country ? `Dónde jugar ${game.title} en ${country.name}` : seoOverride?.title ?? t('seo.whereToPlayTitle', { game: game.title }),
     description:
-      seoOverride?.description ??
+      (country ? `Guía de ${game.title} para ${country.name}: mecánicas de ${game.provider}, moneda ${country.currency} y comprobaciones de disponibilidad. Solo destinos con evidencia para este país.` : seoOverride?.description) ??
       t('seo.whereToPlayDescription', {
         game: game.title,
         gameType,

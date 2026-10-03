@@ -7,10 +7,10 @@ import { track } from '@/lib/tracking'
 import { useCommercialImpression } from '@/components/analytics/use-commercial-impression'
 import { Button } from '@/components/ui/button'
 import { useCountry } from '@/components/country-context'
-import { getBetssonGamePlayCta } from '@/lib/affiliates/betsson'
+import { getProviderGameCta } from '@/lib/affiliates/promotion'
 import type { CategorySlug } from '@/lib/types'
 import styles from './betsson-banner.module.css'
-import { BrazilAdWarning } from './brazil-ad-warning'
+import { CommercialAdDisclosure } from './commercial-ad-disclosure'
 import { AffiliateDisclosureLine } from '@/components/notices'
 
 export function ProviderPlayRealCta({
@@ -20,30 +20,30 @@ export function ProviderPlayRealCta({
   gameSlug: string
   category: CategorySlug
 }) {
-  const { marketCode, locale, t } = useCountry()
-  const cta = marketCode ? getBetssonGamePlayCta(marketCode, locale, { gameSlug, category }) : null
+  const { marketCode, locale, t, commercial } = useCountry()
+  const cta = marketCode ? getProviderGameCta(commercial, marketCode, locale, { gameSlug, category }) : null
   const root = useRef<HTMLDivElement>(null), route = usePathname()
-  const payload = { campaignKey: cta ? campaignForGoHref(cta.href) : undefined, gameSlug, category, country: marketCode ?? undefined, language: locale,
-    operatorSlug: 'betsson-group-affiliates', placement: 'game_detail_play_real', destination: 'betsson-group-affiliates' }
+  const payload = { campaignKey: cta ? campaignForGoHref(cta.href, commercial) : undefined, gameSlug, category, country: marketCode ?? undefined, language: locale,
+    operatorId: cta?.operatorId, operatorSlug: cta?.operatorSlug, placement: 'game_detail_play_real', destination: cta?.operatorSlug }
   useCommercialImpression(root, `${route}:${marketCode}:${locale}`, () => track('affiliate_impression', payload))
   if (!cta) return null
   return (
     <div ref={root}
       className={styles.playCta}
-      data-betsson-game-cta=""
+      data-provider-game-cta=""
       data-operator-cta-mode={cta.mode}
       data-game-slug={gameSlug}
-      data-betting-ad="" data-evidence-state="pending"
+      data-commercial-ad=""
     >
       <Button
         size="lg"
         className={styles.playCtaButton}
         render={<a href={cta.href} target="_blank" rel="sponsored noopener noreferrer" onClick={() => track('affiliate_click', payload)} />}
       >
-        {t('affiliate.playRealBetsson')}
+        {cta.ctaLabel || t('affiliate.playAtNamed', { name: cta.operatorName })}
       </Button>
       <AffiliateDisclosureLine />
-      <BrazilAdWarning operatorId="op-betsson" />
+      <CommercialAdDisclosure operatorId={cta.operatorId} />
     </div>
   )
 }

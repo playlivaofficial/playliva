@@ -1,4 +1,4 @@
-import type { Locale } from './types'
+import type { ContentLocale } from '@/lib/types'
 
 export interface RtpEvidence {
   gameSlug: string
@@ -7,7 +7,7 @@ export interface RtpEvidence {
   publishedPercent: string
   source: string
   verifiedAt: string
-  variant: Record<Locale, string>
+  variant: Record<ContentLocale, string>
 }
 
 // Public provider specifications, not a claim about any operator's configured version.
@@ -33,7 +33,7 @@ export function validRtpEvidence(evidence: RtpEvidence | undefined, slug: string
   if (!evidence || evidence.gameSlug !== slug || evidence.provider.toLowerCase() !== provider.toLowerCase() ||
     !/^\d{1,2}(?:\.\d{1,4})?%$|^100(?:\.0{1,4})?%$/.test(evidence.publishedPercent) ||
     !/^\d{4}-\d{2}-\d{2}$/.test(evidence.verifiedAt) || !Number.isFinite(Date.parse(evidence.verifiedAt)) ||
-    !['en', 'pt-BR', 'es-MX'].every(locale => evidence.variant?.[locale as Locale]?.trim())) return false
+    !['en', 'pt-BR', 'es-MX'].every(locale => evidence.variant?.[locale as ContentLocale]?.trim())) return false
   const sources: Record<string, string> = { aviator: '/games/aviator', 'spribe-dice': '/games/dice', 'spribe-keno': '/games/keno' }
   // Extending coverage requires an explicit source/edition review, not just any provider URL.
   return Boolean(sources[slug]) && evidence.source === `https://spribe.co${sources[slug]}`

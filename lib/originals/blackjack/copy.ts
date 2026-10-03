@@ -1,3 +1,5 @@
+import { contentLocale } from '@/lib/locale'
+import type { ContentLocale } from '@/lib/types'
 import type { Locale } from '@/lib/types'
 
 const en = {
@@ -26,7 +28,7 @@ const en = {
   verifiedReferral: 'External recommendation: the separately verified Blackjack Live listing. This is not the PlayLiva Original.',
 }
 type Copy = { [K in keyof typeof en]: string }
-const COPY: Record<Locale, Copy> = {
+const COPY: Record<ContentLocale, Copy> = {
   en,
   'pt-BR': {
     description: 'Jogue Liva Blackjack grátis: seis baralhos, blackjack paga 3:2, pedir carta, parar, dobrar e dividir. Só Liva Credits virtuais. Sem depósitos ou valor monetário.',
@@ -79,4 +81,4 @@ const COPY: Record<Locale, Copy> = {
     verifiedReferral: 'Recomendación externa: la ficha de Blackjack Live, verificada por separado. No es el PlayLiva Original.',
   },
 }
-export const blackjackCopy = (locale: Locale): Copy => COPY[locale]
+export const blackjackCopy = (locale: Locale): Copy => COPY[contentLocale(locale)]

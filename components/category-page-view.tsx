@@ -55,8 +55,8 @@ export function CategoryPageView({ slug, referenceCatalog }: { slug: CategorySlu
     : undefined
   const comparisons = getComparisonsForCategory(slug).slice(0, 2)
 
-  // Lead with market-popular games; fall back to the full catalog.
-  const leadGames = popular.length > 0 ? popular : allGames
+  // A sparse regional editorial ordering must never remove catalogue members.
+  const leadGames = [...popular, ...allGames.filter(game => !popular.some(lead => lead.id === game.id))]
 
   return (
     <div>

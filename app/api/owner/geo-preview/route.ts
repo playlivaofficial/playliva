@@ -1,6 +1,7 @@
 import { allowedOrigin } from '@/lib/owner/server/auth'
 import { ownerGeoStatus, requestOwnerToken, setOwnerPreviewGeo } from '@/lib/owner/server/geo-preview'
 import { PRIVATE_HEADERS } from '@/lib/owner/private-headers'
+import { isCommercialGeo } from '@/lib/geo'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -28,7 +29,7 @@ export async function POST(request: Request) {
       text += decoder.decode(part.value, { stream: true })
     }
     const body = JSON.parse(text + decoder.decode())
-    if (!body || Array.isArray(body) || Object.keys(body).length !== 1 || !Object.hasOwn(body, 'country') || ![null, 'BR', 'MX'].includes(body.country)) return reply({ error: 'Invalid preview GEO.' }, 400)
+    if (!body || Array.isArray(body) || Object.keys(body).length !== 1 || !Object.hasOwn(body, 'country') || (body.country !== null && !isCommercialGeo(body.country))) return reply({ error: 'Invalid preview GEO.' }, 400)
     if (!await setOwnerPreviewGeo(requestOwnerToken(request.headers), body.country)) return reply({ error: 'Owner authentication required.' }, 401)
     return reply(await ownerGeoStatus(request.headers))
   } catch { return reply({ error: 'Preview could not be updated. Refresh and try again.' }, 400) }

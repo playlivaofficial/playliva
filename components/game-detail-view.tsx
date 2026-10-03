@@ -14,6 +14,7 @@ import {
   Trophy,
 } from 'lucide-react'
 import { useCountry } from '@/components/country-context'
+import { geoForLocale } from '@/lib/geo'
 import {
   getComparisonsForGame,
   getCountryName,
@@ -48,7 +49,7 @@ import { isWhereToPlayIndexable } from '@/lib/seo-market'
 import { localeToSegment } from '@/lib/locale'
 
 export function GameDetailView({ game }: { game: Game }) {
-  const { marketCode: countryCode, country, t, locale } = useCountry()
+  const { commercial, marketCode: countryCode, country, t, locale } = useCountry()
   const visibleCategory = discoveryCategory(game)
   const categoryName = getCategoryName(visibleCategory, locale)
   const marketName = countryCode ? getCountryName(countryCode, locale) : t('geo.marketLabel')
@@ -56,8 +57,10 @@ export function GameDetailView({ game }: { game: Game }) {
   const copy = productCopy(locale)
   const deviceNames: Record<string, string> = { Desktop: copy.desktop, Mobile: copy.mobile, Tablet: copy.tablet }
 
-  const operators = countryCode ? getOperatorsForGame(game, countryCode) : []
-  const hasPublishedGuide = isWhereToPlayIndexable(game, localeToSegment(locale))
+  const operators = countryCode ? getOperatorsForGame(game, countryCode, commercial.operators) : []
+  // Pending country guides are useful neutral destinations. Linking them does
+  // not claim operator availability or make the guide indexable.
+  const hasPublishedGuide = geoForLocale(locale) !== null || isWhereToPlayIndexable(game, localeToSegment(locale))
   const providerPath = providerSlug(game.provider)
   const related = getRelatedGames(game, undefined, 4)
   const comparisons = getComparisonsForGame(game.id)

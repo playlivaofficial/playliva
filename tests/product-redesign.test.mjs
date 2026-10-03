@@ -57,9 +57,9 @@ test('redesign: hero has two clear localized internal actions and one existing O
       link.closest('[data-hero-sponsor]') && /^https:\/\/www\.gov\.br\//.test(link.getAttribute('href'))))
     assert.doesNotMatch(doc.body.innerHTML, /https?:\/\/(?:www\.)?betsson/i)
     const goLinks = [...doc.querySelectorAll('a[href^="/go"]')]
-    assert.ok(goLinks.length >= 1)
+    assert.equal(goLinks.length, 0, 'Deprecated Brazil promotion remains suppressed')
     assert.ok(goLinks.every(link => link.closest('[data-hero-sponsor]')))
-    assert.equal(doc.querySelector('[data-hero-sponsor] [data-betsson-banner="homepage"]').getAttribute('data-banner-layout'), 'compact-header')
+    assert.equal(doc.querySelector('[data-hero-sponsor] [data-betsson-banner="homepage"]'), null)
     dom.window.close()
   }
 })
@@ -72,7 +72,7 @@ test('redesign: all fourteen implemented Originals remain localized, distinct an
     assert.ok(doc.querySelector('[data-original-card="blackjack"]').textContent.includes(productCopy(locale).noLiveDealer))
     assert.equal(doc.querySelector('[data-provider-card]'), null)
     assert.equal(doc.querySelector('[data-original-card] a[href^="/go"]'), null)
-    assert.ok(doc.querySelector('[data-betsson-banner="play"] a[href^="/go"]'))
+    assert.equal(doc.querySelector('[data-betsson-banner="play"] a[href^="/go"]'), null)
     assert.equal(doc.querySelector('[role="group"] button[aria-pressed="true"]').textContent, productCopy(locale).all)
     dom.window.close()
   }

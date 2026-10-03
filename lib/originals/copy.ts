@@ -1,3 +1,5 @@
+import { contentLocale } from '@/lib/locale'
+import type { ContentLocale } from '@/lib/types'
 import type { Locale } from '../types'
 
 const en = {
@@ -15,7 +17,7 @@ const en = {
   noOperators: 'No approved operators are available for this category in your selected market.',
 }
 type Copy = { [K in keyof typeof en]: string }
-const copy: Record<Locale, Copy> = {
+const copy: Record<ContentLocale, Copy> = {
   en,
   'pt-BR': {
     playFree: 'Jogar Grátis', freePlay: 'JOGUE GRÁTIS', demo: 'DEMO', balance: 'Saldo Demo', credits: 'Liva Credits',
@@ -46,4 +48,4 @@ const copy: Record<Locale, Copy> = {
     noOperators: 'No hay operadores aprobados para esta categoría en el mercado seleccionado.',
   },
 }
-export const originalsCopy = (locale: Locale): Copy => copy[locale]
+export const originalsCopy = (locale: Locale): Copy => copy[contentLocale(locale)]

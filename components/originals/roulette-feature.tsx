@@ -1,4 +1,6 @@
 'use client'
+
+import { contentLocale } from '@/lib/locale'
 import Image from 'next/image'
 import { PowerFeature } from './power-feature'
 import { ArrowRight, Play } from 'lucide-react'
@@ -12,7 +14,7 @@ import styles from './originals-discovery.module.css'
 /** Small original SVG and links only; no renderer or settlement imports. */
 export function RouletteFeature({ surface }: { surface: 'home' | 'hub' | 'category' }) {
   const { locale } = useCountry(), copy = rouletteCopy(locale), shared = originalsDiscoveryCopy(locale)
-  const Heading = surface === 'hub' ? 'h2' : 'h3', title = LIVA_ROULETTE.title[locale]
+  const Heading = surface === 'hub' ? 'h2' : 'h3', title = LIVA_ROULETTE.title[contentLocale(locale)]
   return <article className={styles.card} data-original-card="roulette" data-surface={surface}>
     <LocaleLink href="/play/roulette" prefetch={false} className={styles.posterLink} aria-label={`${shared.playFree}: ${title}`}>
       <Image src="/originals/roulette/orbit-poster.svg" alt={copy.posterAlt} fill sizes="(max-width:767px) 100vw,700px" className={styles.poster}/>

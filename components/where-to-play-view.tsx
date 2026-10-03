@@ -23,13 +23,19 @@ import { track } from '@/lib/tracking'
 import type { Game } from '@/lib/types'
 import { EditorialByline } from '@/components/editorial-byline'
 import { editorialCopy } from '@/lib/editorial'
+import { localeToSegment } from '@/lib/locale'
+import { seoMarketForLocaleSegment } from '@/lib/seo-market'
+import { geoEditorial } from '@/lib/geo-editorial'
 
 export function WhereToPlayView({ game }: { game: Game }) {
-  const { marketCode: country, locale, t } = useCountry()
-  const countryName = country ? getCountryName(country, locale) : t('geo.marketLabel')
+  const { commercial, marketCode: country, locale, t } = useCountry()
+  const editorialMarket = seoMarketForLocaleSegment(localeToSegment(locale))
+  const countryName = editorialMarket ? getCountryName(editorialMarket, locale) : t('geo.marketLabel')
+  const visitorCountryName = country ? getCountryName(country, locale) : t('geo.marketLabel')
+  const regional = geoEditorial(locale)
   const categoryName = getCategoryName(game.category, locale)
   const gc = getGameContent(game, locale)
-  const operators = country ? getOperatorsForGame(game, country) : []
+  const operators = country ? getOperatorsForGame(game, country, commercial.operators) : []
   const comparisons = getComparisonsForGame(game.id).slice(0, 2)
   const related = getRelatedGames(game, country ?? undefined, 4)
 
@@ -73,14 +79,14 @@ export function WhereToPlayView({ game }: { game: Game }) {
                 {countryName}
               </span>
               <h1 className="mt-3 text-balance font-display text-3xl font-bold sm:text-4xl">
-                {gc.seo?.whereToPlay?.h1 ??
+                {regional ? `Dónde jugar ${game.title} en ${regional.name}` : gc.seo?.whereToPlay?.h1 ??
                   t('game.whereToPlayTitle', {
                     game: game.title,
                     market: countryName,
                   })}
               </h1>
               <p className="mt-3 max-w-xl text-pretty leading-relaxed text-muted-foreground">
-                {operators.length > 0 && gc.whereToPlayIntro
+                {regional ? `${gc.shortDescription} Consulta qué comprobar sobre disponibilidad en ${regional.name}, moneda ${regional.currency} y la edición de ${game.provider}. La ficha del juego no confirma su oferta en un operador.` : operators.length > 0 && gc.whereToPlayIntro
                   ? gc.whereToPlayIntro
                   : <>{gc.shortDescription}{' '}{t('wtp.intro', { country: countryName, game: game.title })}</>}
               </p>
@@ -96,7 +102,7 @@ export function WhereToPlayView({ game }: { game: Game }) {
             <SectionHeading
               title={t('category.operatorsTitle', {
                 category: categoryName,
-                market: countryName,
+                market: visitorCountryName,
               })}
               description={t('wtp.operatorsSub')}
               className="mb-6"
@@ -119,7 +125,7 @@ export function WhereToPlayView({ game }: { game: Game }) {
         ) : (
           <div className="rounded-2xl border border-border bg-card/50 p-8 text-center">
             <p className="text-pretty text-muted-foreground">
-              {t('wtp.empty', { game: game.title, market: countryName })}
+              {t('wtp.empty', { game: game.title, market: visitorCountryName })}
             </p>
           </div>
         )}
@@ -144,7 +150,7 @@ export function WhereToPlayView({ game }: { game: Game }) {
         <Section className="pt-4">
           <SectionHeading
             title={t('game.gamesLike', { game: game.title })}
-            description={t('geo.popularInSub', { country: countryName })}
+            description={t('game.compareSub')}
             className="mb-6"
           />
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -156,6 +162,11 @@ export function WhereToPlayView({ game }: { game: Game }) {
       )}
 
       <Section className="pt-4">
+        {regional && <div className="mb-6 rounded-2xl border border-border p-6" data-wtp-country={regional.code}>
+          <h2 className="text-xl font-semibold">Disponibilidad y moneda en {regional.name}</h2>
+          <p className="mt-3 leading-relaxed text-muted-foreground">{regional.money}</p>
+          <ul className="mt-4 list-disc space-y-3 pl-5 text-muted-foreground">{regional.checks.map(check => <li key={check}>{check}</li>)}</ul>
+        </div>}
         <div className="grid gap-6 lg:grid-cols-2">
           <div className="rounded-2xl border border-border bg-card p-6">
             <div className="flex items-center gap-2 text-primary">

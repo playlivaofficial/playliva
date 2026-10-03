@@ -17,6 +17,7 @@ import paths from '../lib/catalog/paths.ts'
 import data from '../lib/data.ts'
 import sitemapModule from '../app/sitemap.ts'
 import seo from '../lib/seo.ts'
+import seoMarket from '../lib/seo-market.ts'
 import copy from '../lib/catalog/copy.ts'
 const { REFERENCE_GAMES, PROVIDERS, catalogSummaries } = catalog
 const locales = [['en', 'en'], ['pt-BR', 'pt-br'], ['es-MX', 'es-mx']]
@@ -74,8 +75,8 @@ test('M11: all three locales contain original copy, catalog artwork and meaningf
     assert.ok(doc.querySelector('[data-artwork-status="sourced"]'))
     assert.ok(game.artwork.status !== 'fallback' && doc.querySelector(`img[src="${game.artwork.assetPath}"]`))
     assert.equal(doc.querySelector('a[href*="/where-to-play/"], iframe, [data-game-shell]'), null)
-    assert.ok(doc.querySelector('[data-betsson-game-cta] a[href^="/go"]'))
-    assert.ok(doc.querySelector('[data-betsson-banner="game"]'))
+    assert.equal(doc.querySelector('[data-betsson-game-cta] a[href^="/go"]'), null)
+    assert.equal(doc.querySelector('[data-betsson-banner="game"]'), null)
     assert.doesNotMatch(doc.body.textContent, /Play Fruit Party at Betsson|Play .+ Splash at Betsson|This game may not be available at Betsson/i)
     assert.ok(doc.querySelector(`a[href="/${segment}/providers/${game.providerId}"]`))
     assert.ok(doc.querySelector(`a[href="/${segment}/${game.category}"]`))
@@ -146,7 +147,7 @@ test('M11: selected reading lists and comparisons retain localized reasons and w
     for (const comparison of editorial.REFERENCE_COMPARISONS) {
       const dom = render(locale, segment, React.createElement(views.ReferenceComparisonView, { comparison, locale }))
       for (const text of [comparison.shared[locale], ...comparison.difference[locale]]) assert.ok(dom.window.document.body.textContent.includes(text))
-      assert.ok(dom.window.document.querySelector('[data-betsson-banner="comparison"] a[href^="/go"]'))
+      assert.equal(dom.window.document.querySelector('[data-betsson-banner="comparison"] a[href^="/go"]'), null)
       assert.equal(dom.window.document.querySelector('a[href*="/where-to-play/"]'), null)
       dom.window.close()
     }
@@ -160,7 +161,7 @@ test('M11: provider pages have documented overviews, category links and their ow
     const games = catalogSummaries(locale).filter(game => game.providerId === provider.id)
     const count = games.length
     assert.equal(doc.querySelectorAll('[data-provider-card]').length, Math.min(12, count))
-    assert.ok(doc.querySelector('[data-betsson-banner="provider"] a[href^="/go"]'))
+    assert.equal(doc.querySelector('[data-betsson-banner="provider"] a[href^="/go"]'), null)
     assert.equal(doc.querySelector('a[href*="/where-to-play/"]'), null)
     dom.window.close()
   }
@@ -170,15 +171,16 @@ test('M11: 189 M10 URLs survive; new routes have unique reciprocal localized met
   const oldPaths = JSON.parse(await readFile(new URL('./fixtures/m10-sitemap-paths.json', import.meta.url)))
   const entries = sitemapModule.default(), urls = entries.map(item => item.url)
   assert.equal(oldPaths.length * 3, 189)
-  assert.equal(entries.length, 322) // Existing quality exclusions preserved; +6 Rio Drift/Arcade URLs.
+  assert.equal(entries.length, 317) // Four regional hubs; deprecated empty commercial inventory excluded.
   assert.equal(new Set(urls).size, urls.length)
   assert.equal(paths.REFERENCE_PATHS.length, 43)
   for (const [, segment] of locales) for (const path of oldPaths) {
     let expected = true
     if (path.startsWith('/where-to-play/')) {
       const game = data.getGame(path.split('/').pop())
-      expected = segment === 'pt-br' && data.getOperatorsForGame(game, 'BR').length > 0
+      expected = seoMarket.isWhereToPlayIndexable(game, segment)
     }
+    if (/^\/(operators|offers)(\/|$)/.test(path)) expected = false
     if (path.startsWith('/best/best-')) {
       const list = data.getGameList(path.split('/').pop())
       expected = list.country === 'BR' ? segment === 'pt-br' : segment === 'es-mx'
@@ -188,7 +190,7 @@ test('M11: 189 M10 URLs survive; new routes have unique reciprocal localized met
   for (const path of paths.REFERENCE_PATHS) for (const [, segment] of locales) {
     const entry = entries.find(item => item.url === `${seo.SITE_URL}/${segment}${path}`)
     assert.ok(entry)
-    assert.equal(entry.alternates.languages['x-default'], `${seo.SITE_URL}/pt-br${path}`)
+    assert.equal(entry.alternates.languages['x-default'], `${seo.SITE_URL}/en${path}`)
     for (const [, other] of locales) assert.equal(entry.alternates.languages[other], `${seo.SITE_URL}/${other}${path}`)
     const [kind, slug] = path.slice(1).split('/')
     if (slug) {

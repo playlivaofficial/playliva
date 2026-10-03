@@ -14,7 +14,7 @@ import translationModule from '../lib/i18n.ts'
 const { createTranslator } = translationModule
 
 test('breadcrumb JSON-LD matches localized home/category routes in every locale', () => {
-  for (const segment of ['en', 'pt-br', 'es-mx']) {
+  for (const segment of ['en', 'pt-br', 'es-mx', 'es-co', 'es-pe']) {
     const data = getBreadcrumbJsonLd([{ label: 'Home', href: '/' }, { label: 'Games', href: '/games' }, { label: 'Aviator' }], segment)
     assert.equal(data.itemListElement[0].item, `${SITE_URL}/${segment}`)
     assert.equal(data.itemListElement[1].item, `${SITE_URL}/${segment}/games`)
@@ -44,7 +44,7 @@ test('contact produces only an encoded email draft using the existing address', 
   assert.equal(url.pathname, 'hello@playliva.com')
   assert.equal(url.searchParams.get('subject'), 'Question & follow-up')
   assert.equal(url.searchParams.get('body'), 'A & B\nperson@example.invalid\n\nLine one\nLine two')
-  for (const locale of ['en', 'pt-BR', 'es-MX']) {
+  for (const locale of ['en', 'pt-BR', 'es-MX', 'es-CO', 'es-PE']) {
     const t = createTranslator(locale)
     assert.notEqual(t('contact.openDraft'), 'contact.openDraft')
     assert.notEqual(t('contact.draftNote'), 'contact.draftNote')

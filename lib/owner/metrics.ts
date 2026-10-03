@@ -1,5 +1,5 @@
 import { inPeriod, type Filters } from './model'
-export interface MetricEvent { pageFamily?: string; taxonomy?: string; provider?: string; category?: string; campaign?: string; partnerCampaign?: string; platform?: string; date: string; event: string; count: number; route: string; game: string; locale: string; operator: string; placement: string; geo: string; device: string; source: string; utmContent: string }
+export interface MetricEvent { cta?: string; currency?: string; pageFamily?: string; taxonomy?: string; provider?: string; category?: string; campaign?: string; partnerCampaign?: string; platform?: string; date: string; event: string; count: number; route: string; game: string; locale: string; operator: string; placement: string; geo: string; device: string; source: string; utmContent: string }
 export const FUNNEL_EVENTS = ['page_view', 'demo_round_start', 'demo_round_complete', 'affiliate_impression', 'affiliate_click'] as const
 export function matchesEvent(row: MetricEvent, filters: Filters) {
   return inPeriod(row.date, filters) && (['game', 'route', 'locale', 'operator', 'placement', 'geo', 'device', 'source'] as const).every(key => !filters[key] || filters[key].toLowerCase() === row[key].toLowerCase())

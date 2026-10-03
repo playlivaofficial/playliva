@@ -8,6 +8,7 @@ import {
 } from '../affiliates/betsson'
 import { getPublicOperators, isCategorySlug } from '../data'
 import type { CategorySlug, CountryCode, Locale } from '../types'
+import type { CommercialSnapshot } from '../commercial/types'
 import { LIVA_BLACKJACK } from './blackjack/definition'
 import { getVerifiedBlackjackReferrals } from './blackjack/play-real'
 import type { OriginalGameDefinition } from './definition'
@@ -24,12 +25,12 @@ export interface OperatorCtaOption {
 }
 
 /** Category referral only. Never pass an Original ID as a verified provider game. */
-export function getPlayRealOptions(country: CountryCode, category: CategorySlug, locale: Locale): OperatorCtaOption[] {
+export function getPlayRealOptions(country: CountryCode, category: CategorySlug, locale: Locale, snapshot?: CommercialSnapshot): OperatorCtaOption[] {
   if (!isCategorySlug(category)) return []
-  return getPublicOperators().flatMap(operator => {
+  return getPublicOperators(snapshot?.operators).flatMap(operator => {
     const context = { operatorSlug: operator.slug, country, category,
       pageType: 'play', placement: VERIFIED_PLAY_REAL_PLACEMENT }
-    if (!resolveDestination(context)) return []
+    if (!resolveDestination(context, snapshot)) return []
     return [{ operatorSlug: operator.slug, name: operator.name, mode: 'verified-category' as const,
       href: buildGoHref({ operator: operator.slug, country, category, language: locale,
         page: 'play', placement: VERIFIED_PLAY_REAL_PLACEMENT, cta: VERIFIED_PLAY_REAL_PLACEMENT }) }]
@@ -42,15 +43,15 @@ export function getPlayRealOptions(country: CountryCode, category: CategorySlug,
  * availability, and still resolves when instant-games / table-games category
  * gates would hide the brand destination.
  */
-export function getGenericApprovedOperatorCtas(country: CountryCode, locale: Locale): OperatorCtaOption[] {
-  return getPublicOperators().flatMap(operator => {
+export function getGenericApprovedOperatorCtas(country: CountryCode, locale: Locale, snapshot?: CommercialSnapshot): OperatorCtaOption[] {
+  return getPublicOperators(snapshot?.operators).flatMap(operator => {
     const resolved = resolveGenericBrandDestination({
       operatorSlug: operator.slug,
       country,
       language: locale,
       pageType: 'play',
       placement: GENERIC_OPERATOR_PLACEMENT,
-    })
+    }, snapshot)
     if (!resolved) return []
     return [{ operatorSlug: operator.slug, name: operator.name, mode: GENERIC_BRAND_MODE,
       href: buildGoHref({ operator: operator.slug, country, language: locale,
@@ -59,16 +60,16 @@ export function getGenericApprovedOperatorCtas(country: CountryCode, locale: Loc
 }
 
 /** Verified listing or category first; generic brand only when those are empty. */
-export function getOriginalOperatorCtas(game: OriginalGameDefinition, country: CountryCode, locale: Locale): OperatorCtaOption[] {
+export function getOriginalOperatorCtas(game: OriginalGameDefinition, country: CountryCode, locale: Locale, snapshot?: CommercialSnapshot): OperatorCtaOption[] {
   // Arcade has no operator-equivalent game/category. The shared sponsor stays separate.
   if (!isCategorySlug(game.category)) return []
   if (game.id === LIVA_BLACKJACK.id) {
-    return getVerifiedBlackjackReferrals(country, locale).map(option => ({ ...option, mode: 'verified-game' as const }))
+    return getVerifiedBlackjackReferrals(country, locale, snapshot).map(option => ({ ...option, mode: 'verified-game' as const }))
   }
   if (game.id === LIVA_ROULETTE.id) {
-    return getVerifiedRouletteReferrals(country, locale).map(option => ({ ...option, mode: 'verified-game' as const }))
+    return getVerifiedRouletteReferrals(country, locale, snapshot).map(option => ({ ...option, mode: 'verified-game' as const }))
   }
-  const verifiedCategory = getPlayRealOptions(country, game.category, locale)
+  const verifiedCategory = getPlayRealOptions(country, game.category, locale, snapshot)
   if (verifiedCategory.length) return verifiedCategory
-  return getGenericApprovedOperatorCtas(country, locale)
+  return getGenericApprovedOperatorCtas(country, locale, snapshot)
 }

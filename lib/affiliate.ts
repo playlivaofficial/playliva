@@ -7,11 +7,13 @@
  * inactive operators or unsupported markets.
  */
 
-import { getOperator, getOperatorById, getOffers, getPublicOperators,
+import { getOperator, getOperatorById, getOffers,
   isAffiliateEligible, isOfferEligible, isCategorySlug, affiliateGameSlug, affiliateCategory,
   type AffiliateContext } from './data'
 import type { CountryCode } from './types'
 import { DEFAULT_LOCALE_SEGMENT, isLocaleSegment, localeToSegment } from './locale'
+import type { CommercialSnapshot } from './commercial/types'
+import { emptyCommercialSnapshot } from './commercial/types'
 
 export interface GoParams {
   /** Operator slug (preferred) */
@@ -64,7 +66,7 @@ export interface ResolvedDestination {
  * {matchSlug} {placement}. Unmatched tokens are left as-is rather than
  * throwing, so a partial template never breaks a redirect.
  */
-function applyTrackingTemplate(
+export function applyTrackingTemplate(
   template: string,
   ctx: {
     geo: CountryCode
@@ -92,7 +94,7 @@ function applyTrackingTemplate(
 }
 
 /** Append a tracking-template query string to a base destination URL. */
-function withTrackingTemplate(
+export function withTrackingTemplate(
   baseUrl: string,
   template: string | undefined,
   ctx: Parameters<typeof applyTrackingTemplate>[1],
@@ -118,19 +120,20 @@ export function resolveDestination(params: AffiliateContext & {
   language?: string | null
   /** Gates optional measurement only, never configured functional partner attribution. */
   analyticsAllowed?: boolean
-}): ResolvedDestination | null {
+}, snapshot: CommercialSnapshot = emptyCommercialSnapshot()): ResolvedDestination | null {
   const { operatorSlug, offerId, country, analyticsAllowed = false, ...context } = params
+  if (snapshot.geo !== country) return null
   const gameSlug = affiliateGameSlug(context)
   const category = affiliateCategory(context)
   const ctx = { ...context, gameSlug }
 
   // Offer-based resolution (validate the offer is live and verified in this market).
   if (offerId) {
-    const offer = getOffers(country).find(
-      (o) => o.id === offerId && isOfferEligible(o, country, context),
+    const offer = getOffers(country, snapshot.offers).find(
+      (o) => o.id === offerId && isOfferEligible(o, country, context, snapshot.operators),
     )
     if (offer) {
-      const operator = getOperatorById(offer.operatorId)
+      const operator = getOperatorById(offer.operatorId, snapshot.operators)
       if (operatorSlug && operatorSlug !== operator?.slug) return null
       const url = withTrackingTemplate(
         withTrackingTemplate(offer.affiliateUrl, operator?.trackingTemplate?.[country], { geo: country, ...ctx }),
@@ -148,7 +151,7 @@ export function resolveDestination(params: AffiliateContext & {
 
   // Operator-based resolution.
   if (operatorSlug) {
-    const operator = getOperator(operatorSlug)
+    const operator = getOperator(operatorSlug, snapshot.operators)
     if (!operator || !isAffiliateEligible(operator, country, context)) return null
     // A category-specific destination (e.g. crash, live-casino) takes
     // priority over the generic destination when the operator has an
@@ -178,11 +181,9 @@ export function affiliateFallbackPath(params: {
 }): string {
   const language = params.language
   const segment = language && isLocaleSegment(language) ? language
-    : language === 'pt-BR' || language === 'es-MX' ? localeToSegment(language)
+    : language === 'pt-BR' || language === 'es-MX' || language === 'es-CO' || language === 'es-PE' ? localeToSegment(language)
     : params.cookieLocale && isLocaleSegment(params.cookieLocale) ? params.cookieLocale
     : DEFAULT_LOCALE_SEGMENT
-  const operator = getPublicOperators().find((o) => o.slug === params.operatorSlug)
-  const path = operator ? `/operators/${encodeURIComponent(operator.slug)}`
-    : params.operatorSlug ? '/operators' : '/offers'
+  const path = params.operatorSlug ? '/operators' : '/offers'
   return `/${segment}${path}`
 }
