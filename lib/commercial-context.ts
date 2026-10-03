@@ -7,7 +7,7 @@ export function commercialContext(path: string, placement = '') {
   const pageType: PageType = !family ? 'home' : family === 'play' ? 'play' : family === 'games' ? slug ? 'game' : 'games'
     : family === 'providers' ? 'provider' : family === 'games-like' ? 'games_like'
       : family === 'compare' ? 'comparison' : family === 'where-to-play' ? 'where_to_play'
-        : ['crash', 'slots', 'live-casino', 'instant-games', 'table-games'].includes(family) ? 'category'
+        : ['crash', 'slots', 'live-casino', 'instant-games', 'table-games', 'arcade'].includes(family) ? 'category'
           : family === 'best' ? 'best_list' : family === 'operators' ? slug ? 'operator' : 'operators'
             : family === 'offers' ? 'offers' : 'content'
   const taxonomy = placement === 'originals_engagement_offer' ? 'playliva_original_popup'

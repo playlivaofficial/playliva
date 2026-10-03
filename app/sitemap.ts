@@ -57,6 +57,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/', priority: 1 },
     { path: '/games', priority: 0.9 },
     { path: '/play', priority: 0.8 },
+    { path: '/play/rio-drift', priority: 0.8 },
+    { path: '/arcade', priority: 0.7 },
     { path: '/play/avia-de-janeiro', priority: 0.8 },
     { path: '/play/crash', priority: 0.8 },
     { path: '/play/liva-ginga', priority: 0.8 },

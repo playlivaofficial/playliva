@@ -31,6 +31,9 @@ import { createHash } from 'node:crypto'
 // and tracking.ts (exclude owner preview telemetry); other snapshots remain fixed.
 // data.ts (public campaign references instead of private IDs), affiliate.ts
 // (resolver contract comment). Approved destinations, engines and SEO stay fixed.
+// Rio Drift adds one consented best-score event/coarse label and six sitemap URLs.
+// Only tracking.ts, sitemap.ts and play-real.ts's arcade exclusion are rebased;
+// commercial records, partner destinations and existing category eligibility remain frozen.
 test('redesign: protected outbound infrastructure remains unchanged except authorized Betsson play-real files', async () => {
   const expected = JSON.parse(await readFile(new URL('./fixtures/redesign-protected.json', import.meta.url), 'utf8'))
   for (const [path, hash] of Object.entries(expected)) {

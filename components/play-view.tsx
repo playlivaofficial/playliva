@@ -5,6 +5,7 @@ import { DiscoverySearch } from '@/components/discovery/search'
 import { ArrowRight, Check } from 'lucide-react'
 import { ThreeGameFeature } from '@/components/originals/three-game-feature'
 import { AviaFeature } from '@/components/originals/avia-feature'
+import { DriftFeature } from '@/components/originals/rio-drift/feature'
 import { useState } from 'react'
 import { LocaleLink } from '@/components/locale-link'
 import { useCountry } from '@/components/country-context'
@@ -26,9 +27,10 @@ export function PlayView() {
   const product = productCopy(locale)
   const [filter, setFilter] = useState('all')
   const groups = [
-    { id: 'all', label: product.all, count: 13 }, { id: 'crash', label: product.crash, count: 4 },
+    { id: 'all', label: product.all, count: 14 }, { id: 'crash', label: product.crash, count: 4 },
     { id: 'slots', label: product.slots, count: 3 }, { id: 'cards', label: product.cards, count: 4 },
     { id: 'instant', label: product.instant, count: 2 },
+    { id: 'arcade', label: 'Arcade', count: 1 },
   ]
   return (
     <div className={styles.hub} data-play-hub>
@@ -55,6 +57,7 @@ export function PlayView() {
       </div>
       <p className={styles.available} role="status">{product.resultCount.replace('{count}', String(groups.find(group => group.id === filter)?.count ?? 9))}</p>
       <div className={styles.hubGrid} data-filter={filter}>
+        <div hidden={filter !== 'all' && filter !== 'arcade'}><DriftFeature surface="hub" /></div>
         <div hidden={filter !== 'all' && filter !== 'crash'}><AviaFeature surface="hub" /></div>
         <div hidden={filter !== 'all' && filter !== 'instant'}><ThreeGameFeature kind="samba-drop" surface="hub" /></div>
         <div hidden={filter !== 'all' && filter !== 'crash'}><ThreeGameFeature kind="skuptu-levanta" surface="hub" /></div>

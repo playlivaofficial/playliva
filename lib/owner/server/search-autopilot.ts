@@ -1,4 +1,6 @@
 import { randomUUID } from 'node:crypto'
+import { driftCopy } from '@/lib/originals/rio-drift/copy'
+import { RIO_DRIFT_PATH, RIO_DRIFT_SHARE } from '@/lib/originals/rio-drift/definition'
 import { getGame } from '@/lib/data'
 import { getGameContent, getCategoryName } from '@/lib/content'
 import { getReferenceGame } from '@/lib/catalog'
@@ -9,6 +11,10 @@ import { eligibleExperiment, freshness, googleDay, measureExperiment, shiftDay, 
 import { searchStore, type SearchStore } from './search-store'
 
 export function searchTarget(page: string) {
+  if (page === 'https://www.playliva.com/pt-br/play/rio-drift') {
+    const c = driftCopy('pt-BR'), metadata = pageMetadata({title:c.title,description:c.description,path:RIO_DRIFT_PATH,localeSegment:'pt-br',images:[RIO_DRIFT_SHARE]})
+    return {previous:String(metadata.title),next:'Rio Drift: corrida e drift grátis no navegador'}
+  }
   const match=/^https:\/\/www\.playliva\.com\/pt-br\/games\/([a-z0-9-]+)$/.exec(page)
   if(!match) return null
   const slug=match[1], game=getGame(slug), reference=getReferenceGame(slug)

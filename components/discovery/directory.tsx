@@ -12,7 +12,7 @@ import styles from '@/components/catalog/catalog.module.css'
 export function GameDirectory({locale,segment,params}:{locale:Locale;segment:string;params:DirectoryParams}){
  const entries=discoveryEntries(locale),result=queryDirectory(entries,params),c=discoveryCopy(locale),labels=catalogCopy(locale)
  const categories=[...new Map(entries.map(g=>[g.category,g.categoryLabel])).entries()],providers=[...new Map(entries.map(g=>[g.providerId,g.provider])).entries()].sort((a,b)=>a[1].localeCompare(b[1]))
- const instantFormats:Record<string,string>={plinko:'Plinko',mines:locale==='en'?'Mines':'Minas',dice:locale==='en'?'Dice':'Dados',keno:'Keno'}
+ const instantFormats:Record<string,string>={plinko:'Plinko',mines:locale==='en'?'Mines':'Minas',dice:locale==='en'?'Dice':'Dados',keno:'Keno',racing:locale==='pt-BR'?'Corrida · habilidade':locale==='es-MX'?'Carreras · habilidad':'Racing · skill'}
  const formats=[...new Map(entries.map(g=>[g.format,instantFormats[g.format]??(g.format==='blackjack'?c.blackjack:g.format==='roulette'?c.roulette:g.categoryLabel)])).entries()]
  const hidden=Object.entries(params).filter(([key,value])=>key!=='page'&&value)
  return <DiscoveryEvents surface="directory"><div data-game-directory>

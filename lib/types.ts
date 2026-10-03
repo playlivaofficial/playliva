@@ -23,6 +23,8 @@ export type LanguageCode = 'PT' | 'ES' | 'EN'
 export type Locale = 'pt-BR' | 'es-MX' | 'en'
 
 export type CategorySlug = 'crash' | 'slots' | 'live-casino' | 'table-games' | 'instant-games'
+/** Editorial arcade discovery does not grant operator/category eligibility. */
+export type DiscoveryCategorySlug = CategorySlug | 'arcade'
 /** Legacy commercial records may retain Sports; it is not a discovery category. */
 export type OperatorCategorySlug = CategorySlug | 'sports'
 

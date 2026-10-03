@@ -5,10 +5,12 @@ import { getGameContent, getCategoryName } from '@/lib/content'
 import { SPOTLIGHT_GAMES } from '@/lib/home/spotlight'
 import { normalizeSearch } from '@/lib/catalog/query'
 import type { CatalogSummary } from '@/lib/catalog/types'
-import type { CategorySlug, Locale } from '@/lib/types'
+import type { DiscoveryCategorySlug, Locale } from '@/lib/types'
+import { driftCopy } from '@/lib/originals/rio-drift/copy'
 
 export interface DiscoveryEntry extends CatalogSummary { kind: 'provider' | 'original'; href: string; aliases: string[]; format: string }
-const originalCategories: Record<string, CategorySlug> = {
+const originalCategories: Record<string, DiscoveryCategorySlug> = {
+  'rio-drift': 'arcade',
   'avia-de-janeiro': 'crash',
   crash: 'crash', 'liva-ginga': 'crash', 'skuptu-levanta': 'crash',
   'capybara-gold': 'slots', golaco: 'slots', 'carnaval-gold': 'slots',
@@ -16,7 +18,8 @@ const originalCategories: Record<string, CategorySlug> = {
   mines: 'instant-games', 'samba-drop': 'instant-games',
 }
 export const originalCategory = (slug: string) => originalCategories[slug]
-export function gameFormat(slug: string, category: CategorySlug) {
+export function gameFormat(slug: string, category: DiscoveryCategorySlug) {
+  if (slug === 'rio-drift') return 'racing'
   if (/blackjack|21-brasil/.test(slug)) return 'blackjack'
   if (/roulette|liva-raio/.test(slug)) return 'roulette'
   if (slug === 'plinko' || slug === 'samba-drop') return 'plinko'
@@ -29,10 +32,10 @@ export function discoveryEntries(locale: Locale): DiscoveryEntry[] {
   const real = catalogSummaries(locale).map(game => ({ ...game, kind: 'provider' as const, href: `/games/${game.slug}`,
     aliases: game.slug === 'book-of-dead' ? ['Book of Dead'] : game.providerId === 'play-n-go' ? ['Play n GO', 'Playngo'] : [], format: gameFormat(game.slug, game.category) }))
   const originals = SPOTLIGHT_GAMES.map(game => {
-    const slug=game.playPath.split('/').at(-1)!,category=originalCategory(slug),categoryLabel=getCategoryName(category,locale)
-    const title=game.title[locale],summary=locale==='pt-BR'?'Jogue grátis com créditos virtuais, sem depósitos ou valor monetário.':locale==='es-MX'?'Juega gratis con créditos virtuales, sin depósitos ni valor monetario.':'Play free with virtual credits, no deposits or monetary value.'
+    const slug=game.playPath.split('/').at(-1)!,category=originalCategory(slug),categoryLabel=category==='arcade'?driftCopy(locale).category:getCategoryName(category,locale)
+    const title=game.title[locale],summary=slug==='rio-drift'?driftCopy(locale).actionHint:locale==='pt-BR'?'Jogue grátis com créditos virtuais, sem depósitos ou valor monetário.':locale==='es-MX'?'Juega gratis con créditos virtuales, sin depósitos ni valor monetario.':'Play free with virtual credits, no deposits or monetary value.'
     return {id:game.id,slug,title,provider:'PlayLiva Original',providerId:'playliva',category,categoryLabel,summary,image:game.poster,artworkLabel:'',reference:false,kind:'original' as const,href:game.playPath,
-      aliases:[title.replace(/^Liva /,''),...(slug==='roulette'?['Golden Orbit']:slug==='mines'?['Jungle Gold']:slug==='crash'?['PlayLiva Island Crash']:[])],format:gameFormat(slug,category),searchText:normalizeSearch([title,'PlayLiva Original',category,categoryLabel].join(' '))}
+      aliases:[title.replace(/^Liva /,''),...(slug==='rio-drift'?['Drift','Rio','Racing','Skill','Corrida','Habilidade','Carreras']:slug==='roulette'?['Golden Orbit']:slug==='mines'?['Jungle Gold']:slug==='crash'?['PlayLiva Island Crash']:[])],format:gameFormat(slug,category),searchText:normalizeSearch([title,'PlayLiva Original',category,categoryLabel].join(' '))}
   })
   return [...real,...originals]
 }

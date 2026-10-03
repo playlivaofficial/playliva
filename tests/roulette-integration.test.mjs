@@ -13,7 +13,7 @@ const source = path => readFile(new URL('../' + path, import.meta.url), 'utf8')
 const { rouletteCopy, rouletteBetLabel } = copyModule, { LIVA_ROULETTE } = configModule
 const { getVerifiedRouletteReferrals } = referralModule
 
-test('Roulette integration: full localized copy/bet labels, safe metadata and thirty-nine Original URLs', () => {
+test('Roulette integration: full localized copy/bet labels, safe metadata and forty-two Original URLs', () => {
   for (const [locale, segment] of [['en','en'],['pt-BR','pt-br'],['es-MX','es-mx']]) {
     const copy = rouletteCopy(locale)
     assert.deepEqual(Object.keys(copy), Object.keys(rouletteCopy('en')))
@@ -26,7 +26,7 @@ test('Roulette integration: full localized copy/bet labels, safe metadata and th
     for (const s of ['en','pt-br','es-mx']) assert.ok(meta.alternates.languages[s].endsWith(`/${s}/play/roulette`))
     assert.ok(meta.alternates.languages['x-default'].endsWith('/pt-br/play/roulette'))
   }
-  assert.equal(sitemapModule.default().filter(e => /\/play\//.test(e.url)).length, 39)
+  assert.equal(sitemapModule.default().filter(e => /\/play\//.test(e.url)).length, 42)
 })
 test('Roulette integration: exact external game/GEO approval is required; no Original availability claim', () => {
   const partner = dataModule.getOperator('betsson-group-affiliates')

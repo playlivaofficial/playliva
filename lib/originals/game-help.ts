@@ -5,6 +5,7 @@ export interface GameHelp { sections: { title:string; items:string[] }[]; paytab
 export async function loadGameHelp(slug:string,locale:Locale):Promise<GameHelp>{
  const t=settingsCopy(locale), sections:GameHelp['sections']=[]
  const add=(title:string,...items:string[])=>sections.push({title,items:items.flatMap(text=>text.split(/(?<=[.!?])\s+(?=[A-ZÁÉÍÓÚÂÊÔÃÕÇ])/u))})
+ if(slug==='rio-drift'){const {driftCopy}=await import('./rio-drift/copy');const c=driftCopy(locale);add(c.rulesTitle,...c.rules);add(c.creditsTitle,c.credits);return {sections}}
  if(slug==='avia-de-janeiro'){const {aviaCopy}=await import('./avia/copy');const c=aviaCopy(locale);add(t.objective,...c.rules);add(t.credits,c.credits);return {sections}}
  if(['samba-drop','skuptu-levanta','carnaval-gold'].includes(slug)){
   const {threeCopy,threeRules}=await import('./three-game-copy');const c=threeCopy(locale)

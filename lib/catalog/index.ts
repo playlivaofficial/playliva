@@ -3,7 +3,7 @@ import { GAMES } from '@/lib/data'
 import { getGameContent, getCategoryName } from '@/lib/content'
 import { getApprovedArtwork, hasApprovedArtwork } from '@/lib/game-artwork'
 import { discoveryCategory } from '@/lib/product-discovery'
-import type { Locale } from '@/lib/types'
+import type { CategorySlug, Locale } from '@/lib/types'
 import { REFERENCE_GAMES } from './games'
 import { PROVIDERS, getReferenceProvider } from './providers'
 import { catalogCopy } from './copy'
@@ -12,7 +12,7 @@ import type { CatalogSummary, ReferenceGame } from './types'
 
 export { REFERENCE_GAMES, PROVIDERS, getReferenceProvider }
 export const getReferenceGame = (slug: string) => REFERENCE_GAMES.find(game => game.slug === slug)
-export function referenceSummary(game: ReferenceGame, locale: Locale): CatalogSummary {
+export function referenceSummary(game: ReferenceGame, locale: Locale): CatalogSummary<CategorySlug> {
   const provider = getReferenceProvider(game.providerId)!.name
   const categoryLabel = getCategoryName(game.category, locale)
   const summary = game.content[locale].summary
@@ -21,8 +21,8 @@ export function referenceSummary(game: ReferenceGame, locale: Locale): CatalogSu
     searchText: normalizeSearch([game.title, provider, game.category, categoryLabel, summary, ...game.tags].join(' ')),
   }
 }
-export function catalogSummaries(locale: Locale): CatalogSummary[] {
-  const legacy: CatalogSummary[] = GAMES.map(game => {
+export function catalogSummaries(locale: Locale): CatalogSummary<CategorySlug>[] {
+  const legacy: CatalogSummary<CategorySlug>[] = GAMES.map(game => {
     const category = discoveryCategory(game)
     const categoryLabel = getCategoryName(category, locale)
     const summary = getGameContent(game, locale).shortDescription

@@ -1,5 +1,7 @@
 import { RAIO, RAIO_POSTER } from '@/lib/originals/raio/definition'
 import { AVIA, AVIA_PATH, AVIA_POSTER } from '@/lib/originals/avia/definition'
+import { RIO_DRIFT, RIO_DRIFT_PATH, RIO_DRIFT_POSTER } from '@/lib/originals/rio-drift/definition'
+import { driftCopy } from '@/lib/originals/rio-drift/copy'
 import { BRASIL21, BRASIL21_POSTER } from '@/lib/originals/brasil21/definition'
 import { powerCopy } from '@/lib/originals/power-copy'
 import type { Locale } from '@/lib/types'
@@ -49,6 +51,7 @@ const byLocale = <T,>(pick: (locale: Locale) => T): Record<Locale, T> =>
   Object.fromEntries(locales.map((locale) => [locale, pick(locale)])) as Record<Locale, T>
 
 export const SPOTLIGHT_GAMES: readonly SpotlightGame[] = [
+  { id: RIO_DRIFT.id, slug: RIO_DRIFT.slug, playPath: RIO_DRIFT_PATH, title: RIO_DRIFT.title, category: byLocale(locale => driftCopy(locale).category), poster: RIO_DRIFT_POSTER, posterAlt: byLocale(locale => `Rio Drift — ${driftCopy(locale).racing}`), posterHasTitle: true, enabled: false },
   { id: AVIA.id, slug: AVIA.slug, playPath: AVIA_PATH, title: AVIA.title, category: byLocale(() => 'Crash'), poster: AVIA_POSTER, posterAlt: AVIA.title, posterHasTitle: true, enabled: false },
   ...THREE_GAMES.map(game=>({id:game.id,slug:game.slug,playPath:`/play/${game.slug}`,title:game.title,category:byLocale(locale=>game.category==='crash'?'Crash':game.category==='slots'?'Slots':locale==='pt-BR'?'Jogos instantâneos':locale==='es-MX'?'Juegos instantáneos':'Instant Games'),poster:gamePoster(game.slug),posterAlt:game.title,posterHasTitle:true})),
   {
