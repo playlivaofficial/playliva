@@ -60,6 +60,8 @@ export function getGenericApprovedOperatorCtas(country: CountryCode, locale: Loc
 
 /** Verified listing or category first; generic brand only when those are empty. */
 export function getOriginalOperatorCtas(game: OriginalGameDefinition, country: CountryCode, locale: Locale): OperatorCtaOption[] {
+  // Arcade has no operator-equivalent game/category. The shared sponsor stays separate.
+  if (!isCategorySlug(game.category)) return []
   if (game.id === LIVA_BLACKJACK.id) {
     return getVerifiedBlackjackReferrals(country, locale).map(option => ({ ...option, mode: 'verified-game' as const }))
   }

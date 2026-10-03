@@ -143,6 +143,8 @@ test('M10: footer and trust display have no replacement characters in any suppor
 // Casino UX V2 refreshes this presentation snapshot; casino-ux.test separately freezes production math.
 // Avia adds its isolated server engine, localized help and replay-safe shared wallet receipts.
 // Existing crash/table math remains covered by the unchanged Casino UX V2 math fixture.
+// Rio Drift adds five isolated skill-game modules; shared definition gains an
+// editorial-only arcade category, help/analytics/CTA guard are explicitly scoped.
 test('Originals: three-game additions and existing Casino UX V2 snapshot', async () => {
   const roots = ['lib/originals', 'components/originals/crash', 'components/originals/capybara', 'components/originals/blackjack', 'components/originals/roulette', 'components/originals/mines']
   const paths = []
@@ -156,6 +158,6 @@ test('Originals: three-game additions and existing Casino UX V2 snapshot', async
   for (const path of roots) await walk(path)
   const hash = createHash('sha256')
   for (const path of paths.sort()) hash.update(path + '\0' + (await readFile(new URL('../' + path, import.meta.url), 'utf8')).replace(/\r\n/g, '\n') + '\0')
-  assert.equal(paths.length, 104)
-  assert.equal(hash.digest('hex'), '7f03ad6d34ea96771fcecbec4db7074446c61752c2255e1f7bb5d92d9b5c6798')
+  assert.equal(paths.length, 109)
+  assert.equal(hash.digest('hex'), '8046a956723650b7cd0e2ea3c9743343cecc8e4b27971e7ffc74af156badbfc8')
 })

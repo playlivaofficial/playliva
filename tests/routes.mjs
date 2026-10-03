@@ -390,7 +390,7 @@ try {
       if (routePath === '/live-casino') {
         assert.ok(doc.querySelector('[data-originals-section="live-casino"]'))
         assert.ok(blackjack[0].compareDocumentPosition(doc.querySelector('main a[href*="/games/"]')) & 4)
-      } else assert.deepEqual([...doc.querySelectorAll('[data-original-card]')].map(e => e.getAttribute('data-original-card')), routePath === '/play' ? ['avia-de-janeiro', 'samba-drop', 'skuptu-levanta', 'carnaval-gold', 'island-crash', 'liva-ginga', 'capybara-gold', 'golaco', 'blackjack', 'roulette', 'mines', 'liva-raio', 'liva-21-brasil'] : ['island-crash', 'liva-ginga', 'skuptu-levanta', 'capybara-gold', 'golaco', 'blackjack', 'roulette', 'mines'])
+      } else assert.deepEqual([...doc.querySelectorAll('[data-original-card]')].map(e => e.getAttribute('data-original-card')), routePath === '/play' ? ['rio-drift', 'avia-de-janeiro', 'samba-drop', 'skuptu-levanta', 'carnaval-gold', 'island-crash', 'liva-ginga', 'capybara-gold', 'golaco', 'blackjack', 'roulette', 'mines', 'liva-raio', 'liva-21-brasil'] : ['island-crash', 'liva-ginga', 'skuptu-levanta', 'capybara-gold', 'golaco', 'blackjack', 'roulette', 'mines'])
     }
     for (const [slug, surfaces] of [['liva-ginga', ['', '/play', '/crash']], ['golaco', ['', '/play', '/slots']]]) {
       if (!surfaces.includes(routePath)) continue
@@ -541,8 +541,14 @@ try {
       assert.equal(data['@context'], 'https://schema.org', `${path}: schema context`)
       const realEntity = /^\/games\/[^/]+$/.test(routePath)
       const listPage = routePath === '/games' || /^\/providers\/[^/]+$/.test(routePath)
-      const newOriginal = ['/play/avia-de-janeiro', '/play/samba-drop', '/play/skuptu-levanta', '/play/carnaval-gold'].includes(routePath)
-      assert.ok(['WebSite', 'Organization', 'BreadcrumbList', ...(newOriginal || realEntity ? ['VideoGame'] : []), ...(listPage ? ['ItemList'] : [])].includes(data['@type']), `${path}: schema must have an audited visible use`)
+      const newOriginal = ['/play/rio-drift', '/play/avia-de-janeiro', '/play/samba-drop', '/play/skuptu-levanta', '/play/carnaval-gold'].includes(routePath)
+      assert.ok(['WebSite', 'Organization', 'BreadcrumbList', ...(newOriginal || realEntity ? ['VideoGame'] : []), ...(listPage ? ['ItemList'] : []), ...(routePath==='/arcade'?['CollectionPage']:[])].includes(data['@type']), `${path}: schema must have an audited visible use`)
+      if (data['@type']==='VideoGame' && routePath==='/play/rio-drift') {
+        assert.equal(data.name,'Rio Drift');assert.equal(data.url,SITE_URL+path);assert.equal(data.isAccessibleForFree,true)
+        assert.equal(data.aggregateRating,undefined);assert.equal(data.offers,undefined)
+        assert.ok(doc.querySelector(`main a[href="/${segment}/arcade"]`),`${path}: relevant arcade discovery`)
+        assert.doesNotMatch(doc.querySelector('[data-original-article]')?.textContent??'',/onde apostar|where to bet|dónde apostar/i)
+      }
       if (data['@type'] === 'VideoGame' && realEntity) {
         const game = catalogModule.catalogSummaries(localeModule.segmentToLocale(segment)).find(g=>g.slug===routePath.split('/').pop())
         assert.equal(data.name,game.title);assert.equal(data.publisher.name,game.provider);assert.equal(data.url,SITE_URL+path)
@@ -556,7 +562,10 @@ try {
         assert.equal(data.name, doc.querySelector('h1')?.textContent, `${path}: game schema names the visible game`)
         assert.equal(data.url, `${SITE_URL}${path}`, `${path}: game schema is canonical`)
         assert.equal(data.description, doc.querySelector('meta[name="description"]')?.content)
-        assert.equal(data.image, doc.querySelector('meta[property="og:image"]')?.content)
+        if (routePath === '/play/rio-drift') {
+          assert.equal(data.image, `${SITE_URL}/originals/rio-drift/poster.webp`)
+          assert.equal(doc.querySelector('meta[property="og:image"]')?.content, `${SITE_URL}/originals/rio-drift/share.webp`)
+        } else assert.equal(data.image, doc.querySelector('meta[property="og:image"]')?.content)
         assert.equal(data.inLanguage, localeModule.segmentToLocale(segment))
         assert.equal(data.isAccessibleForFree, true)
         assert.equal(data.applicationCategory, 'GameApplication')

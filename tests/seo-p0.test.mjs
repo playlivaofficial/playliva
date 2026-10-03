@@ -42,7 +42,7 @@ test('market lists and Where-to-Play indexability are derived from verified data
 
 test('sitemap excludes empty and wrong-market SEO routes', () => {
   const paths = sitemap().map((entry) => new URL(entry.url).pathname)
-  assert.equal(paths.length, 316) // + Liva Ginga and Liva Golaço in three locales
+  assert.equal(paths.length, 322) // Rio Drift and Arcade add six indexable locale routes.
   assert.ok(paths.includes('/pt-br/where-to-play/aviator'))
   assert.ok(!paths.includes('/en/where-to-play/aviator'))
   assert.ok(!paths.some((path) => path.includes('/where-to-play/mines')))

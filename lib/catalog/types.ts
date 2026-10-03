@@ -1,4 +1,4 @@
-import type { CategorySlug, Locale } from '@/lib/types'
+import type { CategorySlug, DiscoveryCategorySlug, Locale } from '@/lib/types'
 
 export type ProviderId = 'pragmatic-play' | 'play-n-go' | 'evolution' | 'smartsoft' | 'spribe'
 export type Localized<T> = Record<Locale, T>
@@ -54,13 +54,13 @@ export interface ReferenceGame {
 }
 
 /** Small single-language payload passed across the server/client boundary. */
-export interface CatalogSummary {
+export interface CatalogSummary<C extends DiscoveryCategorySlug = DiscoveryCategorySlug> {
   id: string
   slug: string
   title: string
   provider: string
   providerId: string
-  category: CategorySlug
+  category: C
   categoryLabel: string
   summary: string
   image: string | null

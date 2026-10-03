@@ -63,8 +63,12 @@ export function titleCandidate(name: string) {
   const title = `${name}: como funciona e onde jogar`
   return title.length <= 62 && !/[<>\r\n]/.test(name) ? title : null
 }
+/** Explicit public rollout: arcade eligibility never expands to other unfinished Originals. */
+export function isSearchTitleTarget(page: string) {
+  return /^https:\/\/www\.playliva\.com\/pt-br\/(games\/[a-z0-9-]+|play\/rio-drift)$/.test(page)
+}
 export function eligibleExperiment(signal: Signal, state: SeoState, now: Date, previous: string, next: string) {
-  if (!state.enabled || !['current', 'delayed'].includes(freshness(state, now)) || !state.coverageFrom || state.coverageFrom > shiftDay(signal.to, -55) || signal.query || signal.kind !== 'low-ctr' || !/\/pt-br\/games\/[a-z0-9-]+$/.test(signal.page) || signal.country !== 'bra' || previous === next) return false
+  if (!state.enabled || !['current', 'delayed'].includes(freshness(state, now)) || !state.coverageFrom || state.coverageFrom > shiftDay(signal.to, -55) || signal.query || signal.kind !== 'low-ctr' || !isSearchTitleTarget(signal.page) || signal.country !== 'bra' || previous === next) return false
   if (state.experiments.some(e => e.status === 'measuring' || e.status === 'pending' || e.page === signal.page && (e.status === 'winner' || Date.parse(e.endedAt ?? e.startedAt) > now.getTime() - 90 * 86400000))) return false
   const { current: c, previous: p } = signal.windows[2]
   return c.impressions >= 1000 && p.impressions >= 1000 && c.days >= 21 && p.days >= 21 && p.clicks >= 20 && c.ctr < p.ctr * 0.7 && Math.abs(c.position - p.position) <= 2 && signal.windows.slice(0,2).every(w => w.current.impressions >= 200 && w.previous.impressions >= 200 && w.current.ctr < w.previous.ctr * 0.7)
