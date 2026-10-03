@@ -24,6 +24,7 @@ social/.tmp/
 # Common ignores
 node_modules
 .next/
+.local/
 next-env.d.ts
 *.tsbuildinfo
 .DS_Store

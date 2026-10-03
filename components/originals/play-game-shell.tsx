@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react'
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react'
 import { GameSettings } from './game-settings'
 import settingsStyles from './game-settings.module.css'
 import { Button } from '@/components/ui/button'
@@ -21,18 +21,27 @@ function subscribeFullscreen(listener: () => void) {
 }
 
 /** Shared by all implemented Originals; game engines remain route-isolated. */
-export function PlayGameShell({ game, children, controls, roundActive = false, compact = false }: {
+export function PlayGameShell({ game, children, controls, roundActive = false, compact = false, onEngagementHold, holdNextRound, engagementActive }: {
   game: OriginalGameDefinition
   children: ReactNode
   controls: ReactNode
   roundActive?: boolean
   compact?: boolean
+  onEngagementHold?: (held: boolean) => void
+  holdNextRound?: (open: boolean) => void
+  /** Automatic games also count an observed countdown followed by an instant crash. */
+  engagementActive?: boolean
 }) {
   const { locale, countryCode } = useCountry()
   const { session, storageStatus, wallet } = useDemoSession()
   const copy = originalsCopy(locale)
   const format = (value: number) => formatCredits(value, locale)
   const root = useRef<HTMLElement>(null)
+  const engagementHold = useCallback((held: boolean) => {
+    const dialog = root.current?.querySelector<HTMLDialogElement>('dialog[open]')
+    if (held && dialog) { dialog.close(); root.current?.querySelector<HTMLButtonElement>('[data-casino-settings-trigger]')?.focus() }
+    onEngagementHold?.(held)
+  }, [onEngagementHold])
   const opened = useRef<string | null>(null)
   const [resetOpen, setResetOpen] = useState(false)
   const [fullscreenError, setFullscreenError] = useState(false)
@@ -72,7 +81,7 @@ export function PlayGameShell({ game, children, controls, roundActive = false, c
     {storageStatus === 'memory-only' && <p role="status" className="text-sm text-muted-foreground">{copy.memoryOnly}</p>}
     {storageStatus === 'recovered' && <p role="status" className="text-sm text-muted-foreground">{copy.recovered}</p>}
     <div data-game-toolbar className={settingsStyles.toolbar}>
-      <GameSettings slug={slug} ready={ready} roundActive={roundActive} haptics={capabilities[1] === 'true'} fullscreen={capabilities[0] === 'true' ? capabilities[2] === 'true' ? copy.exitFullscreen : copy.fullscreen : undefined} onFullscreen={toggleFullscreen} onAudioChange={sound => trackFreePlay('demo_sound_toggle', { originalId: id, originalSlug: slug, category, country: countryCode, locale, soundState: sound ? 'on' : 'off' })} />
+      <GameSettings slug={slug} ready={ready} roundActive={roundActive} holdNextRound={holdNextRound} haptics={capabilities[1] === 'true'} fullscreen={capabilities[0] === 'true' ? capabilities[2] === 'true' ? copy.exitFullscreen : copy.fullscreen : undefined} onFullscreen={toggleFullscreen} onAudioChange={sound => trackFreePlay('demo_sound_toggle', { originalId: id, originalSlug: slug, category, country: countryCode, locale, soundState: sound ? 'on' : 'off' })} />
         <Button variant="outline" className={settingsStyles.resetControl} disabled={!ready || roundActive} onClick={() => setResetOpen(true)}>{copy.reset}</Button>
     </div>
         {resetOpen && <div className="space-y-2" role="group" aria-label={copy.resetConfirm}>
@@ -104,6 +113,6 @@ export function PlayGameShell({ game, children, controls, roundActive = false, c
       </aside>
     </div>
     {/* Contextual partner offer: fixed overlay outside the game unit, opened only at a round boundary. */}
-    <BetssonEngagementOffer game={game} roundActive={roundActive} />
+    <BetssonEngagementOffer game={game} roundActive={engagementActive ?? roundActive} onHold={engagementHold} />
   </section>
 }

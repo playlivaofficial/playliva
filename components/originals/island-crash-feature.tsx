@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import { ThreeGameFeature } from './three-game-feature'
+import { AviaFeature } from './avia-feature'
 import { ArrowRight, Gamepad2, Play } from 'lucide-react'
 import { useCountry } from '@/components/country-context'
 import { LocaleLink } from '@/components/locale-link'
@@ -57,6 +58,7 @@ export function OriginalsDiscoverySection({ surface }: { surface: 'home' | 'cate
         <LocaleLink href="/play" className={styles.hubLink}>{copy.hubLink}<ArrowRight size={17} aria-hidden="true" /></LocaleLink>
       </div>
       <div className={surface === 'home' ? styles.homeGrid : undefined}>
+      {surface === 'category' && <AviaFeature surface="category" />}
       <IslandCrashFeature surface={surface} />
       <EmbaixadinhaFeature surface={surface} />
       <ThreeGameFeature kind="skuptu-levanta" surface={surface} />

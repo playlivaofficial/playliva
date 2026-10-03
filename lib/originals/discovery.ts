@@ -91,6 +91,7 @@ const LINK_LABELS: Record<Locale, { hub: string; crash: string; slots: string }>
 export function originalsLinks(locale: Locale, currentSlug: string): { href: string; label: string }[] {
   const labels = LINK_LABELS[locale]
   return [
+    { href: '/play/avia-de-janeiro', label: 'Avia de Janeiro' },
     { href: '/play/samba-drop', label: 'Liva Samba Drop' },
     { href: '/play/skuptu-levanta', label: 'Skuptu Levanta' },
     { href: '/play/carnaval-gold', label: 'Liva Carnaval Gold' },

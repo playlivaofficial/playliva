@@ -63,11 +63,11 @@ test('redesign: hero has two clear localized internal actions and one existing O
     dom.window.close()
   }
 })
-test('redesign: all twelve implemented Originals remain localized, distinct and truthful in the lobby', () => {
+test('redesign: all thirteen implemented Originals remain localized, distinct and truthful in the lobby', () => {
   for (const [locale, segment] of locales) {
     const dom = new JSDOM(renderToStaticMarkup(wrap(locale, `/${segment}/play`, React.createElement(PlayView))))
     const doc = dom.window.document
-    assert.deepEqual([...doc.querySelectorAll('[data-original-card]')].map(e => e.dataset.originalCard), ['samba-drop', 'skuptu-levanta', 'carnaval-gold', 'island-crash', 'liva-ginga', 'capybara-gold', 'golaco', 'blackjack', 'roulette', 'mines', 'liva-raio', 'liva-21-brasil'])
+    assert.deepEqual([...doc.querySelectorAll('[data-original-card]')].map(e => e.dataset.originalCard), ['avia-de-janeiro', 'samba-drop', 'skuptu-levanta', 'carnaval-gold', 'island-crash', 'liva-ginga', 'capybara-gold', 'golaco', 'blackjack', 'roulette', 'mines', 'liva-raio', 'liva-21-brasil'])
     for (const slug of ['crash', 'liva-ginga', 'capybara-gold', 'golaco', 'blackjack', 'roulette', 'mines', 'liva-raio', 'liva-21-brasil']) assert.ok(doc.querySelector(`a[data-play-free][href="/${segment}/play/${slug}"]`))
     assert.ok(doc.querySelector('[data-original-card="blackjack"]').textContent.includes(productCopy(locale).noLiveDealer))
     assert.equal(doc.querySelector('[data-provider-card]'), null)
@@ -108,9 +108,9 @@ test('redesign: lobby filters expose the right games, announce counts, and resto
     assert.deepEqual(visible(), ['blackjack', 'roulette', 'liva-raio', 'liva-21-brasil'])
     assert.ok(document.querySelector('[role="status"]').textContent.includes('4'))
     await click('Jogos instantâneos'); assert.deepEqual(visible(), ['samba-drop', 'mines'])
-    await click(productCopy('pt-BR').crash); assert.deepEqual(visible(), ['skuptu-levanta', 'island-crash', 'liva-ginga'])
+    await click(productCopy('pt-BR').crash); assert.deepEqual(visible(), ['avia-de-janeiro', 'skuptu-levanta', 'island-crash', 'liva-ginga'])
     await click(productCopy('pt-BR').slots); assert.deepEqual(visible(), ['carnaval-gold', 'capybara-gold', 'golaco'])
-    await click('Todos os Originals'); assert.equal(visible().length, 12)
+    await click('Todos os Originals'); assert.equal(visible().length, 13)
   })
 })
 test('redesign: provider explorer places Blackjack Live with live catalog entries, never with free-play Originals', async () => {

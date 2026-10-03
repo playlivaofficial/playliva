@@ -7,19 +7,19 @@ import { audioPreferences } from '@/lib/originals/session'
 import { settingsCopy } from '@/lib/originals/settings-copy'
 import type { GameHelp } from '@/lib/originals/game-help'
 import styles from './game-settings.module.css'
-export function GameSettings({slug,ready,roundActive,haptics,fullscreen,onFullscreen,onAudioChange}:{slug:string;ready:boolean;roundActive:boolean;haptics:boolean;fullscreen?:string;onFullscreen:()=>void;onAudioChange:(enabled:boolean)=>void}){
+export function GameSettings({slug,ready,roundActive,haptics,fullscreen,onFullscreen,onAudioChange,holdNextRound}:{slug:string;ready:boolean;roundActive:boolean;haptics:boolean;fullscreen?:string;onFullscreen:()=>void;onAudioChange:(enabled:boolean)=>void;holdNextRound?:(open:boolean)=>void}){
  const {locale}=useCountry(),{wallet,session}=useDemoSession(),t=settingsCopy(locale)
  const dialog=useRef<HTMLDialogElement>(null),trigger=useRef<HTMLButtonElement>(null)
  const [tab,setTab]=useState<'settings'|'rules'|'paytable'>('settings'),[help,setHelp]=useState<GameHelp|null>(null),[failed,setFailed]=useState(false)
  const slot=slug==='capybara-gold'||slug==='golaco'||slug==='carnaval-gold',mix=audioPreferences(session.settings)
  // Release the top layer at settlement so the existing affiliate offer can own focus.
- useEffect(()=>{if(!roundActive&&dialog.current?.open){dialog.current.close();trigger.current?.focus()}},[roundActive])
+ useEffect(()=>{if(!holdNextRound&&!roundActive&&dialog.current?.open){dialog.current.close();trigger.current?.focus()}},[roundActive,holdNextRound])
  async function info(next:'rules'|'paytable') {setTab(next);if(help)return;setFailed(false);try{const {loadGameHelp}=await import('@/lib/originals/game-help');setHelp(await loadGameHelp(slug,locale))}catch{setFailed(true)}}
  function toggle(key:'music'|'sfx'){const next={...mix,[key]:!mix[key]};if(wallet.setSettings({...session.settings,...next,sound:next.music||next.sfx}))onAudioChange(next.music||next.sfx)}
  function close(){dialog.current?.close();trigger.current?.focus()}
  return <div className={styles.root} data-casino-settings>
-  <button data-casino-settings-trigger ref={trigger} type="button" disabled={!ready} onClick={()=>{setTab('settings');dialog.current?.showModal()}} aria-haspopup="dialog" className={styles.trigger}><Settings size={18}/>{t.settings}{slot&&session.settings.turbo&&<Rabbit size={17} aria-label={t.turbo}/>}</button>
-  <dialog ref={dialog} className={styles.dialog} aria-label={t.settings} onCancel={e=>{e.preventDefault();close()}} onClick={e=>{if(e.target===e.currentTarget)close()}}>
+  <button data-casino-settings-trigger ref={trigger} type="button" disabled={!ready} onClick={()=>{setTab('settings');dialog.current?.showModal();holdNextRound?.(true)}} aria-haspopup="dialog" className={styles.trigger}><Settings size={18}/>{t.settings}{slot&&session.settings.turbo&&<Rabbit size={17} aria-label={t.turbo}/>}</button>
+  <dialog ref={dialog} className={styles.dialog} aria-label={t.settings} onClose={()=>holdNextRound?.(false)} onCancel={e=>{e.preventDefault();close()}} onClick={e=>{if(e.target===e.currentTarget)close()}}>
    <div className={styles.panel}>
     <header><h2>{t.settings}</h2><button type="button" onClick={close} aria-label={t.close}><X size={20}/></button></header>
     <nav aria-label={t.settings}>{(['settings','rules',...(slot?['paytable']:[])] as const).map(key=><button type="button" key={key} aria-current={tab===key?'page':undefined} onClick={()=>key==='settings'?setTab('settings'):void info(key as 'rules'|'paytable')}>{t[key as keyof typeof t]}</button>)}</nav>

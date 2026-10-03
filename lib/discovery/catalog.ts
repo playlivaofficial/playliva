@@ -9,6 +9,7 @@ import type { CategorySlug, Locale } from '@/lib/types'
 
 export interface DiscoveryEntry extends CatalogSummary { kind: 'provider' | 'original'; href: string; aliases: string[]; format: string }
 const originalCategories: Record<string, CategorySlug> = {
+  'avia-de-janeiro': 'crash',
   crash: 'crash', 'liva-ginga': 'crash', 'skuptu-levanta': 'crash',
   'capybara-gold': 'slots', golaco: 'slots', 'carnaval-gold': 'slots',
   blackjack: 'table-games', roulette: 'table-games', 'liva-raio': 'table-games', 'liva-21-brasil': 'table-games',
