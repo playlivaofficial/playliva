@@ -29,6 +29,9 @@ export interface DemoSession {
   sequence: number
   settings: GameSettings
   transactions: DemoTransaction[]
+  /** Server receipt cursor, persisted atomically with its credit/debit. No authentication material. */
+  aviaReceipt?: { guestId: string; sequence: number }
+  aviaReceipts?: Record<string, number>
 }
 export type TransactionContext = Pick<DemoTransaction, 'gameId' | 'roundId'>
 export type WalletResult = { ok: true } | {
@@ -82,11 +85,15 @@ export function decodeSession(raw: string | null): DemoSession | null {
         ...(item.roundId === undefined ? {} : { roundId: item.roundId }) })
     }
     const last = transactions.at(-1)
+    if (value.aviaReceipt !== undefined && (!/^[a-f0-9]{64}$/.test(value.aviaReceipt?.guestId) || !integer(value.aviaReceipt?.sequence, Number.MAX_SAFE_INTEGER))) return null
+    if (value.aviaReceipts !== undefined && (!value.aviaReceipts || typeof value.aviaReceipts !== 'object' || Array.isArray(value.aviaReceipts) || Object.keys(value.aviaReceipts).length > 64 || !Object.entries(value.aviaReceipts).every(([id, sequence]) => /^[a-f0-9]{64}$/.test(id) && integer(sequence, Number.MAX_SAFE_INTEGER)))) return null
     if (last ? last.sequence !== value.sequence || last.balance !== value.balance
       : value.sequence !== 0 || value.balance !== initial) return null
     return { version: DEMO_SCHEMA_VERSION, balance: value.balance * scale, sequence: value.sequence,
       settings: cleanSettings(value.settings),
-      transactions: transactions.map(item => ({ ...item, amount: item.amount * scale, balance: item.balance * scale })) }
+      transactions: transactions.map(item => ({ ...item, amount: item.amount * scale, balance: item.balance * scale })),
+      ...(value.aviaReceipt === undefined ? {} : { aviaReceipt: { guestId: value.aviaReceipt.guestId, sequence: value.aviaReceipt.sequence } }),
+      ...(value.aviaReceipts === undefined ? {} : { aviaReceipts: { ...value.aviaReceipts } }) }
   } catch { return null }
 }
 
@@ -94,6 +101,8 @@ function freeze(snapshot: DemoSnapshot): DemoSnapshot {
   snapshot.session.transactions.forEach(Object.freeze)
   Object.freeze(snapshot.session.transactions)
   Object.freeze(snapshot.session.settings)
+  if (snapshot.session.aviaReceipt) Object.freeze(snapshot.session.aviaReceipt)
+  if (snapshot.session.aviaReceipts) Object.freeze(snapshot.session.aviaReceipts)
   Object.freeze(snapshot.session)
   return Object.freeze(snapshot)
 }
@@ -151,7 +160,7 @@ export function createDemoSessionStore(
     snapshot = freeze({ session, storageStatus })
     notify()
   }
-  function transact(kind: DemoTransaction['kind'], amount: number, context: TransactionContext = {}): WalletResult {
+  function transact(kind: DemoTransaction['kind'], amount: number, context: TransactionContext = {}, aviaReceipt?: DemoSession['aviaReceipt']): WalletResult {
     hydrate()
     if (activeRound && (kind === 'reset' || context?.roundId !== activeRound)) return { ok: false, reason: 'round-active' }
     if (!integer(amount) || amount === 0) return { ok: false, reason: 'invalid-amount' }
@@ -166,11 +175,32 @@ export function createDemoSessionStore(
       at: Math.max(0, Math.trunc(now())),
       ...(context.gameId === undefined ? {} : { gameId: context.gameId }),
       ...(context.roundId === undefined ? {} : { roundId: context.roundId }) }
-    save({ ...state, balance, sequence,
+    save({ ...state, balance, sequence, ...(aviaReceipt ? { aviaReceipt, aviaReceipts: { ...state.aviaReceipts, ...(state.aviaReceipt ? { [state.aviaReceipt.guestId]: state.aviaReceipt.sequence } : {}), [aviaReceipt.guestId]: aviaReceipt.sequence } } : {}),
       transactions: [...state.transactions, transaction].slice(-HISTORY_LIMIT) })
     return { ok: true }
   }
   return {
+    /** Caller serializes across tabs with Web Locks. The server alone decides the outcome;
+     * this method mirrors its receipt into the existing, deliberately local demo wallet. */
+    applyAviaReceipt(guestId: string, receipt: { sequence: number; kind: 'debit' | 'credit'; amount: number; roundId: string }): WalletResult {
+      hydrate()
+      if (!/^[a-f0-9]{64}$/.test(guestId) || !Number.isSafeInteger(receipt.sequence) || receipt.sequence < 1 || !['debit', 'credit'].includes(receipt.kind)) return { ok: false, reason: 'invalid-context' }
+      // Reconcile another tab's latest ledger before checking the cursor.
+      try {
+        const raw = storage()?.getItem(DEMO_STORAGE_KEY) ?? null
+        if (raw && raw !== persistedRaw) {
+          const latest = decodeSession(raw)
+          if (!latest) return { ok: false, reason: 'invalid-context' }
+          snapshot = freeze({ session: latest, storageStatus: 'persistent' }); persistedRaw = raw; detached = false
+        }
+      } catch { return { ok: false, reason: 'invalid-context' } }
+      const cursor = snapshot.session.aviaReceipt
+      const sequence = snapshot.session.aviaReceipts?.[guestId] ?? (cursor?.guestId === guestId ? cursor.sequence : 0)
+      if (receipt.sequence <= sequence) return { ok: true }
+      if (!sequence && Object.keys(snapshot.session.aviaReceipts ?? {}).length >= 64) return { ok: false, reason: 'history-limit' }
+      if (receipt.sequence !== sequence + 1) return { ok: false, reason: 'invalid-context' }
+      return transact(receipt.kind, receipt.amount, { gameId: 'avia-de-janeiro', roundId: receipt.roundId }, { guestId, sequence: receipt.sequence })
+    },
     acquireRound(roundId: string) {
       if (activeRound || !isDemoIdentifier(roundId)) return false
       activeRound = roundId

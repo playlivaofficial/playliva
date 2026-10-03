@@ -22,9 +22,9 @@ test('Crash has complete original copy and reciprocal canonical/hreflang for all
     assert.ok(metadata.alternates.languages['x-default'].endsWith('/pt-br/play/crash'))
   }
 })
-test('only the twelve implemented Originals subroutes enter the sitemap', () => {
+test('only the thirteen implemented Originals subroutes enter the sitemap', () => {
   const urls = sitemapModule.default().map(entry => new URL(entry.url).pathname).filter(path => /\/play\//.test(path))
-  assert.deepEqual(urls.sort(), ['en', 'es-mx', 'pt-br'].flatMap(locale => ['blackjack', 'capybara-gold', 'carnaval-gold', 'crash', 'golaco', 'liva-21-brasil', 'liva-ginga', 'liva-raio', 'mines', 'roulette', 'samba-drop', 'skuptu-levanta'].map(slug => `/${locale}/play/${slug}`)))
+  assert.deepEqual(urls.sort(), ['en', 'es-mx', 'pt-br'].flatMap(locale => ['avia-de-janeiro', 'blackjack', 'capybara-gold', 'carnaval-gold', 'crash', 'golaco', 'liva-21-brasil', 'liva-ginga', 'liva-raio', 'mines', 'roulette', 'samba-drop', 'skuptu-levanta'].map(slug => `/${locale}/play/${slug}`)))
 })
 test('manual auto cashout input supports localized decimals without silently rounding', () => {
   assert.equal(parseAutoInput('2.47'), 247)

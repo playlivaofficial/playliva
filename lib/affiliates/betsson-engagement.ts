@@ -34,6 +34,8 @@ export interface EngagementTriggerOptions {
   open: (milestone: EngagementMilestone) => void
   /** Called when a new cycle starts while the offer is open. */
   close: () => void
+  /** Continuous games wait at the settled boundary until this existing offer is dismissed. */
+  hold?: (held: boolean) => void
   schedule?: (fn: () => void, ms: number) => number
   cancel?: (id: number) => void
 }
@@ -56,11 +58,13 @@ export function createEngagementTrigger(options: EngagementTriggerOptions) {
       const finished = cycles.observe(roundActive)
       if (roundActive) {
         clear()
+        options.hold?.(false)
         if (opened) { opened = false; options.close() }
         return
       }
       if (finished === null || !isCycleMilestone(finished, options.cycleMultiple) || finished <= servedMilestone) return
       servedMilestone = finished
+      options.hold?.(true)
       pending = schedule(() => {
         pending = null
         if (cycles.active || opened) return
@@ -69,7 +73,7 @@ export function createEngagementTrigger(options: EngagementTriggerOptions) {
         options.open({ completedCycleNumber: finished, triggerMultiple: options.cycleMultiple, exposureNumber: exposures })
       }, options.delayMs)
     },
-    dismiss() { clear(); opened = false },
-    dispose() { clear() },
+    dismiss() { clear(); opened = false; options.hold?.(false) },
+    dispose() { clear(); options.hold?.(false) },
   }
 }

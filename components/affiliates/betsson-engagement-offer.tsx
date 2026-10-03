@@ -25,7 +25,7 @@ const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1
  * the viewport/controls layout never shifts. Desktop: compact centered card.
  * Mobile: bottom sheet with the game still visible behind it.
  */
-export function BetssonEngagementOffer({ game, roundActive }: { game: OriginalGameDefinition; roundActive: boolean }) {
+export function BetssonEngagementOffer({ game, roundActive, onHold }: { game: OriginalGameDefinition; roundActive: boolean; onHold?: (held: boolean) => void }) {
   const { marketCode, locale, t } = useCountry()
   const [milestone, setMilestone] = useState<EngagementMilestone | null>(null)
   const model = marketCode ? getBetssonPromo(marketCode, locale, BETSSON_PROMO_PLACEMENTS.originalsEngagement, { pageSlug: game.slug }) : null
@@ -40,12 +40,13 @@ export function BetssonEngagementOffer({ game, roundActive }: { game: OriginalGa
       cycleMultiple: every, delayMs: delay,
       open: (next) => setMilestone(next),
       close: () => setMilestone(null),
+      hold: onHold,
       schedule: (fn, ms) => window.setTimeout(fn, ms),
       cancel: (id) => window.clearTimeout(id),
     })
     trigger.current = instance
     return () => { instance.dispose(); trigger.current = null }
-  }, [promoId, every, delay])
+  }, [promoId, every, delay, onHold])
 
   useEffect(() => { trigger.current?.observe(roundActive) }, [roundActive])
 

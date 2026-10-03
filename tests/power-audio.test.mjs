@@ -2,10 +2,25 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import audioModule from '../lib/originals/power-audio.ts'
 import threeAudio from '../lib/originals/three-game-audio.ts'
+import aviaAudio from '../lib/originals/avia/audio.ts'
 function fakeParam(value) {
   return { value, setValueAtTime(v) { this.value = v; return this }, exponentialRampToValueAtTime(v) { this.value = v; return this },
     linearRampToValueAtTime(v) { this.value = v; return this }, cancelScheduledValues() { return this } }
 }
+
+test('Avia: one lazy context/scheduler, all original cues, independent mix and mute/visibility/unmount cleanup', () => {
+ const stub=fakeAudio()
+ try {
+  const a=aviaAudio.createAviaAudio();a.setEnabled(true);a.flight(true);a.cue('takeoff');assert.equal(stub.contexts.length,0)
+  a.setMix({music:true,sfx:true});a.unlock();a.unlock();assert.equal(stub.contexts.length,1);assert.equal(stub.live,1)
+  for(const cue of ['bet','countdown','takeoff','cashout','crash','reset']){const before=stub.starts;a.cue(cue);assert.ok(stub.starts>before,cue)}
+  for(let i=0;i<100;i++){a.flight(i%2===0,100+i);assert.equal(stub.live,1)}
+  a.setMix({music:false,sfx:true});assert.equal(stub.contexts.length,1)
+  a.setVisible(false);assert.equal(stub.live,0);a.setVisible(true);assert.equal(stub.live,1)
+  a.setEnabled(false);assert.equal(stub.live,0);const starts=stub.starts;a.cue('crash');assert.equal(stub.starts,starts)
+  a.setEnabled(true);assert.equal(stub.live,1);a.dispose();assert.equal(stub.live,0);assert.equal(stub.contexts[0].closed,true)
+ } finally {stub.restore()}
+})
 /** Deterministic Web Audio stand-in: counts contexts, voices started/stopped and live schedulers. */
 function fakeAudio() {
   const contexts = []

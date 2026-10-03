@@ -115,8 +115,8 @@ test('attribution survives internal navigation, accepts a new campaign, expires 
   } finally { dom.window.close(); for (const [key, descriptor] of saved) { if (descriptor) Object.defineProperty(globalThis, key, descriptor); else delete globalThis[key] } }
 })
 
-test('all 12 Originals get distinct valid manual social landing links on all three platforms', () => {
-  assert.equal(spotlight.SPOTLIGHT_GAMES.length, 12)
+test('all 13 Originals get distinct valid manual social landing links on all three platforms', () => {
+  assert.equal(spotlight.SPOTLIGHT_GAMES.length, 13)
   for (const game of spotlight.SPOTLIGHT_GAMES) for (const platform of social.MANUAL_SOCIAL_PLATFORMS) {
     const url = new URL(social.manualSocialLink('https://www.playliva.com/pt-br' + game.playPath, platform, game.slug + '-creative-1'))
     assert.equal(url.pathname, '/pt-br' + game.playPath)

@@ -390,7 +390,7 @@ try {
       if (routePath === '/live-casino') {
         assert.ok(doc.querySelector('[data-originals-section="live-casino"]'))
         assert.ok(blackjack[0].compareDocumentPosition(doc.querySelector('main a[href*="/games/"]')) & 4)
-      } else assert.deepEqual([...doc.querySelectorAll('[data-original-card]')].map(e => e.getAttribute('data-original-card')), routePath === '/play' ? ['samba-drop', 'skuptu-levanta', 'carnaval-gold', 'island-crash', 'liva-ginga', 'capybara-gold', 'golaco', 'blackjack', 'roulette', 'mines', 'liva-raio', 'liva-21-brasil'] : ['island-crash', 'liva-ginga', 'skuptu-levanta', 'capybara-gold', 'golaco', 'blackjack', 'roulette', 'mines'])
+      } else assert.deepEqual([...doc.querySelectorAll('[data-original-card]')].map(e => e.getAttribute('data-original-card')), routePath === '/play' ? ['avia-de-janeiro', 'samba-drop', 'skuptu-levanta', 'carnaval-gold', 'island-crash', 'liva-ginga', 'capybara-gold', 'golaco', 'blackjack', 'roulette', 'mines', 'liva-raio', 'liva-21-brasil'] : ['island-crash', 'liva-ginga', 'skuptu-levanta', 'capybara-gold', 'golaco', 'blackjack', 'roulette', 'mines'])
     }
     for (const [slug, surfaces] of [['liva-ginga', ['', '/play', '/crash']], ['golaco', ['', '/play', '/slots']]]) {
       if (!surfaces.includes(routePath)) continue
@@ -541,7 +541,7 @@ try {
       assert.equal(data['@context'], 'https://schema.org', `${path}: schema context`)
       const realEntity = /^\/games\/[^/]+$/.test(routePath)
       const listPage = routePath === '/games' || /^\/providers\/[^/]+$/.test(routePath)
-      const newOriginal = ['/play/samba-drop', '/play/skuptu-levanta', '/play/carnaval-gold'].includes(routePath)
+      const newOriginal = ['/play/avia-de-janeiro', '/play/samba-drop', '/play/skuptu-levanta', '/play/carnaval-gold'].includes(routePath)
       assert.ok(['WebSite', 'Organization', 'BreadcrumbList', ...(newOriginal || realEntity ? ['VideoGame'] : []), ...(listPage ? ['ItemList'] : [])].includes(data['@type']), `${path}: schema must have an audited visible use`)
       if (data['@type'] === 'VideoGame' && realEntity) {
         const game = catalogModule.catalogSummaries(localeModule.segmentToLocale(segment)).find(g=>g.slug===routePath.split('/').pop())

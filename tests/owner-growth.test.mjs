@@ -83,15 +83,15 @@ test('SEO rules require actual evidence and distinguish indexing requests from i
   assert.equal(metrics.seoOpportunities([{ ...report[0], impressions: 10 }]).length, 0)
   assert.ok(metrics.seoOpportunities([{ ...report[0], position: 18, previousImpressions: 200, internalLinks: 1 }]).some(row => row.kind === 'rising-query'))
 })
-test('owner catalog reuses all 12 Originals and public inventory never includes private routes', () => {
-  assert.equal(catalog.ownerGames.length, 12)
+test('owner catalog reuses all 13 Originals and public inventory never includes private routes', () => {
+  assert.equal(catalog.ownerGames.length, 13)
   assert.ok(catalog.ownerGames.some(row => row.slug === 'skuptu-levanta'))
   assert.ok(catalog.publishedInventory().length > 300)
   assert.ok(catalog.publishedInventory().every(row => !row.route.includes('/owner')))
   assert.equal(catalog.operatorOverview().find(row => row.name === 'Betsson').eligibleGeo.join(), 'BR')
   assert.ok(catalog.operatorOverview().every(row => !('affiliateUrl' in row)))
   const pipeline = content.contentPipeline(model.emptyOwnerState(), rows, [])
-  assert.equal(pipeline.filter(row => row.type === 'Social opportunity').length, 7)
+  assert.equal(pipeline.filter(row => row.type === 'Social opportunity').length, 8)
 })
 test('persistent owner auth, review actions, queue and content states survive readback without editing history', async () => {
   const directory = await mkdtemp(resolve(tmpdir(), 'playliva-owner-test-'))

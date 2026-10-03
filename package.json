@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "node --import tsx scripts/validate-catalog.mjs && next build",
+    "build": "node --import tsx scripts/avia-build-preflight.mjs && node --import tsx scripts/validate-catalog.mjs && next build",
     "start": "next start",
     "lint": "eslint . --max-warnings 3",
     "typecheck": "next typegen && tsc --noEmit",

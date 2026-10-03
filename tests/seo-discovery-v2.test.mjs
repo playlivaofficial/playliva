@@ -12,7 +12,7 @@ import links from '../lib/discovery/links.ts'
 import tracking from '../lib/tracking.ts'
 const entries=catalog.discoveryEntries('pt-BR')
 test('V2 directory ranks real games, legitimate aliases and all Originals without duplicates',()=>{
- assert.equal(entries.length,54);assert.equal(new Set(entries.map(g=>g.href)).size,54)
+ assert.equal(entries.length,55);assert.equal(new Set(entries.map(g=>g.href)).size,55)
  for(const [q,href] of [['Aviator','/games/aviator'],['Aviat','/games/aviator'],['Skuptu Levanta','/play/skuptu-levanta'],['Samba Drop','/play/samba-drop'],['Liva Ginga','/play/liva-ginga'],['Book of Dead','/games/book-of-dead'],['Golden Orbit','/play/roulette']])assert.equal(query.queryDirectory(entries,{q}).items[0].href,href,q)
  for(const game of entries.filter(g=>g.kind==='original'))assert.equal(query.queryDirectory(entries,{q:game.title}).items[0].href,game.href)
  assert.equal(query.queryDirectory(entries,{q:'something-not-a-game'}).total,0)
@@ -42,7 +42,7 @@ test('V2 quality gates agree with metadata, reciprocal alternates and sitemap; m
   assert.equal(meta.robots.index,false);assert.equal(meta.alternates.languages,undefined)
   assert.ok(!sitemap.default().some(g=>g.url.endsWith('/games/'+slug)))
  }finally{references.REFERENCE_GAMES[0].artwork=original}
- const rows=sitemap.default();assert.equal(rows.length,313);assert.equal(new Set(rows.map(r=>r.url)).size,313)
+ const rows=sitemap.default();assert.equal(rows.length,316);assert.equal(new Set(rows.map(r=>r.url)).size,316)
  for(const row of rows){const [,seg,...parts]=new URL(row.url).pathname.split('/');assert.equal(policy.discoveryIndexability('/'+parts.join('/'),seg).index,true)}
  assert.ok(!rows.some(r=>/owner|\?/.test(r.url)))
  assert.equal(policy.discoveryIndexability('/owner/growth','pt-br').index,false)
