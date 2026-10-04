@@ -51,7 +51,7 @@ export function GolacoCabinet({ round, locale, loaded, loadError, onAsset, onAss
     <div className={styles.stadium} aria-hidden="true" />
     <div className={styles.floodlights} aria-hidden="true"><span /><span /></div>
     <header className={styles.cabinetHeader}>
-      <div className={styles.wordmark}><span>PLAYLIVA ORIGINALS</span><b>GOLAÇO</b><small>{bonus ? copy.finalBonus : copy.ways}</small></div>
+      <div className={styles.wordmark}><span>PLAYLIVA ORIGINALS</span><b>GOLAZO</b><small>{bonus ? copy.finalBonus : copy.ways}</small></div>
       {bonus ? <div className={styles.scoreboard} data-bonus-hud>
         <span className={styles.board} aria-live="polite">
           <small>{copy.freeSpins}</small>

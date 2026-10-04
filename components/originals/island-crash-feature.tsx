@@ -1,8 +1,10 @@
 'use client'
 
 import Image from 'next/image'
+import { Fragment } from 'react'
 import { ThreeGameFeature } from './three-game-feature'
 import { AviaFeature } from './avia-feature'
+import { DriftFeature } from './rio-drift/feature'
 import { ArrowRight, Gamepad2, Play } from 'lucide-react'
 import { useCountry } from '@/components/country-context'
 import { LocaleLink } from '@/components/locale-link'
@@ -14,6 +16,7 @@ import { RouletteFeature } from './roulette-feature'
 import { MinesFeature } from './mines-feature'
 import { EmbaixadinhaFeature, GolacoFeature } from './football-features'
 import { productCopy } from '@/lib/product-discovery'
+import { featuredGeo, orderFeaturedOriginals } from '@/lib/originals/featured'
 
 /** A poster and ordinary links only; the game runtime stays on /play/crash. */
 export function IslandCrashFeature({ surface }: { surface: 'home' | 'hub' | 'category' }) {
@@ -44,11 +47,26 @@ export function IslandCrashFeature({ surface }: { surface: 'home' | 'hub' | 'cat
 }
 
 export function OriginalsDiscoverySection({ surface }: { surface: 'home' | 'category' }) {
-  const { locale } = useCountry()
+  const { locale, countryCode } = useCountry()
   const copy = originalsDiscoveryCopy(locale)
   const product = productCopy(locale)
+  const games = orderFeaturedOriginals([
+    { id: 'island-crash', card: <IslandCrashFeature surface={surface} /> },
+    { id: 'liva-embaixadinha', card: <EmbaixadinhaFeature surface={surface} /> },
+    { id: 'skuptu-levanta', card: <ThreeGameFeature kind="skuptu-levanta" surface={surface} /> },
+    ...(surface === 'home' ? [
+      { id: 'liva-capybara-gold', card: <CapybaraFeature surface="home" /> },
+      { id: 'liva-golaco', card: <GolacoFeature surface="home" /> },
+      { id: 'liva-blackjack', card: <BlackjackFeature surface="home" /> },
+      { id: 'liva-roulette', card: <RouletteFeature surface="home" /> },
+      { id: 'liva-mines', card: <MinesFeature surface="home" /> },
+    ] : [
+      { id: 'avia-de-janeiro', card: <AviaFeature surface="category" /> },
+      { id: 'rio-drift', card: <DriftFeature surface="category" /> },
+    ]),
+  ], countryCode)
   return (
-    <section className={styles.section} aria-labelledby={`originals-${surface}-title`} data-originals-section={surface}>
+    <section className={styles.section} aria-labelledby={`originals-${surface}-title`} data-originals-section={surface} data-featured-geo={featuredGeo(countryCode)}>
       <div className={styles.sectionHeading}>
         <div>
           <p className={styles.eyebrow}>{copy.originals}</p>
@@ -58,15 +76,7 @@ export function OriginalsDiscoverySection({ surface }: { surface: 'home' | 'cate
         <LocaleLink href="/play" className={styles.hubLink}>{copy.hubLink}<ArrowRight size={17} aria-hidden="true" /></LocaleLink>
       </div>
       <div className={surface === 'home' ? styles.homeGrid : undefined}>
-      {surface === 'category' && <AviaFeature surface="category" />}
-      <IslandCrashFeature surface={surface} />
-      <EmbaixadinhaFeature surface={surface} />
-      <ThreeGameFeature kind="skuptu-levanta" surface={surface} />
-      {surface === 'home' && <CapybaraFeature surface="home" />}
-      {surface === 'home' && <GolacoFeature surface="home" />}
-      {surface === 'home' && <BlackjackFeature surface="home" />}
-      {surface === 'home' && <RouletteFeature surface="home" />}
-      {surface === 'home' && <MinesFeature surface="home" />}
+      {games.map(game => <Fragment key={game.id}>{game.card}</Fragment>)}
       </div>
     </section>
   )

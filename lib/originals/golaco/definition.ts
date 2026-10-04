@@ -1,7 +1,7 @@
 import type { OriginalGameDefinition } from '../definition'
 
 /** Brand name stays identical across locales, like the other PlayLiva Originals. */
-export const GOLACO_NAME = 'Liva Golaço'
+export const GOLACO_NAME = 'Liva Golazo'
 export const GOLACO: OriginalGameDefinition = Object.freeze({
   id: 'liva-golaco', slug: 'golaco', category: 'slots',
   title: { en: GOLACO_NAME, 'pt-BR': GOLACO_NAME, 'es-MX': GOLACO_NAME },

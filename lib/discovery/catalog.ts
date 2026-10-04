@@ -8,10 +8,11 @@ import { normalizeSearch } from '@/lib/catalog/query'
 import type { CatalogSummary } from '@/lib/catalog/types'
 import type { DiscoveryCategorySlug, Locale } from '@/lib/types'
 import { driftCopy } from '@/lib/originals/rio-drift/copy'
+import { originalLegacyNames } from '@/lib/originals/legacy-names'
 
 export interface DiscoveryEntry extends CatalogSummary { kind: 'provider' | 'original'; href: string; aliases: string[]; format: string }
 const originalCategories: Record<string, DiscoveryCategorySlug> = {
-  'rio-drift': 'arcade',
+  'rio-drift': 'crash',
   'avia-de-janeiro': 'crash',
   crash: 'crash', 'liva-ginga': 'crash', 'skuptu-levanta': 'crash',
   'capybara-gold': 'slots', golaco: 'slots', 'carnaval-gold': 'slots',
@@ -20,7 +21,7 @@ const originalCategories: Record<string, DiscoveryCategorySlug> = {
 }
 export const originalCategory = (slug: string) => originalCategories[slug]
 export function gameFormat(slug: string, category: DiscoveryCategorySlug) {
-  if (slug === 'rio-drift') return 'racing'
+  if (slug === 'rio-drift') return 'crash'
   if (/blackjack|21-brasil/.test(slug)) return 'blackjack'
   if (/roulette|liva-raio/.test(slug)) return 'roulette'
   if (slug === 'plinko' || slug === 'samba-drop') return 'plinko'
@@ -36,7 +37,7 @@ export function discoveryEntries(locale: Locale): DiscoveryEntry[] {
     const slug=game.playPath.split('/').at(-1)!,category=originalCategory(slug),categoryLabel=category==='arcade'?driftCopy(locale).category:getCategoryName(category,locale)
     const title=game.title[contentLocale(locale)],summary=slug==='rio-drift'?driftCopy(locale).actionHint:locale==='pt-BR'?'Jogue grátis com créditos virtuais, sem depósitos ou valor monetário.':locale.startsWith('es-')?'Juega gratis con créditos virtuales, sin depósitos ni valor monetario.':'Play free with virtual credits, no deposits or monetary value.'
     return {id:game.id,slug,title,provider:'PlayLiva Original',providerId:'playliva',category,categoryLabel,summary,image:game.poster,artworkLabel:'',reference:false,kind:'original' as const,href:game.playPath,
-      aliases:[title.replace(/^Liva /,''),...(slug==='rio-drift'?['Drift','Rio','Racing','Skill','Corrida','Habilidade','Carreras']:slug==='roulette'?['Golden Orbit']:slug==='mines'?['Jungle Gold']:slug==='crash'?['PlayLiva Island Crash']:[])],format:gameFormat(slug,category),searchText:normalizeSearch([title,'PlayLiva Original',category,categoryLabel].join(' '))}
+      aliases:[title.replace(/^Liva /,''),...(originalLegacyNames[slug]??[]),...(slug==='rio-drift'?['Rio Drift','Turbo Crash','Carro','Car']:slug==='roulette'?['Golden Orbit']:slug==='mines'?['Jungle Gold']:slug==='crash'?['PlayLiva Island Crash']:[])],format:gameFormat(slug,category),searchText:normalizeSearch([title,'PlayLiva Original',category,categoryLabel].join(' '))}
   })
   return [...real,...originals]
 }

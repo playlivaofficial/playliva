@@ -27,18 +27,18 @@ export const FOOTBALL_CARDS: Record<'embaixadinha' | 'golaco', Record<ContentLoc
   golaco: {
     'pt-BR': {
       category: 'Slots',
-      posterAlt: 'Troféu dourado, bola de ouro, chuteira, luvas e camisa 10 em um estádio iluminado ao pôr do sol, com o logotipo Golaço.',
+      posterAlt: 'Troféu dourado, bola de ouro, chuteira, luvas e camisa 10 em um estádio iluminado ao pôr do sol, com o logotipo Golazo.',
       discovery: 'Estádio lotado, troféus e bola de ouro. Cada gol no bônus Final de Ouro aumenta a Sequência de Gols até ×5.',
     },
     en: {
       category: 'Slots',
-      posterAlt: 'A golden trophy, golden ball, boot, gloves and number 10 shirt in a floodlit stadium at sunset, with the Golaço logo.',
-      discovery: 'A packed stadium, trophies and a golden ball. Every goal in the Final de Ouro bonus lifts the Goal Streak up to ×5.',
+      posterAlt: 'A golden trophy, golden ball, boot, gloves and number 10 shirt in a floodlit stadium at sunset, with the Golazo logo.',
+      discovery: 'A packed stadium, trophies and a golden ball. Every goal in the Golden Final bonus lifts the Goal Streak up to ×5.',
     },
     'es-MX': {
       category: 'Slots',
-      posterAlt: 'Un trofeo dorado, balón de oro, tachones, guantes y playera 10 en un estadio iluminado al atardecer, con el logotipo Golaço.',
-      discovery: 'Estadio lleno, trofeos y balón de oro. Cada gol en el bono Final de Ouro sube la Racha de Goles hasta ×5.',
+      posterAlt: 'Un trofeo dorado, balón de oro, botines, guantes y camiseta 10 en un estadio iluminado al atardecer, con el logotipo Golazo.',
+      discovery: 'Estadio lleno, trofeos y balón de oro. Cada gol en el bono Final de Oro sube la Racha de Goles hasta ×5.',
     },
   },
 }

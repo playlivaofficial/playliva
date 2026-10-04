@@ -1,4 +1,4 @@
-// Original vector artwork for Liva Golaço, rasterised to small alpha WebP.
+// Original vector artwork for Liva Golazo, rasterised to small alpha WebP.
 // Offline/dev only: node scripts/golaco-assets.mjs
 // Every shape below is drawn here from scratch: no club, federation, league,
 // manufacturer or tournament mark, no third-party asset. The SVG source of
@@ -7,11 +7,13 @@ import { mkdir, writeFile } from 'node:fs/promises'
 import sharp from 'sharp'
 
 const OUT = new URL('../public/originals/golaco/', import.meta.url)
-const INK = '#0d2a1d'
+const INK = '#102738'
 const svg = (body, size = 256) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" width="${size}" height="${size}">
 <defs>
   <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff6c2"/><stop offset=".35" stop-color="#ffd23f"/><stop offset=".7" stop-color="#e8a312"/><stop offset="1" stop-color="#a86a07"/></linearGradient>
   <linearGradient id="goldV" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3b5"/><stop offset=".45" stop-color="#ffcf3a"/><stop offset="1" stop-color="#b8780a"/></linearGradient>
+  <linearGradient id="cyan" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#70edee"/><stop offset="1" stop-color="#148eb3"/></linearGradient>
+  <linearGradient id="navy" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#315a85"/><stop offset="1" stop-color="#112846"/></linearGradient>
   <linearGradient id="green" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4fe08f"/><stop offset="1" stop-color="#0c7a3e"/></linearGradient>
   <linearGradient id="blue" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6aa2ff"/><stop offset="1" stop-color="#1b3fb3"/></linearGradient>
   <linearGradient id="yellow" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff07a"/><stop offset="1" stop-color="#f3b914"/></linearGradient>
@@ -42,17 +44,17 @@ const ART = {
   // Golden boot: generic stylised boot, no manufacturer marks.
   chuteira: svg(`
     <path d="M40 150 C40 118 58 104 86 100 L126 94 C132 70 146 58 168 58 L190 58 C204 58 212 70 212 86 L214 150 C216 170 204 182 184 184 L64 186 C48 186 40 172 40 150Z" fill="url(#gold)" stroke="${INK}" stroke-width="7" stroke-linejoin="round"/>
-    <path d="M150 62 L190 62 C200 62 206 70 206 80 L206 96 L150 96Z" fill="url(#green)" stroke="${INK}" stroke-width="5"/>
-    <path d="M92 104 C104 100 130 94 150 92 L154 118 C132 122 108 126 96 130Z" fill="#0f8a43" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/>
+    <path d="M150 62 L190 62 C200 62 206 70 206 80 L206 96 L150 96Z" fill="url(#cyan)" stroke="${INK}" stroke-width="5"/>
+    <path d="M92 104 C104 100 130 94 150 92 L154 118 C132 122 108 126 96 130Z" fill="#43cdd7" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/>
     ${[0, 1, 2, 3].map(i => `<path d="M${103 + i * 12} ${105 - i * 3} L${105 + i * 12} ${123 - i * 3}" stroke="#fff9dc" stroke-width="5" stroke-linecap="round"/>`).join('')}
     <path d="M44 168 L212 162" stroke="${INK}" stroke-width="6"/>
-    ${[66, 100, 134, 168, 198].map(x => `<path d="M${x - 9} 186 L${x - 5} 204 L${x + 5} 204 L${x + 9} 186Z" fill="#244b36" stroke="${INK}" stroke-width="4"/>`).join('')}
+    ${[66, 100, 134, 168, 198].map(x => `<path d="M${x - 9} 186 L${x - 5} 204 L${x + 5} 204 L${x + 9} 186Z" fill="#243b57" stroke="${INK}" stroke-width="4"/>`).join('')}
     ${shine('M58 128 C70 112 92 108 118 104 C96 116 76 124 58 142Z', .5)}
     ${shine('M168 70 C180 66 194 68 198 76 C188 74 178 76 168 80Z', .6)}`),
-  // Goalkeeper gloves: a pair, green backs, yellow cuffs, white palms.
+  // Goalkeeper gloves: a pair, cyan backs, gold cuffs, white palms.
   luvas: svg(`
     <g transform="rotate(-14 110 140)">
-      <path d="M62 196 L60 120 C60 108 70 100 82 102 L82 70 C82 60 96 58 100 68 L102 100 L104 58 C104 46 120 46 122 58 L122 100 L126 64 C128 54 142 54 142 66 L140 104 L144 84 C146 74 160 76 158 88 L152 150 C150 170 144 184 136 196Z" fill="url(#green)" stroke="${INK}" stroke-width="7" stroke-linejoin="round"/>
+      <path d="M62 196 L60 120 C60 108 70 100 82 102 L82 70 C82 60 96 58 100 68 L102 100 L104 58 C104 46 120 46 122 58 L122 100 L126 64 C128 54 142 54 142 66 L140 104 L144 84 C146 74 160 76 158 88 L152 150 C150 170 144 184 136 196Z" fill="url(#cyan)" stroke="${INK}" stroke-width="7" stroke-linejoin="round"/>
       <rect x="56" y="190" width="86" height="30" rx="8" fill="url(#yellow)" stroke="${INK}" stroke-width="6"/>
       ${shine('M72 118 C76 110 84 110 88 116 L88 160 C82 150 76 138 72 118Z', .35)}
     </g>
@@ -60,20 +62,20 @@ const ART = {
       <path d="M118 198 L118 122 C118 110 128 102 140 104 L142 72 C142 62 156 60 160 70 L162 102 L164 60 C164 48 180 48 182 60 L182 102 L186 66 C188 56 202 56 202 68 L200 106 L204 86 C206 76 220 78 218 90 L212 152 C210 172 204 186 196 198Z" fill="#f6fbf7" stroke="${INK}" stroke-width="7" stroke-linejoin="round"/>
       <path d="M130 150 C150 142 176 142 204 150" stroke="#b9d9c5" stroke-width="6" fill="none" stroke-linecap="round"/>
       <rect x="114" y="192" width="88" height="30" rx="8" fill="url(#yellow)" stroke="${INK}" stroke-width="6"/>
-      <path d="M126 207 L190 207" stroke="#0f8a43" stroke-width="6"/>
+      <path d="M126 207 L190 207" stroke="#43cdd7" stroke-width="6"/>
     </g>`),
-  // Referee whistle with a yellow/green cord.
+  // Referee whistle with a gold/cyan cord.
   apito: svg(`
     <path d="M150 70 C170 30 216 28 226 60" fill="none" stroke="url(#yellow)" stroke-width="12" stroke-linecap="round"/>
-    <path d="M150 70 C170 30 216 28 226 60" fill="none" stroke="#0f8a43" stroke-width="4" stroke-dasharray="10 12" stroke-linecap="round"/>
+    <path d="M150 70 C170 30 216 28 226 60" fill="none" stroke="#43cdd7" stroke-width="4" stroke-dasharray="10 12" stroke-linecap="round"/>
     <path d="M40 128 C40 96 66 76 102 76 L200 76 C212 76 220 86 220 98 L220 110 C220 122 212 128 200 128 L166 128 C170 138 172 146 172 156 C172 196 140 214 106 214 C66 214 40 184 40 150Z" fill="url(#silver)" stroke="${INK}" stroke-width="7" stroke-linejoin="round"/>
     <rect x="196" y="84" width="28" height="36" rx="6" fill="#3b4f5c" stroke="${INK}" stroke-width="5"/>
     <circle cx="106" cy="148" r="30" fill="#2b3a44" stroke="${INK}" stroke-width="5"/>
     <circle cx="106" cy="148" r="15" fill="url(#yellow)"/>
     ${shine('M58 116 C66 96 86 86 110 86 L150 86 C126 94 90 100 66 126Z', .75)}`),
-  // Gold medal with a national-palette ribbon (no crest).
+  // Gold medal with a fictional club ribbon (no crest).
   medalha: svg(`
-    <path d="M86 20 L126 110 L100 120 L60 30Z" fill="url(#green)" stroke="${INK}" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M86 20 L126 110 L100 120 L60 30Z" fill="url(#cyan)" stroke="${INK}" stroke-width="6" stroke-linejoin="round"/>
     <path d="M170 20 L130 110 L156 120 L196 30Z" fill="url(#blue)" stroke="${INK}" stroke-width="6" stroke-linejoin="round"/>
     <path d="M112 40 L144 40 L136 106 L120 106Z" fill="url(#yellow)" stroke="${INK}" stroke-width="5"/>
     <circle cx="128" cy="164" r="68" fill="url(#gold)" stroke="${INK}" stroke-width="7"/>
@@ -110,15 +112,15 @@ const ART = {
     <path d="M82 150 L174 150 L184 184 L72 184Z" fill="#fff8ec"/>
     <path d="M110 34 L146 34 L196 206 L60 206Z" fill="none" stroke="${INK}" stroke-width="7" stroke-linejoin="round"/>
     ${shine('M114 44 L126 44 L100 196 L84 196Z', .35)}`),
-  // WILD: plain yellow No. 10 shirt, green trim, no badge or maker mark.
+  // WILD: navy No. 10 shirt, cyan trim, no badge or maker mark.
   camisa: svg(`
     <circle cx="128" cy="132" r="118" fill="url(#glow)"/>
-    <path d="M86 34 L104 40 C112 52 144 52 152 40 L170 34 L224 64 L204 112 L182 102 L182 222 L74 222 L74 102 L52 112 L32 64Z" fill="url(#yellow)" stroke="${INK}" stroke-width="7" stroke-linejoin="round"/>
-    <path d="M104 40 C112 52 144 52 152 40 L140 70 C134 76 122 76 116 70Z" fill="#0f8a43" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/>
-    <path d="M32 64 L52 112 L62 108 L42 60Z M224 64 L204 112 L194 108 L214 60Z" fill="#0f8a43"/>
-    <text x="128" y="182" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, Arial, sans-serif" font-weight="900" font-size="96" fill="#0f8a43" stroke="#fff6c8" stroke-width="5" paint-order="stroke">10</text>
+    <path d="M86 34 L104 40 C112 52 144 52 152 40 L170 34 L224 64 L204 112 L182 102 L182 222 L74 222 L74 102 L52 112 L32 64Z" fill="url(#navy)" stroke="${INK}" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M104 40 C112 52 144 52 152 40 L140 70 C134 76 122 76 116 70Z" fill="#43cdd7" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/>
+    <path d="M32 64 L52 112 L62 108 L42 60Z M224 64 L204 112 L194 108 L214 60Z" fill="#43cdd7"/>
+    <text x="128" y="182" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, Arial, sans-serif" font-weight="900" font-size="96" fill="#43cdd7" stroke="#e2faff" stroke-width="5" paint-order="stroke">10</text>
     ${shine('M86 48 L100 52 C92 90 88 150 86 210 L78 210 C80 150 82 90 86 48Z', .35)}`),
-  // SCATTER: golden trophy (generic cup) on a green plinth.
+  // SCATTER: golden trophy (generic cup) on a cyan plinth.
   taca: svg(`
     <circle cx="128" cy="118" r="120" fill="url(#glow)"/>
     <path d="M70 52 C30 52 30 118 88 124" fill="none" stroke="url(#gold)" stroke-width="16"/>
@@ -128,7 +130,7 @@ const ART = {
     <path d="M66 34 L190 34 C190 104 164 138 128 142 C92 138 66 104 66 34Z" fill="url(#gold)" stroke="${INK}" stroke-width="7" stroke-linejoin="round"/>
     <path d="M116 142 L140 142 L146 176 L110 176Z" fill="url(#goldV)" stroke="${INK}" stroke-width="6"/>
     <rect x="80" y="174" width="96" height="22" rx="6" fill="url(#gold)" stroke="${INK}" stroke-width="6"/>
-    <rect x="66" y="194" width="124" height="38" rx="8" fill="url(#green)" stroke="${INK}" stroke-width="7"/>
+    <rect x="66" y="194" width="124" height="38" rx="8" fill="url(#cyan)" stroke="${INK}" stroke-width="7"/>
     <path d="M128 60 L136 78 L156 80 L141 93 L146 113 L128 102 L110 113 L115 93 L100 80 L120 78Z" fill="#fff4b8" stroke="#a86a07" stroke-width="3"/>
     ${shine('M80 44 L98 44 C98 80 104 104 118 124 C96 114 84 88 80 44Z', .6)}`),
   // GOL: golden ball bursting into the net (free spins only).
@@ -143,7 +145,7 @@ function stadium(width, height, { poster = false } = {}) {
   const crowd = []
   let seed = 11
   const rand = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647 }
-  const colours = ['#ffd21f', '#11924a', '#1f48c9', '#ffffff', '#f28c38', '#ffd21f', '#11924a']
+  const colours = ['#e4c780', '#38cbd6', '#305484', '#ffffff', '#f28c78', '#b8e9ed', '#38cbd6']
   for (let row = 0; row < 26; row++) {
     const y = height * .34 + row * height * .012
     for (let i = 0; i < 90; i++) {
@@ -168,7 +170,7 @@ function stadium(width, height, { poster = false } = {}) {
   <circle cx="${width * .5}" cy="${height * .36}" r="${height * .3}" fill="url(#sun)"/>
   <path d="M0 ${height * .34} Q ${width / 2} ${height * .26} ${width} ${height * .34} L${width} ${height * .66} L0 ${height * .66}Z" fill="#26324a"/>
   ${crowd.join('')}
-  <rect x="0" y="${height * .64}" width="${width}" height="${height * .04}" fill="#0f8a43"/>
+  <rect x="0" y="${height * .64}" width="${width}" height="${height * .04}" fill="#43cdd7"/>
   <rect x="0" y="${height * .645}" width="${width}" height="${height * .012}" fill="#ffd21f" opacity=".9"/>
   <rect x="0" y="${height * .68}" width="${width}" height="${height * .32}" fill="url(#pitch)"/>
   ${Array.from({ length: 8 }, (_, i) => `<rect x="${i * width / 8}" y="${height * .68}" width="${width / 16}" height="${height * .32}" fill="#ffffff" opacity=".05"/>`).join('')}
@@ -192,7 +194,7 @@ await writeFile(new URL('stadium.webp', OUT), backdrop); sizes.stadium = backdro
 const place = async (name, size, left, top, rotate = 0) => ({ input: await sharp(Buffer.from(ART[name]), { density: 200 }).resize(size, size).rotate(rotate, { background: { r: 0, g: 0, b: 0, alpha: 0 } }).png().toBuffer(), left, top })
 const wordmark = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675">
   <text x="600" y="118" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-weight="700" font-size="30" letter-spacing="8" fill="#fff4c4">PLAYLIVA ORIGINALS</text>
-  <text x="600" y="262" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-weight="900" font-size="132" fill="#ffd21f" stroke="#0b3d22" stroke-width="12" paint-order="stroke">GOLAÇO</text>
+  <text x="600" y="262" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-weight="900" font-size="132" fill="#ffd21f" stroke="#102738" stroke-width="12" paint-order="stroke">GOLAZO</text>
 </svg>`
 const poster = await sharp(Buffer.from(stadium(1200, 675, { poster: true })))
   .composite([

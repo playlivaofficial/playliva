@@ -1,6 +1,6 @@
 import Image from 'next/image'
 
-/** Original Rio scenery and the owner-selected Ipanema aircraft artwork. */
+/** Fictional coastal skyline with broad island ridges; aircraft identity is preserved. */
 export function RioArt() {
   return <svg viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
     <defs>
@@ -18,8 +18,8 @@ export function RioArt() {
     <path fill="url(#avia-sea)" d="M0 458H1200V800H0Z"/>
     <path d="M782 467L864 467L991 733L651 733Z" fill="url(#avia-sunpath)" opacity=".65"/>
     {Array.from({ length: 26 }, (_, i) => <path key={i} d={`M${690 - i * 5 + (i % 3) * 28} ${485 + i * 9}h${220 + i * 5}`} stroke="#ffeac4" strokeWidth={i % 2 ? 1 : 3} opacity={.16 - i * .004}/ >)}
-    <path d="M760 493C810 453 835 454 858 408C876 373 885 310 910 298C951 278 972 339 981 394C990 443 1038 454 1085 474L1145 517Z" fill="url(#avia-rock)"/>
-    <path d="M910 303C889 363 901 410 864 455L925 482L961 479C925 419 922 376 910 303" fill="#659085" opacity=".32"/>
+    <path d="M740 492L795 455L842 407L887 427L928 376L970 389L1010 443L1062 458L1129 505L1145 517Z" fill="url(#avia-rock)"/>
+    <path d="M928 376L909 436L864 475L925 489L984 483L956 425Z" fill="#659085" opacity=".32"/>
     <path d="M981 487Q1070 343 1115 377Q1153 338 1200 397V610Z" fill="#234958"/>
     <path d="M0 491C151 475 213 493 246 524C289 563 225 587 181 597C105 614 96 650 164 666C253 688 311 691 330 744L1200 800H0Z" fill="#e8c597"/>
     <path d="M0 503C149 487 189 502 222 524C272 559 164 574 130 601C57 657 166 695 234 702C297 708 295 736 298 767L1200 800H0Z" fill="url(#avia-shore)"/>

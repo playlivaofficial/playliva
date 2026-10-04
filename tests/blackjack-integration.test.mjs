@@ -52,7 +52,7 @@ test('Blackjack: discovery stays lightweight and does not register a provider ga
   assert.match(feature, /data-original-card="blackjack"/); assert.equal((feature.match(/prefetch=\{false\}/g) ?? []).length, 2)
   assert.doesNotMatch(feature, /import .*engine|import .*blackjack-game|import .*simulation/)
   assert.match(await source('components/play-view.tsx'), /IslandCrashFeature surface="hub"[\s\S]*CapybaraFeature surface="hub"[\s\S]*BlackjackFeature surface="hub"/)
-  assert.match(await source('components/originals/island-crash-feature.tsx'), /surface === 'home' && <BlackjackFeature surface="home"/)
+  assert.match(await source('components/originals/island-crash-feature.tsx'), /id: 'liva-blackjack', card: <BlackjackFeature surface="home"/)
   assert.match(await source('components/category-page-view.tsx'), /slug === 'live-casino' && <BlackjackDiscoverySection/)
   assert.match(await source('components/mobile-bottom-nav.tsx'), /activePath === '\/play\/blackjack'\) return null/)
 })

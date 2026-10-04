@@ -13,7 +13,7 @@ import { searchStore, type SearchStore } from './search-store'
 export function searchTarget(page: string) {
   if (page === 'https://www.playliva.com/pt-br/play/rio-drift') {
     const c = driftCopy('pt-BR'), metadata = pageMetadata({title:c.title,description:c.description,path:RIO_DRIFT_PATH,localeSegment:'pt-br',images:[RIO_DRIFT_SHARE]})
-    return {previous:String(metadata.title),next:'Rio Drift: corrida e drift grátis no navegador'}
+    return {previous:String(metadata.title),next:'Liva Turbo Crash: jogo crash de carro grátis'}
   }
   const match=/^https:\/\/www\.playliva\.com\/pt-br\/games\/([a-z0-9-]+)$/.exec(page)
   if(!match) return null

@@ -9,7 +9,8 @@ import { LocaleLink } from '@/components/locale-link'
 import { useCountry } from '@/components/country-context'
 import { UTM_KEYS } from '@/lib/attribution'
 import { productCopy } from '@/lib/product-discovery'
-import { SPOTLIGHT_GAMES, spotlightIndicator, type SpotlightGame } from '@/lib/home/spotlight'
+import { featuredSpotlightGames, spotlightIndicator, type SpotlightGame } from '@/lib/home/spotlight'
+import { featuredGeo } from '@/lib/originals/featured'
 import styles from './spotlight-carousel.module.css'
 
 const noopSubscribe = () => () => {}
@@ -35,8 +36,9 @@ function withCampaignParams(path: string, search: string): string {
  * arrow keys. Each slide is a direct link to that game, so tapping the card,
  * the Play label or the arrow opens the exact game in the current locale.
  */
-export function SpotlightCarousel({ games = SPOTLIGHT_GAMES }: { games?: readonly SpotlightGame[] }) {
-  const { locale } = useCountry()
+export function SpotlightCarousel({ games: catalog }: { games?: readonly SpotlightGame[] }) {
+  const { locale, countryCode } = useCountry()
+  const games = featuredSpotlightGames(countryCode, catalog)
   const copy = productCopy(locale)
   const track = useRef<HTMLDivElement>(null)
   const [index, setIndex] = useState(0)
@@ -116,7 +118,7 @@ export function SpotlightCarousel({ games = SPOTLIGHT_GAMES }: { games?: readonl
   const indicator = spotlightIndicator(index + 1, total)
   return (
     <section className={styles.carousel} aria-roledescription="carousel" aria-label={copy.spotlightLabel}
-      data-spotlight-carousel="" data-spotlight-total={total} data-spotlight-index={index + 1} onKeyDown={onKeyDown}>
+      data-spotlight-carousel="" data-featured-geo={featuredGeo(countryCode)} data-spotlight-total={total} data-spotlight-index={index + 1} onKeyDown={onKeyDown}>
       <div ref={track} className={styles.track} onPointerDown={onPointerDown} onPointerMove={onPointerMove}
         onPointerUp={endDrag} onPointerCancel={endDrag} onClickCapture={onClickCapture} tabIndex={0}>
         {games.map((game, position) => {

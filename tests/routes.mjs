@@ -43,6 +43,7 @@ import brazilModule from '../lib/compliance/brazil.ts'
 import rtpModule from '../lib/rtp.ts'
 import promoModule from '../lib/affiliates/betsson-promo-config.ts'
 import spotlightModule from '../lib/home/spotlight.ts'
+import geoModule from '../lib/geo.ts'
 const { originalsDiscoveryCopy, ISLAND_CRASH_POSTER } = discoveryModule
 const { ANALYTICS_COOKIE } = consentModule
 
@@ -416,7 +417,15 @@ try {
       if (routePath === '/live-casino') {
         assert.ok(doc.querySelector('[data-originals-section="live-casino"]'))
         assert.ok(blackjack[0].compareDocumentPosition(doc.querySelector('main a[href*="/games/"]')) & 4)
-      } else assert.deepEqual([...doc.querySelectorAll('[data-original-card]')].map(e => e.getAttribute('data-original-card')), routePath === '/play' ? ['rio-drift', 'avia-de-janeiro', 'samba-drop', 'skuptu-levanta', 'carnaval-gold', 'island-crash', 'liva-ginga', 'capybara-gold', 'golaco', 'blackjack', 'roulette', 'mines', 'liva-raio', 'liva-21-brasil'] : ['island-crash', 'liva-ginga', 'skuptu-levanta', 'capybara-gold', 'golaco', 'blackjack', 'roulette', 'mines'])
+      } else {
+        const homeSlugs = ['crash', 'liva-ginga', 'capybara-gold', 'skuptu-levanta', 'golaco', 'blackjack', 'roulette', 'mines']
+        const expectedGames = spotlightModule.featuredSpotlightGames(geoModule.geoForLocale(segment))
+          .filter(game => routePath === '/play' || homeSlugs.includes(game.slug))
+        const expectedCards = expectedGames.map(game => game.id === 'island-crash' ? game.id : game.slug)
+        assert.equal(expectedCards.length, routePath === '/play' ? 14 : 8, `${path}: complete featured inventory`)
+        assert.deepEqual(expectedCards.slice(0, 2), ['island-crash', 'liva-ginga'], `${path}: protected flagship anchors`)
+        assert.deepEqual([...doc.querySelectorAll('[data-original-card]')].map(e => e.getAttribute('data-original-card')), expectedCards, `${path}: central GEO featured order`)
+      }
     }
     for (const [slug, surfaces] of [['liva-ginga', ['', '/play', '/crash']], ['golaco', ['', '/play', '/slots']]]) {
       if (!surfaces.includes(routePath)) continue
@@ -435,7 +444,7 @@ try {
       const article = doc.querySelector('[data-original-article]')
       assert.ok(article?.querySelector('ol, ul') && article.textContent.length > 600, `${path}: visible rules and description`)
       const crumbs = [...doc.querySelectorAll('script[type="application/ld+json"]')].map(e => e.textContent).find(t => t.includes('BreadcrumbList'))
-      assert.ok(crumbs?.includes(`/${segment}/play"`) && crumbs.includes(routePath === '/play/golaco' ? 'Liva Golaço' : 'Liva Ginga'), `${path}: breadcrumb structured data`)
+      assert.ok(crumbs?.includes(`/${segment}/play"`) && crumbs.includes(routePath === '/play/golaco' ? 'Liva Golazo' : 'Liva Ginga'), `${path}: breadcrumb structured data`)
       assert.equal(Boolean(doc.querySelector('link[rel="alternate"][hreflang="x-default"]')), publicPaths.includes(path), `${path}: indexable Originals have an equivalent neutral default`)
       assert.equal(doc.querySelector('nav.fixed'), null, `${path}: controls unobstructed by mobile nav`)
       assert.doesNotMatch(doc.querySelector('main')?.textContent ?? '', /Nike|Adidas|CBF|FIFA|Neymar|Pel[ée]\b/, `${path}: no protected marks`)
@@ -574,9 +583,10 @@ try {
       const newOriginal = ['/play/rio-drift', '/play/avia-de-janeiro', '/play/samba-drop', '/play/skuptu-levanta', '/play/carnaval-gold'].includes(routePath)
       assert.ok(['WebSite', 'Organization', 'BreadcrumbList', ...(newOriginal || realEntity ? ['VideoGame'] : []), ...(listPage ? ['ItemList'] : []), ...(routePath==='/arcade'?['CollectionPage']:[])].includes(data['@type']), `${path}: schema must have an audited visible use`)
       if (data['@type']==='VideoGame' && routePath==='/play/rio-drift') {
-        assert.equal(data.name,'Rio Drift');assert.equal(data.url,SITE_URL+path);assert.equal(data.isAccessibleForFree,true)
+        assert.equal(data.name,'Liva Turbo Crash');assert.equal(data.url,SITE_URL+path);assert.equal(data.isAccessibleForFree,true)
         assert.equal(data.aggregateRating,undefined);assert.equal(data.offers,undefined)
-        assert.ok(doc.querySelector(`main a[href="/${segment}/arcade"]`),`${path}: relevant arcade discovery`)
+        assert.ok(doc.querySelector(`main a[href="/${segment}/crash"]`),`${path}: relevant crash discovery`)
+        assert.ok(doc.querySelector(`main a[href="/${segment}/arcade"]`),`${path}: historical arcade page remains discoverable`)
         assert.doesNotMatch(doc.querySelector('[data-original-article]')?.textContent??'',/onde apostar|where to bet|dónde apostar/i)
       }
       if (data['@type'] === 'VideoGame' && realEntity) {

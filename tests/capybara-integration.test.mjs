@@ -33,7 +33,7 @@ test('Capybara: Originals discovery stays separate, lightweight and never import
   assert.equal((feature.match(/prefetch=\{false\}/g) ?? []).length, 2)
   assert.doesNotMatch(feature, /import .*engine|import .*capybara-game|import .*simulation|\.png/)
   assert.match(await source('components/play-view.tsx'), /IslandCrashFeature surface="hub"[\s\S]*CapybaraFeature surface="hub"/)
-  assert.match(await source('components/originals/island-crash-feature.tsx'), /surface === 'home' && <CapybaraFeature surface="home"/)
+  assert.match(await source('components/originals/island-crash-feature.tsx'), /id: 'liva-capybara-gold', card: <CapybaraFeature surface="home"/)
   assert.match(await source('components/category-page-view.tsx'), /slug === 'slots' && <CapybaraDiscoverySection/)
   assert.match(await source('components/mobile-bottom-nav.tsx'), /activePath === '\/play\/capybara-gold'\) return null/)
   assert.match(await source('components/originals/capybara/capybara-entry.tsx'), /dynamic\(\(\) => import\('\.\/capybara-game'\)/)

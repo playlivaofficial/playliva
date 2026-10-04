@@ -29,7 +29,7 @@ const heroModule = unwrap(await import('../components/home/hero.tsx'))
 const shellModule = unwrap(await import('../components/originals/play-game-shell.tsx'))
 cssHooks.deregister()
 
-const { SPOTLIGHT_GAMES, spotlightIndicator } = spotlightModule
+const { SPOTLIGHT_GAMES, featuredSpotlightGames, spotlightIndicator } = spotlightModule
 const { CountryProvider } = countryModule
 const { productCopy } = productModule
 const locales = [['pt-BR', 'pt-br'], ['en', 'en'], ['es-MX', 'es-mx']]
@@ -41,11 +41,11 @@ function wrap(locale, path, child) {
 }
 const render = (locale, path, child) => new JSDOM(renderToStaticMarkup(wrap(locale, path, child))).window.document
 
-test('spotlight catalog is data-driven: every playable Original, canonical order, live poster paths, no engine imports', async () => {
+test('spotlight catalog is data-driven: every playable Original, stable IDs, live poster paths, no engine imports', async () => {
   const routes = (await readdir(new URL('../app/[locale]/play', import.meta.url), { withFileTypes: true }))
     .filter(entry => entry.isDirectory() && entry.name !== 'embaixadinha').map(entry => entry.name).sort()
   assert.deepEqual(SPOTLIGHT_GAMES.map(game => game.slug).slice().sort(), routes, 'one slide per playable route')
-  assert.deepEqual(SPOTLIGHT_GAMES.map(game => game.id), ['rio-drift', 'avia-de-janeiro', 'samba-drop', 'skuptu-levanta', 'carnaval-gold', 'island-crash', 'liva-embaixadinha', 'liva-capybara-gold', 'liva-golaco', 'liva-blackjack', 'liva-roulette', 'liva-mines', 'liva-raio', 'liva-21-brasil'])
+  assert.equal(new Set(SPOTLIGHT_GAMES.map(game => game.id)).size, routes.length)
   for (const game of SPOTLIGHT_GAMES) {
     assert.equal(game.playPath, `/play/${game.slug}`)
     assert.match(game.poster, /^\/originals\//)
@@ -75,7 +75,7 @@ test('hero spotlight renders N slides with direct, locale-preserving game links 
     assert.equal(doc.querySelector('[data-spotlight-indicator]').textContent, `01 / ${String(total).padStart(2, '0')}`)
     assert.equal(doc.body.textContent.includes('01 / 05') && total !== 5, false)
     slides.forEach((slide, position) => {
-      const game = SPOTLIGHT_GAMES[position]
+      const game = featuredSpotlightGames('MX')[position]
       assert.equal(slide.getAttribute('data-spotlight-slide'), game.slug)
       const link = slide.querySelector('a[data-spotlight-game]')
       assert.equal(link.getAttribute('href'), `/${segment}/play/${game.slug}`, 'exact game, current locale, no generic Games page')
@@ -105,7 +105,7 @@ test('spotlight carousel adapts to a different catalog length and preserves inbo
   globalThis.IS_REACT_ACT_ENVIRONMENT = true
   const root = createRoot(document.getElementById('root'))
   try {
-    const games = SPOTLIGHT_GAMES.slice(0, 3)
+    const games = featuredSpotlightGames('MX', SPOTLIGHT_GAMES.slice(0, 3))
     await act(() => root.render(wrap('pt-BR', '/pt-br', React.createElement(carouselModule.SpotlightCarousel, { games }))))
     const carousel = document.querySelector('[data-spotlight-carousel]')
     assert.equal(carousel.getAttribute('data-spotlight-total'), '3')

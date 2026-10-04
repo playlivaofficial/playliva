@@ -19,10 +19,10 @@ export default async function Page({ params }: { params: Promise<{ locale: strin
   if (!isLocaleSegment(segment)) notFound()
   const locale = segmentToLocale(segment), c = driftCopy(locale), url = absoluteUrl(`/${segment}${RIO_DRIFT_PATH}`)
   return <><JsonLd data={{ '@context': 'https://schema.org', '@type': 'VideoGame', '@id': `${url}#game`,
-    name: 'Rio Drift', description: c.description, url, image: absoluteUrl(RIO_DRIFT_POSTER), inLanguage: locale, genre: c.racing,
+    name: 'Liva Turbo Crash', description: c.description, url, image: absoluteUrl(RIO_DRIFT_POSTER), inLanguage: locale, genre: c.racing,
     isAccessibleForFree: true, applicationCategory: 'GameApplication', gamePlatform: 'Web browser', playMode: 'https://schema.org/SinglePlayer',
     publisher: { '@type': 'Organization', name: 'PlayLiva', url: absoluteUrl('/') } }} />
-    <DriftEntry /><OriginalSeoArticle crumbs={{ originals: 'PlayLiva Originals', game: 'Rio Drift', path: RIO_DRIFT_PATH }}
-      title={`Rio Drift · ${c.racing}`} paragraphs={c.paragraphs} rulesTitle={c.rulesTitle} rules={c.rules} creditsTitle={c.creditsTitle} credits={c.credits}
-      links={[{ href: '/arcade', label: c.arcadeTitle }, { href: '/play', label: 'PlayLiva Originals' }, { href: '/games?kind=original&category=arcade', label: c.racing }]} /></>
+    <DriftEntry /><OriginalSeoArticle crumbs={{ originals: 'PlayLiva Originals', game: 'Liva Turbo Crash', path: RIO_DRIFT_PATH }}
+      title={`Liva Turbo Crash · ${c.racing}`} paragraphs={c.paragraphs} rulesTitle={c.rulesTitle} rules={c.rules} creditsTitle={c.creditsTitle} credits={c.credits}
+      links={[{ href: '/crash', label: c.category }, { href: '/play', label: 'PlayLiva Originals' }, { href: '/arcade', label: c.arcadeTitle }, { href: '/games?kind=original&category=crash', label: c.racing }]} /></>
 }

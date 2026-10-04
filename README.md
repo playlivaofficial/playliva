@@ -2,6 +2,10 @@
 
 Source of truth: https://github.com/playlivaofficial/playliva.
 
+[Pan-LATAM Originals](docs/pan-latam-originals.md) documents the MX/CO/PE
+featured priority, protected Island Crash / Liva Ginga identities, display-name
+updates with stable routes, and the classic Liva Turbo Crash replacement.
+
 The PT-BR YouTube Shorts review and least-privilege uploader workflow is documented in [docs/social-youtube.md](docs/social-youtube.md). Generated media, OAuth client credentials and access/refresh tokens stay in ignored local paths and must never be committed.
 
 [Betsson BR campaign funnel](docs/betsson-br-campaign-funnel.md) centralizes

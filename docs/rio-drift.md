@@ -1,72 +1,70 @@
-# Rio Drift
+# Liva Turbo Crash (stable Rio Drift route)
 
-Rio Drift is the first skill-based Arcade Original. Runs never debit or award
-Liva Credits. Points are not wagers, returns or prizes. There is one endless
-score-attack mode, no account requirement and no global leaderboard.
+Liva Turbo Crash replaces the former skill-driving mode while keeping the
+`rio-drift` game ID, analytics identity and `/[locale]/play/rio-drift` route.
+The public name, rules, cover art, schema, search aliases and discovery category
+now describe a Crash Original. `Rio Drift` remains a search alias. The old
+`/arcade` landing page explains the change without inventing another game.
 
-## Gameplay and rendering
+## Round and wallet rules
 
-- `lib/originals/rio-drift/engine.ts` owns fixed 120 Hz steering, slip, traction,
-  deterministic 300 m track sections, obstacle spacing and score settlement.
-  Frame deltas are capped at 100 ms; hiding the tab or opening Settings pauses
-  the run. Resume clears held inputs. Reload abandons an unfinished attempt.
-- `components/originals/rio-drift/scene.ts` draws the original coupe, coast,
-  palms, fictional traffic, city and tunnel with Canvas 2D. No external models,
-  renderer dependency, audio samples or licensed vehicle designs are used.
-- Controls: arrows/A-D while the game has focus, horizontal road dragging,
-  or the two touch arrows. Pointer cancellation releases held steering.
-- Distance awards 1.4 points/metre. Controlled drift awards
-  `(40 + abs(angle) × 160) × combo` points/second. Every 1.4 seconds of drift
-  increases combo up to 5×. Clean corners award `150 × combo`; near misses
-  award `125 × combo`. Losing the clean line breaks combo.
-- `records.ts` stores only a bounded local best, combo, distance and completed
-  run count. It merges another tab's best and settles a run ID once. Blocked
-  storage falls back to the current session. Shared Reset Balance preserves
-  these separate arcade records.
-- `audio.ts` uses the existing shared synthesis and Music/SFX settings. Its
-  original 116 BPM syncopated electronic loop, engine, tires, tunnel, collision
-  and result cues share one gesture-created context and one scheduler.
+`lib/originals/rio-drift/crash-engine.ts` owns a single-player local demo. It
+samples a fresh cryptographically random crash point using the existing pure
+crash-distribution helper. The protected Island Crash engine is unchanged.
+The point stays private to the engine closure until the round ends.
 
-## Integrations and boundaries
+- Select 1 / 5 / 10 / 25 / 50 virtual credits. Ignition lasts 850 ms.
+- The multiplier grows as `exp(elapsed / 6000)` after ignition. Integer
+  hundredths are used for multiplier, stakes and returns.
+- Manual cashout is accepted only while running and strictly before the
+  crash deadline. Automatic cashout compares its deadline before processing a
+  delayed crash tick. Ties lose, including an instant 1.00x crash.
+- A round ends at a maximum 25x. It automatically banks the pending return
+  only when the sampled crash is strictly beyond 25x. A crash exactly at 25x
+  takes precedence. A prior cashout remains locked while the car continues.
+- One guarded wallet debit and at most one guarded credit belong to each
+  stable round ID. Replay, duplicate actions, re-entrant notifications and
+  late callbacks cannot settle twice. Start reserves payout/ledger headroom.
+- The 1,100 ms crash/finish reaction ends before the wallet lock releases and
+  another round or eligible sponsor offer becomes available. Catch-up from a
+  hidden tab checks the original deadlines; the reaction starts when observed.
+- Settings and hidden tabs do not pause deadlines. Unmount/reload abandons
+  an unsettled local round without a refund. Already credited returns persist.
+- All credits are fictional. PlayLiva accepts no bets or deposits and offers
+  no money withdrawal or prizes.
 
-Public routes are `/[locale]/play/rio-drift` and `/[locale]/arcade` for the
-existing EN, PT-BR and ES-MX locales. Discovery includes one Original with
-Arcade category and Racing/Skill format. Operator categories stay separate;
-Arcade never claims that a partner offers Rio Drift. Existing BR header sponsor
-and shared offer remain subject to trusted GEO and the current approved
-campaign configuration. Offers count fully settled runs, after impact, at
-3/6/9. Dismissing preserves future cadence.
+The former `engine.ts` and `records.ts` are retained only for old local skill
+records. Runtime Turbo gameplay imports neither. No old score is deleted,
+converted into money, credited or submitted as a new high score.
 
-Existing consented analytics emit open/start/complete and a best-score update.
-Score context is limited to `under-1k`, `1k-5k`, `5k-10k`, `10k-plus`; no exact
-records or balance are sent. Start/complete and affiliate events enter the
-existing Owner Growth feed. Sitemap inventory supplies the localized SEO and
-content views; there is no new owner subsystem.
+## Rendering, audio and commercial integration
 
-SEO Autopilot explicitly permits the PT-BR Rio Drift title only, alongside its
-existing provider targets. It retains Brazil/locale filtering, 56-day evidence,
-sample and CTR-decline gates, one active experiment, 7/14/28-day measurement,
-90-day cooldown and baseline rollback. No experiment is created by launch.
-The normal cached title override applies only when the source baseline matches;
-Preview and database outages retain source metadata.
+The Canvas 2D scene retains PlayLiva's original blue coupe and uses a straight,
+fictional waterfront road. The multiplier has one prominent central HUD.
+Steering, moving obstacles, distance scoring and combos are removed. Road
+travel uses continuous render time, independent of the 40 ms state timer;
+reduced motion keeps the environment static. Rendering never settles credits.
 
-Rio Drift is explicitly excluded from the dormant video-generation catalog.
-The automatic video shutdown remains in force: no jobs, workers or uploads.
-Its cover art can be rebuilt using `node scripts/rio-drift-assets.mjs`; the SVG
-source and two WebP outputs are version-controlled together.
+The original synthesized electronic loop and car effects use the shared
+Music/SFX preferences. Audio starts only after a gesture, stays silent when
+hidden/muted and releases its context on unmount. No downloaded audio,
+licensed vehicle model or new renderer dependency is added.
 
-## Verification and release gate
+Shared promotional cadence still counts complete rounds (3/6/9), never
+ignition, active driving or the crash reaction. MX/CO/PE operator approval,
+active-state and destination gates remain authoritative; BR/ROW and missing
+campaigns remain suppressed. No real campaign is introduced.
 
-Run the repository's frozen install, lint, typecheck, full tests, build,
-`test:routes` and `social:secrets`. The Rio Drift focused tests cover physics,
-cadence, inputs, local records, audio, consent, owner/discovery, localization,
-SEO evidence gates and video shutdown. Browser review covers 1440/430/390/320
-layouts and the real rendered gameplay. Use the existing read-only
-`scripts/seo-discovery-audit.mjs` against a local production build to inspect
-sitemap pages, duplicate metadata and links.
+## QA
 
-Owner approval is required before commit/push/PR/deployment. After approval,
-follow the normal PR, hosted CI, Preview, merge-commit and Production workflow.
-Only after Production is Ready on the merged SHA: inspect the PT-BR canonical
-in Search Console, confirm the sitemap, request indexing if eligible and record
-Google's actual result. Submission is not proof of indexing.
+The focused engine tests cover deadlines, exact ties, instant crash, the 25x
+cap, delayed ticks, integer payout, double settlement, invalid RNG/input,
+reload behavior and preservation of old skill data. Component tests exercise
+Start/Cash out/Replay, real wallet persistence, Settings/hidden-tab deadlines,
+consented analytics and the shared 3/6/9 promotional cadence.
+
+Run the normal frozen install, lint, typecheck, full tests, production build,
+route/SEO crawl and secret scan. Inspect actual gameplay at 1440 / 430 / 390 /
+320 widths. Cover art is rebuilt with `node scripts/rio-drift-assets.mjs`.
+Automatic social video production remains disabled; this refinement neither
+uploads media nor enables the dormant video schedule.

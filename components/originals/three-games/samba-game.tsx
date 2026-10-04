@@ -48,7 +48,7 @@ export function SambaPlay({suppliedEngine,presentationNow}:{suppliedEngine?:Drop
   <label>{copy.risk}<select value={risk} disabled={active} onChange={e=>setRisk(e.target.value as Risk)}>{RISKS.map(r=><option key={r} value={r}>{copy[r]}</option>)}</select></label>
   <button className={styles.action} disabled={active||round.phase==='error'} onClick={start}>{copy.drop}</button>{error&&<p role="alert" className={styles.error}>{copy.error}</p>}
  </div>}><div className={styles.stage}>
-  <div className={styles.stageHeader}><span className={styles.eyebrow}>PLAYLIVA ORIGINAL</span><h2>SAMBA DROP</h2></div>
+  <div className={styles.stageHeader}><span className={styles.eyebrow}>PLAYLIVA ORIGINAL</span><h2>RITMO DROP</h2></div>
   <div className={styles.status} aria-live="polite">{round.result&&round.phase!=='dropping'?`${threeNumber(round.result.multiplier/SCALE,locale,4)}× · ${copy.return} ${formatCredits(round.result.payout,locale)}`:round.phase==='dropping'?copy.dropping:copy.ready}</div>
   <svg viewBox="0 0 600 530" className={styles.board} role="img" aria-label={`${copy.rows}: ${boardRows} · ${copy.risk}: ${copy[config.risk]}`}>
    <defs><radialGradient id="samba-glow"><stop stopColor="#d4ff6c"/><stop offset="1" stopColor="#d4ff6c" stopOpacity="0"/></radialGradient><linearGradient id="samba-gold" x2="1" y2="1"><stop stopColor="#fff7b0"/><stop offset="1" stopColor="#db9e24"/></linearGradient></defs>

@@ -3,13 +3,14 @@ import Image from 'next/image'
 import { LocaleLink } from '@/components/locale-link'
 import { THREE_GAMES, gamePoster } from '@/lib/originals/three-game-definitions'
 import { threeDescription } from '@/lib/originals/three-game-copy'
+import { originalLegacyNames } from '@/lib/originals/legacy-names'
 import { normalizeSearch } from '@/lib/catalog/query'
 import { productCopy } from '@/lib/product-discovery'
 import type { Locale } from '@/lib/types'
 
 export function matchingThreeGames(query: string, category: string, provider: string, locale: Locale) {
   const words = normalizeSearch(query).split(/\s+/).filter(Boolean)
-  return THREE_GAMES.filter(game => provider === 'all' && (category === 'all' || category === game.category) && words.every(word => normalizeSearch(`${game.title[contentLocale(locale)]} PlayLiva Original ${threeDescription(game.slug, locale)} ${game.category}`).includes(word)))
+  return THREE_GAMES.filter(game => provider === 'all' && (category === 'all' || category === game.category) && words.every(word => normalizeSearch(`${game.title[contentLocale(locale)]} ${(originalLegacyNames[game.slug] ?? []).join(' ')} PlayLiva Original ${threeDescription(game.slug, locale)} ${game.category}`).includes(word)))
 }
 
 /** Playable Originals stay distinct from the provider reference catalog. */
