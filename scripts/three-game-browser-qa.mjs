@@ -19,7 +19,7 @@ for(const slug of games){
  await page.setViewportSize({width:1440,height:1000})
 }
 await page.goto(`${base}/pt-br/games`,{waitUntil:'networkidle'})
-for(const [query,slug] of [['Skuptu Levanta','skuptu-levanta'],['Liva Samba Drop','samba-drop'],['Liva Carnaval Gold','carnaval-gold']]){
+for(const [query,slug] of [['Skuptu Levanta','skuptu-levanta'],['Liva Ritmo Drop','samba-drop'],['Liva Fiesta Gold','carnaval-gold']]){
  await page.getByRole('searchbox').fill(query)
  const card=page.locator(`[data-original-search="${slug}"]`)
  await card.waitFor({state:'visible'})

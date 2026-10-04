@@ -44,7 +44,7 @@ export default function RaioGame(){
   </div>
   return <div className={styles.game} data-power-game="liva-raio" data-phase={s.phase} onPointerDown={()=>audio.unlock()}><PlayGameShell game={RAIO} compact controls={controls} roundActive={active}>
     <div className={styles.raioStage} data-boosted-win={s.result?.boosted&&s.phase==='result'}>
-      <div className={styles.stageHeader}><span>PLAYLIVA ORIGINALS</span><b>LIVA <em>RAIO</em></b><small>{copy.free}</small></div>
+      <div className={styles.stageHeader}><span>PLAYLIVA ORIGINALS</span><b>LIVA <em>RAYO</em></b><small>{copy.free}</small></div>
       <div className={styles.chargeLine} data-charging={s.phase==='charge'}/>
       <div className={styles.wheelLayout}><div className={styles.wheelWrap}><RaioWheel engine={engine} audio={audio}/></div>
         <div className={styles.powerBoard}><p>{copy.powerNumbers}</p><div className={styles.powerTiles}>{[0,1,2,3].map(i=><div key={`${s.roundId}-${i}`} className={styles.powerTile}><b>{s.powers[i]?.number??'—'}</b><span>{s.powers[i]?`${s.powers[i].multiplier}×`:'⚡'}</span></div>)}</div><small>{copy.powerHint}</small>

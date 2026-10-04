@@ -27,7 +27,7 @@ export default async function Page({params}:{params:Promise<{locale:string}>}) {
     <h2 className="text-xl font-semibold">{c.rulesTitle}</h2>
     <ul className="list-disc space-y-2 pl-5 text-muted-foreground">{c.rules.slice(0,4).map(rule=><li key={rule}>{rule}</li>)}</ul>
     <p className="text-muted-foreground">{c.credits}</p>
-    <nav className="flex flex-wrap gap-6 text-primary" aria-label="PlayLiva Originals"><LocaleLink href="/play">PlayLiva Originals →</LocaleLink><LocaleLink href="/games?kind=original&category=arcade">{c.racing} →</LocaleLink></nav>
-    <JsonLd data={{'@context':'https://schema.org','@type':'CollectionPage',name:c.arcadeTitle,description:c.arcadeDescription,url:absoluteUrl(`/${segment}/arcade`),inLanguage:segmentToLocale(segment),hasPart:{'@type':'VideoGame',name:'Rio Drift',url:absoluteUrl(`/${segment}${RIO_DRIFT_PATH}`)}}} />
+    <nav className="flex flex-wrap gap-6 text-primary" aria-label="PlayLiva Originals"><LocaleLink href="/play">PlayLiva Originals →</LocaleLink><LocaleLink href="/games?kind=original&category=crash">{c.racing} →</LocaleLink></nav>
+    <JsonLd data={{'@context':'https://schema.org','@type':'CollectionPage',name:c.arcadeTitle,description:c.arcadeDescription,url:absoluteUrl(`/${segment}/arcade`),inLanguage:segmentToLocale(segment),hasPart:{'@type':'VideoGame',name:'Liva Turbo Crash',url:absoluteUrl(`/${segment}${RIO_DRIFT_PATH}`)}}} />
   </main>
 }

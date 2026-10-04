@@ -139,12 +139,12 @@ export function AviaPlay() {
   </div>}>
     <div className={styles.stage} data-phase={round?.phase ?? 'betting'}>
       <div className={styles.scenery} ref={coast}><RioArt /></div><div className={styles.shade} />
-      <div className={styles.topline}><div className={styles.mark}>AVIA<small>DE JANEIRO</small></div><span>PLAYLIVA ORIGINAL</span></div>
+      <div className={styles.topline}><div className={styles.mark}>SKYLINE<small>LIVA</small></div><span>PLAYLIVA ORIGINAL</span></div>
       <div className={`${styles.cloud} ${styles.cloudOne}`} /><div ref={cloud} className={`${styles.cloud} ${styles.cloudTwo}`} />
       <div ref={plane} className={styles.aircraft} data-avia-aircraft="ipanema"><span className={`${styles.exhaust} ${styles.exhaustFar}`} aria-hidden="true" /><span className={`${styles.exhaust} ${styles.exhaustNear}`} aria-hidden="true" /><AviaAircraft /></div>
       <div className={styles.hud} data-result={round?.phase === 'result'}><span>{round ? c[round.phase] : c.syncing}</span><strong>{(display.multiplier / 100).toFixed(2)}×</strong><div className={styles.subline}>{round?.phase === 'betting' ? `${c.countdown} ${display.seconds}s` : round?.phase === 'result' ? c.next : c.coast}</div></div>
       {round?.wager?.status === 'won' && <div className={styles.status} role="status">✓ {c.cashed} · {format(round.wager.payout)}</div>}
-      <div className={styles.footer}><span className={styles.signal}>RIO DE JANEIRO</span><span>{round ? `#${String(round.number).padStart(4, '0')}` : '—'} · LIVA CREDITS</span></div>
+      <div className={styles.footer}><span className={styles.signal}>{c.coast}</span><span>{round ? `#${String(round.number).padStart(4, '0')}` : '—'} · LIVA CREDITS</span></div>
       <div ref={progress} className={styles.progress} />
     </div>
   </PlayGameShell><div className={styles.history} aria-label={c.history}><span>{c.history}</span>{round?.history.map(item => <b key={item.id}>{(item.multiplier / 100).toFixed(2)}×</b>)}</div></div>

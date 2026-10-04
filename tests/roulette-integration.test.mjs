@@ -55,7 +55,7 @@ test('Roulette integration: lightweight Original discovery stays outside provide
   assert.equal((feature.match(/prefetch=\{false\}/g) ?? []).length, 2)
   assert.doesNotMatch(feature, /import .*engine|import .*roulette-game|import .*simulation/)
   assert.match(await source('components/play-view.tsx'), /RouletteFeature surface="hub"/)
-  assert.match(await source('components/originals/island-crash-feature.tsx'), /surface === 'home' && <RouletteFeature surface="home"/)
+  assert.match(await source('components/originals/island-crash-feature.tsx'), /id: 'liva-roulette', card: <RouletteFeature surface="home"/)
   assert.match(await source('components/category-page-view.tsx'), /slug === 'table-games' && <RouletteDiscoverySection/)
   assert.match(await source('components/category-page-view.tsx'), /slug === 'live-casino' && <RouletteDiscoverySection liveContext/)
   assert.match(await source('components/mobile-bottom-nav.tsx'), /activePath === '\/play\/roulette'\) return null/)

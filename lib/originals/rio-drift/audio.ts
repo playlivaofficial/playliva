@@ -1,10 +1,10 @@
 import { createSynth, note, type Synth } from '../synth'
 import type { AudioMix } from '../audio-mix'
-import type { DriftRun } from './engine'
+import type { TurboSnapshot } from './crash-engine'
 
 /** Original syncopated electronic beat and synthesized car sounds; no downloaded audio. */
 export function createDriftAudio(synth: Synth = createSynth({ masterGain: .65, musicGain: .15, sfxGain: .55 })) {
-  let enabled = false, visible = true, disposed = false, driving = false, speed = 0, drift = false, tunnel = false
+  let enabled = false, visible = true, disposed = false, driving = false, speed = 0
   function loop() {
     if (!enabled || !visible || disposed) { synth.stopLoop(); return }
     synth.startLoop(60 / 116 / 4, (i, at) => {
@@ -17,8 +17,6 @@ export function createDriftAudio(synth: Synth = createSynth({ masterGain: .65, m
       if (!driving && i % 4 === 0) synth.tone(at, { type: 'triangle', frequency: 44, decay: .23, gain: .018 })
       if (driving && i % 2 === 0) {
         synth.tone(at, { type: 'triangle', frequency: 68 + speed * 2.4, decay: .32, gain: .12, partials: [[2, .32], [3, .12]] })
-        if (drift) synth.noise(at, { type: 'bandpass', frequency: 980 + speed * 8, q: 3, duration: .27, gain: .055 })
-        if (tunnel && i % 8 === 0) synth.noise(at, { type: 'lowpass', frequency: 420, duration: .5, gain: .035 })
       }
     })
     synth.musicLevel(driving ? .9 : .42, .2)
@@ -28,15 +26,14 @@ export function createDriftAudio(synth: Synth = createSynth({ masterGain: .65, m
     setEnabled(on: boolean) { disposed = false; enabled = on; synth.setEnabled(on); loop() },
     unlock() { if (!disposed) { synth.unlock(); loop() } },
     setVisible(on: boolean) { visible = on; synth.setVisible(on); loop() },
-    drive(run: DriftRun, paused: boolean) { const next = run.phase === 'running' && !paused; speed = run.speed; drift = run.drifting; tunnel = Math.floor(run.distance / 900) % 3 === 2; if (next !== driving) { driving = next; loop() } },
-    cue(cue: 'start' | 'combo' | 'near' | 'crash' | 'finish' | 'ui') {
+    drive(run: TurboSnapshot) { const next = run.phase === 'running'; speed = Math.min(54, Math.log(run.multiplier / 100 + 1) * 18); if (next !== driving) { driving = next; loop() } },
+    cue(cue: 'start' | 'cashout' | 'crash' | 'finish' | 'ui') {
       if (disposed) return
       const at = synth.ready(); if (at === null) return
       if (cue === 'crash') { synth.duck(at, .15, .8); synth.noise(at, { type: 'lowpass', frequency: 1800, sweepTo: 120, duration: .38, gain: .35 }); synth.tone(at, { frequency: 105, bend: 35, decay: .4, gain: .26 }); return }
       if (cue === 'start') { synth.tone(at, { type: 'triangle', frequency: 100, bend: 380, decay: .6, gain: .19 }); return }
-      if (cue === 'near') { synth.noise(at, { type: 'bandpass', frequency: 600, sweepTo: 2000, duration: .18, gain: .13 }); return }
       if (cue === 'finish') { [0, 3, 7, 12].forEach((n, i) => synth.bell(at + i * .08, note(n), .14, .4)); return }
-      synth.bell(at, cue === 'combo' ? 880 : 520, .11, .16)
+      synth.bell(at, cue === 'cashout' ? 880 : 520, .11, .16)
     },
     dispose() { disposed = true; driving = false; synth.dispose() },
   }

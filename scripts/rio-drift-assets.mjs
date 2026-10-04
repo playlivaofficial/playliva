@@ -26,7 +26,7 @@ ${Array.from({length:14},(_,i)=>`<path d="M${560+i*26} ${362+i*9}h${65+i*6}" str
 <path d="M605 341C830 362 915 419 877 450L761 516 674 563 578 621" fill="none" stroke="#dae2db" stroke-opacity=".45" stroke-width="5" stroke-dasharray="24 26"/>
 ${Array.from({length:18},(_,i)=>{const x=10+i*36,h=30+(i*19)%67;return `<path d="M${x} 329v-${h}h28v${h}" fill="#142d40"/><path d="M${x+5} ${315-h}v6m10-6v6m-10 8v6m10-6v6" stroke="#ffd493" stroke-opacity=".65" stroke-width="3"/>`}).join('')}
 <g fill="none" stroke="#42ead1"><path d="M781 569Q968 559 994 461" stroke-width="5" filter="url(#glow)"/><path d="M722 616Q945 602 1006 486" stroke-width="2" opacity=".6"/></g>
-<g transform="translate(956 513) rotate(28) skewX(-8) scale(1.45 .99)">
+<g transform="translate(956 513) rotate(9) skewX(-8) scale(1.45 .99)">
  <ellipse cx="10" cy="22" rx="100" ry="132" fill="#011221" opacity=".7"/>
  <path d="M-67-82h16v62h-16zm118 0h16v62H51zM-68 41h17v58h-17zm119 0h17v58H51z" fill="#071019" stroke="#586775" stroke-width="2"/>
  <path d="M-45-122Q0-143 45-122Q71-102 63-33L57 44Q76 103 55 125Q0 138-55 125Q-76 103-57 44L-63-33Q-71-102-45-122z" fill="url(#paint)" stroke="#77fbe5" stroke-width="2"/>
@@ -41,9 +41,9 @@ ${Array.from({length:18},(_,i)=>{const x=10+i*36,h=30+(i*19)%67;return `<path d=
  <text y="33" text-anchor="middle" fill="#dffff2" font-family="sans-serif" font-weight="700" font-size="13">PL</text>
 </g>
 <path fill="url(#shade)" d="M0 0h1200v675H0z"/>
-<g font-family="sans-serif" fill="#eefffc"><text x="70" y="104" font-weight="700" letter-spacing="4" font-size="23">PLAYLIVA ORIGINAL</text><text x="64" y="275" font-weight="900" letter-spacing="-4" font-size="152">RIO</text><text x="64" y="408" fill="#64f5d7" font-weight="900" letter-spacing="-4" font-size="126">DRIFT</text><path d="M70 450h220" stroke="#ffd778" stroke-width="4"/><text x="70" y="494" letter-spacing="3" font-size="19">ARCADE · RACING · SKILL</text><text x="70" y="598" font-size="25" font-weight="700">PlayLiva</text></g>
+<g font-family="sans-serif" fill="#eefffc"><text x="70" y="104" font-weight="700" letter-spacing="4" font-size="23">PLAYLIVA ORIGINAL</text><text x="64" y="275" font-weight="900" letter-spacing="-4" font-size="102">LIVA TURBO</text><text x="64" y="408" fill="#64f5d7" font-weight="900" letter-spacing="-4" font-size="126">CRASH</text><path d="M70 450h220" stroke="#ffd778" stroke-width="4"/><text x="70" y="494" letter-spacing="3" font-size="19">PLAYLIVA ORIGINAL · 25×</text><text x="70" y="598" font-size="25" font-weight="700">PlayLiva</text></g>
 </svg>`
 await writeFile(`${source}/poster.svg`,svg)
 await sharp(Buffer.from(svg)).webp({quality:88,effort:6}).toFile(`${output}/poster.webp`)
 await sharp(Buffer.from(svg)).resize(1200,630,{fit:'cover',position:'centre'}).webp({quality:88,effort:6}).toFile(`${output}/share.webp`)
-console.log('Rio Drift original poster 1200×675 and share 1200×630 rendered.')
+console.log('Liva Turbo Crash original poster 1200×675 and share 1200×630 rendered.')

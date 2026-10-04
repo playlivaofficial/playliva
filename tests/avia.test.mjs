@@ -125,7 +125,9 @@ test('instant 1.00x flights count once at the same shared offer cadence, includi
 test('all locales: discovery search, crash relations, localized help, sitemap and Owner Growth', async () => {
   for (const locale of ['pt-BR', 'en', 'es-MX']) {
     const entries = catalog.discoveryEntries(locale)
-    for (const q of ['Avia', 'Janeiro', 'Avia de Janeiro']) assert.equal(query.queryDirectory(entries, { q }).items[0].slug, 'avia-de-janeiro')
+    for (const q of ['Liva Skyline', 'Skyline', 'Janeiro', 'Avia de Janeiro']) assert.equal(query.queryDirectory(entries, { q }).items[0].slug, 'avia-de-janeiro')
+    // The short legacy word also matches Aviator; keep it discoverable without overriding current-title ranking.
+    assert.ok(query.queryDirectory(entries, { q:'Avia' }).items.some(row=>row.slug==='avia-de-janeiro'))
     const avia = entries.find(row => row.slug === 'avia-de-janeiro')
     assert.equal(avia.category, 'crash')
     assert.ok(catalog.relatedDiscovery(avia, entries, 'original').some(row => ['crash', 'liva-ginga', 'skuptu-levanta'].includes(row.slug)))

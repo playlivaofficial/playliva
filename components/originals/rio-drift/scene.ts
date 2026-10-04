@@ -1,6 +1,6 @@
-import { trackAt, trafficAt, type DriftRun } from '@/lib/originals/rio-drift/engine'
+import { GROWTH_MS, REACTION_MS, timeToMultiplier, type TurboSnapshot } from '@/lib/originals/rio-drift/crash-engine'
 
-type Point = { x: number; y: number; half: number }
+
 const rgba = (r: number, g: number, b: number, a = 1) => `rgba(${r},${g},${b},${a})`
 function polygon(c: CanvasRenderingContext2D, points: number[][], fill: string | CanvasGradient) {
   c.beginPath(); points.forEach(([x, y], i) => i ? c.lineTo(x, y) : c.moveTo(x, y)); c.closePath(); c.fillStyle = fill; c.fill()
@@ -34,79 +34,52 @@ export function drawCoupe(c: CanvasRenderingContext2D, x: number, y: number, wid
   c.restore()
 }
 
-/** A bounded, asset-free pseudo-3D coast renderer; physics never depends on pixels or frame rate. */
-export function renderDrift(c: CanvasRenderingContext2D, w: number, h: number, s: DriftRun, reduced: boolean) {
-  const night = Math.min(1, s.distance / 2600), road = trackAt(s.distance), tunnel = road.district === 'tunnel'
-  const sky = c.createLinearGradient(0, 0, 0, h * .43)
-  sky.addColorStop(0, rgba(30 - night * 18, 40 - night * 24, 84 - night * 46)); sky.addColorStop(.62, rgba(162 - night * 130, 91 - night * 65, 111 - night * 58)); sky.addColorStop(1, rgba(255 - night * 195, 178 - night * 126, 130 - night * 52))
+/** A straight, authored road keeps the car and multiplier readable; no visual can alter settlement. */
+export function renderTurbo(c: CanvasRenderingContext2D, w: number, h: number, s: TurboSnapshot, at: number, reduced: boolean) {
+  const running = s.phase === 'running', crashed = s.phase === 'crashed' || s.phase === 'ready' && s.history[0] && !s.history[0].capped
+  const elapsed = s.phase === 'running' ? Math.min(Math.max(0, at - s.runningAt), timeToMultiplier(2500)) : s.phase === 'launch' ? 0 : timeToMultiplier(s.multiplier)
+  const distance = reduced ? 0 : (Math.exp(elapsed / GROWTH_MS) - 1) * 230
+  const reaction = s.phase === 'crashed' ? Math.min(1, Math.max(0, at - s.finishedAt) / REACTION_MS) : crashed ? 1 : 0
+  const sky = c.createLinearGradient(0, 0, 0, h)
+  sky.addColorStop(0, '#081527'); sky.addColorStop(.36, '#174b64'); sky.addColorStop(.48, '#be8475'); sky.addColorStop(.54, '#e7a672'); sky.addColorStop(1, '#081824')
   c.fillStyle = sky; c.fillRect(0, 0, w, h)
-  const sun = c.createRadialGradient(w * .73, h * .21, 0, w * .73, h * .21, w * .16)
-  sun.addColorStop(0, '#ffe4aaa8'); sun.addColorStop(1, '#ffc68300'); c.fillStyle = sun; c.fillRect(w * .55, h * .06, w * .36, h * .32)
-  c.fillStyle = rgba(255, 218, 162, .7 * (1 - night)); c.beginPath(); c.arc(w * .73, h * .21, w * .052, 0, Math.PI * 2); c.fill()
-  c.fillStyle = '#384057'; c.beginPath(); c.moveTo(0, h*.36)
-  c.bezierCurveTo(w*.1,h*.08,w*.14,h*.22,w*.23,h*.32); c.bezierCurveTo(w*.36,h*.23,w*.43,h*.2,w*.6,h*.34)
-  c.bezierCurveTo(w*.74,h*.19,w*.79,h*.25,w,h*.3); c.lineTo(w,h*.4); c.lineTo(0,h*.4); c.fill()
-  c.fillStyle = '#183d4d'; c.beginPath(); c.moveTo(w*.59,h*.36); c.bezierCurveTo(w*.72,h*.31,w*.74,h*.15,w*.8,h*.145)
-  c.bezierCurveTo(w*.87,h*.14,w*.85,h*.31,w*.97,h*.34); c.lineTo(w,h*.4); c.lineTo(w*.59,h*.4); c.fill()
-  const sea = c.createLinearGradient(0, h * .32, 0, h); sea.addColorStop(0, '#286d80'); sea.addColorStop(.55, night > .5 ? '#143648' : '#187988'); sea.addColorStop(1, '#072634')
-  c.fillStyle = sea; c.fillRect(0, h * .34, w, h * .66)
-  for (let i = 0; i < 18; i++) {
-    const yy = h * (.36 + i * .028), xx = ((i * 97 + (reduced ? 0 : s.distance * .15)) % (w * .44)) - w * .1
-    c.strokeStyle = rgba(177, 240, 240, .13 - i * .004); c.lineWidth = 1; c.beginPath(); c.moveTo(xx, yy); c.lineTo(xx + 15 + i * 3, yy); c.stroke()
+  const glow = c.createRadialGradient(w*.5,h*.44,0,w*.5,h*.44,w*.4)
+  glow.addColorStop(0,'#ffdb9666');glow.addColorStop(1,'#ffe0a000');c.fillStyle=glow;c.fillRect(0,0,w,h)
+  // Fictional waterfront skyline, deliberately kept away from the main HUD.
+  for(let i=0;i<16;i++) {
+    const x=i*w/15, size=(i*13%31+17)*w/700
+    c.fillStyle='#123344';c.fillRect(x,h*.5-size,w*.055,size)
+    c.fillStyle='#80c9c966';c.fillRect(x+3,h*.5-size+5,2,Math.max(3,size-9))
   }
-  const project = (q: number): Point => {
-    const ahead = (1 - q) * 320, bend = trackAt(s.distance + ahead).curve
-    return { x: w * .5 + bend * w * .35 * Math.sin((1 - q) * Math.PI), y: h * (.33 + .74 * q * q), half: w * (.015 + .49 * q * q) * road.halfWidth }
-  }
-  for (let i = 0; i < 64; i++) {
-    const q = i / 64, a = project(q), b = project((i + 1) / 64), band = Math.floor((s.distance + (1 - q) * 320) / 12) % 2
-    b.y += 1 // Overlap subpixel joins; avoid a distracting horizontal seam on each road quad.
-    polygon(c, [[a.x - a.half * 1.32, a.y], [a.x + a.half * 1.65, a.y], [b.x + b.half * 1.65, b.y], [b.x - b.half * 1.32, b.y]], band ? '#234552' : '#254854')
-    polygon(c, [[a.x - a.half * 1.08, a.y], [a.x + a.half * 1.08, a.y], [b.x + b.half * 1.08, b.y], [b.x - b.half * 1.08, b.y]], band ? '#dfc8ac' : '#4b8997')
-    polygon(c, [[a.x - a.half, a.y], [a.x + a.half, a.y], [b.x + b.half, b.y], [b.x - b.half, b.y]], band ? '#283442' : '#2b3846')
-    for (const side of [-1, 1]) {
-      polygon(c, [[a.x + side * a.half * .94, a.y], [a.x + side * a.half * .955, a.y], [b.x + side * b.half * .955, b.y], [b.x + side * b.half * .94, b.y]], night > .5 ? '#38cdd1' : '#c7dedb')
-      if (band) polygon(c, [[a.x + side * a.half * .325, a.y], [a.x + side * a.half * .337, a.y], [b.x + side * b.half * .337, b.y], [b.x + side * b.half * .325, b.y]], '#a7b6b788')
+  c.fillStyle='#13323e';c.fillRect(0,h*.5,w,h*.5)
+  const project=(q:number)=>({x:w*.5,y:h*(.49+.55*q*q),half:w*(.013+.52*q*q)})
+  for(let i=0;i<50;i++) {
+    const q=i/50,a=project(q),b=project((i+1)/50), band=Math.floor((distance+(1-q)*260)/14)%2
+    b.y+=1
+    polygon(c,[[a.x-a.half*1.09,a.y],[a.x+a.half*1.09,a.y],[b.x+b.half*1.09,b.y],[b.x-b.half*1.09,b.y]],band?'#286579':'#174d61')
+    polygon(c,[[a.x-a.half,a.y],[a.x+a.half,a.y],[b.x+b.half,b.y],[b.x-b.half,b.y]],band?'#142b3c':'#162e3f')
+    for(const side of [-1,1]) {
+      polygon(c,[[a.x+side*a.half*.95,a.y],[a.x+side*a.half*.966,a.y],[b.x+side*b.half*.966,b.y],[b.x+side*b.half*.95,b.y]],'#57dac9')
+      if(band)polygon(c,[[a.x+side*a.half*.325,a.y],[a.x+side*a.half*.34,a.y],[b.x+side*b.half*.34,b.y],[b.x+side*b.half*.325,b.y]],'#b0cad466')
     }
   }
-  // Original city blocks, lamp rhythm and palms move only along predictable perspective paths.
-  for (let i = 10; i >= 0; i--) {
-    const z = ((i * 38 + 380 - s.distance % 38) % 380), q = Math.max(.05, 1 - z / 380), p = project(q), size = 8 + q * q * 80
-    const x = p.x + p.half * 1.38, y = p.y
-    c.fillStyle = i % 2 ? '#234154' : '#243b52'; c.fillRect(x, y - size * 1.65, size * .75, size * 1.65)
-    polygon(c, [[x, y - size * 1.65], [x + size * .22, y - size * 1.83], [x + size * .96, y - size * 1.83], [x + size * .75, y - size * 1.65]], '#4c6470')
-    for (let row = 0; row < 4; row++) for (let col = 0; col < 3; col++) { c.fillStyle = (row + col + i) % 3 ? '#edd59599' : '#48cad966'; c.fillRect(x + size * (.1 + col * .21), y - size * (1.4 - row * .3), size * .08, size * .12) }
-    const palm = p.x - p.half * 1.2
-    c.strokeStyle = '#244b4f'; c.lineWidth = 2 + q * 3; c.beginPath(); c.moveTo(palm, y); c.quadraticCurveTo(palm - size * .12, y - size * .5, palm, y - size); c.stroke()
-    for (let leaf = 0; leaf < 5; leaf++) { c.strokeStyle = '#367765'; c.lineWidth = 1 + q * 4; c.beginPath(); c.moveTo(palm, y - size); c.quadraticCurveTo(palm + Math.cos(leaf * 1.4) * size * .4, y - size * 1.4, palm + Math.cos(leaf * 1.4) * size * .64, y - size * .83); c.stroke() }
-  }
-  if (tunnel) {
-    const shade = c.createLinearGradient(0, 0, 0, h); shade.addColorStop(0, '#060f20e6'); shade.addColorStop(.5, '#07132975'); shade.addColorStop(1, '#09152800'); c.fillStyle = shade; c.fillRect(0, 0, w, h)
-    c.strokeStyle = '#204154'; c.lineWidth = w * .075; c.beginPath(); c.moveTo(-w * .1, h); c.quadraticCurveTo(w * .1, -h * .35, w * .5, h * .2); c.quadraticCurveTo(w * .9, -h * .35, w * 1.1, h); c.stroke()
-    c.strokeStyle = '#4be3e3'; c.lineWidth = 2; c.beginPath(); c.moveTo(w * .05, h); c.quadraticCurveTo(w * .16, h * .28, w * .5, h * .27); c.quadraticCurveTo(w * .84, h * .28, w * .95, h); c.stroke()
-  }
-  for (let index = s.obstacle + 1; index >= s.obstacle; index--) {
-    const o = trafficAt(index), z = o.distance - s.distance
-    if (z < -10 || z > 290) continue
-    const q = Math.max(.12, .77 - z / 340), p = project(q), x = p.x + p.half * o.x
-    if (o.kind === 'cones') {
-      polygon(c, [[x, p.y - q * 32], [x - q * 16, p.y], [x + q * 16, p.y]], '#f89e52'); c.fillStyle = '#f5e6c7'; c.fillRect(x - q * 7, p.y - q * 15, q * 14, q * 4)
-    } else drawCoupe(c, x, p.y, Math.max(10, w * .115 * q / .77), 0, o.kind === 'taxi' ? '#daba45' : '#92a2aa', false)
-  }
-  const p = project(.77), carWidth = Math.min(108, w * .145), x = p.x + p.half * s.x, y = p.y
-  if (s.drifting && !reduced) {
-    for (const side of [-1, 1]) {
-      c.strokeStyle = '#121b2699'; c.lineWidth = Math.max(2, carWidth * .045); c.beginPath(); c.moveTo(x + side * carWidth * .43, y + carWidth * .45); c.quadraticCurveTo(x + side * carWidth * .43 - s.lateral * carWidth * .8, y + carWidth, x - s.lateral * carWidth * 2 + side * carWidth * .43, h * 1.1); c.stroke()
-      for (let i = 0; i < 4; i++) { c.fillStyle = rgba(164, 219, 220, .14 - i * .025); c.beginPath(); c.ellipse(x + side * carWidth * .4 - s.lateral * i * 13, y + carWidth * (.75 + i * .35), carWidth * (.16 + i * .09), carWidth * .24, 0, 0, Math.PI * 2); c.fill() }
+  for(let i=0;i<8;i++) {
+    const q=(i/8+(distance%30)/240)%1,p=project(q),size=3+q*q*38
+    for(const side of [-1,1]){
+      c.fillStyle='#36586a';c.fillRect(p.x+side*p.half*1.2,p.y-size,Math.max(1,q*3),size)
+      c.fillStyle='#c5fff1';c.fillRect(p.x+side*p.half*1.2-2,p.y-size,4+q*3,2+q*2)
     }
   }
-  if (night > .4) {
-    const glow = c.createRadialGradient(x, y + 20, 0, x, y + 20, carWidth); glow.addColorStop(0, '#10dbe645'); glow.addColorStop(1, '#10dbe600'); c.fillStyle = glow; c.fillRect(x - carWidth, y - carWidth / 2, carWidth * 2, carWidth * 2)
+  const width=Math.min(112,w*.19),x=w*.5+(reduced?0:reaction*width*.12),y=h*.76
+  const under=c.createRadialGradient(x,y,0,x,y,width)
+  under.addColorStop(0,crashed?'#fd9a423b':'#33efd23d');under.addColorStop(1,'#24e2ca00');c.fillStyle=under;c.fillRect(x-width,y-width,width*2,width*2)
+  if(running&&!reduced)for(let i=0;i<4;i++) {
+    c.fillStyle=rgba(77,237,224,.17-i*.035);c.fillRect(x-width*.23+i*width*.13,y+width*.85,width*.05,width*(.25+(s.multiplier/2500)*.5))
   }
-  drawCoupe(c, x, y, carWidth, s.angle + (s.phase === 'impact' && !reduced ? Math.min(.32, s.impactTime) : 0))
-  if (s.phase === 'impact') {
-    c.fillStyle = rgba(255, 173, 101, Math.max(0, .2 - s.impactTime * .4)); c.fillRect(0, 0, w, h)
-    if (!reduced) for (let i = 0; i < 8; i++) { c.fillStyle = '#ffd991'; c.fillRect(x + Math.sin(i * 3) * s.impactTime * 110, y + Math.cos(i * 3) * s.impactTime * 90, 2, 5) }
+  drawCoupe(c,x,y,width,reduced?0:reaction*.075)
+  if(crashed)for(let i=0;i<5;i++) {
+    c.fillStyle=rgba(171,185,190,.17-i*.025)
+    c.beginPath();c.ellipse(x+(i-2)*width*.14,y-width*(.6+i*.15+reaction*.18),width*(.12+i*.035),width*.19,0,0,Math.PI*2);c.fill()
   }
-  const vignette = c.createRadialGradient(w / 2, h * .55, w * .16, w / 2, h * .55, w * .75); vignette.addColorStop(0, '#05152200'); vignette.addColorStop(1, '#05152255'); c.fillStyle = vignette; c.fillRect(0, 0, w, h)
+  const shade=c.createLinearGradient(0,0,0,h*.5);shade.addColorStop(0,'#061120b3');shade.addColorStop(1,'#06112000');c.fillStyle=shade;c.fillRect(0,0,w,h*.5)
 }

@@ -43,7 +43,7 @@ export default function BrasilGame(){
   const value=handValue(s.player),dealerValue=handValue(s.dealer)
   return <div className={styles.game} data-power-game="liva-21-brasil" data-phase={s.phase} onPointerDown={()=>audio.unlock()}><PlayGameShell game={BRASIL21} compact controls={controls} roundActive={active}>
     <div className={styles.brasilStage} data-power-win={s.result?.outcome==='power'&&s.phase==='result'}>
-      <div className={styles.stageHeader}><span>PLAYLIVA ORIGINALS</span><b>LIVA <em>21</em> BRASIL</b><small>{copy.free}</small></div>
+      <div className={styles.stageHeader}><span>PLAYLIVA ORIGINALS</span><b>LIVA <em>21</em> ROYALE</b><small>{copy.free}</small></div>
       <div className={styles.powerRank}><div><small>{copy.powerRank}</small><p>{copy.powerRule}</p></div><strong key={s.roundId}>{s.power??'?'}</strong></div>
       <div className={styles.dealerArea}><div className={styles.handLabel}><span>{copy.dealer}</span>{s.dealer.length>0&&!s.holeHidden&&<b>{dealerValue.total}</b>}</div><div className={styles.cards}>{s.dealer.map((c,i)=><PlayingCard key={i===1?"hole":c.id} card={c} label={copy.hidden}/>)}{s.holeHidden&&<PlayingCard key="hole" hidden label={copy.hidden}/>}</div></div>
       <div className={styles.tableSeal} aria-live="polite"><span>{s.phase==='deal'?copy.dealing:s.phase==='player'?copy.yourTurn:['dealer','reveal'].includes(s.phase)?copy.dealerTurn:s.result?outcome(s.result.outcome):copy.ready}</span>{s.result&&<strong>{copy.returned}: {fmt(s.result.returned)}</strong>}<small>{copy.baseRule}</small></div>

@@ -26,7 +26,7 @@ test('Mines integration: complete locale copy, canonical/hreflang, three URLs an
 })
 test('Mines integration: lightweight discovery in three surfaces, owned art and no heavy/public outcome engine', async () => {
   assert.match(await source('components/play-view.tsx'),/MinesFeature surface="hub"/)
-  assert.match(await source('components/originals/island-crash-feature.tsx'),/surface === 'home' && <MinesFeature surface="home"/)
+  assert.match(await source('components/originals/island-crash-feature.tsx'),/id: 'liva-mines', card: <MinesFeature surface="home"/)
   assert.match(await source('components/category-page-view.tsx'),/slug === 'instant-games' && <MinesDiscoverySection/)
   assert.match(await source('components/mobile-bottom-nav.tsx'),/activePath === '\/play\/mines'\) return null/)
   assert.doesNotMatch(await source('components/originals/mines-feature.tsx'),/import .*engine|import .*mines-game|import .*simulation/)

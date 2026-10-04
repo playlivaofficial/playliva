@@ -17,7 +17,7 @@ for (const locale of ['pt-br', 'en', 'es-mx']) {
   assert.doesNotMatch(response.headers.get('x-robots-tag') ?? '', /noindex|nofollow/)
   assert.equal(doc.querySelector('link[rel=canonical]')?.href, url)
   assert.equal(doc.querySelectorAll('h1').length, 1)
-  assert.equal(doc.querySelector('h1').textContent, 'Avia de Janeiro')
+  assert.equal(doc.querySelector('h1').textContent, 'Liva Skyline')
   assert.doesNotMatch(meta('robots') ?? '', /noindex|nofollow/)
   assert.ok(meta('description')?.length > 70)
   assert.equal(meta('og:url'), url)
@@ -29,7 +29,7 @@ for (const locale of ['pt-br', 'en', 'es-mx']) {
   assert.equal(game?.url, url); assert.equal(game?.isAccessibleForFree, true)
   assert.equal(game.aggregateRating, undefined)
   const crumbs = schemas.find(s => s['@type'] === 'BreadcrumbList')
-  assert.equal(crumbs?.itemListElement.at(-1)?.name, 'Avia de Janeiro')
+  assert.equal(crumbs?.itemListElement.at(-1)?.name, 'Liva Skyline')
   assert.equal(crumbs.itemListElement[0].item, `${canonical}/${locale}/play`)
   // Shared breadcrumbs omit the optional URL on the current-page item.
   assert.ok(crumbs.itemListElement.every(row => !row.item || row.item.startsWith(`${canonical}/${locale}`)))

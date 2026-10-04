@@ -180,6 +180,10 @@ test('M10: footer and trust display have no replacement characters in any suppor
 // editorial-only arcade category, help/analytics/CTA guard are explicitly scoped.
 // GEO migration changes shared Spanish accessors and generic referral adapters only.
 // Existing engine/outcome files remain unchanged and retain their separate math checks.
+// Pan-LATAM refinement updates six display names/localized copy, adds centralized featured order
+// and legacy search aliases, and adds Rio Drift's authorized isolated crash loop with matching
+// copy/audio presentation. Protected flagship engines, existing game math, wallet and settlement
+// files remain unchanged; casino-ux.test and engine behavior tests retain those guards.
 test('Originals: three-game additions and existing Casino UX V2 snapshot', async () => {
   const roots = ['lib/originals', 'components/originals/crash', 'components/originals/capybara', 'components/originals/blackjack', 'components/originals/roulette', 'components/originals/mines']
   const paths = []
@@ -193,6 +197,6 @@ test('Originals: three-game additions and existing Casino UX V2 snapshot', async
   for (const path of roots) await walk(path)
   const hash = createHash('sha256')
   for (const path of paths.sort()) hash.update(path + '\0' + (await readFile(new URL('../' + path, import.meta.url), 'utf8')).replace(/\r\n/g, '\n') + '\0')
-  assert.equal(paths.length, 109)
-  assert.equal(hash.digest('hex'), '7d9f05574b236cdc2d3493b29d16f1b8c95b421ad0695a497e9a2eb7a8f0261f')
+  assert.equal(paths.length, 112)
+  assert.equal(hash.digest('hex'), 'ec0b1f4fdd5732f038ca28cc34888e9b0cb610b8cbd557380d232336f05ef19c')
 })

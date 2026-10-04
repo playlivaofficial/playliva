@@ -22,15 +22,16 @@ import { blackjackCopy } from '@/lib/originals/blackjack/copy'
 import { rouletteCopy } from '@/lib/originals/roulette/copy'
 import { minesCopy } from '@/lib/originals/mines/copy'
 import { productCopy } from '@/lib/product-discovery'
+import { orderFeaturedOriginals } from '@/lib/originals/featured'
 
 /**
  * Canonical homepage "In the spotlight" catalog.
  *
  * Discovery metadata only: posters, localized labels and the localized play
  * path. Never import an engine, wallet or renderer here. The carousel renders
- * whatever this list contains, in this order, and derives its `01 / N`
+ * whatever this list contains, in the central GEO featured order, and derives its `01 / N`
  * indicator from its length — adding an Original means adding an entry, not
- * editing the component. Order mirrors the Play hub.
+ * editing the component. Registry order is not a public featured priority.
  */
 export interface SpotlightGame {
   /** Explicitly disabled entries are excluded from social generation. */
@@ -53,7 +54,7 @@ const byLocale = <T,>(pick: (locale: Locale) => T): Record<ContentLocale, T> =>
   Object.fromEntries(locales.map((locale) => [locale, pick(locale)])) as Record<ContentLocale, T>
 
 export const SPOTLIGHT_GAMES: readonly SpotlightGame[] = [
-  { id: RIO_DRIFT.id, slug: RIO_DRIFT.slug, playPath: RIO_DRIFT_PATH, title: RIO_DRIFT.title, category: byLocale(locale => driftCopy(locale).category), poster: RIO_DRIFT_POSTER, posterAlt: byLocale(locale => `Rio Drift — ${driftCopy(locale).racing}`), posterHasTitle: true, enabled: false },
+  { id: RIO_DRIFT.id, slug: RIO_DRIFT.slug, playPath: RIO_DRIFT_PATH, title: RIO_DRIFT.title, category: byLocale(locale => driftCopy(locale).category), poster: RIO_DRIFT_POSTER, posterAlt: byLocale(locale => RIO_DRIFT.title[contentLocale(locale)]), posterHasTitle: true, enabled: false },
   { id: AVIA.id, slug: AVIA.slug, playPath: AVIA_PATH, title: AVIA.title, category: byLocale(() => 'Crash'), poster: AVIA_POSTER, posterAlt: AVIA.title, posterHasTitle: true, enabled: false },
   ...THREE_GAMES.map(game=>({id:game.id,slug:game.slug,playPath:`/play/${game.slug}`,title:game.title,category:byLocale(locale=>game.category==='crash'?'Crash':game.category==='slots'?'Slots':locale==='pt-BR'?'Jogos instantâneos':locale.startsWith('es-')?'Juegos instantáneos':'Instant Games'),poster:gamePoster(game.slug),posterAlt:game.title,posterHasTitle:true})),
   {
@@ -110,6 +111,10 @@ export const SPOTLIGHT_GAMES: readonly SpotlightGame[] = [
     id:game.id, slug:game.slug, playPath:'/play/'+game.slug, title:game.title, category:byLocale(locale=>powerCopy(locale).category), poster, posterAlt:byLocale(locale=>`${game.title[contentLocale(locale)]} — ${powerCopy(locale).category}`), posterHasTitle:true,
   })),
 ]
+
+export function featuredSpotlightGames(geo?: unknown, games: readonly SpotlightGame[] = SPOTLIGHT_GAMES) {
+  return orderFeaturedOriginals(games, geo)
+}
 
 /** `01 / 05` style indicator: zero-padded to two digits, index is 1-based. */
 export function spotlightIndicator(index: number, total: number): string {
