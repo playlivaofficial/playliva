@@ -166,7 +166,7 @@ export interface Operator {
   campaignKey?: string
   priority?: number
   ctaText?: Partial<Record<Locale, string>>
-  commercialLegal?: { status: 'verified'; statement?: string; responsibleGambling?: string; disclosure?: string }
+  commercialLegal?: { status: 'verified'; reviewBy: string; statement?: string; responsibleGambling?: string; disclosure?: string }
   id: string
   slug: string
   name: string

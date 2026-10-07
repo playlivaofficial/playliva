@@ -15,7 +15,8 @@ export function useCampaignExpiry(expiresAt: number | undefined): void {
     schedule()
     const check = () => { if (Date.now() >= expiresAt) refresh() }
     window.addEventListener('pageshow', check)
+    window.addEventListener('focus', check)
     document.addEventListener('visibilitychange', check)
-    return () => { disposed = true; window.clearTimeout(timer); window.removeEventListener('pageshow', check); document.removeEventListener('visibilitychange', check) }
+    return () => { disposed = true; window.clearTimeout(timer); window.removeEventListener('pageshow', check); window.removeEventListener('focus', check); document.removeEventListener('visibilitychange', check) }
   }, [expiresAt])
 }

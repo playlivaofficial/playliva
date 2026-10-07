@@ -77,7 +77,7 @@ export function snapshotFromRegistry(geo: unknown, registrations: OperatorRegist
       affiliateUrl: { [geo]: commercialReference(geo, record.id, record.campaignKey) },
       verifiedGames: { [geo]: record.verifiedGames ?? [] }, verifiedOffers: [],
       ctaText: record.ctaText,
-      commercialLegal: { status: 'verified', statement: legal.statement,
+      commercialLegal: { status: 'verified', reviewBy: legal.reviewBy!, statement: legal.statement,
         responsibleGambling: legal.responsibleGambling, disclosure: legal.disclosure },
     }
     result.operators.push(operator)

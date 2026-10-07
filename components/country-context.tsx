@@ -20,6 +20,8 @@ import { LOCALES, createTranslator, type Translator } from '@/lib/i18n'
 import type { Country, CountryCode, Locale } from '@/lib/types'
 import { isCommercialGeo, type CommercialCurrency } from '@/lib/geo'
 import { emptyCommercialSnapshot, type CommercialSnapshot } from '@/lib/commercial/types'
+import { currentCommercialSnapshot, nextCommercialReviewExpiry } from '@/lib/commercial/expiry'
+import { useCampaignExpiry } from '@/components/affiliates/use-campaign-expiry'
 import {
   isLocaleSegment,
   localeToSegment,
@@ -97,6 +99,10 @@ export function CountryProvider({
   const [countryCode, setCountryCodeState] =
     useState<CountryCode>(visitorCountryCode ?? initialCountryCode ?? DEFAULT_COUNTRY)
   const [marketReady, setMarketReady] = useState(visitorCountryCode !== null)
+  // Refresh the shared context, not just individual banners: cached cards,
+  // disclosures and operator availability must expire together.
+  const currentCommercial = currentCommercialSnapshot(commercial)
+  useCampaignExpiry(nextCommercialReviewExpiry(currentCommercial))
 
   // LANGUAGE is derived from the URL on every render, never from
   // independent client state — this keeps it perfectly in sync with
@@ -161,7 +167,7 @@ export function CountryProvider({
     const country = getCountry(effectiveCountryCode)
     const t = createTranslator(locale)
     const marketCode = marketReady && effectiveCountryCode === visitorCountryCode && isCommercialGeo(effectiveCountryCode) ? effectiveCountryCode : null
-    const visibleCommercial = marketCode && commercial.geo === marketCode ? commercial : emptyCommercialSnapshot()
+    const visibleCommercial = marketCode && currentCommercial.geo === marketCode ? currentCommercial : emptyCommercialSnapshot()
     return {
       country,
       countryCode: effectiveCountryCode,
@@ -176,7 +182,7 @@ export function CountryProvider({
       nameOf: (code: CountryCode) => getCountryName(code, locale),
       countries: PUBLIC_COUNTRIES,
     }
-  }, [countryCode, previewCountryCode, marketReady, visitorCountryCode, commercial, setCountryCode, locale, setLocale])
+  }, [countryCode, previewCountryCode, marketReady, visitorCountryCode, currentCommercial, setCountryCode, locale, setLocale])
 
   return (
     <CountryContext.Provider value={value}>{children}</CountryContext.Provider>
