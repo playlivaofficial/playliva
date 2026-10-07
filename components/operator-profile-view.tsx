@@ -58,7 +58,7 @@ export function OperatorProfileView({ operator }: { operator: Operator }) {
 
   const relatedOffers = (activeCountry ? getPublicOffers(activeCountry, commercial.offers, commercial.operators) : []).filter((o) => o.operatorId === operator.id)
 
-  const games = (activeCountry ? getGamesForOperator(operator, activeCountry) : []).slice(0, 8)
+  const games = (hasAffiliate && activeCountry ? getGamesForOperator(operator, activeCountry) : []).slice(0, 8)
 
   useEffect(() => {
     track('operator_view', {
@@ -77,7 +77,7 @@ export function OperatorProfileView({ operator }: { operator: Operator }) {
           className="pointer-events-none absolute inset-x-0 -top-24 mx-auto h-64 max-w-3xl rounded-full bg-primary/20 blur-[100px]"
         />
         <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8"
-          data-betting-ad={hasAffiliate ? '' : undefined} data-evidence-state="current">
+          data-betting-ad={hasAffiliate ? '' : undefined} data-evidence-state={hasAffiliate ? 'current' : undefined}>
           <Breadcrumbs
             className="mb-4"
             items={[
@@ -201,7 +201,7 @@ export function OperatorProfileView({ operator }: { operator: Operator }) {
 
           <aside className="space-y-4">
             <div className="rounded-2xl border border-border bg-card p-5"
-              data-betting-ad={hasAffiliate ? '' : undefined} data-evidence-state="current">
+              data-betting-ad={hasAffiliate ? '' : undefined} data-evidence-state={hasAffiliate ? 'current' : undefined}>
               <h3 className="font-display text-base font-bold text-foreground">
                 {t('operators.termsTitle')}
               </h3>
