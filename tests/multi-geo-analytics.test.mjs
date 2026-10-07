@@ -10,12 +10,13 @@ import tracking from '../lib/tracking.ts'
 import search from '../lib/owner/search-model.ts'
 import reporting from '../lib/owner/server/search-report.ts'
 import catalog from '../lib/owner/server/catalog.ts'
+import { registration as reviewedFixture } from './fixtures/commercial.mjs'
 
 const registration = country => ({
   id: `test-${country.toLowerCase()}`, slug: `test-${country.toLowerCase()}`, brand: 'Isolated test operator', geo: country,
   productTypes: ['crash'], approved: true, active: true, affiliateUrl: 'https://partner.invalid/approved-fixture',
   campaignKey: `${country.toLowerCase()}-approved`, campaignId: 'private-test-id', currency: geo.GEO_CONFIG[country].currency,
-  priority: 1, assets: { logo: '/icon.svg', alt: 'Test' }, legal: { status: 'unknown' }, verifiedGames: ['g-aviator'],
+  priority: 1, assets: { logo: '/icon.svg', alt: 'Test' }, legal: reviewedFixture(country).legal, verifiedGames: ['g-aviator'],
 })
 const headers = country => new Headers({ 'x-vercel-ip-country': country })
 const event = country => ({ id: randomUUID(), event: 'affiliate_click', timestamp: new Date().toISOString(), url: `/es-${country.toLowerCase()}/games/aviator`,

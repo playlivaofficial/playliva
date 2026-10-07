@@ -44,7 +44,7 @@ test('pending, inactive, incomplete, invalid and conflicting configuration fails
 })
 
 test('Brazil retirement and ROW cannot use archived campaigns or another country fallback', () => {
-  for (const geo of ['BR', 'US', 'PT', 'ES', 'ZA', null, undefined]) {
+  for (const geo of ['BR', 'GE', 'US', 'PT', 'ES', 'ZA', null, undefined]) {
     const snapshot = snapshotFromRegistry(geo, [registration()])
     assert.equal(snapshot.geo, null)
     assert.deepEqual(snapshot.operators, [])
