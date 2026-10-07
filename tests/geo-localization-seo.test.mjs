@@ -1,4 +1,5 @@
 import test from 'node:test'
+import { registration as reviewedFixture } from './fixtures/commercial.mjs'
 import assert from 'node:assert/strict'
 import { registerHooks } from 'node:module'
 import locale from '../lib/locale.ts'
@@ -85,7 +86,7 @@ test('verified exact-game data activates only the matching regional WTP canonica
   const previous = process.env.PLAYLIVA_COMMERCIAL_REGISTRY
   const fixture = { id:'fixture-co', slug:'fixture-co', brand:'Fixture', geo:'CO', productTypes:['crash'], approved:true, active:true,
     affiliateUrl:'https://affiliate.fixture.invalid/approved', campaignKey:'fixture-campaign', currency:'COP', priority:1,
-    assets:{ logo:'/icon-512.png', alt:'Fixture' }, legal:{ status:'unknown' }, verifiedGames:['g1'] }
+    assets:{ logo:'/icon-512.png', alt:'Fixture' }, legal:reviewedFixture('CO').legal, verifiedGames:['g1'] }
   try {
     process.env.PLAYLIVA_COMMERCIAL_REGISTRY = JSON.stringify([fixture])
     assert.deepEqual(commercialSeo.publishedWhereToPlayLocales(data.getGame('aviator')).sort(), ['es-co','pt-br'])

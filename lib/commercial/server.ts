@@ -20,9 +20,18 @@ function https(value: unknown): value is string {
   } catch { return false }
 }
 
+/** Review evidence is an eligibility gate, not just optional disclosure text.
+ * Recheck it whenever resolving a private destination so old page props cannot
+ * keep a withdrawn or expired record usable. */
+function hasCurrentLegalReview(legal: unknown, now: number): boolean {
+  return object(legal) && legal.status === 'verified' && https(legal.source) &&
+    typeof legal.verifiedAt === 'string' && typeof legal.reviewBy === 'string' &&
+    Date.parse(legal.verifiedAt) <= now && Date.parse(legal.reviewBy) > now
+}
+
 /** Malformed or ambiguous records fail closed independently of valid records.
- * The empty default is intentional: affiliate approvals are still pending. */
-export function parseOperatorRegistry(source: string = process.env.PLAYLIVA_COMMERCIAL_REGISTRY ?? '[]'): OperatorRegistration[] {
+ * Missing configuration deliberately has no publishable default. */
+export function parseOperatorRegistry(source: string = process.env.PLAYLIVA_COMMERCIAL_REGISTRY ?? '[]', now = Date.now()): OperatorRegistration[] {
   try {
     const input: unknown = JSON.parse(source)
     if (!Array.isArray(input) || input.length > 100) return []
@@ -32,7 +41,7 @@ export function parseOperatorRegistry(source: string = process.env.PLAYLIVA_COMM
         item.approved !== true || item.active !== true || !https(item.affiliateUrl) ||
         item.currency !== GEO_CONFIG[item.geo].currency || !strings(item.productTypes) ||
         !item.productTypes.length || !item.productTypes.every(isCategorySlug) ||
-        !object(item.legal) || typeof item.legal.status !== 'string' || !['unknown', 'verified'].includes(item.legal.status) ||
+        !object(item.legal) || !hasCurrentLegalReview(item.legal, now) ||
         !object(item.assets) || typeof item.assets.logo !== 'string' || !/^\/(?!\/)[a-zA-Z0-9/_\-.]+$/.test(item.assets.logo) ||
         typeof item.assets.alt !== 'string' || !item.assets.alt.trim() || !Number.isFinite(item.priority)) return false
       if (item.verifiedGames !== undefined && !strings(item.verifiedGames)) return false
@@ -55,12 +64,10 @@ export function snapshotFromRegistry(geo: unknown, registrations: OperatorRegist
   const result = emptyCommercialSnapshot(isCommercialGeo(geo) ? geo : null)
   if (!isCommercialGeo(geo)) return result
   // Validate injected fixtures as well as production input; no alternate permissive path.
-  const records = parseOperatorRegistry(JSON.stringify(registrations)).filter(item => item.geo === geo)
+  const records = parseOperatorRegistry(JSON.stringify(registrations), now).filter(item => item.geo === geo)
     .sort((a, b) => a.priority - b.priority || a.id.localeCompare(b.id))
   for (const record of records) {
     const legal = record.legal
-    const legalCurrent = legal.status === 'verified' && https(legal.source) &&
-      Date.parse(legal.verifiedAt ?? '') <= now && Date.parse(legal.reviewBy ?? '') > now
     const operator: Operator = {
       id: record.id, slug: record.slug, name: record.brand, logo: record.assets.logo,
       countries: [geo], categories: record.productTypes, paymentMethods: [], gameTypes: [],
@@ -70,8 +77,8 @@ export function snapshotFromRegistry(geo: unknown, registrations: OperatorRegist
       affiliateUrl: { [geo]: commercialReference(geo, record.id, record.campaignKey) },
       verifiedGames: { [geo]: record.verifiedGames ?? [] }, verifiedOffers: [],
       ctaText: record.ctaText,
-      commercialLegal: legalCurrent ? { status: 'verified', statement: legal.statement,
-        responsibleGambling: legal.responsibleGambling, disclosure: legal.disclosure } : undefined,
+      commercialLegal: { status: 'verified', statement: legal.statement,
+        responsibleGambling: legal.responsibleGambling, disclosure: legal.disclosure },
     }
     result.operators.push(operator)
     const campaign = record.offer
