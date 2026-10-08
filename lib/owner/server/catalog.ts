@@ -2,7 +2,7 @@ import { SPOTLIGHT_GAMES } from '@/lib/home/spotlight'
 import sitemap from '@/app/sitemap'
 import { isAffiliateEligible } from '@/lib/data'
 import { TARGET_GEOS, GEO_CONFIG } from '@/lib/geo'
-import { commercialSnapshot } from '@/lib/commercial/server'
+import { commercialSnapshot, diagnoseCommercialConfiguration } from '@/lib/commercial/server'
 export const ownerGames = SPOTLIGHT_GAMES.map(game => ({ id: game.id, slug: game.slug, title: game.title['pt-BR'], category: game.category.en, poster: game.poster, route: game.playPath }))
 export const publishedInventory = () => sitemap().map(row => {
   const path = new URL(row.url).pathname, parts = path.split('/').filter(Boolean), game = ownerGames.find(item => path.endsWith(item.route))
@@ -24,10 +24,12 @@ export function operatorOverview() {
   })
 }
 export function commercialReadiness() {
+  const diagnostics = diagnoseCommercialConfiguration()
   return TARGET_GEOS.map(geo => {
-    const snapshot = commercialSnapshot(geo)
-    return { geo, locale: GEO_CONFIG[geo].locale, currency: GEO_CONFIG[geo].currency,
+    const snapshot = commercialSnapshot(geo), diagnosis = diagnostics.geos.find(row => row.geo === geo)!
+    return { geo, locale: GEO_CONFIG[geo].locale, currency: GEO_CONFIG[geo].currency, expectedOperator: diagnosis.brand,
       operators: snapshot.operators.length, offers: snapshot.offers.length, campaigns: snapshot.campaigns.length,
-      ready: snapshot.operators.length >= 1 }
+      ready: snapshot.operators.length >= 1, issues: diagnosis.issues, legacyKeys: diagnosis.legacyKeys,
+      registry: diagnostics.registry, legacyDestinations: diagnostics.legacyDestinations, retiredLegacyKeys: diagnostics.retiredLegacyKeys }
   })
 }

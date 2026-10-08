@@ -39,6 +39,8 @@ export interface OperatorRegistration {
   approved: boolean
   active: boolean
   affiliateUrl: string
+  /** Optional GEO-scoped key into `PLAYLIVA_AFFILIATE_DESTINATIONS`, used only when `affiliateUrl` is omitted. */
+  destinationKey?: string
   campaignKey: string
   campaignId?: string
   trackingTemplate?: string
