@@ -444,8 +444,18 @@ review deadline before publishing the record. Missing review evidence in the
 configuration does not establish that external authorization is absent.
 Approval never inherits from another country. Revoke a record by
 setting `active: false` and redeploying; stale rendered buttons cannot bypass the
-server redirect gate. Deprecated `PLAYLIVA_AFFILIATE_DESTINATIONS` BR values do not
-activate anything.
+server redirect gate.
+
+Confirmed operators per active GEO (`lib/commercial/operators.ts`): MX → Betsson
+(es-MX / MXN), CO → Betsson (es-CO / COP), PE → Inkabet (es-PE / PEN). The
+mapping contains no links. A registry record may omit `affiliateUrl` and set
+`destinationKey` to reuse an issued link already stored in the deprecated
+`PLAYLIVA_AFFILIATE_DESTINATIONS` map. Only keys scoped to the record's own GEO
+(`<operator>-<geo>[-<campaign>]`, e.g. `betsson-mx-brand`) resolve, `.bet.br`
+destinations are refused, and every other registry gate still applies. The
+map alone activates nothing; BR keys stay retired. The Owner Growth Affiliate
+view lists per-GEO configuration issue codes (missing record, unresolved
+legacy key, stale legal review and so on) without showing any value.
 
 CO/PE home and Games pages have substantive regional context and unique metadata.
 Shared Spanish long-tail pages remain usable with self-canonicals and `noindex`

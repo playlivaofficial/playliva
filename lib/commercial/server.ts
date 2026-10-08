@@ -5,6 +5,7 @@ import type { Operator, Offer } from '../types'
 import { commercialReference, isCommercialKey, parseCommercialReference } from './references'
 import { emptyCommercialSnapshot, type CommercialSnapshot, type OperatorRegistration } from './types'
 import { hasMatchingCurrencyCopy } from './currency'
+import { EXPECTED_OPERATORS } from './operators'
 
 function object(value: unknown): value is Record<string, unknown> { return !!value && typeof value === 'object' && !Array.isArray(value) }
 function strings(value: unknown): value is string[] { return Array.isArray(value) && value.every(item => typeof item === 'string') }
@@ -29,35 +30,116 @@ function hasCurrentLegalReview(legal: unknown, now: number): boolean {
     Date.parse(legal.verifiedAt) <= now && Date.parse(legal.reviewBy) > now
 }
 
-/** Malformed or ambiguous records fail closed independently of valid records.
- * Missing configuration deliberately has no publishable default. */
-export function parseOperatorRegistry(source: string = process.env.PLAYLIVA_COMMERCIAL_REGISTRY ?? '[]', now = Date.now()): OperatorRegistration[] {
+/** Deprecated `PLAYLIVA_AFFILIATE_DESTINATIONS` maps legacy keys to issued
+ * destinations. A registry record may reference one by `destinationKey` instead
+ * of repeating the URL. Only keys scoped to the record's own active GEO resolve
+ * (`<operator>-<geo>[-<campaign>]`), so retired Brazil keys or another
+ * country's link can never activate. The map alone activates nothing. */
+const LEGACY_KEY = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+export function legacyKeyGeo(key: string): string | null {
+  if (!LEGACY_KEY.test(key) || key.length > 80) return null
+  const segment = key.split('-').slice(1).find(part => /^[a-z]{2}$/.test(part))
+  return segment ? segment.toUpperCase() : null
+}
+function parseLegacyDestinations(source: string): Record<string, unknown> | null {
+  try { const value: unknown = JSON.parse(source); return object(value) ? value : null } catch { return null }
+}
+function legacyDestination(geo: unknown, key: unknown, destinations: Record<string, unknown> | null): string | undefined {
+  if (!destinations || !isCommercialGeo(geo) || typeof key !== 'string' || legacyKeyGeo(key) !== geo || !Object.hasOwn(destinations, key)) return undefined
+  const value = destinations[key]
+  return https(value) && !/(^|\.)bet\.br$/.test(new URL(value).hostname) ? value : undefined
+}
+
+type RegistryIssue = 'identity_invalid' | 'not_approved_or_inactive' | 'destination_missing' | 'destination_invalid' |
+  'currency_mismatch' | 'product_types_invalid' | 'legal_review_missing' | 'legal_review_not_current' | 'logo_invalid' |
+  'priority_invalid' | 'optional_field_invalid' | 'duplicate_identity'
+
+/** Every reason a raw record is withheld. An empty list means publishable. */
+function registrationIssues(item: unknown, now: number): RegistryIssue[] {
+  if (!object(item) || !isCommercialGeo(item.geo)) return ['identity_invalid']
+  const issues: RegistryIssue[] = []
+  if (!isCommercialKey(item.id) || !isCommercialKey(item.slug) || !isCommercialKey(item.campaignKey) || typeof item.brand !== 'string' || !item.brand.trim()) issues.push('identity_invalid')
+  if (item.approved !== true || item.active !== true) issues.push('not_approved_or_inactive')
+  if (item.affiliateUrl === undefined) issues.push('destination_missing')
+  else if (!https(item.affiliateUrl)) issues.push('destination_invalid')
+  if (item.currency !== GEO_CONFIG[item.geo].currency) issues.push('currency_mismatch')
+  if (!strings(item.productTypes) || !item.productTypes.length || !item.productTypes.every(isCategorySlug)) issues.push('product_types_invalid')
+  if (!object(item.legal) || item.legal.status !== 'verified' || !https(item.legal.source) || typeof item.legal.verifiedAt !== 'string' || typeof item.legal.reviewBy !== 'string') issues.push('legal_review_missing')
+  else if (!hasCurrentLegalReview(item.legal, now)) issues.push('legal_review_not_current')
+  if (!object(item.assets) || typeof item.assets.logo !== 'string' || !/^\/(?!\/)[a-zA-Z0-9/_\-.]+$/.test(item.assets.logo) ||
+    typeof item.assets.alt !== 'string' || !item.assets.alt.trim()) issues.push('logo_invalid')
+  if (!Number.isFinite(item.priority)) issues.push('priority_invalid')
+  if ((item.verifiedGames !== undefined && !strings(item.verifiedGames)) ||
+    (item.trackingTemplate !== undefined && typeof item.trackingTemplate !== 'string') ||
+    (item.analyticsTrackingTemplate !== undefined && typeof item.analyticsTrackingTemplate !== 'string') ||
+    (item.campaignId !== undefined && typeof item.campaignId !== 'string') || !localizedStrings(item.ctaText) ||
+    ['source', 'verifiedAt', 'reviewBy', 'statement', 'responsibleGambling', 'disclosure'].some(key => object(item.legal) && item.legal[key] !== undefined && typeof item.legal[key] !== 'string')) issues.push('optional_field_invalid')
+  return issues
+}
+
+function isDuplicate(record: Record<string, unknown>, input: unknown[]): boolean {
+  const offer = object(record.offer) ? record.offer : null
+  return input.filter(other => object(other) && other.geo === record.geo &&
+    (other.id === record.id || other.slug === record.slug || other.campaignKey === record.campaignKey ||
+      (object(other.offer) && offer &&
+        ((isCommercialKey(offer.id) && other.offer.id === offer.id) ||
+          (object(other.offer.offer) && object(offer.offer) && isCommercialKey(offer.offer.id) && other.offer.offer.id === offer.offer.id))))).length !== 1
+}
+
+function readRegistryInput(source: string, destinationsSource: string): unknown[] | null {
   try {
     const input: unknown = JSON.parse(source)
-    if (!Array.isArray(input) || input.length > 100) return []
-    const records = input.filter((item): item is OperatorRegistration => {
-      if (!object(item) || !isCommercialGeo(item.geo) || !isCommercialKey(item.id) || !isCommercialKey(item.slug) ||
-        !isCommercialKey(item.campaignKey) || typeof item.brand !== 'string' || !item.brand.trim() ||
-        item.approved !== true || item.active !== true || !https(item.affiliateUrl) ||
-        item.currency !== GEO_CONFIG[item.geo].currency || !strings(item.productTypes) ||
-        !item.productTypes.length || !item.productTypes.every(isCategorySlug) ||
-        !object(item.legal) || !hasCurrentLegalReview(item.legal, now) ||
-        !object(item.assets) || typeof item.assets.logo !== 'string' || !/^\/(?!\/)[a-zA-Z0-9/_\-.]+$/.test(item.assets.logo) ||
-        typeof item.assets.alt !== 'string' || !item.assets.alt.trim() || !Number.isFinite(item.priority)) return false
-      if (item.verifiedGames !== undefined && !strings(item.verifiedGames)) return false
-      if (item.trackingTemplate !== undefined && typeof item.trackingTemplate !== 'string') return false
-      if (item.analyticsTrackingTemplate !== undefined && typeof item.analyticsTrackingTemplate !== 'string') return false
-      if (item.campaignId !== undefined && typeof item.campaignId !== 'string') return false
-      if (!localizedStrings(item.ctaText)) return false
-      if (['source', 'verifiedAt', 'reviewBy', 'statement', 'responsibleGambling', 'disclosure'].some(key => item.legal && (item.legal as Record<string, unknown>)[key] !== undefined && typeof (item.legal as Record<string, unknown>)[key] !== 'string')) return false
-      return true
-    })
-    return records.filter(record => input.filter(other => object(other) && other.geo === record.geo &&
-      (other.id === record.id || other.slug === record.slug || other.campaignKey === record.campaignKey ||
-        (object(other.offer) && record.offer &&
-          ((isCommercialKey(record.offer.id) && other.offer.id === record.offer.id) ||
-            (object(other.offer.offer) && isCommercialKey(record.offer.offer?.id) && other.offer.offer.id === record.offer.offer.id))))).length === 1)
-  } catch { return [] }
+    if (!Array.isArray(input) || input.length > 100) return null
+    const destinations = parseLegacyDestinations(destinationsSource)
+    // Resolve a GEO-scoped legacy key only when no explicit destination is set.
+    return input.map(item => object(item) && item.affiliateUrl === undefined && item.destinationKey !== undefined
+      ? { ...item, affiliateUrl: legacyDestination(item.geo, item.destinationKey, destinations) } : item)
+  } catch { return null }
+}
+
+/** Malformed or ambiguous records fail closed independently of valid records.
+ * Missing configuration deliberately has no publishable default. */
+export function parseOperatorRegistry(source: string = process.env.PLAYLIVA_COMMERCIAL_REGISTRY ?? '[]', now = Date.now(),
+  destinationsSource: string = process.env.PLAYLIVA_AFFILIATE_DESTINATIONS ?? '{}'): OperatorRegistration[] {
+  const input = readRegistryInput(source, destinationsSource)
+  if (!input) return []
+  return input.filter((item): item is OperatorRegistration =>
+    registrationIssues(item, now).length === 0 && !isDuplicate(item as unknown as Record<string, unknown>, input))
+}
+
+export type CommercialDiagnostics = ReturnType<typeof diagnoseCommercialConfiguration>
+
+/** Owner-only, secret-free explanation of why each active GEO is or is not
+ * publishing. Reports variable state, key names' GEO scope and issue codes;
+ * never destinations, campaign IDs or tracking values. Missing configuration
+ * is reported as missing configuration, never as absent authorization. */
+export function diagnoseCommercialConfiguration(now = Date.now(), env: Record<string, string | undefined> = process.env) {
+  const registrySource = env.PLAYLIVA_COMMERCIAL_REGISTRY, destinationsSource = env.PLAYLIVA_AFFILIATE_DESTINATIONS
+  const input = registrySource === undefined ? [] : readRegistryInput(registrySource, destinationsSource ?? '{}')
+  const destinations = destinationsSource === undefined ? null : parseLegacyDestinations(destinationsSource)
+  const legacyKeys = Object.keys(destinations ?? {})
+  const legacyByGeo = (geo: string) => legacyKeys.filter(key => legacyKeyGeo(key) === geo).length
+  const published = parseOperatorRegistry(registrySource ?? '[]', now, destinationsSource ?? '{}')
+  return {
+    registry: registrySource === undefined ? 'missing' as const : input ? 'configured' as const : 'invalid' as const,
+    legacyDestinations: destinationsSource === undefined ? 'missing' as const : destinations ? 'configured' as const : 'invalid' as const,
+    retiredLegacyKeys: legacyKeys.filter(key => legacyKeyGeo(key) === 'BR').length,
+    unscopedLegacyKeys: legacyKeys.filter(key => { const geo = legacyKeyGeo(key); return !geo || (geo !== 'BR' && !isCommercialGeo(geo)) }).length,
+    geos: EXPECTED_OPERATORS.map(expected => {
+      const records = (input ?? []).filter(item => object(item) && item.geo === expected.geo) as Record<string, unknown>[]
+      const live = published.filter(item => item.geo === expected.geo)
+      const issues = new Set<string>()
+      if (!records.length) issues.add('no_registry_record')
+      for (const record of records) {
+        for (const issue of registrationIssues(record, now)) issues.add(issue)
+        if (record.destinationKey !== undefined && record.affiliateUrl === undefined) issues.add('legacy_destination_unresolved')
+        if (isDuplicate(record, input ?? [])) issues.add('duplicate_identity')
+      }
+      if (live.length && !live.some(item => item.brand.trim().toLowerCase() === expected.brand.toLowerCase())) issues.add('expected_operator_not_published')
+      return { ...expected, records: records.length, published: live.length, legacyKeys: legacyByGeo(expected.geo),
+        issues: [...issues] }
+    }),
+  }
 }
 
 export function snapshotFromRegistry(geo: unknown, registrations: OperatorRegistration[], now = Date.now()): CommercialSnapshot {
