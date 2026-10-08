@@ -403,7 +403,10 @@ discovery without affiliate promotion. Historical PT-BR editorial content remain
 
 The private **PlayLiva-only** Vercel secret `PLAYLIVA_COMMERCIAL_REGISTRY` contains
 a JSON array conforming to `OperatorRegistration` in `lib/commercial/types.ts`.
-Its missing/empty default is `[]`: no partners are approved for these markets yet.
+Its missing/empty default is `[]`: no regional records are loaded for publication.
+This configuration state does not establish whether an operator has authorized
+PlayLiva or issued affiliate links. Record externally confirmed authorization
+separately from whether its configuration and evidence have been verified here.
 Do not put this secret, partner URLs, partner campaign IDs or offer evidence in
 Git, `NEXT_PUBLIC_*` variables, analytics payloads or `.env.example`.
 
@@ -435,9 +438,11 @@ Activation is a commercial-data update, followed by a normal PlayLiva redeploy:
    popup cadence and the approved destination. Preview is session-authenticated,
    excluded from analytics and cannot be enabled by public query/cookie values.
 
-`legal.status: "unknown"` publishes no legal claim. A verified legal statement or
-disclosure requires its configured HTTPS source, verification date and future
-review deadline. Approval never inherits from another country. Revoke a record by
+`legal.status: "unknown"` withholds the entire operator. The server requires a
+verified review with its configured HTTPS source, verification date and future
+review deadline before publishing the record. Missing review evidence in the
+configuration does not establish that external authorization is absent.
+Approval never inherits from another country. Revoke a record by
 setting `active: false` and redeploying; stale rendered buttons cannot bypass the
 server redirect gate. Deprecated `PLAYLIVA_AFFILIATE_DESTINATIONS` BR values do not
 activate anything.
