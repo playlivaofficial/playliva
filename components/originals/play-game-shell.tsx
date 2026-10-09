@@ -39,7 +39,12 @@ export function PlayGameShell({ game, children, controls, roundActive = false, c
   const copy = originalsCopy(locale)
   const format = (value: number) => formatCredits(value, locale)
   const root = useRef<HTMLElement>(null)
+  // A reached offer milestone holds the next round for every Original, not only
+  // continuous ones: without it a player restarting within the settle delay
+  // cancelled the 3rd/6th/9th-round offer. Released on dismissal or close.
+  const [offerHeld, setOfferHeld] = useState(false)
   const engagementHold = useCallback((held: boolean) => {
+    setOfferHeld(held)
     const dialog = root.current?.querySelector<HTMLDialogElement>('dialog[open]')
     if (held && dialog) { dialog.close(); root.current?.querySelector<HTMLButtonElement>('[data-casino-settings-trigger]')?.focus() }
     onEngagementHold?.(held)
@@ -99,7 +104,7 @@ export function PlayGameShell({ game, children, controls, roundActive = false, c
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_18rem]">
       <div className="min-w-0 space-y-4" data-game-unit>
         <div aria-label={copy.viewport} data-game-viewport className="min-h-64 overflow-hidden rounded-2xl border border-border bg-card">{children}</div>
-        <fieldset disabled={!ready} aria-label={copy.controls} data-game-controls className="min-w-0 rounded-2xl border border-border bg-card p-4">{controls}</fieldset>
+        <fieldset disabled={!ready || offerHeld} aria-label={copy.controls} data-game-controls data-offer-hold={offerHeld || undefined} className="min-w-0 rounded-2xl border border-border bg-card p-4">{controls}</fieldset>
       </div>
       <aside data-session-panel aria-label={productCopy(locale).settings} className="space-y-4 rounded-2xl border border-border bg-card p-4">
 

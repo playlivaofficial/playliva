@@ -326,3 +326,58 @@ test('an open campaign expires without another gameplay action and releases the 
     delete globalThis.IS_REACT_ACT_ENVIRONMENT
   }
 })
+
+// Real players restart within the settle delay. Before the shell held the next
+// round, an immediate restart cancelled the 3rd/6th/9th-round offer for good.
+for (const [index,game] of allOriginals.entries()) test(`${game.slug}: an immediate restart cannot skip the 3/6/9 offer`, async () => {
+  const geo=['MX','CO','PE'][index%3],locale=`es-${geo}`,route=`/${locale.toLowerCase()}/play/${game.slug}`
+  const fixture=commercialFixture(geo),dom=new JSDOM('<div id="root"></div>',{url:`https://www.playliva.com${route}`,virtualConsole:new VirtualConsole()})
+  const saved=new Map()
+  for(const key of ['window','self','document','location','navigator','Event','KeyboardEvent','MouseEvent','HTMLElement','Node','IntersectionObserver']) {
+    saved.set(key,Object.getOwnPropertyDescriptor(globalThis,key));Object.defineProperty(globalThis,key,{configurable:true,value:dom.window[key]})
+  }
+  Object.defineProperty(globalThis,'IntersectionObserver',{configurable:true,value:class {constructor(cb){this.cb=cb}observe(target){this.cb([{target,isIntersecting:true,intersectionRatio:1}])}disconnect(){}}})
+  globalThis.IS_REACT_ACT_ENVIRONMENT=true
+  let finish
+  // Stateful stand-in for an engine: the start control lives in the shell controls like every Original's.
+  function Harness() {
+    const [active,setActive]=React.useState(false)
+    finish=()=>setActive(false)
+    return React.createElement(PlayGameShell,{game,roundActive:active,
+      controls:React.createElement('button',{type:'button','data-start':'',onClick:()=>setActive(true)},'Start')},React.createElement('div',{},'viewport'))
+  }
+  const root=createRoot(document.getElementById('root')),store=sessionModule.createDemoSessionStore(()=>window.localStorage,()=>1)
+  const start=()=>act(()=>document.querySelector('[data-start]').click())
+  const active=()=>document.querySelector('[data-start]').closest('fieldset').disabled ? 'held' : 'free'
+  try {
+    await act(()=>root.render(wrap(geo,locale,route,React.createElement(providerModule.DemoSessionProvider,{store},React.createElement(Harness)),fixture)))
+    const shown=[]
+    for(let round=1;round<=12;round++) {
+      await start()
+      assert.equal(document.querySelector('[data-engagement-offer]'),null,`no offer during round ${round}`)
+      await act(()=>finish())
+      if(round%3!==0) {
+        await act(()=>new Promise(resolve=>setTimeout(resolve,40)))
+        assert.equal(document.querySelector('[data-engagement-offer]'),null,`no offer after round ${round}`)
+        assert.equal(active(),'free')
+        continue
+      }
+      // The player presses Start again at once, inside the settle delay.
+      await start()
+      assert.equal(active(),'held',`round ${round}: the next round waits for the offer`)
+      await act(()=>new Promise(resolve=>setTimeout(resolve,40)))
+      const popup=document.querySelector('[data-engagement-offer]')
+      assert.ok(popup,`settled round ${round} shows the offer`)
+      assert.equal(new URL(popup.querySelector('[data-promo-cta]').href).searchParams.get('country'),geo)
+      shown.push(Number(popup.dataset.completedCycle))
+      await act(()=>popup.querySelector('[role="dialog"] button').click())
+      assert.equal(document.querySelector('[data-engagement-offer]'),null)
+      assert.equal(active(),'free','closing the offer releases the next round')
+    }
+    assert.deepEqual(shown,[3,6,9,12])
+  } finally {
+    await act(()=>root.unmount());dom.window.close()
+    for(const[key,value]of saved){if(value)Object.defineProperty(globalThis,key,value);else delete globalThis[key]}
+    delete globalThis.IS_REACT_ACT_ENVIRONMENT
+  }
+})
