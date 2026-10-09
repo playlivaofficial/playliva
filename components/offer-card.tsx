@@ -64,7 +64,7 @@ export function OfferCard({ offer }: { offer: Offer }) {
           {offer.title}
         </h3>
         <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
-          {offer.description || (campaign ? t('promo.offerBoundary') : '')}
+          {offer.description || (campaign ? t('promo.offerBoundary', { name: operator?.name ?? offer.brand ?? '' }) : '')}
         </p>
         <p className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
           <span aria-hidden="true">{country.flag}</span>

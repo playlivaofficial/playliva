@@ -433,6 +433,11 @@ Activation is a commercial-data update, followed by a normal PlayLiva redeploy:
    Offers retain the existing 30-day evidence review limit. Missing/stale evidence
    suppresses the offer and popup while separately approved brand discovery may
    remain available. No licence, bonus or authorization claim is inferred.
+   Additional campaigns for the same operator/GEO (for example a casino and a
+   sportsbook welcome offer) go in `offers`, each with the same campaign fields
+   plus its own unique `campaignKey` and issued HTTPS `affiliateUrl` (or GEO-scoped
+   `destinationKey`). An entry without its own valid destination is withheld; it
+   never inherits the brand link. The first campaign listing a placement wins it.
 6. Verify Owner preview for Mexico, Colombia and Peru, then Reset to Real GEO.
    Check currency, directory, Offers, Where to Play, compact banners, pre-round
    popup cadence and the approved destination. Preview is session-authenticated,

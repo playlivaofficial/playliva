@@ -1,6 +1,6 @@
 .banner { max-width: 80rem; margin: 0 auto; padding: 0 1rem 0.35rem; min-width: 0; }
 .card { display: flex; flex-wrap: wrap; align-items: center; gap: 0.85rem 1rem; min-width: 0; padding: 0.85rem 1rem; border: 1px solid #8cace433; border-radius: 1.25rem; background: linear-gradient(135deg, #1c3156, #111e35); }
-.logo { position: relative; width: 48px; height: 48px; flex-shrink: 0; overflow: hidden; border-radius: 0.85rem; background: #ff6a00; }
+.logo { position: relative; width: 48px; height: 48px; flex-shrink: 0; overflow: hidden; border-radius: 0.85rem; background: #fff; }
 .logo img { object-fit: cover; }
 .art { position: relative; flex: 1 1 100%; min-width: 0; overflow: hidden; border-radius: 0.85rem; background: #111e35; aspect-ratio: 728 / 90; }
 .art img { object-fit: contain; }
