@@ -72,7 +72,10 @@ test('analytics and Search Console accept real regional pages independently of i
 test('Owner launch readiness reads current registry without exposing destinations or private tracking IDs', () => {
   const before = process.env.PLAYLIVA_COMMERCIAL_REGISTRY
   try {
+    // A GEO is ready only when its confirmed primary brand publishes.
     process.env.PLAYLIVA_COMMERCIAL_REGISTRY = JSON.stringify([registration('CO')])
+    assert.deepEqual(catalog.commercialReadiness().map(row => [row.geo, row.ready]), [['MX', false], ['CO', false], ['PE', false]])
+    process.env.PLAYLIVA_COMMERCIAL_REGISTRY = JSON.stringify([{ ...registration('CO'), brand: 'Betsson' }])
     assert.deepEqual(catalog.commercialReadiness().map(row => [row.geo, row.currency, row.ready]), [['MX', 'MXN', false], ['CO', 'COP', true], ['PE', 'PEN', false]])
     assert.deepEqual(catalog.operatorOverview().map(row => [row.slug, row.eligibleGeo]), [['test-co', ['CO']]])
     assert.doesNotMatch(JSON.stringify(catalog.operatorOverview()), /partner.invalid|private-test-id/)

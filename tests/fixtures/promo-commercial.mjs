@@ -11,7 +11,7 @@ export function commercialFixture(geo = 'MX', patch = {}) {
   const reviewBy = new Date(Date.now() + 7 * 86_400_000).toISOString()
   const copy = { headline: `Oferta de prueba ${geo}`, condition: `Condiciones verificadas de prueba en ${currency}.`, cta: `Visitar Test Partner ${geo}` }
   return commercial.snapshotFromRegistry(geo, [registration(geo, {
-    slug: `test-partner-${geo.toLowerCase()}`, brand: `Test Partner ${geo}`,
+    slug: `test-partner-${geo.toLowerCase()}`, brand: { MX: 'Betsson', CO: 'Betsson', PE: 'Inkabet' }[geo],
     legal: { status: 'verified', source: 'https://partner.test/legal', verifiedAt, reviewBy,
       statement: `Información comercial de prueba ${geo}`, responsibleGambling: 'Solo personas adultas.' },
     verifiedGames: data.GAMES.map(game => game.id),

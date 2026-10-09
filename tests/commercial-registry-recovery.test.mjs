@@ -91,7 +91,7 @@ test('owner diagnostics explain missing configuration per GEO without exposing v
       [['MX', 'Betsson', 0, ['no_registry_record']], ['CO', 'Betsson', 0, ['no_registry_record']], ['PE', 'Inkabet', 0, ['no_registry_record']]])
   })
   const now = Date.now(), day = 86_400_000
-  const records = [keyed('MX'), keyed('CO', { destinationKey: 'test-co-unknown' }),
+  const records = [keyed('MX', { brand: 'Test partner' }), keyed('CO', { destinationKey: 'test-co-unknown' }),
     keyed('PE', { legal: { status: 'verified', source: 'https://partner.test/l', verifiedAt: new Date(now - 9 * day).toISOString(), reviewBy: new Date(now - day).toISOString() } })]
   withEnv({ registry: JSON.stringify(records), legacy: JSON.stringify(hostile) }, () => {
     const result = commercial.diagnoseCommercialConfiguration(now)

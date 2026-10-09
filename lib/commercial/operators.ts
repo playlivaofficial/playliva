@@ -14,3 +14,8 @@ export function expectedOperator(geo: CommercialGeo) {
 }
 
 export const EXPECTED_OPERATORS = TARGET_GEOS.map(expectedOperator)
+
+/** Only the confirmed primary brand may fill GEO-wide sponsor slots and gameplay popups. */
+export function isPrimaryBrand(geo: CommercialGeo, brand: string): boolean {
+  return brand.trim().toLowerCase() === GEO_OPERATORS[geo].brand.toLowerCase()
+}
