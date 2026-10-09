@@ -2,6 +2,7 @@ import { buildGoHref, resolveDestination } from '../affiliate'
 import { getGame, isCategorySlug, isGameVerifiedAtOperator } from '../data'
 import { isCommercialGeo } from '../geo'
 import type { CommercialSnapshot } from '../commercial/types'
+import { parseCommercialReference } from '../commercial/references'
 import type { CategorySlug, CountryCode, Locale } from '../types'
 import type { PageType } from '../tracking'
 
@@ -83,7 +84,7 @@ export function getPromotion(snapshot: CommercialSnapshot | undefined, country: 
     if (!resolved) continue
     const logo = operatorLogo(operator.id, operator.name, operator.logo, locale)
     const asset = offer.creative?.languages.includes(locale) ? offer.creative : undefined
-    return { promoId: campaign.id, campaignKey: operator.campaignKey, brand: offer.brand ?? operator.slug, offerId: offer.id, operatorId: operator.id,
+    return { promoId: campaign.id, campaignKey: parseCommercialReference(offer.affiliateUrl)?.campaignKey ?? operator.campaignKey, brand: offer.brand ?? operator.slug, offerId: offer.id, operatorId: operator.id,
       operatorSlug: operator.slug, operatorName: operator.name, market: country, locale, campaignName: copy.headline,
       headline: copy.headline, subheadline: undefined, ctaLabel: copy.cta,
       href: buildGoHref({ offer: offer.id, operator: operator.slug, country, language: locale, page: pageType,

@@ -3,7 +3,7 @@ import { GEO_CONFIG, isCommercialGeo } from '../geo'
 import { isCategorySlug, isOfferEligible } from '../data'
 import type { Operator, Offer } from '../types'
 import { commercialReference, isCommercialKey, parseCommercialReference } from './references'
-import { emptyCommercialSnapshot, type CommercialSnapshot, type OperatorRegistration } from './types'
+import { emptyCommercialSnapshot, type CommercialCampaign, type CommercialOfferRegistration, type CommercialSnapshot, type OperatorRegistration } from './types'
 import { hasMatchingCurrencyCopy } from './currency'
 import { EXPECTED_OPERATORS } from './operators'
 
@@ -77,6 +77,43 @@ function registrationIssues(item: unknown, now: number): RegistryIssue[] {
   return issues
 }
 
+/** A tracked destination for one campaign of a record. The record-level
+ * `offer` uses the record's own key and destination; each entry in `offers`
+ * must bring a distinct key and its own partner-issued https destination.
+ * An invalid entry is withheld on its own and never borrows another link. */
+interface CampaignEntry {
+  campaign: Omit<CommercialCampaign, 'operatorId' | 'geo' | 'currency'>
+  campaignKey: string
+  affiliateUrl: string
+  campaignId?: string
+}
+function campaignEntryValid(entry: unknown, record: OperatorRegistration, seen: Set<string>): entry is CommercialOfferRegistration & { affiliateUrl: string } {
+  if (!object(entry) || !isCommercialKey(entry.campaignKey) || entry.campaignKey === record.campaignKey || seen.has(entry.campaignKey) ||
+    !https(entry.affiliateUrl) || /(^|\.)bet\.br$/.test(new URL(entry.affiliateUrl).hostname) ||
+    (entry.campaignId !== undefined && typeof entry.campaignId !== 'string')) return false
+  seen.add(entry.campaignKey)
+  return true
+}
+function campaignEntries(record: OperatorRegistration): CampaignEntry[] {
+  const entries: CampaignEntry[] = record.offer
+    ? [{ campaign: record.offer, campaignKey: record.campaignKey, affiliateUrl: record.affiliateUrl, campaignId: record.campaignId }] : []
+  const seen = new Set<string>()
+  for (const entry of Array.isArray(record.offers) ? record.offers : []) {
+    if (!campaignEntryValid(entry, record, seen)) continue
+    // Keep private destination fields out of the campaign that feeds public props.
+    const campaign: Partial<CommercialOfferRegistration> = { ...entry }
+    for (const key of ['campaignKey', 'affiliateUrl', 'destinationKey', 'campaignId'] as const) delete campaign[key]
+    entries.push({ campaign: campaign as CampaignEntry['campaign'], campaignKey: entry.campaignKey, affiliateUrl: entry.affiliateUrl,
+      campaignId: entry.campaignId ?? record.campaignId })
+  }
+  return entries
+}
+function invalidCampaignEntries(record: Record<string, unknown>): number {
+  if (!Array.isArray(record.offers)) return record.offers === undefined ? 0 : 1
+  const seen = new Set<string>()
+  return record.offers.filter(entry => !campaignEntryValid(entry, record as unknown as OperatorRegistration, seen)).length
+}
+
 function isDuplicate(record: Record<string, unknown>, input: unknown[]): boolean {
   const offer = object(record.offer) ? record.offer : null
   return input.filter(other => object(other) && other.geo === record.geo &&
@@ -92,8 +129,13 @@ function readRegistryInput(source: string, destinationsSource: string): unknown[
     if (!Array.isArray(input) || input.length > 100) return null
     const destinations = parseLegacyDestinations(destinationsSource)
     // Resolve a GEO-scoped legacy key only when no explicit destination is set.
-    return input.map(item => object(item) && item.affiliateUrl === undefined && item.destinationKey !== undefined
-      ? { ...item, affiliateUrl: legacyDestination(item.geo, item.destinationKey, destinations) } : item)
+    const resolve = <T,>(entry: T, geo: unknown): T => object(entry) && entry.affiliateUrl === undefined && entry.destinationKey !== undefined
+      ? { ...entry, affiliateUrl: legacyDestination(geo, entry.destinationKey, destinations) } : entry
+    return input.map(item => {
+      const record = resolve(item, object(item) ? item.geo : undefined)
+      return object(record) && Array.isArray(record.offers)
+        ? { ...record, offers: record.offers.map(entry => resolve(entry, record.geo)) } : record
+    })
   } catch { return null }
 }
 
@@ -134,6 +176,8 @@ export function diagnoseCommercialConfiguration(now = Date.now(), env: Record<st
         for (const issue of registrationIssues(record, now)) issues.add(issue)
         if (record.destinationKey !== undefined && record.affiliateUrl === undefined) issues.add('legacy_destination_unresolved')
         if (isDuplicate(record, input ?? [])) issues.add('duplicate_identity')
+        if (invalidCampaignEntries(record)) issues.add('campaign_destination_invalid')
+        if (Array.isArray(record.offers) && record.offers.some(entry => object(entry) && entry.destinationKey !== undefined && entry.affiliateUrl === undefined)) issues.add('legacy_destination_unresolved')
       }
       if (live.length && !live.some(item => item.brand.trim().toLowerCase() === expected.brand.toLowerCase())) issues.add('expected_operator_not_published')
       return { ...expected, records: records.length, published: live.length, legacyKeys: legacyByGeo(expected.geo),
@@ -163,54 +207,59 @@ export function snapshotFromRegistry(geo: unknown, registrations: OperatorRegist
         responsibleGambling: legal.responsibleGambling, disclosure: legal.disclosure },
     }
     result.operators.push(operator)
-    const campaign = record.offer
-    if (!campaign || !isCommercialKey(campaign.id) || campaign.approved !== true || campaign.active !== true ||
-      typeof campaign.validFrom !== 'string' || typeof campaign.validUntil !== 'string' ||
-      !(Date.parse(campaign.validFrom) <= now && Date.parse(campaign.validUntil) > now) ||
-      !strings(campaign.placements) || !strings(campaign.verifiedTerms) || !campaign.verifiedTerms.length ||
-      !object(campaign.cadence) || !Number.isInteger(campaign.cadence.cycleMultiple) || campaign.cadence.cycleMultiple < 1 ||
-      !Number.isFinite(campaign.cadence.delayMs) || campaign.cadence.delayMs < 0 || !object(campaign.copy) || !object(campaign.offer)) continue
-    const configured = campaign.offer
-    const review = configured.complianceReview
-    if (!['title', 'description', 'terms', 'source', 'lastVerifiedAt'].every(key => typeof configured[key as keyof Offer] === 'string') ||
-      configured.status !== 'verified' || !object(review) || review.status !== 'reviewed-permitted' || review.market !== geo ||
-      !(['legalSource', 'verifiedAt', 'reviewBy'] as const).every(key => typeof review[key] === 'string') ||
-      (configured.category !== 'welcome' && !isCategorySlug(configured.category)) || !localizedStrings(configured.ctaLabel) ||
-      !Object.entries(campaign.copy).every(([locale, copy]) => ['en', 'pt-BR', 'es-MX', 'es-CO', 'es-PE'].includes(locale) && object(copy) &&
-        (['headline', 'condition', 'cta'] as const).every(key => typeof copy[key] === 'string' && copy[key].trim()))) continue
-    if ((configured.currency && configured.currency !== record.currency) || !hasMatchingCurrencyCopy(
-      [configured.title, configured.description, configured.terms, ...campaign.verifiedTerms,
-        ...Object.values(campaign.copy).flatMap(copy => copy ? [copy.headline, copy.condition, copy.cta] : [])].join(' '), record.currency)) continue
-    // Explicit allow-list: never spread private partner configuration into public props.
-    const offer: Offer = {
-      id: configured.id, operatorId: record.id, country: geo, title: configured.title,
-      currency: record.currency,
-      description: configured.description, category: configured.category, terms: configured.terms,
-      affiliateUrl: commercialReference(geo, record.id, record.campaignKey), active: true, featured: !!configured.featured,
-      status: configured.status, validFrom: campaign.validFrom, validUntil: campaign.validUntil,
-      source: configured.source, termsUrl: https(configured.termsUrl) ? configured.termsUrl : undefined,
-      promoId: campaign.id, brand: record.slug, ctaLabel: configured.ctaLabel,
-      lastVerifiedAt: configured.lastVerifiedAt,
-      complianceReview: { market: geo, status: 'reviewed-permitted', legalSource: review.legalSource,
-        verifiedAt: review.verifiedAt, reviewBy: review.reviewBy },
+    for (const entry of campaignEntries(record)) {
+      const campaign = entry.campaign
+      const reference = commercialReference(geo, record.id, entry.campaignKey)
+      if (!campaign || !isCommercialKey(campaign.id) || campaign.approved !== true || campaign.active !== true ||
+        typeof campaign.validFrom !== 'string' || typeof campaign.validUntil !== 'string' ||
+        !(Date.parse(campaign.validFrom) <= now && Date.parse(campaign.validUntil) > now) ||
+        !strings(campaign.placements) || !strings(campaign.verifiedTerms) || !campaign.verifiedTerms.length ||
+        !object(campaign.cadence) || !Number.isInteger(campaign.cadence.cycleMultiple) || campaign.cadence.cycleMultiple < 1 ||
+        !Number.isFinite(campaign.cadence.delayMs) || campaign.cadence.delayMs < 0 || !object(campaign.copy) || !object(campaign.offer)) continue
+      const configured = campaign.offer
+      const review = configured.complianceReview
+      if (!['title', 'description', 'terms', 'source', 'lastVerifiedAt'].every(key => typeof configured[key as keyof Offer] === 'string') ||
+        configured.status !== 'verified' || !object(review) || review.status !== 'reviewed-permitted' || review.market !== geo ||
+        !(['legalSource', 'verifiedAt', 'reviewBy'] as const).every(key => typeof review[key] === 'string') ||
+        (configured.category !== 'welcome' && !isCategorySlug(configured.category)) || !localizedStrings(configured.ctaLabel) ||
+        !Object.entries(campaign.copy).every(([locale, copy]) => ['en', 'pt-BR', 'es-MX', 'es-CO', 'es-PE'].includes(locale) && object(copy) &&
+          (['headline', 'condition', 'cta'] as const).every(key => typeof copy[key] === 'string' && copy[key].trim()))) continue
+      if ((configured.currency && configured.currency !== record.currency) || !hasMatchingCurrencyCopy(
+        [configured.title, configured.description, configured.terms, ...campaign.verifiedTerms,
+          ...Object.values(campaign.copy).flatMap(copy => copy ? [copy.headline, copy.condition, copy.cta] : [])].join(' '), record.currency)) continue
+      // Explicit allow-list: never spread private partner configuration into public props.
+      const offer: Offer = {
+        id: configured.id, operatorId: record.id, country: geo, title: configured.title,
+        currency: record.currency,
+        description: configured.description, category: configured.category, terms: configured.terms,
+        affiliateUrl: reference, active: true, featured: !!configured.featured,
+        status: configured.status, validFrom: campaign.validFrom, validUntil: campaign.validUntil,
+        source: configured.source, termsUrl: https(configured.termsUrl) ? configured.termsUrl : undefined,
+        promoId: campaign.id, brand: record.slug, ctaLabel: configured.ctaLabel,
+        lastVerifiedAt: configured.lastVerifiedAt,
+        complianceReview: { market: geo, status: 'reviewed-permitted', legalSource: review.legalSource,
+          verifiedAt: review.verifiedAt, reviewBy: review.reviewBy },
+      }
+      const creative = configured.creative
+      if (creative && isCommercialKey(creative.id) && /^\/(?!\/)[a-zA-Z0-9/_\-.]+$/.test(creative.assetPath) &&
+        Number.isFinite(creative.width) && creative.width > 0 && Number.isFinite(creative.height) && creative.height > 0 &&
+        object(creative.alt) && localizedStrings(creative.alt) && strings(creative.languages) && creative.languages.every(locale => ['en', 'pt-BR', 'es-MX', 'es-CO', 'es-PE'].includes(locale))) {
+        offer.creative = { id: creative.id, assetPath: creative.assetPath, width: creative.width, height: creative.height,
+          alt: creative.alt, languages: creative.languages }
+      }
+      // One public identity per offer and campaign in a GEO; a repeated id is withheld, never merged.
+      if (!isCommercialKey(offer.id) || result.offers.some(item => item.id === offer.id) ||
+        result.campaigns.some(item => item.id === campaign.id)) continue
+      operator.verifiedOffers = [...(operator.verifiedOffers ?? []), offer.id]
+      if (!isOfferEligible(offer, geo, {}, result.operators, now)) { operator.verifiedOffers = operator.verifiedOffers.filter(id => id !== offer.id); continue }
+      result.offers.push(offer)
+      const copy = Object.fromEntries(Object.entries(campaign.copy).map(([locale, value]) =>
+        [locale, { headline: value!.headline, condition: value!.condition, cta: value!.cta }]))
+      result.campaigns.push({ id: campaign.id, operatorId: record.id, geo, currency: record.currency,
+        approved: true, active: true, offer, copy, placements: [...campaign.placements],
+        cadence: { cycleMultiple: campaign.cadence.cycleMultiple, delayMs: campaign.cadence.delayMs },
+        validFrom: campaign.validFrom, validUntil: campaign.validUntil, verifiedTerms: [...campaign.verifiedTerms] })
     }
-    const creative = configured.creative
-    if (creative && isCommercialKey(creative.id) && /^\/(?!\/)[a-zA-Z0-9/_\-.]+$/.test(creative.assetPath) &&
-      Number.isFinite(creative.width) && creative.width > 0 && Number.isFinite(creative.height) && creative.height > 0 &&
-      object(creative.alt) && localizedStrings(creative.alt) && strings(creative.languages) && creative.languages.every(locale => ['en', 'pt-BR', 'es-MX', 'es-CO', 'es-PE'].includes(locale))) {
-      offer.creative = { id: creative.id, assetPath: creative.assetPath, width: creative.width, height: creative.height,
-        alt: creative.alt, languages: creative.languages }
-    }
-    if (!isCommercialKey(offer.id)) continue
-    operator.verifiedOffers = [offer.id]
-    if (!isOfferEligible(offer, geo, {}, result.operators, now)) { operator.verifiedOffers = []; continue }
-    result.offers.push(offer)
-    const copy = Object.fromEntries(Object.entries(campaign.copy).map(([locale, value]) =>
-      [locale, { headline: value!.headline, condition: value!.condition, cta: value!.cta }]))
-    result.campaigns.push({ id: campaign.id, operatorId: record.id, geo, currency: record.currency,
-      approved: true, active: true, offer, copy, placements: [...campaign.placements],
-      cadence: { cycleMultiple: campaign.cadence.cycleMultiple, delayMs: campaign.cadence.delayMs },
-      validFrom: campaign.validFrom, validUntil: campaign.validUntil, verifiedTerms: [...campaign.verifiedTerms] })
   }
   return result
 }
@@ -222,10 +271,16 @@ export function commercialSnapshot(geo: unknown): CommercialSnapshot { return sn
 export function privateCommercialDestination(reference: string, context: Record<string, string | undefined> = {}, analyticsAllowed = false): string | null {
   const ref = parseCommercialReference(reference)
   if (!ref) return null
-  const record = parseOperatorRegistry().find(item => item.geo === ref.geo && item.id === ref.operatorId && item.campaignKey === ref.campaignKey)
-  if (!record) return null
-  const url = new URL(record.affiliateUrl)
-  const tokens = { ...context, geo: ref.geo, campaignId: record.campaignId ?? '' }
+  const record = parseOperatorRegistry().find(item => item.geo === ref.geo && item.id === ref.operatorId)
+  // The operator's own key is its brand destination; any other key must be one of its verified campaign entries.
+  const entry = record && (record.campaignKey === ref.campaignKey
+    ? { affiliateUrl: record.affiliateUrl, campaignId: record.campaignId }
+    : campaignEntries(record).find(item => item.campaignKey === ref.campaignKey &&
+      // A campaign link redirects only while its offer currently passes every publication gate.
+      snapshotFromRegistry(ref.geo, [record]).offers.some(offer => offer.affiliateUrl === reference)))
+  if (!record || !entry) return null
+  const url = new URL(entry.affiliateUrl)
+  const tokens = { ...context, geo: ref.geo, campaignId: entry.campaignId ?? '' }
   for (const template of [record.trackingTemplate, analyticsAllowed ? record.analyticsTrackingTemplate : undefined]) {
     if (!template) continue
     const filled = template.replace(/\{([a-zA-Z]+)\}/g, (_, key: string) => encodeURIComponent(tokens[key as keyof typeof tokens] ?? ''))

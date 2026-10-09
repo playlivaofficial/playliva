@@ -37,6 +37,9 @@ import { createHash } from 'node:crypto'
 // MX/CO/PE migration explicitly authorizes these commercial/routing/SEO adapters.
 // Their new snapshot is paired with positive activation, strict GEO suppression,
 // privacy, expiry and localized inventory tests; consent and engines stay fixed.
+// LATAM commercial activation rebases only data.ts: an offer may use one of its
+// own operator's same-GEO campaign references (multi-offer registry), covered
+// by commercial-multi-offer tests. Destinations, routing and engines stay fixed.
 test('GEO migration: reviewed outbound, SEO and privacy infrastructure snapshot', async () => {
   const expected = JSON.parse(await readFile(new URL('./fixtures/redesign-protected.json', import.meta.url), 'utf8'))
   for (const [path, hash] of Object.entries(expected)) {

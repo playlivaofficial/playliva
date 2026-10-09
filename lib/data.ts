@@ -1136,7 +1136,11 @@ export function isOfferEligible(
     (!isAffiliateEligible(operator, country, { ...context, category: offer.category }) ||
       (context.category && context.category !== offer.category))) return false
   if (operator?.verifiedOffers && !operator.verifiedOffers.includes(offer.id)) return false
-  if (offer.affiliateUrl !== operator?.affiliateUrl[country]) return false
+  // An offer uses its operator's destination or one of that operator's own
+  // campaign references in this GEO; never another operator's or market's link.
+  const reference = parseCommercialReference(offer.affiliateUrl)
+  if (offer.affiliateUrl !== operator?.affiliateUrl[country] &&
+    !(reference && operator && reference.geo === country && reference.operatorId === operator.id)) return false
   if (offer.validFrom && !(Date.parse(offer.validFrom) <= now)) return false
   if (offer.validUntil && !(Date.parse(offer.validUntil) >= now)) return false
   return true

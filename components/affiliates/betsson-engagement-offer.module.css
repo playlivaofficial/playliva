@@ -26,7 +26,7 @@
 }
 .close:hover, .close:focus-visible { background: #ffffff24; outline: 2px solid #c7f47c; outline-offset: 2px; }
 .brand { display: flex; align-items: center; gap: 0.7rem; padding-right: 3rem; }
-.logo { position: relative; width: 44px; height: 44px; flex-shrink: 0; overflow: hidden; border-radius: 0.8rem; background: #ff6a00; box-shadow: 0 6px 18px #ff6a0033; }
+.logo { position: relative; width: 44px; height: 44px; flex-shrink: 0; overflow: hidden; border-radius: 0.8rem; background: #fff; box-shadow: 0 6px 18px #ff6a0033; }
 .logo img { object-fit: cover; }
 .brandCopy { display: flex; flex-direction: column; min-width: 0; }
 .eyebrow { color: #c7f47c; font-size: .6rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
