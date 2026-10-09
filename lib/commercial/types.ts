@@ -52,14 +52,15 @@ export interface OperatorRegistration {
   legal: { status: 'unknown' | 'verified' | 'blocked'; source?: string; verifiedAt?: string; reviewBy?: string; statement?: string; responsibleGambling?: string; disclosure?: string }
   verifiedGames?: string[]
   offer?: Omit<CommercialCampaign, 'operatorId' | 'geo' | 'currency'>
-  /** Additional verified campaigns for the same operator and GEO. Each carries
-   * its own opaque campaign key and partner-issued destination, so a casino and
-   * a sportsbook welcome offer never share one tracked link. */
+  /** Further verified campaigns for the same operator and GEO (max 20). An
+   * entry may carry its own opaque campaign key and partner-issued destination,
+   * so a casino and a sportsbook welcome offer never share one tracked link;
+   * without destination fields it uses the operator's own destination. */
   offers?: CommercialOfferRegistration[]
 }
 
 export type CommercialOfferRegistration = Omit<CommercialCampaign, 'operatorId' | 'geo' | 'currency'> & {
-  campaignKey: string
+  campaignKey?: string
   affiliateUrl?: string
   /** GEO-scoped key into `PLAYLIVA_AFFILIATE_DESTINATIONS`, used only when `affiliateUrl` is omitted. */
   destinationKey?: string

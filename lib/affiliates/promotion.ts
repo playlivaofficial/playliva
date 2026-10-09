@@ -35,6 +35,10 @@ export const BANNER_SURFACES = {
   originals: { placement: PROMO_PLACEMENTS.originalsHeader, pageType: 'play' },
 } as const satisfies Record<string, { placement: string; pageType: PageType }>
 export type BannerSurface = keyof typeof BANNER_SURFACES
+/** GEO-wide sponsor slots and the gameplay popup belong to the primary brand only.
+ * Secondary operators stay in Offers, Where to Play and comparison flows. */
+const SPONSOR_PLACEMENTS: ReadonlySet<string> = new Set([...Object.values(BANNER_SURFACES).map(item => item.placement), PROMO_PLACEMENTS.originalsEngagement])
+export const isSponsorPlacement = (placement: string) => SPONSOR_PLACEMENTS.has(placement)
 
 export interface PromoCreative {
   id: string; kind: 'logo' | 'banner'; assetPath: string; width: number; height: number
@@ -73,7 +77,7 @@ export function getPromotion(snapshot: CommercialSnapshot | undefined, country: 
       now < from || now >= until || from >= until || !Number.isInteger(campaign.cadence.cycleMultiple) || campaign.cadence.cycleMultiple < 1 ||
       !Number.isFinite(campaign.cadence.delayMs) || campaign.cadence.delayMs < 0) continue
     const operator = snapshot.operators.find(item => item.id === campaign.operatorId)
-    if (!operator || (options.operatorId && options.operatorId !== operator.id)) continue
+    if (!operator || (options.operatorId && options.operatorId !== operator.id) || (isSponsorPlacement(placement) && !operator.sponsor)) continue
     const offer = snapshot.offers.find(item => item.id === campaign.offer.id && item.operatorId === operator.id && item.country === country)
     const copy = campaign.copy[locale] ?? (locale.startsWith('es-') ? campaign.copy['es-MX'] : undefined)
     if (!offer || typeof copy?.headline !== 'string' || !copy.headline.trim() ||
@@ -109,7 +113,7 @@ export function resolveBannerLayout(layout: BannerLayout = 'compact-header'): 'c
 export function getSponsoredBanner(snapshot: CommercialSnapshot | undefined, country: CountryCode, locale: Locale, surface: BannerSurface): SponsoredBannerModel | null {
   if (!sameMarket(snapshot, country)) return null
   const config = BANNER_SURFACES[surface]
-  for (const operator of snapshot.operators) {
+  for (const operator of snapshot.operators.filter(item => item.sponsor)) {
     const resolved = resolveDestination({ operatorSlug: operator.slug, country, language: locale,
       pageType: config.pageType, placement: config.placement }, snapshot)
     if (!resolved) continue

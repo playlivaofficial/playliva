@@ -2,7 +2,7 @@
 export function registration(geo = 'MX', overrides = {}) {
   const now = Date.now(), day = 86_400_000
   return {
-    id: `test-${geo.toLowerCase()}`, slug: 'test-partner', brand: 'Test partner', geo,
+    id: `test-${geo.toLowerCase()}`, slug: 'test-partner', brand: { MX: 'Betsson', CO: 'Betsson', PE: 'Inkabet' }[geo] ?? 'Test partner', geo,
     productTypes: ['crash', 'slots', 'table-games', 'live-casino', 'instant-games'],
     approved: true, active: true, affiliateUrl: `https://partner.test/${geo.toLowerCase()}`,
     campaignKey: `test-${geo.toLowerCase()}-campaign`, campaignId: 'private-test-id',

@@ -240,7 +240,7 @@ for (const [index,game] of allOriginals.entries()) test(`${game.slug}: exact set
       assert.ok(dialog.querySelector('[data-commercial-disclosure]'))
       assert.equal(dialog.querySelector('[data-brazil-ad-warning]'),null)
       assert.match(dialog.textContent,new RegExp(fixture.currency))
-      assert.doesNotMatch(dialog.textContent,/Betsson|R\$20|Ganhe/)
+      assert.doesNotMatch(dialog.textContent,/Jogar na Betsson|R\$20|Ganhe/)
       const link=dialog.querySelector('[data-promo-cta]')
       assert.equal(new URL(link.href).searchParams.get('country'),geo)
       if(round===3)await act(()=>link.dispatchEvent(new window.MouseEvent('click',{bubbles:true,cancelable:true})))

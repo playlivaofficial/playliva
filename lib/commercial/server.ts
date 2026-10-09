@@ -5,7 +5,7 @@ import type { Operator, Offer } from '../types'
 import { commercialReference, isCommercialKey, parseCommercialReference } from './references'
 import { emptyCommercialSnapshot, type CommercialCampaign, type CommercialOfferRegistration, type CommercialSnapshot, type OperatorRegistration } from './types'
 import { hasMatchingCurrencyCopy } from './currency'
-import { EXPECTED_OPERATORS } from './operators'
+import { EXPECTED_OPERATORS, isPrimaryBrand } from './operators'
 
 function object(value: unknown): value is Record<string, unknown> { return !!value && typeof value === 'object' && !Array.isArray(value) }
 function strings(value: unknown): value is string[] { return Array.isArray(value) && value.every(item => typeof item === 'string') }
@@ -73,21 +73,26 @@ function registrationIssues(item: unknown, now: number): RegistryIssue[] {
     (item.trackingTemplate !== undefined && typeof item.trackingTemplate !== 'string') ||
     (item.analyticsTrackingTemplate !== undefined && typeof item.analyticsTrackingTemplate !== 'string') ||
     (item.campaignId !== undefined && typeof item.campaignId !== 'string') || !localizedStrings(item.ctaText) ||
+    (item.offers !== undefined && (!Array.isArray(item.offers) || item.offers.length > 20)) ||
     ['source', 'verifiedAt', 'reviewBy', 'statement', 'responsibleGambling', 'disclosure'].some(key => object(item.legal) && item.legal[key] !== undefined && typeof item.legal[key] !== 'string')) issues.push('optional_field_invalid')
   return issues
 }
 
 /** A tracked destination for one campaign of a record. The record-level
- * `offer` uses the record's own key and destination; each entry in `offers`
- * must bring a distinct key and its own partner-issued https destination.
- * An invalid entry is withheld on its own and never borrows another link. */
+ * `offer`, and any `offers` entry without destination fields, use the record's
+ * own key and destination. An entry that declares a key or destination must
+ * bring a distinct key and its own partner-issued https destination; an invalid
+ * one is withheld on its own and never borrows another link. */
 interface CampaignEntry {
   campaign: Omit<CommercialCampaign, 'operatorId' | 'geo' | 'currency'>
   campaignKey: string
   affiliateUrl: string
   campaignId?: string
 }
-function campaignEntryValid(entry: unknown, record: OperatorRegistration, seen: Set<string>): entry is CommercialOfferRegistration & { affiliateUrl: string } {
+const ownsDestination = (entry: Record<string, unknown>) =>
+  entry.campaignKey !== undefined || entry.affiliateUrl !== undefined || entry.destinationKey !== undefined
+function campaignEntryValid(entry: unknown, record: OperatorRegistration, seen: Set<string>): entry is CommercialOfferRegistration {
+  if (object(entry) && !ownsDestination(entry)) return true
   if (!object(entry) || !isCommercialKey(entry.campaignKey) || entry.campaignKey === record.campaignKey || seen.has(entry.campaignKey) ||
     !https(entry.affiliateUrl) || /(^|\.)bet\.br$/.test(new URL(entry.affiliateUrl).hostname) ||
     (entry.campaignId !== undefined && typeof entry.campaignId !== 'string')) return false
@@ -103,8 +108,10 @@ function campaignEntries(record: OperatorRegistration): CampaignEntry[] {
     // Keep private destination fields out of the campaign that feeds public props.
     const campaign: Partial<CommercialOfferRegistration> = { ...entry }
     for (const key of ['campaignKey', 'affiliateUrl', 'destinationKey', 'campaignId'] as const) delete campaign[key]
-    entries.push({ campaign: campaign as CampaignEntry['campaign'], campaignKey: entry.campaignKey, affiliateUrl: entry.affiliateUrl,
-      campaignId: entry.campaignId ?? record.campaignId })
+    entries.push(ownsDestination(entry)
+      ? { campaign: campaign as CampaignEntry['campaign'], campaignKey: entry.campaignKey!, affiliateUrl: entry.affiliateUrl!,
+        campaignId: entry.campaignId ?? record.campaignId }
+      : { campaign: campaign as CampaignEntry['campaign'], campaignKey: record.campaignKey, affiliateUrl: record.affiliateUrl, campaignId: record.campaignId })
   }
   return entries
 }
@@ -114,13 +121,19 @@ function invalidCampaignEntries(record: Record<string, unknown>): number {
   return record.offers.filter(entry => !campaignEntryValid(entry, record as unknown as OperatorRegistration, seen)).length
 }
 
+const campaignsOf = (record: Record<string, unknown>) =>
+  [record.offer, ...(Array.isArray(record.offers) ? record.offers : [])].filter(object)
+const campaignIds = (record: Record<string, unknown>) => campaignsOf(record).flatMap(campaign =>
+  [isCommercialKey(campaign.id) ? `c:${campaign.id}` : null, object(campaign.offer) && isCommercialKey(campaign.offer.id) ? `o:${campaign.offer.id}` : null])
+  .filter((id): id is string => id !== null)
+
+/** Identity, campaign and offer IDs must be unique per GEO, including across an operator's own campaigns. */
 function isDuplicate(record: Record<string, unknown>, input: unknown[]): boolean {
-  const offer = object(record.offer) ? record.offer : null
+  const own = campaignIds(record)
+  if (new Set(own).size !== own.length) return true
   return input.filter(other => object(other) && other.geo === record.geo &&
     (other.id === record.id || other.slug === record.slug || other.campaignKey === record.campaignKey ||
-      (object(other.offer) && offer &&
-        ((isCommercialKey(offer.id) && other.offer.id === offer.id) ||
-          (object(other.offer.offer) && object(offer.offer) && isCommercialKey(offer.offer.id) && other.offer.offer.id === offer.offer.id))))).length !== 1
+      campaignIds(other).some(id => own.includes(id)))).length !== 1
 }
 
 function readRegistryInput(source: string, destinationsSource: string): unknown[] | null {
@@ -190,8 +203,9 @@ export function snapshotFromRegistry(geo: unknown, registrations: OperatorRegist
   const result = emptyCommercialSnapshot(isCommercialGeo(geo) ? geo : null)
   if (!isCommercialGeo(geo)) return result
   // Validate injected fixtures as well as production input; no alternate permissive path.
+  // The owner-confirmed primary brand leads every GEO list; priority orders the rest.
   const records = parseOperatorRegistry(JSON.stringify(registrations), now).filter(item => item.geo === geo)
-    .sort((a, b) => a.priority - b.priority || a.id.localeCompare(b.id))
+    .sort((a, b) => Number(isPrimaryBrand(geo, b.brand)) - Number(isPrimaryBrand(geo, a.brand)) || a.priority - b.priority || a.id.localeCompare(b.id))
   for (const record of records) {
     const legal = record.legal
     const operator: Operator = {
@@ -202,7 +216,7 @@ export function snapshotFromRegistry(geo: unknown, registrations: OperatorRegist
       priority: record.priority, campaignKey: record.campaignKey,
       affiliateUrl: { [geo]: commercialReference(geo, record.id, record.campaignKey) },
       verifiedGames: { [geo]: record.verifiedGames ?? [] }, verifiedOffers: [],
-      ctaText: record.ctaText,
+      ctaText: record.ctaText, sponsor: isPrimaryBrand(geo, record.brand),
       commercialLegal: { status: 'verified', reviewBy: legal.reviewBy!, statement: legal.statement,
         responsibleGambling: legal.responsibleGambling, disclosure: legal.disclosure },
     }

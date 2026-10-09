@@ -42,7 +42,7 @@ for(const geo of ['MX','CO','PE'])test(`${geo}: Original referrals retain truthf
     assert.ok(doc.querySelector('[data-commercial-disclosure]'))
     assert.equal(doc.querySelector('[data-brazil-ad-warning]'),null)
     assert.equal(doc.querySelector('a[href^="/go?"]').getAttribute('href'),options[0].href)
-    assert.doesNotMatch(doc.body.textContent,/Betsson|Ganhe 100|R\$20|Sponsored/)
+    assert.doesNotMatch(doc.body.textContent,/Jogar na Betsson|Ganhe 100|R\$20|Sponsored/)
     assert.deepEqual(playReal.getOriginalOperatorCtas(game,'BR',locale,snapshot),[])
   }
   const brandOnly=commercialFixture(geo,{productTypes:['slots'],verifiedGames:[]})
@@ -76,7 +76,9 @@ for(const geo of ['MX','CO','PE'])test(`${geo}: no offer copy is fabricated for 
   const card=doc.querySelector('[data-sponsored-banner]')
   assert.ok(card)
   assert.equal(card.dataset.bannerLayout,'compact-header')
-  assert.match(card.textContent,/Test Partner/)
+  // Shared chrome names the configured operator; Inkabet Peru never reads as Betsson.
+  assert.match(card.textContent,new RegExp(`apuestas en ${banner.operatorName}`))
+  if(banner.operatorName!=='Betsson')assert.doesNotMatch(card.textContent,/Betsson/)
   assert.doesNotMatch(card.textContent,/Oferta de prueba|Giros|gratis|Ganhe|R\$20|private-test-id/)
   assert.equal(card.querySelector('a[href^="/go?"]').rel,'sponsored noopener noreferrer')
 })

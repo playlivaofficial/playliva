@@ -95,6 +95,17 @@ test('one operator publishes several offers, each through its own tracked destin
       }
     })
 
+    await t.test('an entry without destination fields uses the operator brand destination', async () => {
+      const shared = campaign('MX', 'sports')
+      delete shared.campaignKey; delete shared.affiliateUrl
+      configure([multi('MX', [campaign('MX', 'casino'), shared])])
+      const snapshot = commercial.commercialSnapshot('MX')
+      assert.equal(snapshot.offers.find(offer => offer.id === 'mx-sports-offer').affiliateUrl,
+        'playliva-affiliate:MX:test-mx:test-mx-campaign')
+      assert.equal(target(await go('MX', { offer: 'mx-sports-offer' })).pathname, '/mx')
+      assert.equal(target(await go('MX', { offer: 'mx-casino-offer' })).pathname, '/mx-casino')
+    })
+
     await t.test('an expired campaign stops publishing and redirecting while siblings continue', async () => {
       const expired = campaign('CO', 'sports', { validUntil: new Date(Date.now() - 60_000).toISOString() })
       configure([multi('CO', [campaign('CO', 'casino'), expired])])
