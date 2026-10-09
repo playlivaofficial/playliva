@@ -52,4 +52,6 @@ export interface OperatorRegistration {
   legal: { status: 'unknown' | 'verified' | 'blocked'; source?: string; verifiedAt?: string; reviewBy?: string; statement?: string; responsibleGambling?: string; disclosure?: string }
   verifiedGames?: string[]
   offer?: Omit<CommercialCampaign, 'operatorId' | 'geo' | 'currency'>
+  /** Further verified campaigns for the same operator and GEO (max 20). */
+  offers?: Omit<CommercialCampaign, 'operatorId' | 'geo' | 'currency'>[]
 }

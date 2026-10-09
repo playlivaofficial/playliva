@@ -453,8 +453,15 @@ mapping contains no links. A registry record may omit `affiliateUrl` and set
 `PLAYLIVA_AFFILIATE_DESTINATIONS` map. Only keys scoped to the record's own GEO
 (`<operator>-<geo>[-<campaign>]`, e.g. `betsson-mx-brand`) resolve, `.bet.br`
 destinations are refused, and every other registry gate still applies. The
-map alone activates nothing; BR keys stay retired. The Owner Growth Affiliate
-view lists per-GEO configuration issue codes (missing record, unresolved
+map alone activates nothing; BR keys stay retired. Only the confirmed primary brand fills GEO-wide sponsor banners and the
+every-third-round gameplay popup, even when another operator has a better
+priority or the primary has no campaign. Secondary operators (for example a
+second CO or PE partner) appear in Offers, Where to Play and comparison flows,
+and the primary leads every list. A record may carry further verified campaigns
+in `offers` (up to 20); campaign and offer IDs must be unique per GEO and each
+campaign passes the same validity, evidence and currency gates. The Owner
+Growth Affiliate view shows each operator's role, active offers and popup state,
+and lists per-GEO configuration issue codes (missing record, unresolved
 legacy key, stale legal review and so on) without showing any value.
 
 CO/PE home and Games pages have substantive regional context and unique metadata.

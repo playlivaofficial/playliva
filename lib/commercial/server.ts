@@ -5,7 +5,7 @@ import type { Operator, Offer } from '../types'
 import { commercialReference, isCommercialKey, parseCommercialReference } from './references'
 import { emptyCommercialSnapshot, type CommercialSnapshot, type OperatorRegistration } from './types'
 import { hasMatchingCurrencyCopy } from './currency'
-import { EXPECTED_OPERATORS } from './operators'
+import { EXPECTED_OPERATORS, isPrimaryBrand } from './operators'
 
 function object(value: unknown): value is Record<string, unknown> { return !!value && typeof value === 'object' && !Array.isArray(value) }
 function strings(value: unknown): value is string[] { return Array.isArray(value) && value.every(item => typeof item === 'string') }
@@ -73,17 +73,24 @@ function registrationIssues(item: unknown, now: number): RegistryIssue[] {
     (item.trackingTemplate !== undefined && typeof item.trackingTemplate !== 'string') ||
     (item.analyticsTrackingTemplate !== undefined && typeof item.analyticsTrackingTemplate !== 'string') ||
     (item.campaignId !== undefined && typeof item.campaignId !== 'string') || !localizedStrings(item.ctaText) ||
+    (item.offers !== undefined && (!Array.isArray(item.offers) || item.offers.length > 20)) ||
     ['source', 'verifiedAt', 'reviewBy', 'statement', 'responsibleGambling', 'disclosure'].some(key => object(item.legal) && item.legal[key] !== undefined && typeof item.legal[key] !== 'string')) issues.push('optional_field_invalid')
   return issues
 }
 
+const campaignsOf = (record: Record<string, unknown>) =>
+  [record.offer, ...(Array.isArray(record.offers) ? record.offers : [])].filter(object)
+const campaignIds = (record: Record<string, unknown>) => campaignsOf(record).flatMap(campaign =>
+  [isCommercialKey(campaign.id) ? `c:${campaign.id}` : null, object(campaign.offer) && isCommercialKey(campaign.offer.id) ? `o:${campaign.offer.id}` : null])
+  .filter((id): id is string => id !== null)
+
+/** Identity, campaign and offer IDs must be unique per GEO, including across an operator's own campaigns. */
 function isDuplicate(record: Record<string, unknown>, input: unknown[]): boolean {
-  const offer = object(record.offer) ? record.offer : null
+  const own = campaignIds(record)
+  if (new Set(own).size !== own.length) return true
   return input.filter(other => object(other) && other.geo === record.geo &&
     (other.id === record.id || other.slug === record.slug || other.campaignKey === record.campaignKey ||
-      (object(other.offer) && offer &&
-        ((isCommercialKey(offer.id) && other.offer.id === offer.id) ||
-          (object(other.offer.offer) && object(offer.offer) && isCommercialKey(offer.offer.id) && other.offer.offer.id === offer.offer.id))))).length !== 1
+      campaignIds(other).some(id => own.includes(id)))).length !== 1
 }
 
 function readRegistryInput(source: string, destinationsSource: string): unknown[] | null {
@@ -146,8 +153,9 @@ export function snapshotFromRegistry(geo: unknown, registrations: OperatorRegist
   const result = emptyCommercialSnapshot(isCommercialGeo(geo) ? geo : null)
   if (!isCommercialGeo(geo)) return result
   // Validate injected fixtures as well as production input; no alternate permissive path.
+  // The owner-confirmed primary brand leads every GEO list; priority orders the rest.
   const records = parseOperatorRegistry(JSON.stringify(registrations), now).filter(item => item.geo === geo)
-    .sort((a, b) => a.priority - b.priority || a.id.localeCompare(b.id))
+    .sort((a, b) => Number(isPrimaryBrand(geo, b.brand)) - Number(isPrimaryBrand(geo, a.brand)) || a.priority - b.priority || a.id.localeCompare(b.id))
   for (const record of records) {
     const legal = record.legal
     const operator: Operator = {
@@ -158,59 +166,61 @@ export function snapshotFromRegistry(geo: unknown, registrations: OperatorRegist
       priority: record.priority, campaignKey: record.campaignKey,
       affiliateUrl: { [geo]: commercialReference(geo, record.id, record.campaignKey) },
       verifiedGames: { [geo]: record.verifiedGames ?? [] }, verifiedOffers: [],
-      ctaText: record.ctaText,
+      ctaText: record.ctaText, sponsor: isPrimaryBrand(geo, record.brand),
       commercialLegal: { status: 'verified', reviewBy: legal.reviewBy!, statement: legal.statement,
         responsibleGambling: legal.responsibleGambling, disclosure: legal.disclosure },
     }
     result.operators.push(operator)
-    const campaign = record.offer
-    if (!campaign || !isCommercialKey(campaign.id) || campaign.approved !== true || campaign.active !== true ||
-      typeof campaign.validFrom !== 'string' || typeof campaign.validUntil !== 'string' ||
-      !(Date.parse(campaign.validFrom) <= now && Date.parse(campaign.validUntil) > now) ||
-      !strings(campaign.placements) || !strings(campaign.verifiedTerms) || !campaign.verifiedTerms.length ||
-      !object(campaign.cadence) || !Number.isInteger(campaign.cadence.cycleMultiple) || campaign.cadence.cycleMultiple < 1 ||
-      !Number.isFinite(campaign.cadence.delayMs) || campaign.cadence.delayMs < 0 || !object(campaign.copy) || !object(campaign.offer)) continue
-    const configured = campaign.offer
-    const review = configured.complianceReview
-    if (!['title', 'description', 'terms', 'source', 'lastVerifiedAt'].every(key => typeof configured[key as keyof Offer] === 'string') ||
-      configured.status !== 'verified' || !object(review) || review.status !== 'reviewed-permitted' || review.market !== geo ||
-      !(['legalSource', 'verifiedAt', 'reviewBy'] as const).every(key => typeof review[key] === 'string') ||
-      (configured.category !== 'welcome' && !isCategorySlug(configured.category)) || !localizedStrings(configured.ctaLabel) ||
-      !Object.entries(campaign.copy).every(([locale, copy]) => ['en', 'pt-BR', 'es-MX', 'es-CO', 'es-PE'].includes(locale) && object(copy) &&
-        (['headline', 'condition', 'cta'] as const).every(key => typeof copy[key] === 'string' && copy[key].trim()))) continue
-    if ((configured.currency && configured.currency !== record.currency) || !hasMatchingCurrencyCopy(
-      [configured.title, configured.description, configured.terms, ...campaign.verifiedTerms,
-        ...Object.values(campaign.copy).flatMap(copy => copy ? [copy.headline, copy.condition, copy.cta] : [])].join(' '), record.currency)) continue
-    // Explicit allow-list: never spread private partner configuration into public props.
-    const offer: Offer = {
-      id: configured.id, operatorId: record.id, country: geo, title: configured.title,
-      currency: record.currency,
-      description: configured.description, category: configured.category, terms: configured.terms,
-      affiliateUrl: commercialReference(geo, record.id, record.campaignKey), active: true, featured: !!configured.featured,
-      status: configured.status, validFrom: campaign.validFrom, validUntil: campaign.validUntil,
-      source: configured.source, termsUrl: https(configured.termsUrl) ? configured.termsUrl : undefined,
-      promoId: campaign.id, brand: record.slug, ctaLabel: configured.ctaLabel,
-      lastVerifiedAt: configured.lastVerifiedAt,
-      complianceReview: { market: geo, status: 'reviewed-permitted', legalSource: review.legalSource,
-        verifiedAt: review.verifiedAt, reviewBy: review.reviewBy },
+    // `offer` stays supported; `offers` lists further campaigns from the same dashboard.
+    for (const campaign of [record.offer, ...(record.offers ?? [])]) {
+      if (!campaign || !isCommercialKey(campaign.id) || campaign.approved !== true || campaign.active !== true ||
+        typeof campaign.validFrom !== 'string' || typeof campaign.validUntil !== 'string' ||
+        !(Date.parse(campaign.validFrom) <= now && Date.parse(campaign.validUntil) > now) ||
+        !strings(campaign.placements) || !strings(campaign.verifiedTerms) || !campaign.verifiedTerms.length ||
+        !object(campaign.cadence) || !Number.isInteger(campaign.cadence.cycleMultiple) || campaign.cadence.cycleMultiple < 1 ||
+        !Number.isFinite(campaign.cadence.delayMs) || campaign.cadence.delayMs < 0 || !object(campaign.copy) || !object(campaign.offer)) continue
+      const configured = campaign.offer
+      const review = configured.complianceReview
+      if (!['title', 'description', 'terms', 'source', 'lastVerifiedAt'].every(key => typeof configured[key as keyof Offer] === 'string') ||
+        configured.status !== 'verified' || !object(review) || review.status !== 'reviewed-permitted' || review.market !== geo ||
+        !(['legalSource', 'verifiedAt', 'reviewBy'] as const).every(key => typeof review[key] === 'string') ||
+        (configured.category !== 'welcome' && !isCategorySlug(configured.category)) || !localizedStrings(configured.ctaLabel) ||
+        !Object.entries(campaign.copy).every(([locale, copy]) => ['en', 'pt-BR', 'es-MX', 'es-CO', 'es-PE'].includes(locale) && object(copy) &&
+          (['headline', 'condition', 'cta'] as const).every(key => typeof copy[key] === 'string' && copy[key].trim()))) continue
+      if ((configured.currency && configured.currency !== record.currency) || !hasMatchingCurrencyCopy(
+        [configured.title, configured.description, configured.terms, ...campaign.verifiedTerms,
+          ...Object.values(campaign.copy).flatMap(copy => copy ? [copy.headline, copy.condition, copy.cta] : [])].join(' '), record.currency)) continue
+      // Explicit allow-list: never spread private partner configuration into public props.
+      const offer: Offer = {
+        id: configured.id, operatorId: record.id, country: geo, title: configured.title,
+        currency: record.currency,
+        description: configured.description, category: configured.category, terms: configured.terms,
+        affiliateUrl: commercialReference(geo, record.id, record.campaignKey), active: true, featured: !!configured.featured,
+        status: configured.status, validFrom: campaign.validFrom, validUntil: campaign.validUntil,
+        source: configured.source, termsUrl: https(configured.termsUrl) ? configured.termsUrl : undefined,
+        promoId: campaign.id, brand: record.slug, ctaLabel: configured.ctaLabel,
+        lastVerifiedAt: configured.lastVerifiedAt,
+        complianceReview: { market: geo, status: 'reviewed-permitted', legalSource: review.legalSource,
+          verifiedAt: review.verifiedAt, reviewBy: review.reviewBy },
+      }
+      const creative = configured.creative
+      if (creative && isCommercialKey(creative.id) && /^\/(?!\/)[a-zA-Z0-9/_\-.]+$/.test(creative.assetPath) &&
+        Number.isFinite(creative.width) && creative.width > 0 && Number.isFinite(creative.height) && creative.height > 0 &&
+        object(creative.alt) && localizedStrings(creative.alt) && strings(creative.languages) && creative.languages.every(locale => ['en', 'pt-BR', 'es-MX', 'es-CO', 'es-PE'].includes(locale))) {
+        offer.creative = { id: creative.id, assetPath: creative.assetPath, width: creative.width, height: creative.height,
+          alt: creative.alt, languages: creative.languages }
+      }
+      if (!isCommercialKey(offer.id)) continue
+      operator.verifiedOffers = [...operator.verifiedOffers!, offer.id]
+      if (!isOfferEligible(offer, geo, {}, result.operators, now)) { operator.verifiedOffers = operator.verifiedOffers.filter(id => id !== offer.id); continue }
+      result.offers.push(offer)
+      const copy = Object.fromEntries(Object.entries(campaign.copy).map(([locale, value]) =>
+        [locale, { headline: value!.headline, condition: value!.condition, cta: value!.cta }]))
+      result.campaigns.push({ id: campaign.id, operatorId: record.id, geo, currency: record.currency,
+        approved: true, active: true, offer, copy, placements: [...campaign.placements],
+        cadence: { cycleMultiple: campaign.cadence.cycleMultiple, delayMs: campaign.cadence.delayMs },
+        validFrom: campaign.validFrom, validUntil: campaign.validUntil, verifiedTerms: [...campaign.verifiedTerms] })
     }
-    const creative = configured.creative
-    if (creative && isCommercialKey(creative.id) && /^\/(?!\/)[a-zA-Z0-9/_\-.]+$/.test(creative.assetPath) &&
-      Number.isFinite(creative.width) && creative.width > 0 && Number.isFinite(creative.height) && creative.height > 0 &&
-      object(creative.alt) && localizedStrings(creative.alt) && strings(creative.languages) && creative.languages.every(locale => ['en', 'pt-BR', 'es-MX', 'es-CO', 'es-PE'].includes(locale))) {
-      offer.creative = { id: creative.id, assetPath: creative.assetPath, width: creative.width, height: creative.height,
-        alt: creative.alt, languages: creative.languages }
-    }
-    if (!isCommercialKey(offer.id)) continue
-    operator.verifiedOffers = [offer.id]
-    if (!isOfferEligible(offer, geo, {}, result.operators, now)) { operator.verifiedOffers = []; continue }
-    result.offers.push(offer)
-    const copy = Object.fromEntries(Object.entries(campaign.copy).map(([locale, value]) =>
-      [locale, { headline: value!.headline, condition: value!.condition, cta: value!.cta }]))
-    result.campaigns.push({ id: campaign.id, operatorId: record.id, geo, currency: record.currency,
-      approved: true, active: true, offer, copy, placements: [...campaign.placements],
-      cadence: { cycleMultiple: campaign.cadence.cycleMultiple, delayMs: campaign.cadence.delayMs },
-      validFrom: campaign.validFrom, validUntil: campaign.validUntil, verifiedTerms: [...campaign.verifiedTerms] })
   }
   return result
 }
