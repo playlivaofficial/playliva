@@ -62,7 +62,7 @@ const ptBR: Dict = {
   'affiliate.playAtNamed': 'Jogar na {name}',
   'affiliate.exploreNamed': 'Explorar {name}',
   'affiliate.homeBannerBody':
-    'Conheça cassino e apostas na Betsson. A PlayLiva não aceita apostas nem depósitos.',
+    'Conheça cassino e apostas na {name}. A PlayLiva não aceita apostas nem depósitos.',
   'affiliate.genericBoundary':
     'Esta é uma indicação da marca do operador, não uma afirmação de que este PlayLiva Original esteja disponível lá.',
   'affiliate.playRealBetsson': 'JOGAR NA BETSSON',
@@ -72,9 +72,9 @@ const ptBR: Dict = {
   // Central partner promo (chrome only; the campaign claim comes verbatim from config)
   'promo.eyebrow': 'Oferta do parceiro',
   'promo.casinoBoundary':
-    'Promoção de cassino da Betsson para jogadores no Brasil. Não se refere a este jogo. Condições no site oficial.',
+    'Promoção de cassino da {name}. Não se refere a este jogo. Condições no site oficial.',
   'promo.offerBoundary':
-    'Promoção de cassino da Betsson para jogadores no Brasil. Condições completas no site oficial.',
+    'Promoção da {name}. Condições completas no site oficial.',
   'promo.terms': 'Termos e condições',
   'promo.keepPlaying': 'Continuar jogando grátis',
   'promo.close': 'Fechar oferta',
@@ -600,7 +600,7 @@ const esMX: Dict = {
   'affiliate.playAtNamed': 'Jugar en {name}',
   'affiliate.exploreNamed': 'Explorar {name}',
   'affiliate.homeBannerBody':
-    'Explora casino y apuestas en Betsson. PlayLiva no acepta apuestas ni depósitos.',
+    'Explora casino y apuestas en {name}. PlayLiva no acepta apuestas ni depósitos.',
   'affiliate.genericBoundary':
     'Esta es una indicación de la marca del operador, no una afirmación de que este PlayLiva Original esté disponible allí.',
   'affiliate.playRealBetsson': 'JUGAR EN BETSSON',
@@ -610,9 +610,9 @@ const esMX: Dict = {
   // Central partner promo (chrome only; the campaign claim comes verbatim from config)
   'promo.eyebrow': 'Oferta del socio',
   'promo.casinoBoundary':
-    'Promoción de casino de Betsson para jugadores en Brasil. No se refiere a este juego. Condiciones en el sitio oficial.',
+    'Promoción de casino de {name}. No se refiere a este juego. Condiciones en el sitio oficial.',
   'promo.offerBoundary':
-    'Promoción de casino de Betsson para jugadores en Brasil. Condiciones completas en el sitio oficial.',
+    'Promoción de {name}. Condiciones completas en el sitio oficial.',
   'promo.terms': 'Términos y condiciones',
   'promo.keepPlaying': 'Seguir jugando gratis',
   'promo.close': 'Cerrar oferta',
@@ -1114,7 +1114,7 @@ const en: Dict = {
   'affiliate.playAtNamed': 'Play at {name}',
   'affiliate.exploreNamed': 'Explore {name}',
   'affiliate.homeBannerBody':
-    'Explore casino and betting at Betsson. PlayLiva does not accept bets or deposits.',
+    'Explore casino and betting at {name}. PlayLiva does not accept bets or deposits.',
   'affiliate.genericBoundary':
     'This is a brand referral to the operator, not a claim that this PlayLiva Original is available there.',
   'affiliate.playRealBetsson': 'PLAY REAL · BETSSON',
@@ -1124,9 +1124,9 @@ const en: Dict = {
   // Central partner promo (chrome only; the campaign claim comes verbatim from config)
   'promo.eyebrow': 'Partner offer',
   'promo.casinoBoundary':
-    'Betsson casino promotion for players in Brazil. It does not refer to this game. Conditions on the official site.',
+    '{name} casino promotion. It does not refer to this game. Conditions on the official site.',
   'promo.offerBoundary':
-    'Betsson casino promotion for players in Brazil. Full conditions on the official site.',
+    '{name} promotion. Full conditions on the official site.',
   'promo.terms': 'Terms and conditions',
   'promo.keepPlaying': 'Keep playing free',
   'promo.close': 'Close offer',

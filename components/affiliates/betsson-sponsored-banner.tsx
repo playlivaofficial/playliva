@@ -116,7 +116,7 @@ export function BetssonSponsoredBanner({
           {promo
             ? <p className={`${styles.title} ${styles.promoTitle}`} lang={locale}>{promo.headline}</p>
             : <p className={styles.title}>{banner.operatorName}</p>}
-          <p className={styles.body}>{t('affiliate.homeBannerBody')}</p>
+          <p className={styles.body}>{t('affiliate.homeBannerBody', { name: banner.operatorName })}</p>
         </div>
         <Button
           size="lg"

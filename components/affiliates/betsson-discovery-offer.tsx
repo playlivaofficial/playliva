@@ -51,7 +51,7 @@ export function BetssonDiscoveryOffer({ gameSlug, pageSlug, operatorId }: { game
     </div>}
     <h3 className={styles.headline} lang={locale}>{model.headline}</h3>
     {model.subheadline && <p className={styles.subheadline} lang={locale}>{model.subheadline}</p>}
-    <p className={styles.boundary}>{t('promo.casinoBoundary')}</p>
+    <p className={styles.boundary}>{t('promo.casinoBoundary', { name: model.operatorName })}</p>
     <Button size="lg" className={styles.cta}
       render={<a href={model.href} target="_blank" rel="sponsored noopener noreferrer" data-promo-cta=""
         onClick={() => trackBetssonPromo('affiliate_click', model, { gameSlug, route })} />}>

@@ -135,3 +135,16 @@ test('one operator publishes several offers, each through its own tracked destin
     else process.env.PLAYLIVA_COMMERCIAL_REGISTRY = previous
   }
 })
+
+test('shared ad chrome names the configured operator, never a fixed brand or market', async () => {
+  const i18n = await import('../lib/i18n.ts')
+  const { createTranslator, LOCALES } = i18n.default ?? i18n
+  for (const locale of LOCALES) {
+    const t = createTranslator(locale)
+    for (const key of ['affiliate.homeBannerBody', 'promo.casinoBoundary', 'promo.offerBoundary']) {
+      const text = t(key, { name: 'Inkabet' })
+      assert.match(text, /Inkabet/, `${locale} ${key} uses the operator name`)
+      assert.doesNotMatch(text, /Betsson|Brasil|Brazil/, `${locale} ${key} has no fixed brand or market`)
+    }
+  }
+})
