@@ -5,7 +5,8 @@ import type { Operator, Offer } from '../types'
 import { commercialReference, isCommercialKey, parseCommercialReference } from './references'
 import { emptyCommercialSnapshot, type CommercialCampaign, type CommercialOfferRegistration, type CommercialSnapshot, type OperatorRegistration } from './types'
 import { hasMatchingCurrencyCopy } from './currency'
-import { EXPECTED_OPERATORS, isPrimaryBrand } from './operators'
+import { EXPECTED_OPERATORS, sponsorRank } from './operators'
+import { isSponsorPlacement } from '../affiliates/promotion'
 
 function object(value: unknown): value is Record<string, unknown> { return !!value && typeof value === 'object' && !Array.isArray(value) }
 function strings(value: unknown): value is string[] { return Array.isArray(value) && value.every(item => typeof item === 'string') }
@@ -203,9 +204,10 @@ export function snapshotFromRegistry(geo: unknown, registrations: OperatorRegist
   const result = emptyCommercialSnapshot(isCommercialGeo(geo) ? geo : null)
   if (!isCommercialGeo(geo)) return result
   // Validate injected fixtures as well as production input; no alternate permissive path.
-  // The owner-confirmed primary brand leads every GEO list; priority orders the rest.
+  // The owner-confirmed sponsor chain (primary first) leads every GEO list; priority orders the rest.
+  const rank = (brand: string) => { const value = sponsorRank(geo, brand); return value < 0 ? Number.MAX_SAFE_INTEGER : value }
   const records = parseOperatorRegistry(JSON.stringify(registrations), now).filter(item => item.geo === geo)
-    .sort((a, b) => Number(isPrimaryBrand(geo, b.brand)) - Number(isPrimaryBrand(geo, a.brand)) || a.priority - b.priority || a.id.localeCompare(b.id))
+    .sort((a, b) => rank(a.brand) - rank(b.brand) || a.priority - b.priority || a.id.localeCompare(b.id))
   for (const record of records) {
     const legal = record.legal
     const operator: Operator = {
@@ -216,7 +218,7 @@ export function snapshotFromRegistry(geo: unknown, registrations: OperatorRegist
       priority: record.priority, campaignKey: record.campaignKey,
       affiliateUrl: { [geo]: commercialReference(geo, record.id, record.campaignKey) },
       verifiedGames: { [geo]: record.verifiedGames ?? [] }, verifiedOffers: [],
-      ctaText: record.ctaText, sponsor: isPrimaryBrand(geo, record.brand),
+      ctaText: record.ctaText, sponsor: false,
       commercialLegal: { status: 'verified', reviewBy: legal.reviewBy!, statement: legal.statement,
         responsibleGambling: legal.responsibleGambling, disclosure: legal.disclosure },
     }
@@ -275,6 +277,12 @@ export function snapshotFromRegistry(geo: unknown, registrations: OperatorRegist
         validFrom: campaign.validFrom, validUntil: campaign.validUntil, verifiedTerms: [...campaign.verifiedTerms] })
     }
   }
+  // Exactly one sponsor per GEO: the first chain brand with a live sponsor-eligible
+  // campaign, else the first chain brand published at all (brand-only banners).
+  const chain = result.operators.filter(operator => sponsorRank(geo, operator.name) >= 0)
+  const sponsor = chain.find(operator => result.campaigns.some(campaign => campaign.operatorId === operator.id &&
+    campaign.placements.some(isSponsorPlacement))) ?? chain[0]
+  if (sponsor) sponsor.sponsor = true
   return result
 }
 

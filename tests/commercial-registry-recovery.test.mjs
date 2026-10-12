@@ -24,9 +24,10 @@ function withEnv(values, run) {
   restore(); return result
 }
 
-test('active GEO operator mapping is MX/CO Betsson and PE Inkabet with the market locale and currency', () => {
+test('primary GEO operators are MX Betsson, CO bwin and PE Inkabet with the market locale and currency', () => {
   assert.deepEqual(operators.EXPECTED_OPERATORS.map(row => [row.geo, row.brand, row.locale, row.currency]),
-    [['MX', 'Betsson', 'es-MX', 'MXN'], ['CO', 'Betsson', 'es-CO', 'COP'], ['PE', 'Inkabet', 'es-PE', 'PEN']])
+    [['MX', 'Betsson', 'es-MX', 'MXN'], ['CO', 'bwin', 'es-CO', 'COP'], ['PE', 'Inkabet', 'es-PE', 'PEN']])
+  assert.deepEqual(Object.values(operators.GEO_OPERATORS).map(row => row.sponsors), [['Betsson'], ['bwin', 'Betsson'], ['Inkabet']])
 })
 
 test('legacy keys are scoped by their GEO segment; Brazil stays retired', () => {
@@ -88,7 +89,7 @@ test('owner diagnostics explain missing configuration per GEO without exposing v
     const result = commercial.diagnoseCommercialConfiguration()
     assert.deepEqual([result.registry, result.legacyDestinations], ['missing', 'missing'])
     assert.deepEqual(result.geos.map(row => [row.geo, row.brand, row.published, row.issues]),
-      [['MX', 'Betsson', 0, ['no_registry_record']], ['CO', 'Betsson', 0, ['no_registry_record']], ['PE', 'Inkabet', 0, ['no_registry_record']]])
+      [['MX', 'Betsson', 0, ['no_registry_record']], ['CO', 'bwin', 0, ['no_registry_record']], ['PE', 'Inkabet', 0, ['no_registry_record']]])
   })
   const now = Date.now(), day = 86_400_000
   const records = [keyed('MX', { brand: 'Test partner' }), keyed('CO', { destinationKey: 'test-co-unknown' }),

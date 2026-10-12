@@ -18,7 +18,6 @@ import { geoForLocale } from '@/lib/geo'
 import {
   getComparisonsForGame,
   getCountryName,
-  getOperatorsForGame,
   getPublicMarkets,
   getRelatedGames,
 } from '@/lib/data'
@@ -28,7 +27,8 @@ import { GameCard } from '@/components/game-card'
 import { GameArtwork } from '@/components/game-artwork'
 import { Breadcrumbs } from '@/components/breadcrumbs'
 import { ComparisonCard } from '@/components/comparison-card'
-import { WhereToPlayOperatorCard } from '@/components/where-to-play-operator-card'
+import { GameCasinoOptions } from '@/components/affiliates/game-casino-options'
+import { getGameCasinoOptions } from '@/lib/affiliates/promotion'
 import {
   ResponsibleNotice,
   ResponsibleGamingNotice,
@@ -57,7 +57,9 @@ export function GameDetailView({ game }: { game: Game }) {
   const copy = productCopy(locale)
   const deviceNames: Record<string, string> = { Desktop: copy.desktop, Mobile: copy.mobile, Tablet: copy.tablet }
 
-  const operators = countryCode ? getOperatorsForGame(game, countryCode, commercial.operators) : []
+  // Every approved operator in this GEO: verified availability first, honest brand discovery after.
+  const casinoOptions = countryCode ? getGameCasinoOptions(commercial, countryCode, locale, { id: game.id, slug: game.slug, category: game.affiliateCategory ?? game.category }) : { verified: [], explore: [] }
+  const hasCasinoOptions = casinoOptions.verified.length + casinoOptions.explore.length > 0
   // Pending country guides are useful neutral destinations. Linking them does
   // not claim operator availability or make the guide indexable.
   const hasPublishedGuide = geoForLocale(locale) !== null || isWhereToPlayIndexable(game, localeToSegment(locale))
@@ -155,7 +157,7 @@ export function GameDetailView({ game }: { game: Game }) {
             </p>
             <div className={styles.detailActions}>
               <ProviderPlayRealCta gameSlug={game.slug} category={game.affiliateCategory ?? game.category} />
-              {operators.length > 0 && (
+              {hasCasinoOptions && (
                 <Button size="lg" variant="outline" render={<a href="#where-to-play" />}>
                   {t('cta.seeWhereToPlay')}
                 </Button>
@@ -470,20 +472,8 @@ export function GameDetailView({ game }: { game: Game }) {
             </Button>
           ) : undefined}
         />
-        {operators.length > 0 && countryCode ? (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {operators.map((operator) => (
-              <WhereToPlayOperatorCard
-                key={operator.id}
-                operator={operator}
-                country={countryCode}
-                category={game.category}
-                pageType="game"
-                pageSlug={game.slug}
-                ctaLocation="game_where_to_play"
-              />
-            ))}
-          </div>
+        {hasCasinoOptions ? (
+          <GameCasinoOptions game={{ id: game.id, slug: game.slug, title: game.title, category: game.affiliateCategory ?? game.category }} />
         ) : (
           <div className="rounded-2xl border border-dashed border-border bg-card/40 p-10 text-center">
             <p className="text-base font-medium text-foreground">

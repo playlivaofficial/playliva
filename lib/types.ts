@@ -166,7 +166,7 @@ export interface Operator {
   campaignKey?: string
   priority?: number
   ctaText?: Partial<Record<Locale, string>>
-  /** The GEO's owner-confirmed primary brand: the only operator for sponsor slots and gameplay popups. */
+  /** The GEO's active sponsor (first live brand in the owner-confirmed sponsor chain): the only operator for sponsor slots and gameplay popups. */
   sponsor?: boolean
   commercialLegal?: { status: 'verified'; reviewBy: string; statement?: string; responsibleGambling?: string; disclosure?: string }
   id: string

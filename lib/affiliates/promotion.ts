@@ -153,3 +153,34 @@ export function getProviderGameCta(snapshot: CommercialSnapshot | undefined, cou
   }
   return null
 }
+
+export interface GameCasinoOption {
+  operatorId: string; operatorSlug: string; operatorName: string; logo: string; sponsor: boolean
+  href: string; placement: 'game_where_to_play_verified' | 'game_explore_casinos'
+  offer?: { offerId: string; headline: string; condition: string }
+}
+/**
+ * Multi-operator choices for one provider game. `verified` lists every approved
+ * operator in this GEO with an explicit availability record for this exact
+ * game; `explore` lists the other approved operators as honest brand
+ * discovery that never claims the game is offered there. The sponsor chain
+ * only orders the lists; it never hides another eligible operator.
+ */
+export function getGameCasinoOptions(snapshot: CommercialSnapshot | undefined, country: CountryCode, locale: Locale,
+  game: { id: string; slug: string; category: CategorySlug }): { verified: GameCasinoOption[]; explore: GameCasinoOption[] } {
+  const result = { verified: [] as GameCasinoOption[], explore: [] as GameCasinoOption[] }
+  if (!sameMarket(snapshot, country)) return result
+  for (const operator of snapshot.operators) {
+    if (!operator.categories.includes(game.category)) continue
+    const verified = Boolean(operator.verifiedGames?.[country]?.includes(game.id))
+    const placement = verified ? 'game_where_to_play_verified' as const : 'game_explore_casinos' as const
+    const resolved = resolveDestination({ operatorSlug: operator.slug, country, language: locale, pageType: 'content', pageSlug: game.slug, placement }, snapshot)
+    if (!resolved) continue
+    const promo = getPromotion(snapshot, country, locale, PROMO_PLACEMENTS.offersPage, { operatorId: operator.id, pageType: 'content' })
+    result[verified ? 'verified' : 'explore'].push({ operatorId: operator.id, operatorSlug: operator.slug, operatorName: operator.name,
+      logo: operator.logo, sponsor: Boolean(operator.sponsor), placement,
+      href: buildGoHref({ operator: operator.slug, country, language: locale, page: 'content', pageSlug: game.slug, placement, cta: placement }),
+      offer: promo ? { offerId: promo.offerId, headline: promo.headline, condition: promo.engagementCopy.condition } : undefined })
+  }
+  return result
+}
