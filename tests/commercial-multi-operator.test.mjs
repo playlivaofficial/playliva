@@ -125,3 +125,32 @@ test('the rendered game section labels verified play and unverified discovery ho
   }
   assert.doesNotMatch(markup, /partner\.test/, 'destinations stay server-side')
 })
+
+test('validated game deep links open the verified game; unverified or colliding links are ignored', async () => {
+  const previous = process.env.PLAYLIVA_COMMERCIAL_REGISTRY
+  try {
+    const records = market('PE')
+    records[0].gameLinks = [
+      { gameId: 'g1', campaignKey: 'main-pe-aviator', affiliateUrl: 'https://partner.test/main-pe/aviator' },
+      { gameId: 'g6', campaignKey: 'main-pe-bonanza', affiliateUrl: 'https://partner.test/main-pe/bonanza' }, // g6 not verified: ignored
+      { gameId: 'g1', campaignKey: 'main-pe', affiliateUrl: 'https://partner.test/collision' }, // duplicate game and brand key: ignored
+    ]
+    process.env.PLAYLIVA_COMMERCIAL_REGISTRY = JSON.stringify(records)
+    const snapshot = commercial.commercialSnapshot('PE')
+    assert.deepEqual(Object.keys(snapshot.operators[0].gameAffiliateUrl.PE), ['g1'])
+    assert.doesNotMatch(JSON.stringify(snapshot), /partner\.test\/(main|extra|collision)/, 'destinations stay server-side')
+    const [inkabet] = promotion.getGameCasinoOptions(snapshot, 'PE', 'es-PE', aviator).verified
+    assert.equal(new URL(inkabet.href, 'https://www.playliva.com').searchParams.get('game'), 'aviator')
+    const go = href => endpoint.GET(new NextRequest(`https://www.playliva.com${href}`, { headers: { 'x-vercel-ip-country': 'PE' } }))
+    assert.equal(new URL((await go(inkabet.href)).headers.get('location')).pathname, '/main-pe/aviator')
+    // The additional operator has no deep link: its verified row uses its own destination.
+    const extra = promotion.getGameCasinoOptions(snapshot, 'PE', 'es-PE', aviator).verified[1]
+    assert.equal(new URL(extra.href, 'https://www.playliva.com').searchParams.get('game'), null)
+    assert.equal(new URL((await go(extra.href)).headers.get('location')).pathname, '/extra-pe')
+    // The deep-link reference resolves only for its verified game record.
+    assert.equal(commercial.privateCommercialDestination('playliva-affiliate:PE:main-pe:main-pe-bonanza'), null)
+  } finally {
+    if (previous === undefined) delete process.env.PLAYLIVA_COMMERCIAL_REGISTRY
+    else process.env.PLAYLIVA_COMMERCIAL_REGISTRY = previous
+  }
+})

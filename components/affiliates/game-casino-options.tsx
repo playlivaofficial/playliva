@@ -19,7 +19,7 @@ import type { CategorySlug } from '@/lib/types'
  * brand discovery are separate, separately labelled lists; every approved
  * operator in the visitor's GEO stays visible, ordered by the sponsor chain.
  */
-export function GameCasinoOptions({ game }: { game: { id: string; slug: string; title: string; category: CategorySlug } }) {
+export function GameCasinoOptions({ game, disclosure = true }: { game: { id: string; slug: string; title: string; category: CategorySlug }; disclosure?: boolean }) {
   const { marketCode, locale, t, commercial } = useCountry()
   const root = useRef<HTMLDivElement>(null), route = usePathname()
   const options = marketCode ? getGameCasinoOptions(commercial, marketCode, locale, game) : { verified: [], explore: [] }
@@ -72,7 +72,7 @@ export function GameCasinoOptions({ game }: { game: { id: string; slug: string; 
         <ul className="mt-3 space-y-3">{options.explore.map(option => row(option, false))}</ul>
       </section>}
       <div className="space-y-1 text-xs text-muted-foreground">
-        <AffiliateDisclosureLine />
+        {disclosure && <AffiliateDisclosureLine />}
         <ResponsibleNotice />
       </div>
     </div>

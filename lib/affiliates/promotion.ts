@@ -174,12 +174,15 @@ export function getGameCasinoOptions(snapshot: CommercialSnapshot | undefined, c
     if (!operator.categories.includes(game.category)) continue
     const verified = Boolean(operator.verifiedGames?.[country]?.includes(game.id))
     const placement = verified ? 'game_where_to_play_verified' as const : 'game_explore_casinos' as const
-    const resolved = resolveDestination({ operatorSlug: operator.slug, country, language: locale, pageType: 'content', pageSlug: game.slug, placement }, snapshot)
+    // A validated deep link opens the game itself; otherwise the operator's own destination.
+    const deepLink = verified && Boolean(operator.gameAffiliateUrl?.[country]?.[game.id]) && getGame(game.slug)?.id === game.id
+    const resolved = resolveDestination({ operatorSlug: operator.slug, country, language: locale, pageType: 'content', pageSlug: game.slug, placement,
+      ...(deepLink ? { gameSlug: game.slug } : {}) }, snapshot)
     if (!resolved) continue
     const promo = getPromotion(snapshot, country, locale, PROMO_PLACEMENTS.offersPage, { operatorId: operator.id, pageType: 'content' })
     result[verified ? 'verified' : 'explore'].push({ operatorId: operator.id, operatorSlug: operator.slug, operatorName: operator.name,
       logo: operator.logo, sponsor: Boolean(operator.sponsor), placement,
-      href: buildGoHref({ operator: operator.slug, country, language: locale, page: 'content', pageSlug: game.slug, placement, cta: placement }),
+      href: buildGoHref({ operator: operator.slug, country, language: locale, page: 'content', pageSlug: game.slug, placement, cta: placement, ...(deepLink ? { game: game.slug } : {}) }),
       offer: promo ? { offerId: promo.offerId, headline: promo.headline, condition: promo.engagementCopy.condition } : undefined })
   }
   return result

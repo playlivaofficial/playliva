@@ -216,6 +216,12 @@ export interface Operator {
    */
   categoryAffiliateUrl?: Partial<Record<OperatorCategorySlug, Partial<Record<CountryCode, string>>>>
   /**
+   * Validated operator deep link for one verified game, keyed by GEO then game
+   * id. Present only alongside a matching `verifiedGames` record; an opaque
+   * reference resolved server-side by `/go`.
+   */
+  gameAffiliateUrl?: Partial<Record<CountryCode, Record<string, string>>>
+  /**
    * Functional partner attribution appended at redirect time regardless of
    * analytics consent, keyed by GEO. Supports tokens: {geo} {language} {pageType}
    * {pageSlug} {gameSlug} {matchSlug} {placement}. Undefined until the real

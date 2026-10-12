@@ -473,7 +473,7 @@ export function GameDetailView({ game }: { game: Game }) {
           ) : undefined}
         />
         {hasCasinoOptions ? (
-          <GameCasinoOptions game={{ id: game.id, slug: game.slug, title: game.title, category: game.affiliateCategory ?? game.category }} />
+          <GameCasinoOptions disclosure={false} game={{ id: game.id, slug: game.slug, title: game.title, category: game.affiliateCategory ?? game.category }} />
         ) : (
           <div className="rounded-2xl border border-dashed border-border bg-card/40 p-10 text-center">
             <p className="text-base font-medium text-foreground">

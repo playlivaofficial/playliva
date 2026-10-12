@@ -57,6 +57,8 @@ export interface OperatorRegistration {
    * so a casino and a sportsbook welcome offer never share one tracked link;
    * without destination fields it uses the operator's own destination. */
   offers?: CommercialOfferRegistration[]
+  /** Partner-issued deep links for games listed in `verifiedGames`; each needs its own key. */
+  gameLinks?: { gameId: string; campaignKey: string; affiliateUrl?: string; destinationKey?: string }[]
 }
 
 export type CommercialOfferRegistration = Omit<CommercialCampaign, 'operatorId' | 'geo' | 'currency'> & {
