@@ -40,6 +40,9 @@ import { createHash } from 'node:crypto'
 // LATAM commercial activation rebases only data.ts: an offer may use one of its
 // own operator's same-GEO campaign references (multi-offer registry), covered
 // by commercial-multi-offer tests. Destinations, routing and engines stay fixed.
+// Multi-operator Where to Play rebases only affiliate.ts: a validated per-game deep link
+// (registry `gameLinks`, only for a verified game) may replace the brand destination,
+// covered by commercial-multi-operator tests. Eligibility rules and GEO gates stay fixed.
 test('GEO migration: reviewed outbound, SEO and privacy infrastructure snapshot', async () => {
   const expected = JSON.parse(await readFile(new URL('./fixtures/redesign-protected.json', import.meta.url), 'utf8'))
   for (const [path, hash] of Object.entries(expected)) {

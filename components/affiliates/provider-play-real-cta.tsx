@@ -40,7 +40,8 @@ export function ProviderPlayRealCta({
         className={styles.playCtaButton}
         render={<a href={cta.href} target="_blank" rel="sponsored noopener noreferrer" onClick={() => track('affiliate_click', payload)} />}
       >
-        {cta.ctaLabel || t('affiliate.playAtNamed', { name: cta.operatorName })}
+        {/* "Play at" only when this exact game is verified there; a brand referral says "Explore". */}
+        {cta.ctaLabel || t(cta.mode === 'verified-game' ? 'affiliate.playAtNamed' : 'affiliate.exploreNamed', { name: cta.operatorName })}
       </Button>
       <AffiliateDisclosureLine />
       <CommercialAdDisclosure operatorId={cta.operatorId} />

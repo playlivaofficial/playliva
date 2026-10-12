@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo } from 'react'
+import Image from 'next/image'
 import { useCountry } from '@/components/country-context'
 import { getPublicOffers, getCountryName } from '@/lib/data'
 import { Section, SectionHeading } from '@/components/section'
@@ -31,18 +32,11 @@ export function OffersView() {
   const countryName = marketCode ? getCountryName(marketCode, locale) : t('geo.marketLabel')
 
   const featured = useMemo(() => offers.filter((o) => o.featured), [offers])
-  const casino = useMemo(
-    () =>
-      // Featured offers already render in the highlighted grid; never duplicate a card.
-      offers.filter((o) =>
-        !o.featured && ['crash', 'slots', 'live-casino', 'table-games', 'instant-games'].includes(o.category as string),
-      ),
-    [offers],
-  )
-  const newPlayer = useMemo(
-    () => offers.filter((o) => !o.featured && o.category === 'welcome'),
-    [offers],
-  )
+  // Every authorized operator keeps its own section, in the GEO's commercial order
+  // (sponsor chain first). Featured offers already render above; never duplicate a card.
+  const byOperator = useMemo(() => commercial.operators
+    .map((operator) => ({ operator, offers: offers.filter((o) => !o.featured && o.operatorId === operator.id) }))
+    .filter((group) => group.offers.length > 0), [offers, commercial.operators])
 
   return (
     <div>
@@ -114,20 +108,20 @@ export function OffersView() {
             </Section>
           )}
 
-          {casino.length > 0 && (
-            <Section className="border-t border-border bg-card/30">
-              <SectionHeading title={t('offers.casino')} />
-              <OfferGrid offers={casino} />
+          {byOperator.map(({ operator, offers: operatorOffers }) => (
+            <Section key={operator.id} className="border-t border-border bg-card/30">
+              <div className="mb-6 flex items-center gap-3" data-offers-operator={operator.id}>
+                <span className="relative size-11 shrink-0 overflow-hidden rounded-xl border border-border bg-white">
+                  <Image src={operator.logo} alt="" fill sizes="44px" className="object-contain" />
+                </span>
+                <div>
+                  <h2 className="font-display text-2xl font-bold tracking-tight text-foreground">{t('offers.byOperator', { name: operator.name })}</h2>
+                  <p className="text-sm text-muted-foreground">{t('offers.operatorCount', { count: operatorOffers.length, market: countryName })}</p>
+                </div>
+              </div>
+              <OfferGrid offers={operatorOffers} />
             </Section>
-          )}
-
-
-          {newPlayer.length > 0 && (
-            <Section className="border-t border-border bg-card/30">
-              <SectionHeading title={t('offers.newPlayer')} />
-              <OfferGrid offers={newPlayer} />
-            </Section>
-          )}
+          ))}
         </div>
       )}
 

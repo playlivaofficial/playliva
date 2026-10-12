@@ -8,7 +8,7 @@
  */
 
 import { getOperator, getOperatorById, getOffers,
-  isAffiliateEligible, isOfferEligible, isCategorySlug, affiliateGameSlug, affiliateCategory,
+  isAffiliateEligible, isOfferEligible, isCategorySlug, affiliateGameSlug, affiliateCategory, getGame,
   type AffiliateContext } from './data'
 import type { CountryCode } from './types'
 import { DEFAULT_LOCALE_SEGMENT, isLocaleSegment, localeToSegment } from './locale'
@@ -160,7 +160,11 @@ export function resolveDestination(params: AffiliateContext & {
     const categoryUrl = category && isCategorySlug(category)
       ? operator.categoryAffiliateUrl?.[category]?.[country]
       : undefined
-    const baseUrl = categoryUrl ?? operator.affiliateUrl[country]
+    // A validated deep link exists only for a game this operator is verified to
+    // offer in this GEO (eligibility above already required that record).
+    const verifiedGame = gameSlug ? getGame(gameSlug) : undefined
+    const gameUrl = verifiedGame ? operator.gameAffiliateUrl?.[country]?.[verifiedGame.id] : undefined
+    const baseUrl = gameUrl ?? categoryUrl ?? operator.affiliateUrl[country]
     if (!baseUrl) return null
     const url = withTrackingTemplate(
       withTrackingTemplate(baseUrl, operator.trackingTemplate?.[country], { geo: country, ...ctx }),

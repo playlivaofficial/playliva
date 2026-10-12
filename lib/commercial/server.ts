@@ -5,7 +5,8 @@ import type { Operator, Offer } from '../types'
 import { commercialReference, isCommercialKey, parseCommercialReference } from './references'
 import { emptyCommercialSnapshot, type CommercialCampaign, type CommercialOfferRegistration, type CommercialSnapshot, type OperatorRegistration } from './types'
 import { hasMatchingCurrencyCopy } from './currency'
-import { EXPECTED_OPERATORS, isPrimaryBrand } from './operators'
+import { EXPECTED_OPERATORS, sponsorRank } from './operators'
+import { isSponsorPlacement } from '../affiliates/promotion'
 
 function object(value: unknown): value is Record<string, unknown> { return !!value && typeof value === 'object' && !Array.isArray(value) }
 function strings(value: unknown): value is string[] { return Array.isArray(value) && value.every(item => typeof item === 'string') }
@@ -115,6 +116,20 @@ function campaignEntries(record: OperatorRegistration): CampaignEntry[] {
   }
   return entries
 }
+/** Valid deep links: own key and https destination, for a game the record already verifies. */
+function gameLinkEntries(record: OperatorRegistration): { gameId: string; campaignKey: string; affiliateUrl: string }[] {
+  const keys = new Set([record.campaignKey, ...campaignEntries(record).map(entry => entry.campaignKey)]), games = new Set<string>()
+  const links: { gameId: string; campaignKey: string; affiliateUrl: string }[] = []
+  for (const link of Array.isArray(record.gameLinks) ? record.gameLinks : []) {
+    if (!object(link) || typeof link.gameId !== 'string' || !(record.verifiedGames ?? []).includes(link.gameId) || games.has(link.gameId) ||
+      !isCommercialKey(link.campaignKey) || keys.has(link.campaignKey) || !https(link.affiliateUrl) ||
+      /(^|.)bet.br$/.test(new URL(link.affiliateUrl).hostname)) continue
+    keys.add(link.campaignKey); games.add(link.gameId)
+    links.push({ gameId: link.gameId, campaignKey: link.campaignKey, affiliateUrl: link.affiliateUrl })
+  }
+  return links
+}
+
 function invalidCampaignEntries(record: Record<string, unknown>): number {
   if (!Array.isArray(record.offers)) return record.offers === undefined ? 0 : 1
   const seen = new Set<string>()
@@ -146,8 +161,10 @@ function readRegistryInput(source: string, destinationsSource: string): unknown[
       ? { ...entry, affiliateUrl: legacyDestination(geo, entry.destinationKey, destinations) } : entry
     return input.map(item => {
       const record = resolve(item, object(item) ? item.geo : undefined)
-      return object(record) && Array.isArray(record.offers)
-        ? { ...record, offers: record.offers.map(entry => resolve(entry, record.geo)) } : record
+      if (!object(record)) return record
+      return { ...record,
+        ...(Array.isArray(record.offers) ? { offers: record.offers.map(entry => resolve(entry, record.geo)) } : {}),
+        ...(Array.isArray(record.gameLinks) ? { gameLinks: record.gameLinks.map(entry => resolve(entry, record.geo)) } : {}) }
     })
   } catch { return null }
 }
@@ -203,9 +220,10 @@ export function snapshotFromRegistry(geo: unknown, registrations: OperatorRegist
   const result = emptyCommercialSnapshot(isCommercialGeo(geo) ? geo : null)
   if (!isCommercialGeo(geo)) return result
   // Validate injected fixtures as well as production input; no alternate permissive path.
-  // The owner-confirmed primary brand leads every GEO list; priority orders the rest.
+  // The owner-confirmed sponsor chain (primary first) leads every GEO list; priority orders the rest.
+  const rank = (brand: string) => { const value = sponsorRank(geo, brand); return value < 0 ? Number.MAX_SAFE_INTEGER : value }
   const records = parseOperatorRegistry(JSON.stringify(registrations), now).filter(item => item.geo === geo)
-    .sort((a, b) => Number(isPrimaryBrand(geo, b.brand)) - Number(isPrimaryBrand(geo, a.brand)) || a.priority - b.priority || a.id.localeCompare(b.id))
+    .sort((a, b) => rank(a.brand) - rank(b.brand) || a.priority - b.priority || a.id.localeCompare(b.id))
   for (const record of records) {
     const legal = record.legal
     const operator: Operator = {
@@ -216,7 +234,8 @@ export function snapshotFromRegistry(geo: unknown, registrations: OperatorRegist
       priority: record.priority, campaignKey: record.campaignKey,
       affiliateUrl: { [geo]: commercialReference(geo, record.id, record.campaignKey) },
       verifiedGames: { [geo]: record.verifiedGames ?? [] }, verifiedOffers: [],
-      ctaText: record.ctaText, sponsor: isPrimaryBrand(geo, record.brand),
+      ctaText: record.ctaText, sponsor: false,
+      gameAffiliateUrl: { [geo]: Object.fromEntries(gameLinkEntries(record).map(link => [link.gameId, commercialReference(geo, record.id, link.campaignKey)])) },
       commercialLegal: { status: 'verified', reviewBy: legal.reviewBy!, statement: legal.statement,
         responsibleGambling: legal.responsibleGambling, disclosure: legal.disclosure },
     }
@@ -275,6 +294,12 @@ export function snapshotFromRegistry(geo: unknown, registrations: OperatorRegist
         validFrom: campaign.validFrom, validUntil: campaign.validUntil, verifiedTerms: [...campaign.verifiedTerms] })
     }
   }
+  // Exactly one sponsor per GEO: the first chain brand with a live sponsor-eligible
+  // campaign, else the first chain brand published at all (brand-only banners).
+  const chain = result.operators.filter(operator => sponsorRank(geo, operator.name) >= 0)
+  const sponsor = chain.find(operator => result.campaigns.some(campaign => campaign.operatorId === operator.id &&
+    campaign.placements.some(isSponsorPlacement))) ?? chain[0]
+  if (sponsor) sponsor.sponsor = true
   return result
 }
 
@@ -287,8 +312,10 @@ export function privateCommercialDestination(reference: string, context: Record<
   if (!ref) return null
   const record = parseOperatorRegistry().find(item => item.geo === ref.geo && item.id === ref.operatorId)
   // The operator's own key is its brand destination; any other key must be one of its verified campaign entries.
+  const gameLink = record && gameLinkEntries(record).find(link => link.campaignKey === ref.campaignKey)
   const entry = record && (record.campaignKey === ref.campaignKey
     ? { affiliateUrl: record.affiliateUrl, campaignId: record.campaignId }
+    : gameLink ? { affiliateUrl: gameLink.affiliateUrl, campaignId: record.campaignId }
     : campaignEntries(record).find(item => item.campaignKey === ref.campaignKey &&
       // A campaign link redirects only while its offer currently passes every publication gate.
       snapshotFromRegistry(ref.geo, [record]).offers.some(offer => offer.affiliateUrl === reference)))

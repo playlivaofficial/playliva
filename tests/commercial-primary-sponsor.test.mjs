@@ -22,12 +22,15 @@ function campaign(geo, key, extra = {}) {
     ...extra,
   }
 }
-const secondary = (geo, overrides = {}) => registration(geo, { id: `second-${geo.toLowerCase()}`, slug: 'second-partner', brand: geo === 'CO' ? 'bwin' : '1xBet',
+// The extra brand per GEO: bwin is Colombia's primary (Betsson its fallback); Winpot and 1xBet are additional only.
+const extraBrand = { MX: 'Winpot', CO: 'bwin', PE: '1xBet' }
+const secondary = (geo, overrides = {}) => registration(geo, { id: `second-${geo.toLowerCase()}`, slug: 'second-partner', brand: extraBrand[geo],
   campaignKey: `second-${geo.toLowerCase()}`, priority: 0, ...overrides })
+const sponsorOf = snapshot => snapshot.operators.filter(item => item.sponsor).map(item => item.name)
 
-test('primary brand leads each GEO and alone fills sponsor slots and the gameplay popup', () => {
-  for (const geo of ['CO', 'PE']) {
-    // The secondary has a better priority number and its own campaign; it must still never take sponsor surfaces.
+test('the sponsor chain decides sponsor slots and the popup; every other operator stays listed', () => {
+  // Betsson (MX) and Inkabet (PE) keep sponsor surfaces even when the additional operator has a better priority number.
+  for (const geo of ['MX', 'PE']) {
     const snapshot = commercial.snapshotFromRegistry(geo, [secondary(geo, { offer: campaign(geo, `s-${geo.toLowerCase()}`) }), registration(geo, { offer: campaign(geo, `p-${geo.toLowerCase()}`) })])
     assert.deepEqual(snapshot.operators.map(item => [item.slug, item.sponsor]), [['test-partner', true], ['second-partner', false]])
     const locale = `es-${geo}`
@@ -35,22 +38,36 @@ test('primary brand leads each GEO and alone fills sponsor slots and the gamepla
       assert.equal(promotion.getSponsoredBanner(snapshot, geo, locale, surface)?.operatorSlug, 'test-partner', `${geo} ${surface}`)
     }
     assert.equal(promotion.getPromotion(snapshot, geo, locale, promotion.PROMO_PLACEMENTS.originalsEngagement)?.offerId, `offer-p-${geo.toLowerCase()}`)
-    // Secondary offers stay available in Offers and discovery flows.
     assert.deepEqual(data.getPublicOffers(geo, snapshot.offers, snapshot.operators).map(offer => offer.id), [`offer-p-${geo.toLowerCase()}`, `offer-s-${geo.toLowerCase()}`])
     assert.equal(promotion.getPromotion(snapshot, geo, locale, promotion.PROMO_PLACEMENTS.offersPage, { operatorId: `second-${geo.toLowerCase()}` })?.offerId, `offer-s-${geo.toLowerCase()}`)
   }
+  // Colombia: a live bwin campaign takes sponsor surfaces and leads the list; Betsson stays listed with its offers.
+  const co = commercial.snapshotFromRegistry('CO', [registration('CO', { offer: campaign('CO', 'betsson') }), secondary('CO', { priority: 5, offer: campaign('CO', 'bwin') })])
+  assert.deepEqual(co.operators.map(item => [item.name, item.sponsor]), [['bwin', true], ['Betsson', false]])
+  assert.equal(promotion.getSponsoredBanner(co, 'CO', 'es-CO', 'homepage')?.operatorSlug, 'second-partner')
+  assert.equal(promotion.getPromotion(co, 'CO', 'es-CO', promotion.PROMO_PLACEMENTS.originalsEngagement)?.offerId, 'offer-bwin')
+  assert.deepEqual(data.getPublicOffers('CO', co.offers, co.operators).map(offer => offer.id), ['offer-bwin', 'offer-betsson'])
 })
 
-test('a secondary operator never replaces a missing or offer-less primary in sponsor surfaces', () => {
-  const onlySecondary = commercial.snapshotFromRegistry('PE', [secondary('PE', { offer: campaign('PE', 'only') })])
-  assert.equal(onlySecondary.operators.length, 1)
-  for (const surface of Object.keys(promotion.BANNER_SURFACES)) assert.equal(promotion.getSponsoredBanner(onlySecondary, 'PE', 'es-PE', surface), null)
-  assert.equal(promotion.getPromotion(onlySecondary, 'PE', 'es-PE', promotion.PROMO_PLACEMENTS.originalsEngagement), null)
-  assert.equal(data.getPublicOffers('PE', onlySecondary.offers, onlySecondary.operators).length, 1, 'the secondary offer remains listed')
-  // Primary without a campaign keeps the brand banner; the popup never borrows the secondary's offer.
-  const noPrimaryOffer = commercial.snapshotFromRegistry('CO', [secondary('CO', { offer: campaign('CO', 'bw') }), registration('CO')])
-  assert.equal(promotion.getSponsoredBanner(noPrimaryOffer, 'CO', 'es-CO', 'homepage')?.operatorSlug, 'test-partner')
-  assert.equal(promotion.getPromotion(noPrimaryOffer, 'CO', 'es-CO', promotion.PROMO_PLACEMENTS.originalsEngagement), null)
+test('a pending primary keeps the last working sponsor; additional operators never take sponsor surfaces', () => {
+  // bwin configured without a live campaign: Betsson keeps Colombia's banners and popup.
+  const pending = commercial.snapshotFromRegistry('CO', [secondary('CO'), registration('CO', { offer: campaign('CO', 'betsson') })])
+  assert.deepEqual(sponsorOf(pending), ['Betsson'])
+  assert.equal(promotion.getSponsoredBanner(pending, 'CO', 'es-CO', 'homepage')?.operatorSlug, 'test-partner')
+  assert.equal(promotion.getPromotion(pending, 'CO', 'es-CO', promotion.PROMO_PLACEMENTS.originalsEngagement)?.offerId, 'offer-betsson')
+  // Winpot / 1xBet alone never sponsor, but their offers remain listed.
+  for (const geo of ['MX', 'PE']) {
+    const only = commercial.snapshotFromRegistry(geo, [secondary(geo, { offer: campaign(geo, 'only') })])
+    assert.deepEqual(sponsorOf(only), [])
+    for (const surface of Object.keys(promotion.BANNER_SURFACES)) assert.equal(promotion.getSponsoredBanner(only, geo, `es-${geo}`, surface), null)
+    assert.equal(promotion.getPromotion(only, geo, `es-${geo}`, promotion.PROMO_PLACEMENTS.originalsEngagement), null)
+    assert.equal(data.getPublicOffers(geo, only.offers, only.operators).length, 1, 'the additional offer remains listed')
+  }
+  // Betsson MX without a campaign keeps the brand banner; the popup never borrows Winpot's offer.
+  const noPrimaryOffer = commercial.snapshotFromRegistry('MX', [secondary('MX', { offer: campaign('MX', 'wp') }), registration('MX')])
+  assert.deepEqual(sponsorOf(noPrimaryOffer), ['Betsson'])
+  assert.equal(promotion.getSponsoredBanner(noPrimaryOffer, 'MX', 'es-MX', 'homepage')?.operatorSlug, 'test-partner')
+  assert.equal(promotion.getPromotion(noPrimaryOffer, 'MX', 'es-MX', promotion.PROMO_PLACEMENTS.originalsEngagement), null)
 })
 
 test('an operator may publish several verified campaigns; expired or duplicate ones fail closed', () => {

@@ -166,7 +166,7 @@ export interface Operator {
   campaignKey?: string
   priority?: number
   ctaText?: Partial<Record<Locale, string>>
-  /** The GEO's owner-confirmed primary brand: the only operator for sponsor slots and gameplay popups. */
+  /** The GEO's active sponsor (first live brand in the owner-confirmed sponsor chain): the only operator for sponsor slots and gameplay popups. */
   sponsor?: boolean
   commercialLegal?: { status: 'verified'; reviewBy: string; statement?: string; responsibleGambling?: string; disclosure?: string }
   id: string
@@ -215,6 +215,12 @@ export interface Operator {
    * tracking links.
    */
   categoryAffiliateUrl?: Partial<Record<OperatorCategorySlug, Partial<Record<CountryCode, string>>>>
+  /**
+   * Validated operator deep link for one verified game, keyed by GEO then game
+   * id. Present only alongside a matching `verifiedGames` record; an opaque
+   * reference resolved server-side by `/go`.
+   */
+  gameAffiliateUrl?: Partial<Record<CountryCode, Record<string, string>>>
   /**
    * Functional partner attribution appended at redirect time regardless of
    * analytics consent, keyed by GEO. Supports tokens: {geo} {language} {pageType}

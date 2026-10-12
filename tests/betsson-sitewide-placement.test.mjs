@@ -180,7 +180,8 @@ test('all 42 real provider games expose an early CTA only for approved target GE
         React.createElement(gameDetailModule.GameDetailView, { game }))
       const node = markup.querySelector('[data-provider-game-cta]')
       assert.ok(node, game.slug)
-      assert.equal(node.textContent.replace(/\s+/g, ' ').includes(t('affiliate.playAtNamed',{name:partner.name})), true)
+      // "Play at" is reserved for a verified exact-game listing; brand referrals say "Explore".
+      assert.equal(node.textContent.replace(/\s+/g, ' ').includes(t(cta.mode === 'verified-game' ? 'affiliate.playAtNamed' : 'affiliate.exploreNamed',{name:partner.name})), true)
       assert.doesNotMatch(node.textContent, new RegExp(`Play ${game.title} at Betsson`, 'i'))
       assert.doesNotMatch(markup.body.textContent, exactClaim)
       assert.ok(markup.querySelector('[data-sponsored-banner="game"]'))
@@ -197,7 +198,7 @@ test('all 42 real provider games expose an early CTA only for approved target GE
         React.createElement(referenceModule.ReferenceGameView, { game, locale }))
       const node = markup.querySelector('[data-provider-game-cta]')
       assert.ok(node, game.slug)
-      assert.ok(node.textContent.includes(t('affiliate.playAtNamed',{name:partner.name})))
+      assert.ok(node.textContent.includes(t('affiliate.exploreNamed',{name:partner.name})))
       assert.doesNotMatch(node.textContent, new RegExp(`Play ${game.title} at Betsson`, 'i'))
       assert.ok(markup.querySelector('[data-sponsored-banner="game"]'))
       if (locale === 'en') assert.doesNotMatch(node.textContent, portuguesePromo)

@@ -24,6 +24,7 @@ import { getCategoryName } from '@/lib/content'
 import styles from './catalog.module.css'
 import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsored-banner'
 import { ProviderPlayRealCta } from '@/components/affiliates/provider-play-real-cta'
+import { GameCasinoOptions } from '@/components/affiliates/game-casino-options'
 import { RtpFact } from '@/components/rtp-fact'
 import { EditorialByline } from '@/components/editorial-byline'
 
@@ -50,6 +51,7 @@ export function ReferenceGameView({ game, locale }: { game: ReferenceGame; local
         <div><h2>{c.overview}</h2><p>{content.overview}</p><h2>{c.how}</h2><p>{content.howItWorks}</p><h2>{c.features}</h2><ul className={styles.features}>{content.features.map(feature => <li key={feature}>{feature}</li>)}</ul></div>
         <aside><div className={styles.heroArt}><CatalogArtwork game={summary} hero /></div><div className={styles.links}><LocaleLink href={`/providers/${game.providerId}`}>{summary.provider}</LocaleLink><LocaleLink href={`/${game.category}`}>{summary.categoryLabel}</LocaleLink><LocaleLink href="/games">{c.back}</LocaleLink></div></aside>
       </div>
+      <section id="where-to-play" className={styles.related}><GameCasinoOptions game={{ id: game.id, slug: game.slug, title: game.title, category: game.category }} /></section>
       {readingList && <div className={styles.links}><LocaleLink href={`/games-like/${game.slug}`}>{c.similar} {game.title} →</LocaleLink></div>}
       {comparisons.length > 0 && <section className={styles.related}><h2>{c.comparisons}</h2><div className={styles.links}>{comparisons.map(item => <LocaleLink key={item.slug} href={`/compare/${item.slug}`}>{getReferenceGame(item.a)!.title} vs {getReferenceGame(item.b)!.title}</LocaleLink>)}</div></section>}
       <section className={styles.related}><h2>{c.related}</h2><div className="grid grid-cols-2 gap-4 sm:grid-cols-3">{game.relatedSlugs.map(slug => <CatalogCard key={slug} game={referenceSummary(getReferenceGame(slug)!, locale)} readLabel={c.read} />)}</div></section>
