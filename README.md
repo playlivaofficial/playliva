@@ -438,6 +438,15 @@ Activation is a commercial-data update, followed by a normal PlayLiva redeploy:
    plus its own unique `campaignKey` and issued HTTPS `affiliateUrl` (or GEO-scoped
    `destinationKey`). An entry without its own valid destination is withheld; it
    never inherits the brand link. The first campaign listing a placement wins it.
+   `verifiedGames` lists catalog game IDs the operator is evidenced to offer in that
+   GEO (partner deep link or the operator's own public catalog); `gameLinks`
+   optionally adds a partner-issued deep link for one of those games, with its own
+   `campaignKey`. Unverified operators appear only under "Explorar casinos".
+   Sponsor slots and the gameplay popup follow `GEO_OPERATORS[geo].sponsors` in
+   `lib/commercial/operators.ts` (CO: bwin, then Betsson): the first brand with a
+   live sponsor-eligible campaign wins. A prepared partner record stays suppressed
+   with `approved: false`/`active: false`; activating it is setting both to `true`
+   and adding its issued `affiliateUrl` (and each offer's own destination).
 6. Verify Owner preview for Mexico, Colombia and Peru, then Reset to Real GEO.
    Check currency, directory, Offers, Where to Play, compact banners, pre-round
    popup cadence and the approved destination. Preview is session-authenticated,
