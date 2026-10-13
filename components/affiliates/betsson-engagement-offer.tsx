@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -50,7 +50,9 @@ export function BetssonEngagementOffer({ game, roundActive, onHold }: { game: Or
     return () => { instance.dispose(); trigger.current = null }
   }, [promoId, every, delay, onHold])
 
-  useEffect(() => { trigger.current?.observe(roundActive) }, [roundActive])
+  // Layout effect: a reached milestone holds the next round before the boundary frame
+  // is painted, so Start is never briefly clickable at a 3/6/9 boundary.
+  useLayoutEffect(() => { trigger.current?.observe(roundActive) }, [roundActive])
 
   const dismiss = useCallback(() => {
     trigger.current?.dismiss()
