@@ -1,5 +1,6 @@
 import { GEO_CONFIG, geoForLocale, type CommercialGeo } from './geo'
 import type { Locale } from './types'
+import { latamMetadata } from './latam-editorial'
 
 const COUNTRY_GUIDES: Record<CommercialGeo, { intro: string; money: string; checks: string[] }> = {
   MX: {
@@ -25,6 +26,8 @@ export function geoEditorial(locale: Locale) {
 }
 
 export function geoEditorialMetadata(path: string, locale: Locale) {
+  const topic = latamMetadata(path, locale)
+  if (topic) return topic
   const country = geoEditorial(locale)
   if (!country || !['/', '/games'].includes(path)) return null
   return path === '/'

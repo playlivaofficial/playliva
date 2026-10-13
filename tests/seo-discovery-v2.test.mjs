@@ -42,14 +42,14 @@ test('V2 quality gates agree with metadata, reciprocal alternates and sitemap; m
   assert.equal(meta.robots.index,false);assert.equal(meta.alternates.languages,undefined)
   assert.ok(!sitemap.default().some(g=>g.url.endsWith('/games/'+slug)))
  }finally{references.REFERENCE_GAMES[0].artwork=original}
- const rows=sitemap.default();assert.equal(rows.length,317);assert.equal(new Set(rows.map(r=>r.url)).size,317)
+ const rows=sitemap.default();assert.equal(rows.length,343);assert.equal(new Set(rows.map(r=>r.url)).size,343)
  for(const row of rows){const [,seg,...parts]=new URL(row.url).pathname.split('/');assert.equal(policy.discoveryIndexability('/'+parts.join('/'),seg).index,true)}
  assert.ok(!rows.some(r=>/owner|\?/.test(r.url)))
  assert.equal(policy.discoveryIndexability('/owner/growth','pt-br').index,false)
  assert.equal(policy.discoveryIndexability('/games?provider=spribe','pt-br').index,false)
  assert.equal(policy.discoveryIndexability('/where-to-play/spribe-dice','pt-br').index,false)
  assert.equal(policy.discoveryIndexability('/where-to-play/aviator','en').index,false)
- for(const seg of ['pt-br','en','es-mx']){const m=metadata.pageMetadata({title:'Aviator',path:'/games/aviator',localeSegment:seg});assert.equal(m.alternates.canonical,`https://www.playliva.com/${seg}/games/aviator`);assert.equal(Object.keys(m.alternates.languages).length,4)}
+ for(const seg of ['pt-br','en','es-mx']){const m=metadata.pageMetadata({title:'Aviator',path:'/games/aviator',localeSegment:seg});assert.equal(m.alternates.canonical,`https://www.playliva.com/${seg}/games/aviator`);assert.equal(Object.keys(m.alternates.languages).length,6)}
 })
 test('V2 cross-discovery and editorial links stay deterministic, bounded and within real routes',()=>{
  const samba=entries.find(g=>g.slug==='samba-drop')

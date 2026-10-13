@@ -171,7 +171,7 @@ test('M11: 189 M10 URLs survive; new routes have unique reciprocal localized met
   const oldPaths = JSON.parse(await readFile(new URL('./fixtures/m10-sitemap-paths.json', import.meta.url)))
   const entries = sitemapModule.default(), urls = entries.map(item => item.url)
   assert.equal(oldPaths.length * 3, 189)
-  assert.equal(entries.length, 317) // Four regional hubs; deprecated empty commercial inventory excluded.
+  assert.equal(entries.length, 343) // Reviewed LATAM cluster and six substantive Spanish guides; empty commercial inventory excluded.
   assert.equal(new Set(urls).size, urls.length)
   assert.equal(paths.REFERENCE_PATHS.length, 43)
   for (const [, segment] of locales) for (const path of oldPaths) {

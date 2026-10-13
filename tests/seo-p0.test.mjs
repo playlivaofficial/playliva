@@ -42,7 +42,7 @@ test('market lists and Where-to-Play indexability are derived from verified data
 
 test('sitemap excludes empty and wrong-market SEO routes', () => {
   const paths = sitemap().map((entry) => new URL(entry.url).pathname)
-  assert.equal(paths.length, 317) // Regional hubs added; deprecated empty commercial pages removed.
+  assert.equal(paths.length, 343) // Reviewed LATAM guides added; empty commercial pages remain excluded.
   assert.ok(paths.includes('/pt-br/where-to-play/aviator'))
   assert.ok(!paths.includes('/en/where-to-play/aviator'))
   assert.ok(!paths.some((path) => path.includes('/where-to-play/mines')))

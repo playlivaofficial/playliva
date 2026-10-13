@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { LatamEditorialGuide } from '@/components/latam-editorial-guide'
 import { CategoryPageView } from '@/components/category-page-view'
 import { CategoryReferenceSection } from '@/components/catalog/reference-views'
 import { catalogLocale } from '@/lib/catalog/metadata'
@@ -34,5 +35,5 @@ export async function generateMetadata({
 
 export default async function SlotsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
-  return <CategoryPageView slug="slots" referenceCatalog={<CategoryReferenceSection category="slots" locale={catalogLocale(locale)} />} />
+  return <CategoryPageView slug="slots" regionalGuide={<LatamEditorialGuide path="/slots" locale={catalogLocale(locale)} />} referenceCatalog={<CategoryReferenceSection category="slots" locale={catalogLocale(locale)} />} />
 }

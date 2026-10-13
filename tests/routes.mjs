@@ -44,6 +44,7 @@ import rtpModule from '../lib/rtp.ts'
 import promoModule from '../lib/affiliates/betsson-promo-config.ts'
 import spotlightModule from '../lib/home/spotlight.ts'
 import geoModule from '../lib/geo.ts'
+import latamModule from '../lib/latam-editorial.ts'
 const { originalsDiscoveryCopy, ISLAND_CRASH_POSTER } = discoveryModule
 const { ANALYTICS_COOKIE } = consentModule
 
@@ -555,7 +556,9 @@ try {
     }
     const category = CATEGORIES.find(c => routePath === `/${c.slug}`)
     if (category) {
-      const gameLinks = [...doc.querySelectorAll('main a[href*="/games/"]')].map(link => new URL(link.href, base).pathname.split('/').pop())
+      // Provider documentation may also contain /games/ in an external URL.
+      // Category membership concerns the localized PlayLiva catalog only.
+      const gameLinks = [...doc.querySelectorAll(`main a[href^="/${segment}/games/"]`)].map(link => new URL(link.href, base).pathname.split('/').pop())
       const expected = GAMES.filter(g => productModule.discoveryCategory(g) === category.slug || category.slug === 'table-games' && g.category === 'table-games').map(g => g.slug)
       // Preserve every legacy category member; append the bounded M11 reference
       // page only. Remaining entries are exercised through pagination tests.
@@ -569,6 +572,10 @@ try {
       }
     }
     const robots = [...doc.querySelectorAll('meta[name="robots"], meta[name="googlebot"]')].map((meta) => meta.content)
+    if (latamModule.LATAM_SEGMENTS.includes(segment) && latamModule.LATAM_REVIEWED_PATHS.includes(routePath)) {
+      assert.ok(doc.querySelector('[data-latam-editorial], [data-latam-guide]'), `${path}: substantive regional guide is rendered`)
+      assert.ok(doc.querySelector(`main a[href="/${segment}/guides/bonos-casino"]`) || routePath==='/guides/bonos-casino', `${path}: regional reading path`)
+    }
     if (routePath.startsWith('/sports')) {
       assert.ok(robots.length && robots.every(value => value.includes('noindex')), `${path}: archive robots ${robots}`)
     }
@@ -581,7 +588,15 @@ try {
       const realEntity = /^\/games\/[^/]+$/.test(routePath)
       const listPage = routePath === '/games' || /^\/providers\/[^/]+$/.test(routePath)
       const newOriginal = ['/play/rio-drift', '/play/avia-de-janeiro', '/play/samba-drop', '/play/skuptu-levanta', '/play/carnaval-gold'].includes(routePath)
-      assert.ok(['WebSite', 'Organization', 'BreadcrumbList', ...(newOriginal || realEntity ? ['VideoGame'] : []), ...(listPage ? ['ItemList'] : []), ...(routePath==='/arcade'?['CollectionPage']:[])].includes(data['@type']), `${path}: schema must have an audited visible use`)
+      assert.ok(['WebSite', 'Organization', 'BreadcrumbList', ...(newOriginal || realEntity ? ['VideoGame'] : []), ...(listPage ? ['ItemList'] : []), ...(routePath==='/arcade'?['CollectionPage']:[]), ...(routePath.startsWith('/guides/')?['Article']:[])].includes(data['@type']), `${path}: schema must have an audited visible use`)
+      if (data['@type']==='Article') {
+        assert.equal(data.url,SITE_URL+path)
+        assert.equal(data.headline,doc.querySelector('h1').textContent.trim())
+        assert.equal(data.inLanguage,segment)
+        assert.equal(data.author.name,'PlayLiva')
+        assert.equal(data.dateModified,latamModule.LATAM_UPDATED_AT)
+        assert.equal(data.aggregateRating,undefined)
+      }
       if (data['@type']==='VideoGame' && routePath==='/play/rio-drift') {
         assert.equal(data.name,'Liva Turbo Crash');assert.equal(data.url,SITE_URL+path);assert.equal(data.isAccessibleForFree,true)
         assert.equal(data.aggregateRating,undefined);assert.equal(data.offers,undefined)
@@ -706,8 +721,16 @@ try {
     for (const game of catalogModule.REFERENCE_GAMES) {
       assert.equal((await fetch(`${base}/${locale}/where-to-play/${game.slug}`)).status, 404)
     }
-    for (const suffix of ['/providers/missing-provider', '/games-like/fruit-party', '/compare/fruit-party-vs-sugar-rush']) {
+    for (const suffix of ['/providers/missing-provider', '/games-like/fruit-party', '/compare/fruit-party-vs-sugar-rush', '/guides/missing-guide']) {
       assert.equal((await fetch(`${base}/${locale}${suffix}`)).status, 404)
+    }
+    if (!latamModule.LATAM_SEGMENTS.includes(locale)) {
+      for (const slug of latamModule.LATAM_GUIDE_SLUGS) {
+        const response = await fetch(`${base}/${locale}/guides/${slug}`)
+        assert.equal(response.status, 404)
+        const html = await response.text()
+        assert.match(html, /name="robots" content="noindex/)
+      }
     }
     for (const path of [`/${locale}/missing-page`, `/${locale}/games/missing-game`, `/${locale}/operators/missing-operator`,
       `/${locale}/sports/missing-sport`,

@@ -9,6 +9,7 @@ import {
   segmentToLocale,
 } from '@/lib/locale'
 import { createTranslator } from '@/lib/i18n'
+import { RegionalCommercialGuide } from '@/components/regional-commercial-guide'
 
 export async function generateMetadata({
   params,
@@ -34,6 +35,7 @@ export async function generateMetadata({
   })
 }
 
-export default function OffersPage() {
-  return <OffersView />
+export default async function OffersPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale: segment } = await params
+  return <><OffersView /><RegionalCommercialGuide locale={segmentToLocale(isLocaleSegment(segment) ? segment : DEFAULT_LOCALE_SEGMENT)} /></>
 }

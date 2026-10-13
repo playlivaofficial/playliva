@@ -18,6 +18,7 @@ import { REFERENCE_GAMES, getReferenceGame } from '@/lib/catalog'
 import { ReferenceGameView } from '@/components/catalog/reference-views'
 import { catalogLocale, referenceMetadata } from '@/lib/catalog/metadata'
 import { applySearchTitle } from '@/lib/owner/server/search-metadata'
+import { LatamEditorialGuide } from '@/components/latam-editorial-guide'
 
 export function generateStaticParams() {
   return [...GAMES, ...REFERENCE_GAMES].map((g) => ({ slug: g.slug }))
@@ -63,5 +64,5 @@ export default async function GamePage({
   if (reference) return <><JsonLd data={entitySchema(slug, isLocaleSegment(locale) ? locale : DEFAULT_LOCALE_SEGMENT)!} /><ReferenceGameView game={reference} locale={catalogLocale(locale)} /><CrossDiscovery slug={slug} segment={locale}/></>
   const game = getGame(slug)
   if (!game) notFound()
-  return <><JsonLd data={entitySchema(slug, isLocaleSegment(locale) ? locale : DEFAULT_LOCALE_SEGMENT)!} /><GameDetailView game={game} /><CrossDiscovery slug={slug} segment={locale}/></>
+  return <><JsonLd data={entitySchema(slug, isLocaleSegment(locale) ? locale : DEFAULT_LOCALE_SEGMENT)!} /><GameDetailView game={game} /><LatamEditorialGuide path={`/games/${slug}`} locale={catalogLocale(locale)} /><CrossDiscovery slug={slug} segment={locale}/></>
 }

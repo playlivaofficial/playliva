@@ -1,6 +1,7 @@
 import { contentLocale } from '@/lib/locale'
 import type { ContentLocale } from '@/lib/types'
 import { entitySupplement } from './discovery/entity-copy'
+import { latamCountry } from './latam-editorial'
 import type {
   CategorySlug,
   Comparison,
@@ -580,6 +581,12 @@ const GAME_CONTENT: Record<ContentLocale, Record<string, GameContent>> = {
 
 export function getGameContent(game: Game, locale: Locale) {
   const c = { ...GAME_CONTENT[contentLocale(locale)]?.[game.id], ...entitySupplement(game.id, locale) }
+  const country = latamCountry(locale)
+  const regionalSeo = (copy: PageSeoOverride | undefined) => copy && country ? {
+    ...copy, title: copy.title.replace(/México/g, country.name),
+    description: copy.description.replace(/México/g, country.name),
+    h1: copy.h1?.replace(/México/g, country.name),
+  } : copy
   const description = c?.description ?? game.description
   const categoryName = getCategoryContent(game.category, locale).name
   const about =
@@ -604,7 +611,7 @@ export function getGameContent(game: Game, locale: Locale) {
     gamesLikeIntro: c?.gamesLikeIntro,
     whereToPlayIntro: c?.whereToPlayIntro,
     availabilityNote: c?.availabilityNote,
-    seo: c?.seo,
+    seo: c?.seo ? { game:regionalSeo(c.seo.game), gamesLike:regionalSeo(c.seo.gamesLike), whereToPlay:regionalSeo(c.seo.whereToPlay) } : undefined,
   }
 }
 

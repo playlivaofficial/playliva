@@ -27,6 +27,7 @@ import { ProviderPlayRealCta } from '@/components/affiliates/provider-play-real-
 import { GameCasinoOptions } from '@/components/affiliates/game-casino-options'
 import { RtpFact } from '@/components/rtp-fact'
 import { EditorialByline } from '@/components/editorial-byline'
+import { LatamEditorialGuide } from '@/components/latam-editorial-guide'
 
 function Evidence({ games, locale }: { games: ReferenceGame[]; locale: Locale }) {
   const c = catalogCopy(locale)
@@ -110,6 +111,7 @@ export function ProviderView({ providerId, locale }: { providerId: string; local
         {provider.id === 'evolution' && locale === 'pt-BR' && <><LocaleLink href="/games/crazy-time">Crazy Time</LocaleLink><LocaleLink href="/games/lightning-roulette">Lightning Roulette</LocaleLink><LocaleLink href="/games/blackjack-live">Blackjack Live</LocaleLink></>}
       </div>
     </PageHero>
+    <LatamEditorialGuide path={`/providers/${provider.id}`} locale={locale} />
     {provider.id === 'evolution' && locale === 'pt-BR' && <Section className="border-b border-border">
       <ContentCard>
         <h2 className="text-xl font-bold">Formatos ao vivo da Evolution</h2>

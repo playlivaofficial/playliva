@@ -18,6 +18,16 @@ await Promise.all(Array.from({length:4},async()=>{while(cursor<urls.length){cons
  }catch(e){failures.push({path,error:e.message})}
 }}))
 rows.sort((a,b)=>a.path.localeCompare(b.path))
+// An alternate must be an indexable sitemap URL and return the same reciprocal cluster.
+const byUrl=new Map(rows.map(row=>[canonical+row.path,row]))
+const cluster=row=>JSON.stringify([...row.alternates].sort((a,b)=>a.lang.localeCompare(b.lang)))
+for(const row of rows){
+ if(row.schemas.includes('invalid'))failures.push({path:row.path,error:'Invalid JSON-LD'})
+ for(const alternate of row.alternates){const target=byUrl.get(alternate.url)
+  if(!target||target.status!==200||/noindex/.test(target.robots))failures.push({path:row.path,error:'Non-indexable alternate',alternate})
+  else if(cluster(target)!==cluster(row))failures.push({path:row.path,error:'Non-reciprocal hreflang cluster',alternate})
+ }
+}
 for(const row of rows){row.inbound=rows.filter(other=>other.path!==row.path&&other.links.includes(row.path)).map(other=>other.path);row.outbound=row.links.filter(path=>rows.some(other=>other.path===path)&&path!==row.path)}
 const duplicates=[];for(const locale of ['pt-br','en','es-mx','es-co','es-pe'])for(const field of ['title','description','h1']){const groups=new Map();for(const row of rows.filter(r=>r.path.startsWith('/'+locale+'/'))){const value=field==='h1'?row.h1.join(' '):row[field];if(value)groups.set(value,[...(groups.get(value)||[]),row.path])}for(const [value,paths]of groups)if(paths.length>1)duplicates.push({locale,field,value,paths})}
 const report={observedAt:new Date().toISOString(),base,sitemapCount:urls.length,rows,failures,duplicates,orphans:rows.filter(r=>!r.inbound.length).map(r=>r.path),weak:rows.filter(r=>r.inbound.length===1).map(r=>r.path)}

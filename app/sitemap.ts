@@ -1,5 +1,6 @@
 import { discoveryIndexability } from '@/lib/discovery/indexability'
 import type { MetadataRoute } from 'next'
+import { LATAM_GUIDE_SLUGS, LATAM_SEGMENTS } from '@/lib/latam-editorial'
 import {
   GAMES,
   COMPARISONS,
@@ -48,7 +49,7 @@ function localizedEntry(
 
   return segments.map((segment) => ({
     url: absoluteUrl(localizedPath(segment)),
-    ...(editorialRecord(path)?.updatedAt ? { lastModified: editorialRecord(path)!.updatedAt } : {}),
+    ...(editorialRecord(path, segment)?.updatedAt ? { lastModified: editorialRecord(path, segment)!.updatedAt } : {}),
     changeFrequency,
     priority,
     alternates: { languages },
@@ -132,5 +133,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   for (const path of REFERENCE_PATHS) {
     entries.push(...localizedEntry(path, 'monthly', 0.6))
   }
+  for (const slug of LATAM_GUIDE_SLUGS) entries.push(...localizedEntry(`/guides/${slug}`, 'monthly', 0.6, LATAM_SEGMENTS))
   return entries
 }
