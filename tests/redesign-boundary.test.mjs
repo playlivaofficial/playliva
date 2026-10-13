@@ -43,6 +43,8 @@ import { createHash } from 'node:crypto'
 // Multi-operator Where to Play rebases only affiliate.ts: a validated per-game deep link
 // (registry `gameLinks`, only for a verified game) may replace the brand destination,
 // covered by commercial-multi-operator tests. Eligibility rules and GEO gates stay fixed.
+// Authorized LATAM SEO growth rebases only sitemap.ts for 26 reviewed editorial URLs.
+// All commercial destinations, consent, tracking and engine snapshots remain fixed.
 test('GEO migration: reviewed outbound, SEO and privacy infrastructure snapshot', async () => {
   const expected = JSON.parse(await readFile(new URL('./fixtures/redesign-protected.json', import.meta.url), 'utf8'))
   for (const [path, hash] of Object.entries(expected)) {

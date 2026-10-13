@@ -14,6 +14,7 @@ import catalog from '../lib/catalog/index.ts'
 import legal from '../lib/legal-content.ts'
 import commercialSeo from '../lib/commercial/seo.ts'
 import data from '../lib/data.ts'
+import latam from '../lib/latam-editorial.ts'
 const hooks = registerHooks({ load(url, context, next) {
   if (url.endsWith('.module.css')) return { format:'commonjs', shortCircuit:true, source:'module.exports = {}' }
   return next(url, context)
@@ -48,8 +49,8 @@ test('MX/CO/PE have actual routes, shared Spanish strings and distinct currency 
 test('regional SEO expands only substantive entry pages, preserving canonical shared inventory', () => {
   const rows = sitemap.default()
   const regional = rows.filter(row => /\/es-(co|pe)(\/|$)/.test(row.url))
-  assert.deepEqual(regional.map(row => new URL(row.url).pathname).sort(), ['/es-co','/es-co/games','/es-pe','/es-pe/games'])
-  assert.ok(rows.length < 330)
+  assert.deepEqual(regional.map(row => new URL(row.url).pathname).sort(), ['es-co','es-pe'].flatMap(segment=>['','/games',...latam.LATAM_REVIEWED_PATHS].map(path=>`/${segment}${path}`)).sort())
+  assert.equal(rows.length, 343)
   assert.equal(rows.filter(row => /\/pt-br\/where-to-play\//.test(row.url)).length, 9)
   assert.ok(!rows.some(row => /\/(offers|operators)(\/|$)/.test(new URL(row.url).pathname)))
   const titles = new Set()
@@ -63,7 +64,7 @@ test('regional SEO expands only substantive entry pages, preserving canonical sh
     titles.add(JSON.stringify(metadata.title))
   }
   assert.equal(titles.size, 6)
-  for (const segment of ['es-co','es-pe']) for (const path of ['/games/aviator','/providers/spribe','/play/skuptu-levanta','/games-like/aviator']) {
+  for (const segment of ['es-co','es-pe']) for (const path of ['/games/jetx','/providers/play-n-go','/play/skuptu-levanta','/games-like/aviator']) {
     const metadata = seo.pageMetadata({ title:'Shared game content', path, localeSegment:segment })
     assert.equal(metadata.robots.index, false)
     assert.equal(metadata.alternates.languages, undefined)

@@ -1,7 +1,9 @@
-import { contentLocale } from '@/lib/locale'
+import { contentLocale, type LocaleSegment } from '@/lib/locale'
+import { geoForLocale } from './geo'
 import type { ContentLocale } from '@/lib/types'
 import type { Locale } from './types'
 import { REFERENCE_PATHS } from './catalog/paths'
+import { LATAM_REVIEWED_PATHS, LATAM_UPDATED_AT } from './latam-editorial'
 
 export const EDITOR = {
   id: 'playliva', name: 'PlayLiva', profile: '/authors/playliva',
@@ -15,7 +17,12 @@ export const EDITOR = {
 
 export interface EditorialRecord { authorId: 'playliva'; publishedAt?: string; updatedAt?: string; evidence: string }
 
-export function editorialRecord(path: string): EditorialRecord | undefined {
+export function editorialRecord(path: string, locale?: Locale | LocaleSegment): EditorialRecord | undefined {
+  if (locale && geoForLocale(locale) && (LATAM_REVIEWED_PATHS as readonly string[]).includes(path)) return {
+    authorId:'playliva', updatedAt:LATAM_UPDATED_AT,
+    ...(path.startsWith('/guides/') ? {publishedAt:LATAM_UPDATED_AT} : {}),
+    evidence:'Substantive Spanish regional guide addition; provider facts and local verification sources checked 2026-10-13. Existing first-publication dates are not inferred.',
+  }
   if (REFERENCE_PATHS.includes(path)) return {
     authorId: 'playliva', publishedAt: '2026-09-13', updatedAt: '2026-09-13',
     evidence: 'M11 production release d2c13f6; source-content checkpoint 6c1b100. Later artwork/layout releases are not editorial updates.',

@@ -21,6 +21,11 @@ export function GeoEditorialGuide({ surface }: { surface: 'home' | 'games' }) {
       <nav className="mt-4 flex flex-wrap gap-x-5 gap-y-3 text-sm font-medium text-primary" aria-label={`Guía de ${country.name}`}>
         <LocaleLink href={surface === 'home' ? '/games' : '/'}>{surface === 'home' ? 'Explorar el catálogo' : `PlayLiva ${country.name}`}</LocaleLink>
         <LocaleLink href="/operators">Revisar operadores</LocaleLink>
+        <LocaleLink href="/games/aviator">Aviator: reglas y controles</LocaleLink>
+        <LocaleLink href="/games/blackjack-live">Blackjack en vivo</LocaleLink>
+        <LocaleLink href="/slots">Tragamonedas y proveedores</LocaleLink>
+        <LocaleLink href="/guides/aviator-demo">Guía de demo de Aviator</LocaleLink>
+        <LocaleLink href="/guides/bonos-casino">Cómo leer bonos de casino</LocaleLink>
         <LocaleLink href="/responsible-gaming">Juego responsable</LocaleLink>
       </nav>
     </div>

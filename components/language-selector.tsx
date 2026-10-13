@@ -4,6 +4,8 @@ import { ChevronDown, Check, Globe } from 'lucide-react'
 import { useTranslation } from '@/components/country-context'
 import { Dropdown, DropdownItem } from '@/components/ui/dropdown'
 import type { Locale } from '@/lib/types'
+import { usePathname } from 'next/navigation'
+import { LATAM_SEGMENTS } from '@/lib/latam-editorial'
 
 /**
  * Public LANGUAGE selector (English / Español / Português). This is
@@ -21,6 +23,11 @@ const LANGUAGES: { code: Locale; flag: string; label: string }[] = [
 
 export function LanguageSelector({ compact = false }: { compact?: boolean }) {
   const { locale, setLocale, t } = useTranslation()
+  const pathname = usePathname()
+  // These new editorial guides exist only in the three published Spanish editions.
+  const languages = pathname.split('/')[2] === 'guides'
+    ? LANGUAGES.filter(language => (LATAM_SEGMENTS as readonly string[]).includes(language.code.toLowerCase()))
+    : LANGUAGES
   const current = LANGUAGES.find((l) => l.code === locale) ?? LANGUAGES[0]
 
   return (
@@ -39,7 +46,7 @@ export function LanguageSelector({ compact = false }: { compact?: boolean }) {
           <p className="px-2.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             {t('selector.languageLabel')}
           </p>
-          {LANGUAGES.map((lang) => (
+          {languages.map((lang) => (
             <DropdownItem
               key={lang.code}
               active={lang.code === locale}

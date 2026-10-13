@@ -71,7 +71,7 @@ test('pan-LATAM presentation keeps stable game identities and remembered search 
 
 test('renamed page metadata preserves canonicals, bounded sitemap and country indexability policy', () => {
   const rows = sitemap.default()
-  assert.equal(rows.length,317)
+  assert.equal(rows.length,343)
   for (const locale of locales) {
     const segment = locale.toLowerCase(), seen = new Set()
     for (const [, ,slug,name,legacy,poster] of changes) {

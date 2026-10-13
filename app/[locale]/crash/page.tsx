@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { LatamEditorialGuide } from '@/components/latam-editorial-guide'
 import { CategoryPageView } from '@/components/category-page-view'
 import { CategoryReferenceSection } from '@/components/catalog/reference-views'
 import { catalogLocale } from '@/lib/catalog/metadata'
@@ -34,5 +35,5 @@ export async function generateMetadata({
 
 export default async function CrashPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
-  return <CategoryPageView slug="crash" referenceCatalog={<CategoryReferenceSection category="crash" locale={catalogLocale(locale)} />} />
+  return <CategoryPageView slug="crash" regionalGuide={<LatamEditorialGuide path="/crash" locale={catalogLocale(locale)} />} referenceCatalog={<CategoryReferenceSection category="crash" locale={catalogLocale(locale)} />} />
 }

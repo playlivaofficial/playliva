@@ -35,7 +35,7 @@ import { ContentCard } from '@/components/content-card'
 import { seoMarketForLocaleSegment } from '@/lib/seo-market'
 import { localeToSegment } from '@/lib/locale'
 
-export function CategoryPageView({ slug, referenceCatalog }: { slug: CategorySlug; referenceCatalog?: ReactNode }) {
+export function CategoryPageView({ slug, referenceCatalog, regionalGuide }: { slug: CategorySlug; referenceCatalog?: ReactNode; regionalGuide?: ReactNode }) {
   const { marketCode: country, t, locale } = useCountry()
   const category = getCategoryContent(slug, locale)
   const countryName = country ? getCountryName(country, locale) : t('geo.marketLabel')
@@ -290,6 +290,8 @@ export function CategoryPageView({ slug, referenceCatalog }: { slug: CategorySlu
           </div>
         </Section>
       )}
+
+      {regionalGuide}
 
       <Section className="border-t border-border bg-card/30">
         <SectionHeading

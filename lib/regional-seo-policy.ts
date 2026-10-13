@@ -1,10 +1,13 @@
 import type { LocaleSegment } from './locale'
+import { LATAM_REVIEWED_PATHS, LATAM_GUIDE_SLUGS, LATAM_SEGMENTS } from './latam-editorial'
 
 /** Only these new regional pages currently contain a dedicated country guide.
  * Shared game/rules translations remain available without expanding the index. */
 export const REGIONAL_EDITORIAL_PATHS = ['/', '/games'] as const
 export function regionalEditorialIndexable(path: string, segment: LocaleSegment): boolean {
+  if (path.startsWith('/guides/')) return (LATAM_SEGMENTS as readonly string[]).includes(segment) && LATAM_GUIDE_SLUGS.some(slug=>path===`/guides/${slug}`)
   return !['es-co', 'es-pe'].includes(segment) || (REGIONAL_EDITORIAL_PATHS as readonly string[]).includes(path)
+    || (LATAM_REVIEWED_PATHS as readonly string[]).includes(path)
     || path === '/offers' || path === '/operators'
     || path.startsWith('/where-to-play/') || path.startsWith('/operators/')
 }
