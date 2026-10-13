@@ -89,9 +89,12 @@ test('consent UI gates loaders/events, supports revocation/revisit, and preserve
     assert.equal(desktopSports.textContent, 'Sports')
     assert.equal(desktopSports.getAttribute('target'), null, 'network navigation stays in the same tab')
     assert.equal(document.querySelector('header nav[aria-label="Primary"] a[href="/en/play"]')?.textContent, 'Play')
+    // Offers is a permanent top-level entry, directly between Instant Games and Sports.
+    assert.deepEqual([...document.querySelectorAll('header nav[aria-label="Primary"] > a')].map(a => a.getAttribute('href')),
+      ['/en/play', '/en/games', '/en/crash', '/en/slots', '/en/live-casino', '/en/instant-games', '/en/offers', 'https://livasports.com'])
     await click(document.querySelector('button[aria-label="More"]'))
     assert.deepEqual([...document.querySelectorAll('header [role="menuitem"]')].map(a => a.getAttribute('href')),
-      ['/en/table-games', '/en/offers', '/en/operators', '/en/about', '/en/responsible-gaming'])
+      ['/en/table-games', '/en/operators', '/en/about', '/en/responsible-gaming'], 'no duplicate Offers link in More')
     await act(() => document.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Escape', bubbles: true })))
     assert.equal(document.querySelector('header [role="menu"]'), null)
     await click(document.querySelector('button[aria-label="Open menu"]'))

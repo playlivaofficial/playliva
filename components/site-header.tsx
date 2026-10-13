@@ -19,11 +19,12 @@ const NAV: { href: string; key: string }[] = [
   { href: '/slots', key: 'nav.slots' },
   { href: '/live-casino', key: 'nav.liveCasino' },
   { href: '/instant-games', key: 'nav.instantGames' },
+  // Commercially important: always a top-level entry, never only inside "More".
+  { href: '/offers', key: 'nav.offers' },
   { href: 'https://livasports.com', key: 'nav.sports' },
 ]
 const SECONDARY = [
   { href: '/table-games', key: 'nav.tableGames' },
-  { href: '/offers', key: 'nav.offers' },
   { href: '/operators', key: 'nav.operators' },
   { href: '/about', key: 'nav.about' },
   { href: '/responsible-gaming', key: 'footer.responsible' },
