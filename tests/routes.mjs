@@ -11,6 +11,7 @@ const fetch = (url, options = {}) => {
 import { spawn } from 'node:child_process'
 import { testDestinations } from './fixtures/affiliate-destinations.mjs'
 import { ownerGeoHttpFixture } from './fixtures/owner-geo-http.mjs'
+import { verifyGeoLanguageHttp } from './fixtures/geo-language-http.mjs'
 import privateDestinations from '../lib/affiliates/server-destinations.ts'
 const { serverDestination } = privateDestinations
 process.env.PLAYLIVA_AFFILIATE_DESTINATIONS = JSON.stringify(testDestinations)
@@ -233,7 +234,7 @@ try {
   assert.ok(ready, 'local production server starts')
   for (const [country, language, cookie, expected] of [
     ['MX', 'es', '', 'es-mx'], ['CO', 'es', '', 'es-co'], ['PE', '', '', 'es-pe'],
-    ['CO', 'en-US', '', 'en'], ['PE', 'es', 'playliva_locale=pt-br', 'pt-br'],
+    ['CO', 'en-US', '', 'es-co'], ['PE', 'es', 'playliva_locale=pt-br', 'pt-br'],
     ['BR', '', '', 'pt-br'], ['GE', '', '', 'en'], ['', 'ka-GE', '', 'en'],
   ]) {
     const response = await fetch(base + '/', { redirect: 'manual', headers: {
@@ -775,6 +776,7 @@ try {
   console.log(`Crawled ${paths.size} public/legal/demo URLs plus locale 404 and affiliate fallback probes. PT-BR OG coverage: ${ptOgImageCount}/${ptPublicCount}.`)
   if (failures.length) console.error(failures.join('\n'))
   assert.equal(failures.length, 0, `${failures.length} content/SEO failures`)
+  await verifyGeoLanguageHttp()
 } catch (error) {
   if (failures.length) console.error(failures.join('\n'))
   throw error

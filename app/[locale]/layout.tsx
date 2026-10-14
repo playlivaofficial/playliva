@@ -42,7 +42,6 @@ export default async function LocaleLayout({
         initialLocale={locale}
         initialCountryCode={seoMarketForLocaleSegment(localeSegment)}
         visitorCountryCode={ownerGeo.previewGeo ?? visitorMarket(requestHeaders)}
-        previewCountryCode={ownerGeo.previewGeo}
         commercial={commercialSnapshot(ownerGeo.previewGeo ?? visitorMarket(requestHeaders))}
       >
         {ownerGeo.authorized && <OwnerGeoPreview status={ownerGeo} />}

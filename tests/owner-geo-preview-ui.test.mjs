@@ -28,7 +28,7 @@ const h = React.createElement
 function tree(geo, active = false, preview = geo, locale = 'pt-BR') {
   return h(AppRouterContext.Provider, { value: { push() {}, prefetch() {} } },
     h(PathnameContext.Provider, { value: locale === 'en' ? '/en/play/crash' : '/pt-br/play/crash' },
-      h(country.CountryProvider, { key: `${geo}:${preview}`, initialLocale: locale, initialCountryCode: 'BR', visitorCountryCode: geo, previewCountryCode: preview },
+      h(country.CountryProvider, { key: `${geo}:${preview}`, initialLocale: locale, initialCountryCode: 'BR', visitorCountryCode: preview ?? geo },
         h(banners.BetssonHomeBanner), h(banners.BetssonSponsoredBanner, { surface: 'originals' }), h(offers.OffersView),
         h(button.AffiliateButton, { operatorSlug: 'betsson-group-affiliates', gameSlug: 'aviator', pageType: 'game', ctaLocation: 'game_detail_play_real' }, 'Explore'),
         h(popup.BetssonEngagementOffer, { game: crash.ISLAND_CRASH, roundActive: active })) ))
@@ -41,7 +41,7 @@ function MarketProbe() {
 function probeTree(geo, preview = geo) {
   const locale = geo ? 'es-' + geo : 'en', path = geo ? '/es-' + geo.toLowerCase() + '/games' : '/en/games'
   return h(AppRouterContext.Provider, { value: { push() {}, prefetch() {} } },
-    h(PathnameContext.Provider, { value: path }, h(country.CountryProvider, { key: String(geo)+String(preview), initialLocale: locale, initialCountryCode: 'MX', visitorCountryCode: geo, previewCountryCode: preview, commercial: commercial.emptyCommercialSnapshot(geo) }, h(MarketProbe))))
+    h(PathnameContext.Provider, { value: path }, h(country.CountryProvider, { key: String(geo)+String(preview), initialLocale: locale, initialCountryCode: 'MX', visitorCountryCode: preview ?? geo, commercial: commercial.emptyCommercialSnapshot(preview ?? geo) }, h(MarketProbe))))
 }
 
 test('pending GEOs never invent commercial surfaces; owner selectors show only Real/MX/CO/PE', () => {

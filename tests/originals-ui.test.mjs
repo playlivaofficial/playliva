@@ -20,7 +20,7 @@ const cssHooks = registerHooks({ load(url, context, next) {
 } })
 const shellModule = await import('../components/originals/play-game-shell.tsx')
 cssHooks.deregister()
-const { CountryProvider, useCountry } = countryModule
+const { CountryProvider } = countryModule
 const { DemoSessionProvider } = providerModule
 const { PlayGameShell } = shellModule
 const { createDemoSessionStore } = sessionModule
@@ -31,9 +31,10 @@ const { saveConsent } = consentModule
 const game = { id: 'test-only', slug: 'test-only', category: 'crash',
   title: { en: 'Shell test', 'pt-BR': 'Teste', 'es-MX': 'Prueba' } }
 const context = { originalId: game.id, originalSlug: game.slug, category: game.category, country: 'BR', locale: 'en' }
-function MarketControl() {
-  const { setCountryCode } = useCountry()
-  return React.createElement('button', { onClick: () => setCountryCode('CO') }, 'Test CO')
+function TestMarketProvider({ children }) {
+  const [geo, setGeo] = React.useState('MX')
+  return React.createElement(CountryProvider, { initialLocale: 'en', visitorCountryCode: geo, commercial: commercialFixture('MX') },
+    children, React.createElement('button', { onClick: () => setGeo('CO') }, 'Test CO'))
 }
 
 test('test-only shell: wallet/settings/reset, consent-aware events, header sponsor, and GEO gating', async () => {
@@ -54,11 +55,10 @@ test('test-only shell: wallet/settings/reset, consent-aware events, header spons
   const render = async (roundActive = false) => act(() => root.render(
     React.createElement(AppRouterContext.Provider, { value: { push() {} } },
       React.createElement(PathnameContext.Provider, { value: '/en/play/test-only' },
-        React.createElement(CountryProvider, { initialLocale: 'en', visitorCountryCode: 'MX', commercial: commercialFixture('MX') },
+        React.createElement(TestMarketProvider, {},
           React.createElement(DemoSessionProvider, { store },
             React.createElement(PlayGameShell, { game, roundActive, controls: React.createElement('button', {}, 'Test control') },
-              React.createElement('div', {}, 'Test viewport only')),
-            React.createElement(MarketControl)))))))
+              React.createElement('div', {}, 'Test viewport only'))))))))
   try {
     saveConsent({ necessary: true, analytics: false, marketing: false })
     await render()

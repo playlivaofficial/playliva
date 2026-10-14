@@ -3,36 +3,26 @@
 import { ChevronDown, Check, Globe } from 'lucide-react'
 import { useTranslation } from '@/components/country-context'
 import { Dropdown, DropdownItem } from '@/components/ui/dropdown'
-import type { Locale } from '@/lib/types'
+import { contentLocale, languageSwitchPath, PUBLIC_LANGUAGES, swapLocaleInPath } from '@/lib/locale'
 import { usePathname } from 'next/navigation'
-import { LATAM_SEGMENTS } from '@/lib/latam-editorial'
 
 /**
  * Public LANGUAGE selector (English / Español / Português). This is
  * intentionally decoupled from GEO — switching language here never changes
  * the visitor's market, operators, affiliate links or offers. GEO/market
- * pickers live separately (see `components/geo-selectors.tsx`).
+ * detection and private Owner preview remain server-authorized.
  */
-const LANGUAGES: { code: Locale; flag: string; label: string }[] = [
-  { code: 'en', flag: '🇬🇧', label: 'English' },
-  { code: 'es-MX', flag: '🇲🇽', label: 'Español · México' },
-  { code: 'es-CO', flag: '🇨🇴', label: 'Español · Colombia' },
-  { code: 'es-PE', flag: '🇵🇪', label: 'Español · Perú' },
-  { code: 'pt-BR', flag: '🇧🇷', label: 'Português' },
-]
-
 export function LanguageSelector({ compact = false }: { compact?: boolean }) {
   const { locale, setLocale, t } = useTranslation()
   const pathname = usePathname()
-  // These new editorial guides exist only in the three published Spanish editions.
-  const languages = pathname.split('/')[2] === 'guides'
-    ? LANGUAGES.filter(language => (LATAM_SEGMENTS as readonly string[]).includes(language.code.toLowerCase()))
-    : LANGUAGES
-  const current = LANGUAGES.find((l) => l.code === locale) ?? LANGUAGES[0]
+  const guideFallback = languageSwitchPath(pathname, 'en') !== swapLocaleInPath(pathname, 'en')
+  const current = PUBLIC_LANGUAGES.find(language => language.code === contentLocale(locale))!
 
   return (
     <Dropdown
       label={t('selector.language')}
+      className="[&>button]:min-h-11 [&>button]:min-w-11"
+      menuClassName="[&_button]:min-h-11"
       trigger={
         <>
           <Globe className="size-4 text-muted-foreground" aria-hidden="true" />
@@ -46,20 +36,20 @@ export function LanguageSelector({ compact = false }: { compact?: boolean }) {
           <p className="px-2.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             {t('selector.languageLabel')}
           </p>
-          {languages.map((lang) => (
+          {guideFallback && <p className="max-w-52 px-2.5 py-1.5 text-xs leading-relaxed text-muted-foreground">
+            Esta guía está disponible en español. English y Português abren su página relacionada.
+          </p>}
+          {PUBLIC_LANGUAGES.map((lang) => (
             <DropdownItem
               key={lang.code}
-              active={lang.code === locale}
+              active={lang.code === contentLocale(locale)}
               onClick={() => {
                 setLocale(lang.code)
                 close()
               }}
             >
-              <span aria-hidden="true" className="text-base">
-                {lang.flag}
-              </span>
               <span className="flex-1">{lang.label}</span>
-              {lang.code === locale && <Check className="size-4 text-primary" />}
+              {lang.code === contentLocale(locale) && <Check className="size-4 text-primary" aria-hidden="true" />}
             </DropdownItem>
           ))}
         </>

@@ -20,7 +20,7 @@ import { registration } from './fixtures/commercial.mjs'
 const approvedMx = commercial.snapshotFromRegistry('MX', [registration('MX')])
 const { OperatorProfileView } = profileModule
 import countryContextModule from '../components/country-context.tsx'
-const { CountryProvider, useCountry } = countryContextModule
+const { CountryProvider } = countryContextModule
 import cookieBannerModule from '../components/cookie-banner.tsx'
 const { CookieBanner } = cookieBannerModule
 import siteFooterModule from '../components/site-footer.tsx'
@@ -40,9 +40,10 @@ const { parseConsent, saveConsent, hasAnalyticsConsent, CONSENT_STORAGE_KEY } = 
 import trackingModule from '../lib/tracking.ts'
 const { track } = trackingModule
 
-function TestMarketControl() {
-  const { setCountryCode } = useCountry()
-  return React.createElement('button', { onClick: () => setCountryCode('CO') }, 'Test CO')
+function TestMarketProvider({ children }) {
+  const [geo, setGeo] = React.useState('MX')
+  return React.createElement(CountryProvider, { initialLocale: 'en', visitorCountryCode: geo, commercial: approvedMx },
+    children, React.createElement('button', { onClick: () => setGeo('CO') }, 'Test CO'))
 }
 
 test('consent UI gates loaders/events, supports revocation/revisit, and preserves navigation/contact truth', async () => {
@@ -77,12 +78,11 @@ test('consent UI gates loaders/events, supports revocation/revisit, and preserve
     await act(async () => {
       root.render(React.createElement(AppRouterContext.Provider, { value: { push() {} } },
         React.createElement(PathnameContext.Provider, { value: '/en' },
-          React.createElement(CountryProvider, { initialLocale: 'en', visitorCountryCode: 'MX', commercial: approvedMx },
+          React.createElement(TestMarketProvider, {},
             React.createElement(CookieBanner), React.createElement(SiteHeader), React.createElement(SiteFooter),
             React.createElement(ContactForm), React.createElement(ConsentedAnalytics),
             React.createElement(AffiliateButton, { operatorSlug: 'test-partner', category: 'crash' }, 'Partner link'),
-            React.createElement(OperatorProfileView, { operator: approvedMx.operators[0] }),
-            React.createElement(TestMarketControl)))))
+            React.createElement(OperatorProfileView, { operator: approvedMx.operators[0] })))))
     })
     const desktopSports = document.querySelector('header nav[aria-label="Primary"] a[href="https://livasports.com"]')
     assert.ok(desktopSports, 'Sports is a direct desktop navigation entry')
@@ -164,7 +164,7 @@ test('consent UI gates loaders/events, supports revocation/revisit, and preserve
     assert.equal(beforeSend(pageEvent), null)
 
     await click(button('Test CO'))
-    assert.equal(document.querySelector('a[href^="/go?"]'), null, 'CO selection must not inherit MX profile or CTA destinations')
+    assert.equal(document.querySelector('a[href^="/go?"]'), null, 'CO request must not inherit MX profile or CTA destinations')
 
     const form = document.querySelector('form')
     form.elements.name.value = 'Unit Test'

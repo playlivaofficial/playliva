@@ -6,7 +6,6 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useState,
   type ReactNode,
 } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
@@ -27,17 +26,18 @@ import {
   localeToSegment,
   segmentToLocale,
   swapLocaleInPath,
+  languageLocaleSegment,
+  languageSwitchPath,
 } from '@/lib/locale'
 
 interface CountryContextValue {
-  /** Selected editorial market; commercial eligibility also requires request GEO. */
+  /** Detected country, or an editorial display baseline when GEO is unsupported. */
   country: Country
   countryCode: CountryCode
-  /** Eligible commercial market from trusted request GEO and selected preference. */
+  /** Eligible commercial market from the existing trusted server resolver only. */
   marketCode: CountryCode | null
   commercial: CommercialSnapshot
   currency: CommercialCurrency | null
-  setCountryCode: (code: CountryCode) => void
   /**
    * LANGUAGE — completely independent from GEO. A visitor's GEO never
    * changes when they switch language, and vice versa.
@@ -56,14 +56,8 @@ interface CountryContextValue {
 
 const CountryContext = createContext<CountryContextValue | null>(null)
 
-// Market preference persists in localStorage; LANGUAGE persists in the URL plus a cookie
-// (read by middleware for the bare `/` redirect) — the two never share state.
-const COUNTRY_STORAGE_KEY = 'playliva.country'
+// LANGUAGE persists in the URL and a cookie. Old market storage is ignored.
 const LOCALE_COOKIE = 'playliva_locale'
-
-function isPublicCountry(code: string): code is CountryCode {
-  return PUBLIC_COUNTRIES.some((c) => c.code === code)
-}
 
 function isSupportedLocale(value: string): value is Locale {
   return (LOCALES as readonly string[]).includes(value)
@@ -74,7 +68,6 @@ export function CountryProvider({
   initialLocale,
   initialCountryCode = DEFAULT_COUNTRY,
   visitorCountryCode = null,
-  previewCountryCode = null,
   commercial = emptyCommercialSnapshot(),
 }: {
   children: ReactNode
@@ -90,15 +83,10 @@ export function CountryProvider({
   initialCountryCode?: CountryCode | null
   /** Trusted request GEO. A saved market preference cannot grant eligibility. */
   visitorCountryCode?: CountryCode | null
-  /** Server-authorized owner preview only; never read from browser storage. */
-  previewCountryCode?: CountryCode | null
   commercial?: CommercialSnapshot
 }) {
   const pathname = usePathname()
   const router = useRouter()
-  const [countryCode, setCountryCodeState] =
-    useState<CountryCode>(visitorCountryCode ?? initialCountryCode ?? DEFAULT_COUNTRY)
-  const [marketReady, setMarketReady] = useState(visitorCountryCode !== null)
   // Refresh the shared context, not just individual banners: cached cards,
   // disclosures and operator availability must expire together.
   const currentCommercial = currentCommercialSnapshot(commercial)
@@ -114,31 +102,6 @@ export function CountryProvider({
       : initialLocale
   }, [pathname, initialLocale])
 
-  // Restore the market preference. It cannot override trusted visitor GEO.
-  useEffect(() => {
-    try {
-      const stored = window.localStorage.getItem(COUNTRY_STORAGE_KEY)
-      if (stored && isPublicCountry(stored)) {
-        setCountryCodeState(stored)
-      }
-      setMarketReady(true)
-    } catch {
-      setMarketReady(true)
-    }
-  }, [])
-
-  const setCountryCode = useCallback((code: CountryCode) => {
-    // Only allow public launch markets. LANGUAGE is untouched by this call.
-    if (!isPublicCountry(code)) return
-    setCountryCodeState(code)
-    setMarketReady(true)
-    try {
-      window.localStorage.setItem(COUNTRY_STORAGE_KEY, code)
-    } catch {
-      // ignore storage write failures
-    }
-  }, [])
-
   const setLocale = useCallback(
     (next: Locale) => {
       // GEO is untouched by this call — only the interface language
@@ -146,15 +109,18 @@ export function CountryProvider({
       // locale segment. This is what keeps the visitor on the same
       // logical page across a language switch.
       if (!isSupportedLocale(next)) return
-      const nextSegment = localeToSegment(next)
+      const currentSegment = localeToSegment(locale)
+      const nextSegment = languageLocaleSegment(next, visitorCountryCode, currentSegment)
       try {
-        document.cookie = `${LOCALE_COOKIE}=${nextSegment}; path=/; max-age=31536000`
+        document.cookie = `${LOCALE_COOKIE}=${nextSegment}; path=/; max-age=31536000; SameSite=Lax${window.location.protocol === 'https:' ? '; Secure' : ''}`
       } catch {
         // ignore cookie write failures — the URL navigation below still works
       }
-      router.push(swapLocaleInPath(pathname, nextSegment))
+      const path = languageSwitchPath(pathname, nextSegment)
+      const samePage = path === swapLocaleInPath(pathname, nextSegment)
+      router.push(path + window.location.search + (samePage ? window.location.hash : ''))
     },
-    [pathname, router],
+    [pathname, router, locale, visitorCountryCode],
   )
 
   // Keep <html lang> in sync with the active LANGUAGE (not GEO) for a11y + SEO.
@@ -163,10 +129,11 @@ export function CountryProvider({
   }, [locale])
 
   const value = useMemo<CountryContextValue>(() => {
-    const effectiveCountryCode = previewCountryCode ?? countryCode
+    // URL locale and stale localStorage cannot alter the server-authorized GEO.
+    const marketCode = isCommercialGeo(visitorCountryCode) ? visitorCountryCode : null
+    const effectiveCountryCode = visitorCountryCode ?? initialCountryCode ?? DEFAULT_COUNTRY
     const country = getCountry(effectiveCountryCode)
     const t = createTranslator(locale)
-    const marketCode = marketReady && effectiveCountryCode === visitorCountryCode && isCommercialGeo(effectiveCountryCode) ? effectiveCountryCode : null
     const visibleCommercial = marketCode && currentCommercial.geo === marketCode ? currentCommercial : emptyCommercialSnapshot()
     return {
       country,
@@ -174,7 +141,6 @@ export function CountryProvider({
       marketCode,
       commercial: visibleCommercial,
       currency: visibleCommercial.currency,
-      setCountryCode,
       locale,
       setLocale,
       t,
@@ -182,7 +148,7 @@ export function CountryProvider({
       nameOf: (code: CountryCode) => getCountryName(code, locale),
       countries: PUBLIC_COUNTRIES,
     }
-  }, [countryCode, previewCountryCode, marketReady, visitorCountryCode, currentCommercial, setCountryCode, locale, setLocale])
+  }, [initialCountryCode, visitorCountryCode, currentCommercial, locale, setLocale])
 
   return (
     <CountryContext.Provider value={value}>{children}</CountryContext.Provider>
