@@ -70,7 +70,7 @@ export function BestListView({ list }: { list: GameList }) {
         {listContent.methodologyCriteria && (
           <div className="mb-8 rounded-2xl border border-border bg-card p-6">
             <h2 className="font-display text-xl font-bold text-foreground">
-              Como selecionamos
+              {t('best.methodologyTitle')}
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
               {listContent.editorialContent}

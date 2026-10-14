@@ -45,6 +45,7 @@ import promoModule from '../lib/affiliates/betsson-promo-config.ts'
 import spotlightModule from '../lib/home/spotlight.ts'
 import geoModule from '../lib/geo.ts'
 import latamModule from '../lib/latam-editorial.ts'
+import searchIntentModule from '../lib/search-intent.ts'
 const { originalsDiscoveryCopy, ISLAND_CRASH_POSTER } = discoveryModule
 const { ANALYTICS_COOKIE } = consentModule
 
@@ -572,6 +573,16 @@ try {
       }
     }
     const robots = [...doc.querySelectorAll('meta[name="robots"], meta[name="googlebot"]')].map((meta) => meta.content)
+    const searchGuide = searchIntentModule.searchIntentGuide(routePath, localeModule.segmentToLocale(segment))
+    const searchContent = doc.querySelector('[data-search-intent]')
+    if (searchGuide) {
+      assert.ok(searchContent, `${path}: server-rendered search-intent content`)
+      assert.equal(searchContent.querySelectorAll('h3').length, searchGuide.sections.length)
+      for (const link of searchGuide.sections.flatMap(section => section.links ?? [])) {
+        assert.ok(searchContent.querySelector(`a[href="/${segment}${link.href}"]`), `${path}: crawlable contextual link ${link.href}`)
+      }
+      assert.equal(searchContent.querySelector('a[href^="/go"]'), null, `${path}: reading links cannot create affiliate destinations`)
+    } else assert.equal(searchContent, null, `${path}: no content leaked into an unreviewed edition`)
     if (latamModule.LATAM_SEGMENTS.includes(segment) && latamModule.LATAM_REVIEWED_PATHS.includes(routePath)) {
       assert.ok(doc.querySelector('[data-latam-editorial], [data-latam-guide]'), `${path}: substantive regional guide is rendered`)
       assert.ok(doc.querySelector(`main a[href="/${segment}/guides/bonos-casino"]`) || routePath==='/guides/bonos-casino', `${path}: regional reading path`)

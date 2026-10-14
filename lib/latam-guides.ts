@@ -56,5 +56,6 @@ export function latamGuide(slug: string, locale: Locale) {
   const country=latamCountry(locale)
   if (!country || !(LATAM_GUIDE_SLUGS as readonly string[]).includes(slug)) return null
   const guide=GUIDES[slug as keyof typeof GUIDES]
-  return { ...guide, country, title:`${guide.title} en ${country.name}`, description:`${guide.description} Referencia para ${country.name} (${country.currency}).` }
+  const selectionLinks = locale === 'es-MX' ? [{ href: slug === 'aviator-demo' ? '/best/best-crash-games-mexico' : '/best/best-slots-mexico', label: slug === 'aviator-demo' ? 'Comparar la selección de crash para México' : 'Comparar la selección de slots para México' }] : []
+  return { ...guide, links: [...guide.links, ...selectionLinks], country, title:`${guide.title} en ${country.name}`, description:`${guide.description} Referencia para ${country.name} (${country.currency}).` }
 }

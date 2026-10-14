@@ -1179,9 +1179,11 @@ const LIST_CONTENT: Record<ContentLocale, Record<string, ListContent>> = {
     'best-crash-games-mexico': {
       title: 'Mejores juegos de crash en México',
       intro:
-        'Los juegos de crash tienen una fuerte presencia en México. Esta selección cubre los títulos de crash que más exploran los jugadores mexicanos, con notas claras sobre sus diferencias.',
+        'Compara Aviator, Spaceman y JetX por proveedor, controles y reglas. Es una selección editorial para México, no una clasificación de popularidad ni una promesa de resultados.',
       editorialContent:
-        'Los rankings reflejan el criterio editorial de PlayLiva según disponibilidad, popularidad y variedad en el mercado mexicano. No son una predicción de resultados.',
+        'Seleccionamos formatos que permiten comparar diferencias documentadas. El orden organiza la lectura y no mide jugadores, ganancias ni disponibilidad en todos los casinos. La disponibilidad comercial se revisa por separado para la visita.',
+      methodologyCriteria: ['Identidad del proveedor y edición del juego', 'Diferencias de controles y ayuda publicada', 'Separación de demo, ficha y juego con dinero', 'Disponibilidad y condiciones verificadas por separado'],
+      selectionReasons: { g1: 'Aviator permite leer el retiro del formato crash de SPRIBE.', g3: 'Spaceman aporta otra ficha para contrastar proveedor y controles.', g2: 'JetX permite comparar la presentación y reglas de otro proveedor.' },
       seoTitle: 'Mejores juegos de crash en México | PlayLiva',
       seoDescription:
         'Descubre los mejores juegos de crash en México, cómo funciona cada uno y dónde jugarlos con responsabilidad.',
@@ -1199,12 +1201,14 @@ const LIST_CONTENT: Record<ContentLocale, Record<string, ListContent>> = {
     'best-slots-mexico': {
       title: 'Mejores slots en México',
       intro:
-        'Los slots son favoritos entre los jugadores mexicanos. Esta selección destaca slots populares y lo que hace interesante explorar cada uno.',
+        'Compara Gates of Olympus, Sweet Bonanza y Big Bass Bonanza por edición y funciones. Esta selección editorial para México no mide popularidad ni predice qué juego pagará más.',
       editorialContent:
-        'Los rankings reflejan el criterio editorial de PlayLiva según disponibilidad y popularidad en México. La volatilidad y las funciones varían por título; juega con responsabilidad.',
+        'Elegimos fichas que ayudan a comparar mecánicas y familias de juegos. El orden es de lectura, no una clasificación de rendimiento. La inclusión no acredita disponibilidad en un casino ni participación en una promoción.',
+      methodologyCriteria: ['Identificación de la edición exacta', 'Funciones documentadas y diferencias entre familias', 'Tabla de pagos y ayuda del juego', 'Moneda, disponibilidad y términos de ofertas revisados por separado'],
+      selectionReasons: { g5: 'Gates of Olympus sirve para entender cascadas y multiplicadores del original.', g6: 'Sweet Bonanza permite contrastar otra familia de cascadas.', g11: 'Big Bass Bonanza aporta una familia distinta que debe leerse en su propia ficha.' },
       seoTitle: 'Mejores slots en México | PlayLiva',
       seoDescription:
-        'Descubre slots populares en México, sus funciones principales y dónde jugarlos con responsabilidad.',
+        'Compara una selección editorial de slots para México: ediciones, funciones, criterios y comprobaciones de disponibilidad.',
     },
   },
   en: {

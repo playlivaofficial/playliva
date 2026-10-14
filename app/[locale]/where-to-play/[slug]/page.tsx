@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { GAMES, getGame } from '@/lib/data'
 import { getGameContent } from '@/lib/content'
 import { WhereToPlayView } from '@/components/where-to-play-view'
+import { SearchIntentGuide } from '@/components/search-intent-guide'
 import { getGameOgImage } from '@/lib/game-artwork'
 import { pageMetadata } from '@/lib/seo'
 import { publishedWhereToPlayLocales } from '@/lib/commercial/seo'
@@ -60,10 +61,11 @@ export async function generateMetadata({
 export default async function WhereToPlayPage({
   params,
 }: {
-  params: Promise<{ slug: string }>
+  params: Promise<{ slug: string; locale: string }>
 }) {
-  const { slug } = await params
+  const { slug, locale: localeSegment } = await params
   const game = getGame(slug)
   if (!game) notFound()
-  return <WhereToPlayView game={game} />
+  const locale = segmentToLocale(isLocaleSegment(localeSegment) ? localeSegment : DEFAULT_LOCALE_SEGMENT)
+  return <><WhereToPlayView game={game} /><SearchIntentGuide path={`/where-to-play/${slug}`} locale={locale} /></>
 }
