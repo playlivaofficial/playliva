@@ -30,7 +30,7 @@ const expectedIds = ['island-crash', 'liva-embaixadinha', 'liva-capybara-gold', 
 function wrap(child, { geo = 'MX', locale = `es-${geo}`, preview = null } = {}) {
   return React.createElement(AppRouterContext.Provider, { value: { push() {}, prefetch() {} } },
     React.createElement(PathnameContext.Provider, { value: `/${locale.toLowerCase()}/play` },
-      React.createElement(CountryProvider, { initialLocale: locale, visitorCountryCode: geo, previewCountryCode: preview }, child)))
+      React.createElement(CountryProvider, { initialLocale: locale, visitorCountryCode: preview ?? geo }, child)))
 }
 const render = (child, settings) => new JSDOM(renderToStaticMarkup(wrap(child, settings))).window.document
 

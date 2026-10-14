@@ -6,7 +6,6 @@ import { useCountry } from '@/components/country-context'
 import { getPublicOffers, getCountryName } from '@/lib/data'
 import { Section, SectionHeading } from '@/components/section'
 import { OfferCard } from '@/components/offer-card'
-import { CountrySelector } from '@/components/geo-selectors'
 import { AffiliateDisclosureLine } from '@/components/notices'
 import type { Offer } from '@/lib/types'
 import { BetssonSponsoredBanner } from '@/components/affiliates/betsson-sponsored-banner'
@@ -74,7 +73,7 @@ export function OffersView() {
                 <span className="text-sm text-muted-foreground">
                   {t('offers.showingFor')}
                 </span>
-                <CountrySelector />
+                <span className="text-sm font-medium" data-detected-market>{countryName}</span>
               </div>
             </div>
           </div>

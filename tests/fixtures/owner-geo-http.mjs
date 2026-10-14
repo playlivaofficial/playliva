@@ -9,7 +9,7 @@ export async function ownerGeoHttpFixture() {
   const password = randomBytes(24).toString('hex'), salt = randomBytes(16).toString('hex')
   const env = { OWNER_LOCAL_ENABLED: '1', OWNER_DATA_DIR: await mkdtemp(resolve(tmpdir(), 'playliva-geo-http-')),
     OWNER_PASSWORD_HASH: `${salt}:${scryptSync(password, salt, 64).toString('hex')}`, VERCEL: '', OWNER_DATABASE_URL: '', OWNER_REDIS_REST_URL: '', OWNER_REDIS_REST_TOKEN: '' }
-  return { env, async verify(base) {
+  return { env, async verify(base, commercialExpected = false) {
     let cookie = ''
     const post = (path, body, session = cookie) => fetch(base + path, { method: 'POST', headers: { origin: base, 'sec-fetch-site': 'same-origin', 'content-type': 'application/json', cookie: session, 'x-vercel-ip-country': 'GE' }, body: JSON.stringify(body) })
     const status = () => fetch(base + '/api/owner/geo-preview', { headers: { cookie, 'x-vercel-ip-country': 'GE' } })
@@ -34,7 +34,7 @@ export async function ownerGeoHttpFixture() {
     for (const country of ['MX', 'CO', 'PE']) {
       assert.equal((await post('/api/owner/geo-preview', { country })).status, 200)
       const locale = 'es-' + country.toLowerCase()
-      for (const path of [`/${locale}`, `/${locale}/offers`, `/${locale}/play/crash`, `/${locale}/games/aviator`]) await checkPage(path, cookie, false, true)
+      for (const path of [`/${locale}`, `/${locale}/offers`, `/${locale}/play/crash`, `/${locale}/games/aviator`, '/en/offers', '/pt-br/offers']) await checkPage(path, cookie, commercialExpected, true)
     }
     // The exact same URL fetched anonymously after owner rendering cannot inherit preview.
     await checkPage('/pt-br', '', false, false)
@@ -43,7 +43,7 @@ export async function ownerGeoHttpFixture() {
     assert.doesNotMatch((await redirect()).headers.get('location'), /betsson\.bet\.br/)
     assert.equal((await post('/api/events', {}, cookie + '; playliva_analytics=granted')).status, 204)
     assert.equal((await post('/api/owner/geo-preview', { country: 'MX' })).status, 200)
-    await checkPage('/pt-br/offers', cookie, false, true)
+    await checkPage('/pt-br/offers', cookie, commercialExpected, true)
     assert.equal((await post('/api/owner/geo-preview', { country: null })).status, 200)
     await checkPage('/pt-br/play/crash', cookie, false, true)
     assert.doesNotMatch((await redirect()).headers.get('location'), /betsson\.bet\.br/)

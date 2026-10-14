@@ -2,6 +2,10 @@
 
 Source of truth: https://github.com/playlivaofficial/playliva.
 
+[Automatic GEO and public languages](docs/geo-language-separation.md) documents
+the three-option language menu, trusted MX/CO/PE detection, private Owner preview,
+saved-language behavior and preserved regional SEO routes.
+
 [Pan-LATAM Originals](docs/pan-latam-originals.md) documents the MX/CO/PE
 featured priority, protected Island Crash / Liva Ginga identities, display-name
 updates with stable routes, and the classic Liva Turbo Crash replacement.
@@ -62,7 +66,7 @@ suppresses commercial links. The public catalog and canonical URLs stay availabl
 ## Private Owner Growth workspace
 
 [Owner GEO preview](docs/owner-geo-preview.md) lets an authenticated owner select
-Brazil, Mexico or Real GEO from the existing workspace and inspect site-wide
+Mexico, Colombia, Peru or Real GEO from the existing workspace and inspect site-wide
 commercial eligibility without a VPN. The selection belongs only to that owner
 session and never changes real visitor GEO or grants eligibility from language.
 
@@ -128,9 +132,10 @@ the bundled React and accessibility plugins declare compatibility through 9,
 not 10. The registry currently marks this ESLint release deprecated; reassess
 the compatible tooling stack in a dedicated dependency maintenance task.
 
-The baseline has **three visible warnings** and a maximum-warning budget of
-three: synchronous effects in `country-context.tsx` and `site-header.tsx`, and
-an existing unused suppression in `json-ld.tsx`. Only those two component files
+The current baseline has **two visible warnings** and a maximum-warning budget of
+three: a synchronous effect in `site-header.tsx` and an existing unused suppression
+in `json-ld.tsx`. The retired country-preference effect no longer produces a warning.
+The existing file-scoped exceptions for `country-context.tsx` and `site-header.tsx`
 downgrade `react-hooks/set-state-in-effect` to warning; all other preset errors
 remain blocking. Resolving these warnings is follow-up work, not permission to
 change GEO or navigation behavior. Do not raise the warning budget to pass CI.

@@ -39,6 +39,9 @@ export function middleware(request: NextRequest) {
     requestHeaders.set('x-locale', firstSegment)
     const response = NextResponse.next({ request: { headers: requestHeaders } })
     response.headers.set('x-locale', firstSegment)
+    // Request-GEO offers and authenticated Owner controls must not be shared.
+    response.headers.set('Cache-Control', 'private, no-store, max-age=0')
+    response.headers.set('Vary', 'Cookie, X-Vercel-IP-Country')
     return response
   }
 

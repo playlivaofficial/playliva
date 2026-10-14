@@ -52,6 +52,32 @@ export function localeToSegment(locale: Locale): LocaleSegment {
   return LOCALE_TO_SEGMENT[locale]
 }
 
+/** Public languages share the existing SEO routes; they never select a GEO. */
+export const PUBLIC_LANGUAGES = [
+  { code: 'es-MX', label: 'Español' },
+  { code: 'en', label: 'English' },
+  { code: 'pt-BR', label: 'Português' },
+] as const
+
+export function languageLocaleSegment(next: Locale, market: unknown, current: LocaleSegment): LocaleSegment {
+  if (contentLocale(next) !== 'es-MX') return localeToSegment(next)
+  const geo = getGeoConfig(market)
+  if (geo) return localeToSegment(geo.locale as Locale)
+  // Preserve an explicit Spanish edition outside commercial markets.
+  return current.startsWith('es-') ? current : 'es-mx'
+}
+
+/** Guides have no EN/PT translation. Continue to their existing subject page
+ * rather than inventing duplicate guide URLs or sending readers to a 404. */
+export function languageSwitchPath(pathname: string, segment: LocaleSegment): string {
+  if (segment === 'en' || segment === 'pt-br') {
+    const guide = stripLocaleFromPath(pathname).replace(/\/$/, '')
+    if (guide === '/guides/aviator-demo') return localizedPath('/games/aviator', segment)
+    if (guide === '/guides/bonos-casino') return localizedPath('/offers', segment)
+  }
+  return swapLocaleInPath(pathname, segment)
+}
+
 export function segmentToOgLocale(segment: LocaleSegment): string {
   return SEGMENT_TO_OG_LOCALE[segment]
 }
@@ -129,9 +155,14 @@ export function detectRootLocaleSegment({ cookieLocale, acceptLanguage, country 
   acceptLanguage: string | null
   country: string | null
 }): LocaleSegment {
-  if (cookieLocale && isLocaleSegment(cookieLocale)) return cookieLocale
   const normalizedCountry = country?.trim().toUpperCase()
   const market = getGeoConfig(normalizedCountry)
   const fallback = market ? localeToSegment(market.locale) : normalizedCountry === 'BR' ? 'pt-br' : 'en'
+  if (cookieLocale && isLocaleSegment(cookieLocale)) {
+    // Legacy Spanish cookies represent a language preference, not a country.
+    return cookieLocale.startsWith('es-') && market ? fallback : cookieLocale
+  }
+  // Approved markets start in Spanish even if the browser suggests EN/PT.
+  if (market) return fallback
   return detectLocaleSegmentFromAcceptLanguage(acceptLanguage, fallback, market ? fallback : 'es-mx')
 }
