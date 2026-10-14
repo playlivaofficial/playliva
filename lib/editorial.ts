@@ -4,6 +4,7 @@ import type { ContentLocale } from '@/lib/types'
 import type { Locale } from './types'
 import { REFERENCE_PATHS } from './catalog/paths'
 import { LATAM_REVIEWED_PATHS, LATAM_UPDATED_AT } from './latam-editorial'
+import { hasSearchIntentReview, SEARCH_INTENT_UPDATED_AT } from './search-intent-scope'
 
 export const EDITOR = {
   id: 'playliva', name: 'PlayLiva', profile: '/authors/playliva',
@@ -18,6 +19,10 @@ export const EDITOR = {
 export interface EditorialRecord { authorId: 'playliva'; publishedAt?: string; updatedAt?: string; evidence: string }
 
 export function editorialRecord(path: string, locale?: Locale | LocaleSegment): EditorialRecord | undefined {
+  if (locale && hasSearchIntentReview(path, locale)) return {
+    authorId: 'playliva', updatedAt: SEARCH_INTENT_UPDATED_AT,
+    evidence: 'Substantive search-intent explanations and contextual reading links reviewed 2026-10-14; original publication dates are not inferred.',
+  }
   if (locale && geoForLocale(locale) && (LATAM_REVIEWED_PATHS as readonly string[]).includes(path)) return {
     authorId:'playliva', updatedAt:LATAM_UPDATED_AT,
     ...(path.startsWith('/guides/') ? {publishedAt:LATAM_UPDATED_AT} : {}),

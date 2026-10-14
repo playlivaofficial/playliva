@@ -2,6 +2,7 @@ import { LocaleLink } from '@/components/locale-link'
 import { Section } from '@/components/section'
 import { latamTopic } from '@/lib/latam-editorial'
 import type { Locale } from '@/lib/types'
+import { SearchIntentContent } from '@/components/search-intent-guide'
 
 /** Server-rendered editorial links contain no outbound affiliate capabilities. */
 export function LatamEditorialGuide({ path, locale }: { path: string; locale: Locale }) {
@@ -11,6 +12,7 @@ export function LatamEditorialGuide({ path, locale }: { path: string; locale: Lo
     <article className="max-w-4xl" data-latam-editorial={topic.country.code}>
       <h2 className="font-display text-2xl font-bold">{topic.name}: guía para {topic.country.name}</h2>
       {topic.paragraphs.map(paragraph=><p className="mt-4 leading-relaxed text-muted-foreground" key={paragraph}>{paragraph}</p>)}
+      <SearchIntentContent path={path} locale={locale} />
       <h3 className="mt-6 text-lg font-semibold">Moneda y condiciones: {topic.country.currency}</h3>
       <p className="mt-3 leading-relaxed text-muted-foreground">{topic.country.money}</p>
       <h3 className="mt-6 text-lg font-semibold">Identidad del destino y revisión local</h3>

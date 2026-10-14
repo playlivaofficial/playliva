@@ -28,7 +28,7 @@ test('reviewed regional pages have substantive country copy and reciprocal index
     const row=rows.find(row=>row.url===metadata.alternates.canonical)
     assert.ok(row)
     assert.deepEqual(row.alternates.languages,metadata.alternates.languages)
-    assert.equal(row.lastModified,'2026-10-13')
+    assert.equal(row.lastModified,editorial.editorialRecord(path,locale).updatedAt)
     for(const url of Object.values(metadata.alternates.languages)) assert.ok(rows.some(row=>row.url===url))
   }
   assert.equal(titles.size,30)

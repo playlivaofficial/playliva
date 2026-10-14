@@ -109,7 +109,10 @@ for (const locale of ['en', 'pt-BR', 'es-MX', 'es-CO', 'es-PE']) test(`BR retire
   }
 })
 
-test('M12 cached ads become visible only with current evidence and close at offer expiry', async () => {
+test('M12 cached ads become visible only with current evidence and close at offer expiry', async t => {
+  // Exercise offer expiry while the recorded regulatory evidence is current.
+  // Wall-clock passage must not renew production evidence or break this fixture.
+  t.mock.timers.enable({ apis: ['Date'], now: checked })
   const dom = new JSDOM('<div id="root"></div>', { url: 'https://www.playliva.com/en' })
   const saved = new Map()
   for (const key of ['window', 'document', 'Event']) {

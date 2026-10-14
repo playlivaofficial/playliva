@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { getGameList, getGameById } from '@/lib/data'
 import { getGameListContent } from '@/lib/content'
 import { BestListView } from '@/components/best-list-view'
+import { SearchIntentGuide } from '@/components/search-intent-guide'
 import { GAME_LISTS } from '@/lib/data'
 import { pageMetadata } from '@/lib/discovery/seo'
 import {
@@ -50,10 +51,11 @@ export async function generateMetadata({
 export default async function BestListPage({
   params,
 }: {
-  params: Promise<{ slug: string }>
+  params: Promise<{ slug: string; locale: string }>
 }) {
-  const { slug } = await params
+  const { slug, locale: localeSegment } = await params
   const list = getGameList(slug)
   if (!list) notFound()
-  return <BestListView list={list} />
+  const locale = segmentToLocale(isLocaleSegment(localeSegment) ? localeSegment : DEFAULT_LOCALE_SEGMENT)
+  return <><BestListView list={list} /><SearchIntentGuide path={`/best/${slug}`} locale={locale} /></>
 }
